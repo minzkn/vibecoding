@@ -218,19 +218,22 @@ var NAV_STRUCTURE = [
 
     const root = getRelativeRoot();
     const currentFile = getCurrentFile();
+    const isMobile = window.innerWidth <= 768;
 
     let html = '<div class="nav-inner">';
 
     NAV_STRUCTURE.forEach((category, idx) => {
+      // 모바일에서는 모든 카테고리 열기, 데스크톱에서는 첫 번째만
+      const isOpen = isMobile || idx === 0;
       html += `
         <div class="nav-category">
-          <button class="nav-category-toggle ${idx === 0 ? 'active' : ''}" aria-expanded="${idx === 0}">
+          <button class="nav-category-toggle ${isOpen ? 'active' : ''}" aria-expanded="${isOpen}">
             <span class="nav-category-title">${category.title}</span>
             <svg class="nav-category-icon" width="12" height="12" viewBox="0 0 12 12">
               <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none"/>
             </svg>
           </button>
-          <ul class="nav-list ${idx === 0 ? 'active' : ''}">
+          <ul class="nav-list ${isOpen ? 'active' : ''}">
       `;
 
       category.pages.forEach(page => {
