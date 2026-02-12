@@ -54,6 +54,10 @@
     left: 0;
     bottom: 0;
     width: 280px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
     z-index: 95;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
@@ -62,6 +66,25 @@
 
   .side-nav.active {
     transform: translateX(0);
+  }
+
+  /* 모바일에서 모든 카테고리가 열려있는지 확인 */
+  .side-nav .nav-category-toggle {
+    /* 터치 타겟 크기 확보 */
+    min-height: 44px;
+  }
+
+  .side-nav .nav-list {
+    /* 닫힌 상태에서도 전환 확인 */
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+
+  .side-nav .nav-list:not(.active) {
+    opacity: 0;
+  }
+
+  .side-nav .nav-list.active {
+    opacity: 1;
   }
 
   .main-content {

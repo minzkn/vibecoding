@@ -218,13 +218,22 @@ var NAV_STRUCTURE = [
 
     const root = getRelativeRoot();
     const currentFile = getCurrentFile();
-    const isMobile = window.innerWidth <= 768;
+    // 모바일 감지: matchMedia 사용으로 더 정확한 감지
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
     let html = '<div class="nav-inner">';
 
     NAV_STRUCTURE.forEach((category, idx) => {
-      // 모바일에서는 모든 카테고리 열기, 데스크톱에서는 첫 번째만
-      const isOpen = isMobile;
+      // 모바일에서는 모든 카테고리 열기
+      // 데스크톱에서는 현재 페이지가 속한 카테고리만 열기
+      let isOpen = isMobile;
+
+      // 데스크톱에서는 현재 페이지가 속한 카테고리 찾기
+      if (!isMobile) {
+        const hasCurrentPage = category.pages.some(page => page.file === currentFile);
+        if (hasCurrentPage) isOpen = true;
+      }
+
       html += `
         <div class="nav-category">
           <button class="nav-category-toggle ${isOpen ? 'active' : ''}" aria-expanded="${isOpen}">
@@ -691,6 +700,16 @@ var NAV_STRUCTURE = [
     if (themeToggle) {
       themeToggle.addEventListener('click', toggleTheme);
     }
+
+    // 화면 크기 변경 시 네비게이션 재구성 (모바일 ↔ 데스크톱 전환 시)
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        buildSideNav();
+        initNavToggle(); // 토글 이벤트 리스너 재등록
+      }, 250);
+    });
   }
 
   // DOM 로드 완료 시 초기화
