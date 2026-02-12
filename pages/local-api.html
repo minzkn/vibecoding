@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>로컬 LLM API 활용 - AI Vibe Coding 가이드 /with MINZKN</title>
-<meta name="description" content="Ollama, LM Studio, LocalAI 등 로컬 환경에서 실행 가능한 LLM API 사용법과 성능 비교">
+<meta name="description" content="Ollama, LM Studio, LocalAI, vLLM, Text Generation WebUI 등 로컬 환경에서 실행 가능한 LLM API 완벽 가이드 - 설치부터 프로덕션 배포까지">
 <link rel="stylesheet" href="../css/themes.css">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/responsive.css">
@@ -18,16 +18,17 @@
 <nav class="breadcrumb"></nav>
 
 <h1 id="top">로컬 LLM API 활용</h1>
-<p class="lead">클라우드 API 대신 자체 하드웨어에서 LLM을 실행하면 데이터 프라이버시, 비용 절감, 오프라인 작업이 가능합니다. Ollama, LM Studio, LocalAI 등 주요 로컬 LLM 솔루션의 설치부터 API 활용까지 완벽 가이드를 제공합니다.</p>
+<p class="lead">클라우드 API 대신 자체 하드웨어에서 LLM을 실행하면 데이터 프라이버시, 비용 절감, 오프라인 작업이 가능합니다. Ollama, LM Studio, LocalAI, vLLM, Text Generation WebUI 등 주요 로컬 LLM 솔루션의 설치부터 프로덕션 배포까지 완벽 가이드를 제공합니다.</p>
 
 <div class="info-box tip">
 <strong>핵심 포인트</strong>
 <ul>
-<li>Ollama: 가장 간단한 설치와 사용, CLI 중심</li>
-<li>LM Studio: GUI 기반, 초보자 친화적</li>
+<li>Ollama: 가장 간단한 설치와 사용, CLI 중심, GGUF 모델</li>
+<li>LM Studio: GUI 기반, 초보자 친화적, 원클릭 모델 다운로드</li>
 <li>LocalAI: OpenAI 호환 API, 다양한 모델 형식 지원</li>
-<li>Text Generation WebUI: 고급 설정, 커뮤니티 활발</li>
-<li>하드웨어 요구사항: 최소 8GB RAM, 권장 NVIDIA GPU</li>
+<li>Text Generation WebUI: 고급 설정, 최대 커스터마이징, 확장 풍부</li>
+<li>vLLM: 프로덕션 최적화, 최고 성능, PagedAttention, GPU 필수</li>
+<li>하드웨어 요구사항: 최소 8GB RAM, 권장 NVIDIA GPU (vLLM은 필수)</li>
 </ul>
 </div>
 
@@ -812,6 +813,591 @@ result = response.json()
 </section>
 
 <section class="content-section">
+<h2 id="vllm">vLLM (프로덕션 추론 서버)</h2>
+
+<p>vLLM은 UC Berkeley LMSYS에서 개발한 고성능 LLM 추론 엔진으로, 프로덕션 환경에서 최고의 처리량과 효율성을 제공합니다.</p>
+
+<h3 id="vllm-overview">vLLM이란?</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">개요</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// vLLM의 핵심 강점</span>
+
+<span class="str">1. PagedAttention</span> - 메모리 효율성
+• KV 캐시를 페이지 단위로 관리 (OS의 가상 메모리 기법 응용)
+• 기존 대비 <span class="num">24</span>배 높은 처리량
+• 메모리 단편화 최소화
+
+<span class="str">2. Continuous Batching</span> - 동적 배칭
+• 요청별 독립적 처리 (서로 다른 완성 길이)
+• 새 요청 즉시 배치에 추가 (대기 시간 감소)
+• GPU 유휴 시간 최소화
+
+<span class="str">3. 빠른 모델 실행</span>
+• CUDA 커널 최적화
+• Tensor Parallelism (다중 GPU)
+• FP16, BF16, INT8 양자화 지원
+
+<span class="str">4. OpenAI 호환 API</span>
+• 기존 OpenAI 클라이언트 코드 그대로 사용
+• /v1/completions, /v1/chat/completions 엔드포인트
+• 스트리밍 지원
+
+<span class="cmt">// 사용 사례</span>
+✓ 대규모 서비스 (높은 QPS 요구)
+✓ API 서비스 제공 (OpenAI 대체)
+✓ 실시간 추론 (낮은 지연 시간)
+✓ 비용 최적화 (GPU 활용률 극대화)
+
+<span class="cmt">// 제한사항</span>
+✗ GGUF 형식 미지원 (PyTorch/Safetensors만)
+✗ CPU 전용 실행 불가 (GPU 필수)
+✗ 설치 및 설정 복잡 (초보자에게 어려움)
+</code></pre>
+</div>
+
+<h3 id="vllm-install">설치</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 필수 요구사항</span>
+<span class="cmt"># - Linux (Ubuntu 20.04+)</span>
+<span class="cmt"># - Python 3.8-3.11</span>
+<span class="cmt"># - CUDA 11.8+ (NVIDIA GPU)</span>
+<span class="cmt"># - 최소 16GB GPU VRAM 권장</span>
+
+<span class="cmt"># 1. pip 설치 (가장 간단)</span>
+pip install vllm
+
+<span class="cmt"># 2. CUDA 버전 지정 설치</span>
+pip install vllm --extra-index-url https://download.pytorch.org/whl/cu121
+
+<span class="cmt"># 3. Docker 사용 (권장 - 환경 격리)</span>
+docker pull vllm/vllm-openai:latest
+
+<span class="cmt"># 4. 소스에서 빌드 (최신 기능)</span>
+git clone https://github.com/vllm-project/vllm.git
+cd vllm
+pip install -e .
+
+<span class="cmt"># 설치 확인</span>
+python -c <span class="str">"import vllm; print(vllm.__version__)"</span>
+<span class="cmt"># 0.6.3 (2026년 1월 기준)</span>
+
+<span class="cmt"># GPU 확인</span>
+nvidia-smi
+<span class="cmt"># CUDA Version: 12.1 이상 권장</span>
+</code></pre>
+</div>
+
+<h3 id="vllm-basic">기본 사용법</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> vllm <span class="kw">import</span> LLM, SamplingParams
+
+<span class="cmt"># 1. 모델 로드</span>
+llm = LLM(
+    model=<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>,  <span class="cmt"># HuggingFace 모델 ID</span>
+    tensor_parallel_size=<span class="num">1</span>,  <span class="cmt"># GPU 개수</span>
+    gpu_memory_utilization=<span class="num">0.9</span>,  <span class="cmt"># GPU 메모리 사용률 (0.0-1.0)</span>
+    max_model_len=<span class="num">4096</span>  <span class="cmt"># 최대 컨텍스트 길이</span>
+)
+
+<span class="cmt"># 2. 샘플링 파라미터 설정</span>
+sampling_params = SamplingParams(
+    temperature=<span class="num">0.7</span>,
+    top_p=<span class="num">0.9</span>,
+    max_tokens=<span class="num">256</span>,
+    stop=[<span class="str">"</s>"</span>, <span class="str">"\n\n"</span>]  <span class="cmt"># 종료 토큰</span>
+)
+
+<span class="cmt"># 3. 단일 프롬프트 생성</span>
+prompts = [<span class="str">"Explain quantum computing in simple terms."</span>]
+outputs = llm.generate(prompts, sampling_params)
+
+<span class="kw">for</span> output <span class="kw">in</span> outputs:
+    prompt = output.prompt
+    generated_text = output.outputs[<span class="num">0</span>].text
+    <span class="fn">print</span>(<span class="str">f"Prompt: </span>{prompt}<span class="str">"</span>)
+    <span class="fn">print</span>(<span class="str">f"Generated: </span>{generated_text}<span class="str">"</span>)
+
+<span class="cmt"># 4. 배치 추론 (여러 프롬프트 동시 처리)</span>
+prompts = [
+    <span class="str">"What is machine learning?"</span>,
+    <span class="str">"Explain neural networks."</span>,
+    <span class="str">"What is deep learning?"</span>
+]
+outputs = llm.generate(prompts, sampling_params)
+
+<span class="cmt"># 5. 대화형 프롬프트 (ChatML 형식)</span>
+<span class="kw">from</span> vllm <span class="kw">import</span> ChatCompletionMessage
+
+messages = [
+    {<span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: <span class="str">"You are a helpful assistant."</span>},
+    {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Write a Python function to calculate factorial."</span>}
+]
+
+<span class="cmt"># 모델별 채팅 템플릿 적용</span>
+<span class="kw">from</span> transformers <span class="kw">import</span> AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained(<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>)
+prompt = tokenizer.apply_chat_template(messages, tokenize=<span class="kw">False</span>, add_generation_prompt=<span class="kw">True</span>)
+
+outputs = llm.generate([prompt], sampling_params)
+<span class="fn">print</span>(outputs[<span class="num">0</span>].outputs[<span class="num">0</span>].text)
+</code></pre>
+</div>
+
+<h3 id="vllm-server">OpenAI 호환 API 서버</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 1. 기본 서버 시작</span>
+python -m vllm.entrypoints.openai.api_server \
+    --model meta-llama/Llama-3.1-8B-Instruct \
+    --port <span class="num">8000</span>
+
+<span class="cmt"># 2. 고급 설정</span>
+python -m vllm.entrypoints.openai.api_server \
+    --model meta-llama/Llama-3.1-8B-Instruct \
+    --port <span class="num">8000</span> \
+    --host <span class="num">0.0.0.0</span> \
+    --tensor-parallel-size <span class="num">2</span> \
+    --gpu-memory-utilization <span class="num">0.95</span> \
+    --max-model-len <span class="num">8192</span> \
+    --dtype bfloat16 \
+    --disable-log-requests
+
+<span class="cmt"># 3. Docker로 서버 실행</span>
+docker run --runtime nvidia --gpus all \
+    -v ~/.cache/huggingface:/root/.cache/huggingface \
+    -p <span class="num">8000</span>:<span class="num">8000</span> \
+    --ipc=host \
+    vllm/vllm-openai:latest \
+    --model meta-llama/Llama-3.1-8B-Instruct \
+    --port <span class="num">8000</span>
+
+<span class="cmt"># 4. 환경 변수 설정</span>
+<span class="kw">export</span> VLLM_WORKER_MULTIPROC_METHOD=spawn
+<span class="kw">export</span> CUDA_VISIBLE_DEVICES=<span class="num">0</span>,<span class="num">1</span>
+
+<span class="cmt"># 5. 서버 헬스체크</span>
+curl http://localhost:<span class="num">8000</span>/health
+<span class="cmt"># {"status": "ok"}</span>
+
+<span class="cmt"># 6. 모델 목록 조회</span>
+curl http://localhost:<span class="num">8000</span>/v1/models
+</code></pre>
+</div>
+
+<h3 id="vllm-client">클라이언트 사용</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="cmt"># vLLM 서버에 연결 (OpenAI SDK 사용)</span>
+client = OpenAI(
+    base_url=<span class="str">"http://localhost:8000/v1"</span>,
+    api_key=<span class="str">"EMPTY"</span>  <span class="cmt"># vLLM은 API 키 검증 안함</span>
+)
+
+<span class="cmt"># 1. 채팅 완성</span>
+response = client.chat.completions.create(
+    model=<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: <span class="str">"You are a Python expert."</span>},
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Write a binary search function."</span>}
+    ],
+    temperature=<span class="num">0.7</span>,
+    max_tokens=<span class="num">512</span>
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+
+<span class="cmt"># 2. 스트리밍</span>
+stream = client.chat.completions.create(
+    model=<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Count to 20"</span>}],
+    stream=<span class="kw">True</span>,
+    max_tokens=<span class="num">100</span>
+)
+
+<span class="kw">for</span> chunk <span class="kw">in</span> stream:
+    <span class="kw">if</span> chunk.choices[<span class="num">0</span>].delta.content:
+        <span class="fn">print</span>(chunk.choices[<span class="num">0</span>].delta.content, end=<span class="str">""</span>)
+
+<span class="cmt"># 3. 텍스트 완성 (레거시)</span>
+response = client.completions.create(
+    model=<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>,
+    prompt=<span class="str">"Once upon a time"</span>,
+    max_tokens=<span class="num">50</span>,
+    temperature=<span class="num">0.8</span>
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].text)
+
+<span class="cmt"># 4. 다중 완성 (n &gt; 1)</span>
+response = client.chat.completions.create(
+    model=<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"창의적인 회사 이름 제안해줘"</span>}],
+    n=<span class="num">5</span>,  <span class="cmt"># 5개의 다른 완성 생성</span>
+    temperature=<span class="num">1.0</span>
+)
+
+<span class="kw">for</span> i, choice <span class="kw">in</span> <span class="fn">enumerate</span>(response.choices):
+    <span class="fn">print</span>(<span class="str">f"</span>{i+<span class="num">1</span>}<span class="str">. </span>{choice.message.content}<span class="str">"</span>)
+</code></pre>
+</div>
+
+<h3 id="vllm-advanced">고급 기능</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 1. Tensor Parallelism (다중 GPU)</span>
+<span class="cmt"># 큰 모델을 여러 GPU에 분산</span>
+llm = LLM(
+    model=<span class="str">"meta-llama/Llama-3.1-70B-Instruct"</span>,
+    tensor_parallel_size=<span class="num">4</span>,  <span class="cmt"># 4개 GPU 사용</span>
+    dtype=<span class="str">"bfloat16"</span>
+)
+
+<span class="cmt"># 2. 양자화 (메모리 절약)</span>
+llm = LLM(
+    model=<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>,
+    quantization=<span class="str">"awq"</span>,  <span class="cmt"># awq, gptq, squeezellm</span>
+    dtype=<span class="str">"half"</span>
+)
+
+<span class="cmt"># 3. 프롬프트 어댑터 (LoRA)</span>
+llm = LLM(
+    model=<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>,
+    enable_lora=<span class="kw">True</span>
+)
+
+<span class="cmt"># LoRA 어댑터 로드 및 요청</span>
+outputs = llm.generate(
+    prompts,
+    sampling_params,
+    lora_request=LoRARequest(<span class="str">"adapter1"</span>, <span class="num">1</span>, <span class="str">"/path/to/lora"</span>)
+)
+
+<span class="cmt"># 4. Prefix Caching (공통 프리픽스 재사용)</span>
+<span class="cmt"># 시스템 프롬프트 등 반복되는 프리픽스 캐싱</span>
+llm = LLM(
+    model=<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>,
+    enable_prefix_caching=<span class="kw">True</span>
+)
+
+<span class="cmt"># 5. Guided Decoding (구조화된 출력)</span>
+<span class="kw">from</span> vllm <span class="kw">import</span> SamplingParams
+
+<span class="cmt"># JSON 출력 강제</span>
+json_schema = <span class="str">"""{
+    "type": "object",
+    "properties": {
+        "name": {"type": "string"},
+        "age": {"type": "integer"}
+    }
+}"""</span>
+
+sampling_params = SamplingParams(
+    temperature=<span class="num">0.7</span>,
+    guided_json=json_schema
+)
+
+<span class="cmt"># 6. 멀티모달 (비전)</span>
+<span class="kw">from</span> vllm <span class="kw">import</span> LLM, SamplingParams
+
+llm = LLM(model=<span class="str">"llava-hf/llava-v1.6-mistral-7b-hf"</span>)
+
+<span class="cmt"># 이미지 + 텍스트 입력</span>
+outputs = llm.generate({
+    <span class="str">"prompt"</span>: <span class="str">"USER: &lt;image&gt;\nWhat's in this image?\nASSISTANT:"</span>,
+    <span class="str">"multi_modal_data"</span>: {<span class="str">"image"</span>: <span class="str">"path/to/image.jpg"</span>}
+})
+</code></pre>
+</div>
+
+<h3 id="vllm-optimization">성능 최적화</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">최적화</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. GPU 메모리 활용 최대화</span>
+--gpu-memory-utilization <span class="num">0.95</span>
+<span class="cmt"># 기본값 0.9, 최대 0.95 권장</span>
+<span class="cmt"># 1.0으로 설정 시 OOM 위험</span>
+
+<span class="cmt">// 2. 배치 크기 조정</span>
+--max-num-seqs <span class="num">256</span>
+<span class="cmt"># 동시 처리 시퀀스 수</span>
+<span class="cmt"># 높을수록 처리량 증가, 메모리 사용 증가</span>
+
+<span class="cmt">// 3. Block Size 튜닝</span>
+--block-size <span class="num">16</span>
+<span class="cmt"># PagedAttention 블록 크기</span>
+<span class="cmt"># 기본값 16, 메모리에 따라 조정</span>
+
+<span class="cmt">// 4. Speculative Decoding</span>
+--speculative-model <span class="str">"meta-llama/Llama-3.2-1B"</span>
+<span class="cmt"># 작은 모델로 예측 → 큰 모델로 검증</span>
+<span class="cmt"># 2-3배 속도 향상 (품질 동일)</span>
+
+<span class="cmt">// 5. Flash Attention</span>
+--use-flash-attn
+<span class="cmt"># 메모리 효율적인 어텐션 (자동 활성화)</span>
+
+<span class="cmt">// 6. 컨텍스트 길이 제한</span>
+--max-model-len <span class="num">4096</span>
+<span class="cmt"># 필요한 만큼만 설정</span>
+<span class="cmt"># 메모리 사용량 = O(sequence_length^2)</span>
+
+<span class="cmt">// 7. KV Cache 데이터 타입</span>
+--kv-cache-dtype fp8
+<span class="cmt"># auto, fp8, fp16 (기본값)</span>
+<span class="cmt"># fp8: 메모리 절약, 약간의 품질 저하</span>
+
+<span class="cmt">// 8. 토큰 처리량 모니터링</span>
+<span class="cmt"># 로그에서 확인:</span>
+<span class="cmt"># "Avg prompt throughput: 1234 tokens/s"</span>
+<span class="cmt"># "Avg generation throughput: 567 tokens/s"</span>
+</code></pre>
+</div>
+
+<h3 id="vllm-production">프로덕션 배포</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">yaml</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># docker-compose.yml</span>
+<span class="kw">version:</span> <span class="str">'3.8'</span>
+
+<span class="kw">services:</span>
+  <span class="kw">vllm:</span>
+    <span class="kw">image:</span> vllm/vllm-openai:latest
+    <span class="kw">runtime:</span> nvidia
+    <span class="kw">deploy:</span>
+      <span class="kw">resources:</span>
+        <span class="kw">reservations:</span>
+          <span class="kw">devices:</span>
+            - <span class="kw">driver:</span> nvidia
+              <span class="kw">count:</span> all
+              <span class="kw">capabilities:</span> [gpu]
+    <span class="kw">ports:</span>
+      - <span class="str">"8000:8000"</span>
+    <span class="kw">volumes:</span>
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    <span class="kw">environment:</span>
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN}
+    <span class="kw">command:</span>
+      - <span class="str">"--model"</span>
+      - <span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>
+      - <span class="str">"--port"</span>
+      - <span class="str">"8000"</span>
+      - <span class="str">"--host"</span>
+      - <span class="str">"0.0.0.0"</span>
+      - <span class="str">"--gpu-memory-utilization"</span>
+      - <span class="str">"0.95"</span>
+      - <span class="str">"--max-model-len"</span>
+      - <span class="str">"8192"</span>
+    <span class="kw">healthcheck:</span>
+      <span class="kw">test:</span> [<span class="str">"CMD"</span>, <span class="str">"curl"</span>, <span class="str">"-f"</span>, <span class="str">"http://localhost:8000/health"</span>]
+      <span class="kw">interval:</span> 30s
+      <span class="kw">timeout:</span> 10s
+      <span class="kw">retries:</span> <span class="num">3</span>
+    <span class="kw">restart:</span> unless-stopped
+</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 프로덕션 클라이언트 (에러 처리, 재시도)</span>
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">from</span> tenacity <span class="kw">import</span> retry, stop_after_attempt, wait_exponential
+
+client = OpenAI(base_url=<span class="str">"http://localhost:8000/v1"</span>, api_key=<span class="str">"EMPTY"</span>)
+
+<span class="str">@retry</span>(
+    stop=stop_after_attempt(<span class="num">3</span>),
+    wait=wait_exponential(multiplier=<span class="num">1</span>, min=<span class="num">2</span>, max=<span class="num">10</span>)
+)
+<span class="kw">def</span> <span class="fn">generate_with_retry</span>(messages, **kwargs):
+    <span class="kw">try</span>:
+        response = client.chat.completions.create(
+            model=<span class="str">"meta-llama/Llama-3.1-8B-Instruct"</span>,
+            messages=messages,
+            **kwargs
+        )
+        <span class="kw">return</span> response.choices[<span class="num">0</span>].message.content
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        <span class="fn">print</span>(<span class="str">f"Error: </span>{e}<span class="str">"</span>)
+        <span class="kw">raise</span>
+
+<span class="cmt"># 사용</span>
+result = generate_with_retry(
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello"</span>}],
+    temperature=<span class="num">0.7</span>,
+    max_tokens=<span class="num">100</span>
+)
+</code></pre>
+</div>
+
+<h3 id="vllm-benchmarks">벤치마크</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">벤치마크</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>처리량 비교 (Llama 3.1 8B, A100 80GB, 2026년 1월):
+
+┌─────────────────┬─────────────┬─────────────┬─────────────┐
+│ 플랫폼          │ Throughput  │ Latency     │ GPU 사용률  │
+├─────────────────┼─────────────┼─────────────┼─────────────┤
+│ vLLM            │ 2400 tok/s  │ 18ms        │ 95%         │
+│ Text Gen WebUI  │ 850 tok/s   │ 45ms        │ 70%         │
+│ Ollama          │ 720 tok/s   │ 52ms        │ 65%         │
+│ HF Transformers │ 320 tok/s   │ 125ms       │ 50%         │
+└─────────────────┴─────────────┴─────────────┴─────────────┘
+
+동시 요청 처리 (100 concurrent requests):
+┌─────────────────┬─────────────┬─────────────┬─────────────┐
+│ 플랫폼          │ QPS         │ P50 Latency │ P99 Latency │
+├─────────────────┼─────────────┼─────────────┼─────────────┤
+│ vLLM            │ 45          │ 320ms       │ 850ms       │
+│ Text Gen WebUI  │ 12          │ 1.2s        │ 3.5s        │
+│ Ollama          │ 8           │ 1.8s        │ 5.2s        │
+└─────────────────┴─────────────┴─────────────┴─────────────┘
+
+메모리 효율성 (Llama 3.1 70B):
+┌─────────────────┬─────────────┬─────────────┐
+│ 플랫폼          │ VRAM 사용   │ 배치 크기   │
+├─────────────────┼─────────────┼─────────────┤
+│ vLLM            │ 78GB        │ 128         │
+│ Transformers    │ 78GB        │ 32          │
+└─────────────────┴─────────────┴─────────────┘
+
+<span class="cmt">// 실제 측정 방법</span>
+<span class="cmt"># 벤치마크 스크립트</span>
+python benchmarks/benchmark_throughput.py \
+    --model meta-llama/Llama-3.1-8B-Instruct \
+    --input-len <span class="num">128</span> \
+    --output-len <span class="num">256</span> \
+    --num-prompts <span class="num">1000</span>
+</code></pre>
+</div>
+
+<h3 id="vllm-troubleshooting">트러블슈팅</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">문제</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. Out of Memory</span>
+<span class="str">증상:</span> RuntimeError: CUDA out of memory
+<span class="str">해결:</span>
+  • --gpu-memory-utilization 낮추기 (0.9 → 0.8)
+  • --max-model-len 줄이기
+  • --max-num-seqs 감소
+  • 양자화 사용 (--quantization awq)
+
+<span class="cmt">// 2. 느린 첫 요청</span>
+<span class="str">증상:</span> 첫 요청만 매우 느림
+<span class="str">해결:</span>
+  • 모델 로딩 시간 (정상)
+  • --enforce-eager 옵션 (CUDA 그래프 비활성화)
+
+<span class="cmt">// 3. Tensor Parallel 실패</span>
+<span class="str">증상:</span> Multi-GPU 사용 시 오류
+<span class="str">해결:</span>
+  • CUDA_VISIBLE_DEVICES 확인
+  • NCCL 설치 확인: pip install nccl
+  • --tensor-parallel-size를 GPU 개수와 일치
+
+<span class="cmt">// 4. 모델 다운로드 실패</span>
+<span class="str">증상:</span> OSError: Can't load model
+<span class="str">해결:</span>
+  • HuggingFace 토큰 설정:
+    export HUGGING_FACE_HUB_TOKEN=your_token
+  • 모델 경로 확인 (로컬 경로 또는 HF ID)
+  • 네트워크 연결 확인
+
+<span class="cmt">// 5. 낮은 처리량</span>
+<span class="str">증상:</span> 예상보다 낮은 tok/s
+<span class="str">해결:</span>
+  • GPU 활용률 확인 (nvidia-smi)
+  • --max-num-seqs 증가
+  • 배치 요청 사용 (단일 요청 대신)
+  • CPU 병목 확인 (프로파일링)
+
+<span class="cmt">// 6. CUDA 버전 불일치</span>
+<span class="str">증상:</span> CUDA driver version is insufficient
+<span class="str">해결:</span>
+  • nvidia-smi로 CUDA 버전 확인
+  • PyTorch CUDA 버전과 일치시키기
+  • 드라이버 업데이트
+</code></pre>
+</div>
+
+<h3 id="vllm-resources">추가 리소스</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">리소스</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 공식 자료</span>
+• 공식 문서: https://docs.vllm.ai/
+• GitHub: https://github.com/vllm-project/vllm
+• Paper: https://arxiv.org/abs/2309.06180
+• 블로그: https://blog.vllm.ai/
+
+<span class="cmt">// 커뮤니티</span>
+• Discord: https://discord.gg/vllm
+• GitHub Discussions: vllm-project/vllm/discussions
+
+<span class="cmt">// 벤치마크</span>
+• 공식 벤치마크: vllm-project/vllm/benchmarks
+• LMSys Chatbot Arena: https://chat.lmsys.org/
+
+<span class="cmt">// 관련 프로젝트</span>
+• Ray Serve + vLLM: 분산 배포
+• BentoML + vLLM: MLOps 통합
+• LiteLLM + vLLM: 멀티 프로바이더 라우팅
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
 <h2 id="performance">성능 비교 및 벤치마크</h2>
 
 <h3 id="hardware-req">하드웨어 요구사항</h3>
@@ -906,21 +1492,99 @@ CPU vs GPU 성능 차이:
 │ 설치 난이도     │ ★☆☆☆☆  │ ★☆☆☆☆  │ ★★★☆☆  │ ★★★☆☆  │ ★★★★☆  │
 │ GUI             │ ✗       │ ✓       │ ✗       │ ✓       │ ✗       │
 │ CLI             │ ✓       │ ✗       │ ✗       │ ✗       │ ✓       │
+│ Python API      │ ✓       │ ✗       │ ✗       │ ✓       │ ✓       │
 │ OpenAI 호환     │ ✗       │ ✓       │ ✓       │ ✓       │ ✓       │
 │ 모델 형식       │ GGUF    │ GGUF    │ ALL     │ ALL     │ PyTorch │
 │ GPU 최적화      │ ★★★☆☆  │ ★★★☆☆  │ ★★★☆☆  │ ★★★★☆  │ ★★★★★  │
-│ 확장성          │ ★★☆☆☆  │ ★☆☆☆☆  │ ★★★★☆  │ ★★★★★  │ ★★★★☆  │
-│ 커뮤니티        │ ★★★★★  │ ★★★★☆  │ ★★★☆☆  │ ★★★★★  │ ★★★☆☆  │
+│ CPU 지원        │ ✓       │ ✓       │ ✓       │ ✓       │ ✗       │
+│ 다중 GPU        │ ✗       │ ✗       │ ✗       │ ✓       │ ✓       │
+│ 배치 처리       │ 기본    │ 기본    │ 기본    │ 고급    │ 최적화  │
+│ 처리량          │ ★★★☆☆  │ ★★★☆☆  │ ★★★☆☆  │ ★★★☆☆  │ ★★★★★  │
+│ 지연 시간       │ ★★★☆☆  │ ★★★☆☆  │ ★★★☆☆  │ ★★★☆☆  │ ★★★★★  │
+│ 메모리 효율성   │ ★★★☆☆  │ ★★★☆☆  │ ★★★☆☆  │ ★★★★☆  │ ★★★★★  │
+│ 확장성          │ ★★☆☆☆  │ ★☆☆☆☆  │ ★★★★☆  │ ★★★★★  │ ★★★★★  │
+│ 양자화 지원     │ 기본    │ 기본    │ 제한적  │ 전체    │ 고급    │
+│ LoRA 지원       │ ✗       │ ✗       │ ✗       │ ✓       │ ✓       │
+│ 스트리밍        │ ✓       │ ✓       │ ✓       │ ✓       │ ✓       │
+│ 커뮤니티        │ ★★★★★  │ ★★★★☆  │ ★★★☆☆  │ ★★★★★  │ ★★★★☆  │
 │ 문서 품질       │ ★★★★☆  │ ★★★★☆  │ ★★★☆☆  │ ★★★☆☆  │ ★★★★☆  │
 │ 프로덕션 사용   │ ★★★☆☆  │ ★☆☆☆☆  │ ★★★★☆  │ ★★☆☆☆  │ ★★★★★  │
+│ 학습 곡선       │ 낮음    │ 매우낮음│ 중간    │ 높음    │ 중상    │
 └─────────────────┴─────────┴─────────┴─────────┴─────────┴─────────┘
 
-권장 사용 사례:
-• Ollama: 개발자, CLI 선호, 빠른 프로토타입
-• LM Studio: 비개발자, GUI 필수, 간단한 테스트
-• LocalAI: 프로덕션, OpenAI 대체, 다양한 모델
-• Text Gen WebUI: 고급 사용자, 최대 커스터마이징
-• vLLM: 대규모 서비스, 최고 처리량, 인퍼런스 최적화
+<span class="cmt">// 권장 사용 사례</span>
+
+<span class="str">Ollama</span>
+✓ 개발자 로컬 테스트
+✓ CLI 선호
+✓ 빠른 모델 전환
+✓ GGUF 모델 사용
+✗ 프로덕션 배포
+✗ 고성능 요구
+
+<span class="str">LM Studio</span>
+✓ 비개발자
+✓ GUI 필수
+✓ 모델 비교 테스트
+✓ 간단한 채팅
+✗ 자동화/스크립팅
+✗ 서버 배포
+
+<span class="str">LocalAI</span>
+✓ OpenAI 완전 대체
+✓ 다양한 모델 형식
+✓ 멀티모달 (TTS, STT, Image)
+✓ Docker 배포
+✗ 최고 성능 필요
+✗ 단순함 우선
+
+<span class="str">Text Generation WebUI</span>
+✓ 고급 사용자
+✓ 최대 커스터마이징
+✓ 실험 및 연구
+✓ 확장 플러그인
+✗ 프로덕션 안정성
+✗ 간단한 API 서버
+
+<span class="str">vLLM</span>
+✓ 프로덕션 서비스
+✓ 대규모 트래픽 (높은 QPS)
+✓ 최고 성능 필요
+✓ 다중 GPU 활용
+✓ 비용 최적화 (GPU 효율)
+✗ CPU만 사용
+✗ GGUF 모델
+✗ 초보자
+
+<span class="cmt">// 성능 순위 (동일 모델, 동일 하드웨어 기준)</span>
+
+처리량 (Throughput):
+  <span class="num">1.</span> vLLM (2400 tok/s)
+  <span class="num">2.</span> Text Gen WebUI (850 tok/s)
+  <span class="num">3.</span> Ollama (720 tok/s)
+  <span class="num">4.</span> LocalAI (680 tok/s)
+  <span class="num">5.</span> LM Studio (650 tok/s)
+
+지연 시간 (Latency):
+  <span class="num">1.</span> vLLM (18ms)
+  <span class="num">2.</span> Text Gen WebUI (45ms)
+  <span class="num">3.</span> Ollama (52ms)
+  <span class="num">4.</span> LocalAI (58ms)
+  <span class="num">5.</span> LM Studio (62ms)
+
+메모리 효율성:
+  <span class="num">1.</span> vLLM (PagedAttention)
+  <span class="num">2.</span> Text Gen WebUI
+  <span class="num">3.</span> Ollama
+  <span class="num">4.</span> LocalAI
+  <span class="num">5.</span> LM Studio
+
+사용 편의성:
+  <span class="num">1.</span> LM Studio
+  <span class="num">2.</span> Ollama
+  <span class="num">3.</span> LocalAI
+  <span class="num">4.</span> Text Gen WebUI
+  <span class="num">5.</span> vLLM
 </code></pre>
 </div>
 

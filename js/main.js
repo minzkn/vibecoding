@@ -43,7 +43,7 @@ var SEARCH_INDEX = [
   { title: "OpenAI API", url: "pages/openai-api.html", description: "OpenAI API 가이드 (GPT-4, o1)", keywords: "openai api gpt-4 o1 가이드" },
   { title: "Gemini API", url: "pages/gemini-api.html", description: "Google Gemini API 가이드", keywords: "gemini google api 가이드" },
   { title: "API 추상화 도구", url: "pages/api-abstraction.html", description: "LiteLLM, Portkey 등 API 추상화 도구", keywords: "api abstraction litellm portkey 추상화" },
-  { title: "로컬 LLM API", url: "pages/local-api.html", description: "Ollama, LM Studio, LocalAI API", keywords: "local api ollama lm studio localai 로컬" },
+  { title: "로컬 LLM API", url: "pages/local-api.html", description: "Ollama, LM Studio, LocalAI, vLLM 등 로컬 LLM 서버 완벽 가이드", keywords: "local api ollama lm studio localai vllm 로컬 추론 서버 inference" },
   { title: "다중 LLM 전환", url: "pages/api-switching.html", description: "다중 LLM 전환 전략 및 비용 최적화", keywords: "api switching 전환 다중 llm 최적화" },
   { title: "API 모범 사례", url: "pages/api-best-practices.html", description: "LLM API 에러 처리, 재시도, 캐싱", keywords: "api best practices 모범사례 에러처리" },
 
@@ -610,6 +610,60 @@ var NAV_STRUCTURE = [
     }
   }
 
+  // ========== Copy 버튼 ==========
+
+  function initCopyButtons() {
+    const copyButtons = document.querySelectorAll('.copy-btn');
+
+    copyButtons.forEach(button => {
+      button.addEventListener('click', async function() {
+        const codeBlock = this.closest('.code-block');
+        if (!codeBlock) return;
+
+        const pre = codeBlock.querySelector('pre');
+        if (!pre) return;
+
+        const code = pre.textContent;
+
+        try {
+          await navigator.clipboard.writeText(code);
+
+          // 성공 피드백
+          const originalText = this.textContent;
+          this.classList.add('copied');
+          this.textContent = 'Copied';
+
+          setTimeout(() => {
+            this.classList.remove('copied');
+            this.textContent = originalText;
+          }, 2000);
+        } catch (err) {
+          // 폴백: 구형 브라우저용
+          const textarea = document.createElement('textarea');
+          textarea.value = code;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+
+          try {
+            document.execCommand('copy');
+            this.classList.add('copied');
+            this.textContent = 'Copied!';
+            setTimeout(() => {
+              this.classList.remove('copied');
+              this.textContent = 'Copy';
+            }, 2000);
+          } catch (e) {
+            console.error('복사 실패:', e);
+          }
+
+          document.body.removeChild(textarea);
+        }
+      });
+    });
+  }
+
   // ========== 초기화 ==========
 
   function init() {
@@ -627,6 +681,7 @@ var NAV_STRUCTURE = [
     initMobileSearch();
     initNavToggle();
     initBackToTop();
+    initCopyButtons();
 
     // 테마 토글 버튼 이벤트
     const themeToggle = document.querySelector('.theme-toggle');
