@@ -129,6 +129,15 @@ hr {
   margin: 2em 0;
 }
 
+.caption {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
 /* ---------- Monospace / Code ---------- */
 code, pre, kbd, samp, .mono {
   font-family: "D2Coding", "D2 Coding", "Fira Code", "Source Code Pro", "Consolas", monospace;
