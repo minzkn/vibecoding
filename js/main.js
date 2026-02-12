@@ -164,13 +164,20 @@ var NAV_STRUCTURE = [
         <button class="mobile-menu-toggle" aria-label="메뉴 열기">
           <span></span><span></span><span></span>
         </button>
-        <a href="${getRelativeRoot()}index.html" class="site-title">
-          <span class="logo-icon">C</span>
-          AI Vibe Coding 가이드
+        <a href="${getRelativeRoot()}index.html" class="header-title">
+          <span class="title-full">AI Vibe Coding 가이드</span>
+          <span class="title-short">AI Vibe</span>
         </a>
       </div>
       <div class="header-right">
+        <button class="mobile-search-toggle" aria-label="검색" title="검색">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="8" cy="8" r="6"/>
+            <path d="M12.5 12.5L17 17"/>
+          </svg>
+        </button>
         <div class="search-container">
+          <span class="search-icon">🔍</span>
           <input type="text" class="search-input" placeholder="검색..." aria-label="검색">
           <div class="search-results"></div>
         </div>
@@ -181,6 +188,27 @@ var NAV_STRUCTURE = [
         </button>
       </div>
     `;
+
+    // 모바일 검색 컨테이너 생성 (header 다음에 배치)
+    const existingSearchMobile = document.querySelector('.search-mobile');
+    if (!existingSearchMobile) {
+      const searchMobile = document.createElement('div');
+      searchMobile.className = 'search-mobile';
+      searchMobile.innerHTML = `
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" placeholder="검색..." aria-label="검색">
+        <div class="search-results"></div>
+      `;
+      header.parentNode.insertBefore(searchMobile, header.nextSibling);
+    }
+
+    // 네비게이션 오버레이 생성 (page-wrapper 내부에)
+    const existingOverlay = document.querySelector('.nav-overlay');
+    if (!existingOverlay) {
+      const overlay = document.createElement('div');
+      overlay.className = 'nav-overlay';
+      document.querySelector('.page-wrapper').appendChild(overlay);
+    }
   }
 
   // Side Navigation 생성
@@ -359,56 +387,62 @@ var NAV_STRUCTURE = [
   // ========== 검색 기능 ==========
 
   function initSearch() {
-    const searchInput = document.querySelector('.search-input');
-    const searchResults = document.querySelector('.search-results');
+    const searchContainers = document.querySelectorAll('.search-container, .search-mobile');
 
-    if (!searchInput || !searchResults) return;
+    searchContainers.forEach(container => {
+      const searchInput = container.querySelector('.search-input');
+      const searchResults = container.querySelector('.search-results');
 
-    let debounceTimer;
+      if (!searchInput || !searchResults) return;
 
-    searchInput.addEventListener('input', function(e) {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        const query = e.target.value.trim().toLowerCase();
+      let debounceTimer;
 
-        if (query.length < 2) {
-          searchResults.innerHTML = '';
-          searchResults.classList.remove('active');
-          return;
-        }
+      searchInput.addEventListener('input', function(e) {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+          const query = e.target.value.trim().toLowerCase();
 
-        const results = SEARCH_INDEX.filter(item => {
-          return item.title.toLowerCase().includes(query) ||
-                 item.description.toLowerCase().includes(query) ||
-                 item.keywords.toLowerCase().includes(query);
-        }).slice(0, 8);
+          if (query.length < 2) {
+            searchResults.innerHTML = '';
+            searchResults.classList.remove('active');
+            return;
+          }
 
-        if (results.length === 0) {
-          searchResults.innerHTML = '<div class="search-no-results">결과 없음</div>';
+          const results = SEARCH_INDEX.filter(item => {
+            return item.title.toLowerCase().includes(query) ||
+                   item.description.toLowerCase().includes(query) ||
+                   item.keywords.toLowerCase().includes(query);
+          }).slice(0, 8);
+
+          if (results.length === 0) {
+            searchResults.innerHTML = '<div class="search-no-results">결과 없음</div>';
+            searchResults.classList.add('active');
+            return;
+          }
+
+          const root = getRelativeRoot();
+          let html = '';
+          results.forEach(item => {
+            html += `
+              <a href="${root}${item.url}" class="search-result-item">
+                <div class="search-result-title">${item.title}</div>
+                <div class="search-result-desc">${item.description}</div>
+              </a>
+            `;
+          });
+
+          searchResults.innerHTML = html;
           searchResults.classList.add('active');
-          return;
-        }
-
-        const root = getRelativeRoot();
-        let html = '';
-        results.forEach(item => {
-          html += `
-            <a href="${root}${item.url}" class="search-result-item">
-              <div class="search-result-title">${item.title}</div>
-              <div class="search-result-desc">${item.description}</div>
-            </a>
-          `;
-        });
-
-        searchResults.innerHTML = html;
-        searchResults.classList.add('active');
-      }, 300);
+        }, 300);
+      });
     });
 
     // 검색 결과 외부 클릭 시 닫기
     document.addEventListener('click', function(e) {
-      if (!e.target.closest('.search-container')) {
-        searchResults.classList.remove('active');
+      if (!e.target.closest('.search-container') && !e.target.closest('.search-mobile')) {
+        document.querySelectorAll('.search-results').forEach(results => {
+          results.classList.remove('active');
+        });
       }
     });
   }
@@ -439,24 +473,81 @@ var NAV_STRUCTURE = [
   function initMobileNav() {
     const menuToggle = document.querySelector('.mobile-menu-toggle');
     const sideNav = document.querySelector('.side-nav');
+    const navOverlay = document.querySelector('.nav-overlay');
 
     if (!menuToggle || !sideNav) return;
 
+    function closeNav() {
+      sideNav.classList.remove('active');
+      menuToggle.classList.remove('active');
+      document.body.classList.remove('nav-open');
+      if (navOverlay) navOverlay.classList.remove('active');
+    }
+
+    function openNav() {
+      sideNav.classList.add('active');
+      menuToggle.classList.add('active');
+      document.body.classList.add('nav-open');
+      if (navOverlay) navOverlay.classList.add('active');
+    }
+
     menuToggle.addEventListener('click', () => {
-      sideNav.classList.toggle('active');
-      menuToggle.classList.toggle('active');
-      document.body.classList.toggle('nav-open');
+      if (sideNav.classList.contains('active')) {
+        closeNav();
+      } else {
+        openNav();
+      }
     });
+
+    // 오버레이 클릭 시 메뉴 닫기
+    if (navOverlay) {
+      navOverlay.addEventListener('click', closeNav);
+    }
 
     // 네비게이션 링크 클릭 시 메뉴 닫기
     sideNav.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         if (window.innerWidth <= 768) {
-          sideNav.classList.remove('active');
-          menuToggle.classList.remove('active');
-          document.body.classList.remove('nav-open');
+          closeNav();
         }
       });
+    });
+
+    // ESC 키로 메뉴 닫기
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && sideNav.classList.contains('active')) {
+        closeNav();
+      }
+    });
+  }
+
+  // ========== 모바일 검색 ==========
+
+  function initMobileSearch() {
+    const searchToggle = document.querySelector('.mobile-search-toggle');
+    const searchMobile = document.querySelector('.search-mobile');
+
+    if (!searchToggle || !searchMobile) return;
+
+    searchToggle.addEventListener('click', () => {
+      const isVisible = searchMobile.style.display === 'block';
+      searchMobile.style.display = isVisible ? 'none' : 'block';
+
+      if (!isVisible) {
+        const input = searchMobile.querySelector('.search-input');
+        if (input) {
+          setTimeout(() => input.focus(), 100);
+        }
+      }
+    });
+
+    // 모바일 검색 외부 클릭 시 닫기
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-mobile') && !e.target.closest('.mobile-search-toggle')) {
+        if (window.innerWidth <= 480) {
+          searchMobile.style.display = 'none';
+        }
+      }
     });
   }
 
@@ -477,6 +568,48 @@ var NAV_STRUCTURE = [
     });
   }
 
+  // ========== Back to Top 버튼 ==========
+
+  function initBackToTop() {
+    // Back to Top 버튼 생성
+    const existingBtn = document.querySelector('.back-to-top');
+    if (!existingBtn) {
+      const btn = document.createElement('button');
+      btn.className = 'back-to-top';
+      btn.innerHTML = '↑';
+      btn.setAttribute('aria-label', '맨 위로');
+      btn.setAttribute('title', '맨 위로');
+      document.body.appendChild(btn);
+
+      btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    // 스크롤 이벤트
+    const backToTopBtn = document.querySelector('.back-to-top');
+    if (backToTopBtn) {
+      let lastScrollY = 0;
+      let ticking = false;
+
+      window.addEventListener('scroll', () => {
+        lastScrollY = window.scrollY;
+
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            if (lastScrollY > 400) {
+              backToTopBtn.classList.add('visible');
+            } else {
+              backToTopBtn.classList.remove('visible');
+            }
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+    }
+  }
+
   // ========== 초기화 ==========
 
   function init() {
@@ -491,7 +624,9 @@ var NAV_STRUCTURE = [
     initSearch();
     initScrollSpy();
     initMobileNav();
+    initMobileSearch();
     initNavToggle();
+    initBackToTop();
 
     // 테마 토글 버튼 이벤트
     const themeToggle = document.querySelector('.theme-toggle');

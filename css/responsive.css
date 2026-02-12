@@ -60,7 +60,7 @@
     box-shadow: var(--shadow-lg);
   }
 
-  .side-nav.open {
+  .side-nav.active {
     transform: translateX(0);
   }
 
