@@ -667,7 +667,7 @@ body.nav-open {
 }
 
 .nav-list.active {
-  max-height: 2000px;
+  max-height: 5000px;
 }
 
 .nav-list li {
