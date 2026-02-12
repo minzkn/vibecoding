@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API 추상화 레이어 - AI Vibe Coding 가이드 /with MINZKN</title>
+<meta name="description" content="LiteLLM, Portkey, OpenRouter 등 다중 LLM 통합 도구, 벤더 독립성, 쉬운 전환">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">API 추상화 레이어</h1>
+<p class="lead">다양한 LLM API를 하나의 통합 인터페이스로 사용할 수 있게 해주는 추상화 레이어입니다. LiteLLM, Portkey, OpenRouter 등을 통해 벤더 종속성을 피하고 쉽게 모델을 전환할 수 있습니다.</p>
+
+<div class="info-box tip">
+<strong>핵심 포인트</strong>
+<ul>
+<li>LiteLLM: 100+ LLM을 OpenAI 형식으로 통합</li>
+<li>Portkey: 게이트웨이, 캐싱, 폴백, 로드 밸런싱</li>
+<li>OpenRouter: 다양한 모델에 단일 API로 접근</li>
+<li>벤더 독립성: 코드 변경 없이 모델 전환</li>
+<li>비용 최적화 및 안정성 향상</li>
+</ul>
+</div>
+
+<section class="content-section">
+<h2 id="why-abstraction">추상화 레이어가 필요한 이유</h2>
+
+<h3 id="problems">문제점</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">기존 방식의 문제</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 벤더 종속성</span>
+• Claude API 사용 중 → OpenAI로 전환 시 코드 전면 수정
+• 각 API마다 다른 인터페이스, 파라미터, 에러 처리
+
+<span class="cmt">// 2. 유지보수 부담</span>
+• API 변경 시 모든 코드 수정 필요
+• 다중 LLM 사용 시 중복 코드 증가
+
+<span class="cmt">// 3. 전환 비용</span>
+• 더 나은 모델 출시 시 전환 어려움
+• 가격/성능 비교 실험 복잡
+
+<span class="cmt">// 4. 안정성</span>
+• 단일 벤더 장애 시 서비스 중단
+• 폴백 구현 복잡
+
+<span class="cmt">// 예시: Claude와 OpenAI의 다른 API</span>
+<span class="cmt"># Claude</span>
+<span class="kw">import</span> anthropic
+client = anthropic.Anthropic()
+message = client.messages.create(
+    model=<span class="str">"claude-4-sonnet"</span>,
+    max_tokens=<span class="num">1024</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"..."</span>}]
+)
+result = message.content[<span class="num">0</span>].text
+
+<span class="cmt"># OpenAI</span>
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+client = OpenAI()
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"..."</span>}]
+)
+result = response.choices[<span class="num">0</span>].message.content
+</code></pre>
+</div>
+
+<h3 id="solutions">해결책: 추상화 레이어</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">추상화 레이어의 장점</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 통합 인터페이스</span>
+• 단일 API로 모든 LLM 접근
+• 코드 변경 없이 모델 전환 가능
+
+<span class="cmt">// 2. 벤더 독립성</span>
+• 특정 벤더에 종속되지 않음
+• 언제든지 최적의 모델 선택 가능
+
+<span class="cmt">// 3. 고급 기능</span>
+• 자동 폴백 (Fallback)
+• 로드 밸런싱
+• 캐싱
+• 비용 추적
+
+<span class="cmt">// 4. 간편한 실험</span>
+• 여러 모델 빠르게 비교
+• A/B 테스트 용이
+
+<span class="cmt">// 예시: LiteLLM 사용</span>
+<span class="kw">from</span> litellm <span class="kw">import</span> completion
+
+<span class="cmt"># Claude 사용</span>
+response = completion(
+    model=<span class="str">"claude-4-sonnet"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"..."</span>}]
+)
+
+<span class="cmt"># OpenAI로 전환 (코드 변경 최소)</span>
+response = completion(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"..."</span>}]
+)
+
+<span class="cmt"># 통일된 인터페이스</span>
+result = response.choices[<span class="num">0</span>].message.content
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="litellm">LiteLLM</h2>
+
+<h3 id="litellm-overview">개요</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">LiteLLM 특징</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>LiteLLM이란?
+• 100+ LLM을 OpenAI 형식으로 통합
+• Python 라이브러리 (오픈소스)
+• 동일한 입출력 형식
+• 스트리밍, 함수 호출 지원
+
+지원 모델:
+• Anthropic (Claude)
+• OpenAI (GPT-4o, o1)
+• Google (Gemini)
+• Cohere, Mistral, AI21
+• Azure OpenAI
+• Bedrock (AWS)
+• VertexAI (Google Cloud)
+• Ollama (로컬 LLM)
+• HuggingFace
+• 기타 100+
+
+GitHub: https://github.com/BerriAI/litellm
+</code></pre>
+</div>
+
+<h3 id="litellm-installation">설치 및 설정</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 설치</span>
+$ pip install litellm
+
+<span class="cmt"># API 키 설정</span>
+$ export ANTHROPIC_API_KEY=<span class="str">"sk-ant-..."</span>
+$ export OPENAI_API_KEY=<span class="str">"sk-..."</span>
+$ export GEMINI_API_KEY=<span class="str">"AIzaSy..."</span>
+</code></pre>
+</div>
+
+<h3 id="litellm-basic">기본 사용법</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> litellm <span class="kw">import</span> completion
+
+<span class="cmt"># Claude</span>
+response = completion(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}]
+)
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+
+<span class="cmt"># OpenAI</span>
+response = completion(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}]
+)
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+
+<span class="cmt"># Google Gemini</span>
+response = completion(
+    model=<span class="str">"gemini/gemini-1.5-flash"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}]
+)
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+
+<span class="cmt"># Ollama (로컬)</span>
+response = completion(
+    model=<span class="str">"ollama/llama3"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}],
+    api_base=<span class="str">"http://localhost:11434"</span>
+)
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+
+<h3 id="litellm-fallback">폴백 구현</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> litellm <span class="kw">import</span> completion
+
+<span class="cmt"># 폴백 리스트 정의</span>
+<span class="kw">def</span> <span class="fn">completion_with_fallback</span>(messages, models):
+    <span class="kw">for</span> model <span class="kw">in</span> models:
+        <span class="kw">try</span>:
+            <span class="fn">print</span>(<span class="str">f"Trying <span class="macro">{model}</span>..."</span>)
+            response = completion(
+                model=model,
+                messages=messages
+            )
+            <span class="fn">print</span>(<span class="str">f"Success with <span class="macro">{model}</span>"</span>)
+            <span class="kw">return</span> response
+        <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+            <span class="fn">print</span>(<span class="str">f"Failed with <span class="macro">{model}</span>: <span class="macro">{e}</span>"</span>)
+            <span class="kw">continue</span>
+
+    <span class="kw">raise</span> <span class="type">Exception</span>(<span class="str">"All models failed"</span>)
+
+<span class="cmt"># 사용</span>
+response = completion_with_fallback(
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕!"</span>}],
+    models=[
+        <span class="str">"claude-4-sonnet-20260101"</span>,  <span class="cmt"># 1순위</span>
+        <span class="str">"gpt-4o"</span>,                    <span class="cmt"># 2순위</span>
+        <span class="str">"gemini/gemini-1.5-flash"</span>   <span class="cmt"># 3순위</span>
+    ]
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+
+<h3 id="litellm-streaming">스트리밍</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> litellm <span class="kw">import</span> completion
+
+<span class="cmt"># 모든 모델에서 동일한 스트리밍 인터페이스</span>
+response = completion(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,  <span class="cmt"># 또는 gpt-4o, gemini/...</span>
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"긴 이야기를 들려줘."</span>}],
+    stream=<span class="kw">True</span>
+)
+
+<span class="kw">for</span> chunk <span class="kw">in</span> response:
+    <span class="kw">if</span> chunk.choices[<span class="num">0</span>].delta.content:
+        <span class="fn">print</span>(chunk.choices[<span class="num">0</span>].delta.content, end=<span class="str">""</span>, flush=<span class="kw">True</span>)
+
+<span class="fn">print</span>()
+</code></pre>
+</div>
+
+<h3 id="litellm-proxy">LiteLLM Proxy 서버</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># Proxy 서버 설치</span>
+$ pip install <span class="str">'litellm[proxy]'</span>
+
+<span class="cmt"># 설정 파일 (config.yaml)</span>
+$ cat > config.yaml << <span class="str">'EOF'</span>
+<span class="str">model_list:
+  - model_name: gpt-4o
+    litellm_params:
+      model: gpt-4o
+      api_key: sk-...
+  - model_name: claude
+    litellm_params:
+      model: claude-4-sonnet-20260101
+      api_key: sk-ant-...
+  - model_name: gemini
+    litellm_params:
+      model: gemini/gemini-1.5-flash
+      api_key: AIzaSy...
+EOF</span>
+
+<span class="cmt"># Proxy 서버 시작</span>
+$ litellm --config config.yaml --port <span class="num">8000</span>
+
+<span class="cmt"># OpenAI 형식으로 호출</span>
+$ curl http://localhost:<span class="num">8000</span>/v1/chat/completions \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{
+    "model": "claude",
+    "messages": [{"role": "user", "content": "안녕!"}]
+  }'</span>
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="portkey">Portkey</h2>
+
+<h3 id="portkey-overview">개요</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Portkey 특징</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>Portkey란?
+• AI 게이트웨이 플랫폼
+• 다중 LLM 통합 및 관리
+• 캐싱, 폴백, 로드 밸런싱
+• 로깅, 모니터링, 분석
+• 프로덕션 환경에 최적화
+
+주요 기능:
+• Gateway: 통합 엔드포인트
+• Fallbacks: 자동 폴백
+• Load Balancing: 트래픽 분산
+• Caching: 시맨틱 캐싱
+• Rate Limiting: 사용량 제한
+• Analytics: 상세 분석 대시보드
+• Virtual Keys: API 키 관리
+
+Website: https://portkey.ai
+GitHub: https://github.com/Portkey-AI/portkey-python-sdk
+</code></pre>
+</div>
+
+<h3 id="portkey-setup">설치 및 설정</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 설치</span>
+$ pip install portkey-ai
+
+<span class="cmt"># 계정 생성 (https://app.portkey.ai)</span>
+<span class="cmt"># API 키 발급 (Portkey API Key)</span>
+$ export PORTKEY_API_KEY=<span class="str">"..."</span>
+</code></pre>
+</div>
+
+<h3 id="portkey-basic">기본 사용법</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> portkey_ai <span class="kw">import</span> Portkey
+
+<span class="cmt"># Portkey 클라이언트 생성</span>
+portkey = Portkey(
+    api_key=<span class="str">"YOUR_PORTKEY_API_KEY"</span>
+)
+
+<span class="cmt"># Claude 사용</span>
+response = portkey.chat.completions.create(
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}],
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    virtual_key=<span class="str">"anthropic-virtual-key"</span>  <span class="cmt"># Portkey에서 생성한 Virtual Key</span>
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+
+<span class="cmt"># OpenAI 사용 (동일한 인터페이스)</span>
+response = portkey.chat.completions.create(
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}],
+    model=<span class="str">"gpt-4o"</span>,
+    virtual_key=<span class="str">"openai-virtual-key"</span>
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+
+<h3 id="portkey-fallback">폴백 설정</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> portkey_ai <span class="kw">import</span> Portkey
+
+portkey = Portkey(api_key=<span class="str">"..."</span>)
+
+<span class="cmt"># Config 정의 (Portkey 대시보드에서도 가능)</span>
+config = {
+    <span class="str">"strategy"</span>: {
+        <span class="str">"mode"</span>: <span class="str">"fallback"</span>
+    },
+    <span class="str">"targets"</span>: [
+        {
+            <span class="str">"virtual_key"</span>: <span class="str">"anthropic-key"</span>,
+            <span class="str">"override_params"</span>: {
+                <span class="str">"model"</span>: <span class="str">"claude-4-sonnet-20260101"</span>
+            }
+        },
+        {
+            <span class="str">"virtual_key"</span>: <span class="str">"openai-key"</span>,
+            <span class="str">"override_params"</span>: {
+                <span class="str">"model"</span>: <span class="str">"gpt-4o"</span>
+            }
+        }
+    ]
+}
+
+<span class="cmt"># 자동 폴백 실행</span>
+response = portkey.chat.completions.create(
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕!"</span>}],
+    config=config
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+
+<h3 id="portkey-loadbalancing">로드 밸런싱</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 라운드 로빈 방식</span>
+config = {
+    <span class="str">"strategy"</span>: {
+        <span class="str">"mode"</span>: <span class="str">"loadbalance"</span>
+    },
+    <span class="str">"targets"</span>: [
+        {
+            <span class="str">"virtual_key"</span>: <span class="str">"anthropic-key"</span>,
+            <span class="str">"override_params"</span>: {<span class="str">"model"</span>: <span class="str">"claude-4-sonnet"</span>},
+            <span class="str">"weight"</span>: <span class="num">0.6</span>  <span class="cmt"># 60%</span>
+        },
+        {
+            <span class="str">"virtual_key"</span>: <span class="str">"openai-key"</span>,
+            <span class="str">"override_params"</span>: {<span class="str">"model"</span>: <span class="str">"gpt-4o"</span>},
+            <span class="str">"weight"</span>: <span class="num">0.4</span>  <span class="cmt"># 40%</span>
+        }
+    ]
+}
+
+<span class="cmt"># 가중치에 따라 자동 분산</span>
+<span class="kw">for</span> i <span class="kw">in</span> range(<span class="num">10</span>):
+    response = portkey.chat.completions.create(
+        messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">f"요청 <span class="macro">{i}</span>"</span>}],
+        config=config
+    )
+    <span class="fn">print</span>(<span class="str">f"<span class="macro">{i}</span>: <span class="macro">{response.model}</span>"</span>)  <span class="cmt"># 사용된 모델 확인</span>
+</code></pre>
+</div>
+
+<h3 id="portkey-caching">캐싱</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># Semantic Caching (의미 기반 캐싱)</span>
+portkey = Portkey(
+    api_key=<span class="str">"..."</span>,
+    cache_force_refresh=<span class="kw">False</span>,  <span class="cmt"># 캐시 사용</span>
+)
+
+<span class="cmt"># 첫 요청 (캐시 생성)</span>
+response1 = portkey.chat.completions.create(
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Python이란 무엇인가?"</span>}],
+    model=<span class="str">"gpt-4o"</span>,
+    virtual_key=<span class="str">"openai-key"</span>
+)
+<span class="fn">print</span>(<span class="str">"Cache status:"</span>, response1.headers.get(<span class="str">"x-portkey-cache-status"</span>))  <span class="cmt"># MISS</span>
+
+<span class="cmt"># 유사한 요청 (캐시 히트)</span>
+response2 = portkey.chat.completions.create(
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"파이썬이 뭐야?"</span>}],
+    model=<span class="str">"gpt-4o"</span>,
+    virtual_key=<span class="str">"openai-key"</span>
+)
+<span class="fn">print</span>(<span class="str">"Cache status:"</span>, response2.headers.get(<span class="str">"x-portkey-cache-status"</span>))  <span class="cmt"># HIT</span>
+<span class="fn">print</span>(<span class="str">"Response time reduced!"</span>)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="openrouter">OpenRouter</h2>
+
+<h3 id="openrouter-overview">개요</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">OpenRouter 특징</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>OpenRouter란?
+• 단일 API로 100+ LLM 접근
+• OpenAI 호환 API 형식
+• 자동 라우팅 및 폴백
+• 투명한 가격 (마진 포함)
+• 사용한 만큼만 지불
+
+지원 모델:
+• GPT-4o, Claude 4, Gemini 1.5
+• Llama 3, Mixtral, Qwen
+• 오픈소스 모델 다수
+• 실시간 모델 추가
+
+Website: https://openrouter.ai
+Pricing: https://openrouter.ai/models
+</code></pre>
+</div>
+
+<h3 id="openrouter-setup">설치 및 설정</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># OpenRouter는 OpenAI SDK 사용</span>
+$ pip install openai
+
+<span class="cmt"># API 키 발급 (https://openrouter.ai/keys)</span>
+$ export OPENROUTER_API_KEY=<span class="str">"sk-or-..."</span>
+</code></pre>
+</div>
+
+<h3 id="openrouter-basic">기본 사용법</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="cmt"># OpenRouter를 OpenAI 클라이언트로 사용</span>
+client = OpenAI(
+    base_url=<span class="str">"https://openrouter.ai/api/v1"</span>,
+    api_key=<span class="str">"sk-or-..."</span>
+)
+
+<span class="cmt"># Claude 사용</span>
+response = client.chat.completions.create(
+    model=<span class="str">"anthropic/claude-4-sonnet"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}]
+)
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+
+<span class="cmt"># GPT-4o 사용</span>
+response = client.chat.completions.create(
+    model=<span class="str">"openai/gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}]
+)
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+
+<span class="cmt"># Gemini 사용</span>
+response = client.chat.completions.create(
+    model=<span class="str">"google/gemini-1.5-flash"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}]
+)
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+
+<span class="cmt"># 오픈소스 모델</span>
+response = client.chat.completions.create(
+    model=<span class="str">"meta-llama/llama-3-70b-instruct"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}]
+)
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+
+<h3 id="openrouter-auto">자동 모델 선택</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># OpenRouter가 최적의 모델 자동 선택</span>
+response = client.chat.completions.create(
+    model=<span class="str">"openrouter/auto"</span>,  <span class="cmt"># 자동 선택</span>
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Python 퀵소트"</span>}]
+)
+
+<span class="cmt"># 사용된 모델 확인</span>
+<span class="fn">print</span>(<span class="str">f"사용된 모델: <span class="macro">{response.model}</span>"</span>)
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="comparison">도구 비교</h2>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">비교표</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>┌──────────────┬─────────┬─────────┬────────────┬──────────┐
+│ 기능         │ LiteLLM │ Portkey │ OpenRouter │ 직접구현 │
+├──────────────┼─────────┼─────────┼────────────┼──────────┤
+│ 통합인터페이스│ ✓       │ ✓       │ ✓          │ ✗        │
+│ 폴백         │ 수동    │ ✓       │ ✓          │ 수동     │
+│ 로드밸런싱   │ ✗       │ ✓       │ ✗          │ 수동     │
+│ 캐싱         │ ✗       │ ✓       │ ✗          │ 수동     │
+│ 분석대시보드│ ✗       │ ✓       │ ✓          │ ✗        │
+│ 셀프호스팅   │ ✓       │ ✓       │ ✗          │ ✓        │
+│ 오픈소스     │ ✓       │ 부분    │ ✗          │ N/A      │
+│ 가격         │ 무료    │ 유료    │ 마진추가   │ 원가     │
+│ 설치용이성   │ 쉬움    │ 보통    │ 쉬움       │ 어려움   │
+└──────────────┴─────────┴─────────┴────────────┴──────────┘
+
+<span class="cmt">// 사용 사례별 추천</span>
+
+<span class="cmt">// LiteLLM</span>
+✓ 빠른 프로토타이핑
+✓ 오픈소스 선호
+✓ 셀프 호스팅 필요
+✓ 기본적인 폴백만 필요
+
+<span class="cmt">// Portkey</span>
+✓ 프로덕션 환경
+✓ 고급 기능 필요 (캐싱, 로드밸런싱)
+✓ 상세한 분석 필요
+✓ 팀 협업
+
+<span class="cmt">// OpenRouter</span>
+✓ 다양한 모델 실험
+✓ 간단한 시작
+✓ 오픈소스 모델 접근
+✓ 투명한 가격
+
+<span class="cmt">// 직접 구현</span>
+✓ 최대 제어 필요
+✓ 커스터마이징 필요
+✓ 비용 최소화
+✓ 특수 요구사항
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="best-practices">모범 사례</h2>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">권장사항</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 모델 선택 전략</span>
+• 주력 모델 + 백업 모델 조합
+• 가격/성능 균형 고려
+• 폴백 순서 최적화
+
+<span class="cmt">// 2. 폴백 구성</span>
+• 유사 성능 모델로 폴백
+• 최소 2개 이상 백업
+• 타임아웃 설정
+
+<span class="cmt">// 3. 캐싱 활용</span>
+• 반복 쿼리 캐싱
+• 적절한 TTL 설정
+• 민감 정보 캐싱 주의
+
+<span class="cmt">// 4. 모니터링</span>
+• 모델별 성공률 추적
+• 비용 모니터링
+• 응답 시간 측정
+• 에러 패턴 분석
+
+<span class="cmt">// 5. 점진적 도입</span>
+• 소규모 트래픽부터 시작
+• A/B 테스트
+• 단계적 롤아웃
+• 롤백 계획 수립
+
+<span class="cmt">// 6. 비용 최적화</span>
+• 저렴한 모델 우선 시도
+• 캐싱으로 중복 호출 방지
+• 배치 처리 활용
+• 사용량 제한 설정
+</code></pre>
+</div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

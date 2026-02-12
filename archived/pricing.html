@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="비용 최적화 - Claude 문서">
+<meta property="og:description" content="Claude API 비용 절감 전략, 효율적인 토큰 관리, 프롬프트 캐싱 활용법">
+<meta property="og:url" content="https://minzkn.com/claude/pages/pricing.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude API 비용 절감 전략, 효율적인 토큰 관리, 프롬프트 캐싱 활용법">
+<meta name="keywords" content="Claude, 비용 최적화, cost optimization, 토큰 관리, caching, 절감">
+<meta name="author" content="MINZKN">
+<title>비용 최적화 - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">비용 최적화</h1>
+  <p class="lead">
+    Claude API를 효율적으로 사용하여 비용을 절감하는 전략과 기법을 소개합니다.
+    토큰 관리, 프롬프트 캐싱, 모델 선택 최적화를 통해 비용 대비 성능을 극대화할 수 있습니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="pricing-overview">요금 구조 개요</h2>
+
+  <p>
+    Claude API는 토큰 기반 과금 방식을 사용하며, 모델별로 입력 및 출력 토큰 가격이 다릅니다.
+    이 페이지에서는 요금 구조를 간략히 소개하고, <strong>비용을 최적화하는 방법</strong>에 집중합니다.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>입력 (MTok)</th>
+        <th>출력 (MTok)</th>
+        <th>10K 입력 + 1K 출력</th>
+        <th>특징</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Opus 4.6</strong></td>
+        <td>$15.00</td>
+        <td>$75.00</td>
+        <td>$0.225</td>
+        <td>최고 성능</td>
+      </tr>
+      <tr>
+        <td><strong>Sonnet 4.5</strong></td>
+        <td>$3.00</td>
+        <td>$15.00</td>
+        <td>$0.045</td>
+        <td>균형 (권장)</td>
+      </tr>
+      <tr>
+        <td><strong>Haiku 4.5</strong></td>
+        <td>$0.80</td>
+        <td>$4.00</td>
+        <td>$0.012</td>
+        <td>빠르고 저렴</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="margin-top: 1rem;"><em>MTok = Million Tokens (백만 토큰). 가격은 2025년 2월 기준이며 변경될 수 있습니다.</em></p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📌 최신 요금 정보</div>
+    <p>
+      항상 최신 요금은 <a href="https://www.anthropic.com/pricing" target="_blank" rel="noopener">Anthropic 공식 사이트</a>에서 확인하세요.
+      이 페이지는 비용 절감 전략에 초점을 맞춥니다.
+    </p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="token-basics">토큰 이해하기</h2>
+
+  <h3 id="what-is-token">토큰이란?</h3>
+  <p>
+    토큰은 AI가 처리하는 텍스트의 기본 단위입니다. 단어보다 작을 수도, 클 수도 있습니다.
+  </p>
+
+  <ul>
+    <li><strong>영어:</strong> 평균 1 토큰 ≈ 0.75 단어 (약 4글자)</li>
+    <li><strong>한국어:</strong> 평균 1 토큰 ≈ 2~4글자</li>
+    <li><strong>코드:</strong> 토큰 수가 더 많을 수 있음 (특수문자, 들여쓰기)</li>
+  </ul>
+
+  <h3 id="estimate-tokens">토큰 수 추정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 토큰 카운팅</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">from</span> anthropic <span class="kw">import</span> Anthropic
+
+client <span class="kw">=</span> <span class="fn">Anthropic</span>()
+
+text <span class="kw">=</span> <span class="str">"Claude는 Anthropic이 개발한 AI입니다."</span>
+
+token_count <span class="kw">=</span> client.messages.<span class="fn">count_tokens</span>(
+    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: text}]
+)
+
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"입력 토큰: {token_count.input_tokens}"</span>)</code></pre>
+  </div>
+
+  <h3 id="cost-calculation">비용 계산 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 비용 계산</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">def</span> <span class="fn">calculate_cost</span>(input_tokens, output_tokens, model<span class="kw">=</span><span class="str">"sonnet"</span>):
+    <span class="cmt"># 백만 토큰당 가격 (USD)</span>
+    prices <span class="kw">=</span> {
+        <span class="str">"opus"</span>: {<span class="str">"input"</span>: <span class="num">15.00</span>, <span class="str">"output"</span>: <span class="num">75.00</span>},
+        <span class="str">"sonnet"</span>: {<span class="str">"input"</span>: <span class="num">3.00</span>, <span class="str">"output"</span>: <span class="num">15.00</span>},
+        <span class="str">"haiku"</span>: {<span class="str">"input"</span>: <span class="num">0.80</span>, <span class="str">"output"</span>: <span class="num">4.00</span>}
+    }
+
+    input_cost <span class="kw">=</span> (input_tokens <span class="kw">/</span> <span class="num">1_000_000</span>) <span class="kw">*</span> prices[model][<span class="str">"input"</span>]
+    output_cost <span class="kw">=</span> (output_tokens <span class="kw">/</span> <span class="num">1_000_000</span>) <span class="kw">*</span> prices[model][<span class="str">"output"</span>]
+
+    <span class="kw">return</span> input_cost <span class="kw">+</span> output_cost
+
+<span class="cmt"># 예시</span>
+cost <span class="kw">=</span> <span class="fn">calculate_cost</span>(
+    input_tokens<span class="kw">=</span><span class="num">10000</span>,
+    output_tokens<span class="kw">=</span><span class="num">1000</span>,
+    model<span class="kw">=</span><span class="str">"sonnet"</span>
+)
+
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"예상 비용: ${cost:.4f}"</span>)  <span class="cmt"># $0.0450</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="billing">과금 방식</h2>
+
+  <h3 id="pay-as-you-go">사용량 기반 과금</h3>
+  <p>
+    Claude API는 선불 크레딧 방식입니다:
+  </p>
+
+  <ol>
+    <li><strong>크레딧 충전:</strong> Console에서 최소 $5부터 충전</li>
+    <li><strong>API 사용:</strong> 사용한 토큰만큼 크레딧 차감</li>
+    <li><strong>자동 충전:</strong> 잔액이 임계값 이하로 떨어지면 자동 충전 (선택)</li>
+  </ol>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 월간 한도 설정</div>
+    <p>
+      Console에서 월 사용량 한도를 설정하면 예상치 못한 과금을 방지할 수 있습니다.
+      예: 월 $100 한도 설정 → 초과 시 API 호출 차단
+    </p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="cost-reduction">비용 절감 전략</h2>
+
+  <h3 id="opt-1">1. 적절한 모델 선택</h3>
+  <p>
+    간단한 작업은 Haiku, 복잡한 작업은 Opus. 대부분은 Sonnet으로 충분합니다.
+  </p>
+
+  <h3 id="opt-2">2. max_tokens 최적화</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python max_tokens 설정</span>
+    </div>
+    <pre><code><span class="cmt"># ❌ 나쁜 예: 불필요하게 큰 값</span>
+max_tokens<span class="kw">=</span><span class="num">4096</span>  <span class="cmt"># 짧은 답변에도 4096 설정</span>
+
+<span class="cmt"># ✅ 좋은 예: 필요한 만큼만</span>
+max_tokens<span class="kw">=</span><span class="num">256</span>  <span class="cmt"># 간단한 분류</span>
+max_tokens<span class="kw">=</span><span class="num">1024</span> <span class="cmt"># 일반 대화</span>
+max_tokens<span class="kw">=</span><span class="num">4096</span> <span class="cmt"># 긴 문서 생성</span></code></pre>
+  </div>
+
+  <h3 id="opt-3">3. 프롬프트 캐싱 활용</h3>
+  <p>
+    같은 긴 컨텍스트를 반복 사용하는 경우 캐싱으로 90% 절감:
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">캐싱 비용 비교</span>
+    </div>
+    <pre><code><span class="cmt"># 100K 토큰 문서를 10회 질문하는 경우 (Sonnet)</span>
+
+캐싱 없음:
+100,000 × 10 / 1,000,000 × $3 = $3.00
+
+캐싱 사용:
+1차: 100,000 / 1,000,000 × $3.75 = $0.375 (쓰기)
+2~10차: 100,000 × 9 / 1,000,000 × $0.30 = $0.27 (읽기)
+총: $0.645
+
+절감액: $3.00 - $0.645 = $2.355 (78.5% 절감)</code></pre>
+  </div>
+
+  <h3 id="opt-4">4. 대화 히스토리 압축</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 대화 요약</span>
+    </div>
+    <pre><code><span class="cmt"># 긴 대화는 주기적으로 요약</span>
+<span class="kw">if</span> <span class="fn">len</span>(conversation_history) <span class="kw">></span> <span class="num">20</span>:
+    <span class="cmt"># Haiku로 빠르고 저렴하게 요약</span>
+    summary <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span><span class="str">"claude-haiku-4-5-20251001"</span>,
+        max_tokens<span class="kw">=</span><span class="num">500</span>,
+        messages<span class="kw">=</span>conversation_history <span class="kw">+</span> [
+            {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"대화 요약 (3문장)"</span>}
+        ]
+    )
+
+    <span class="cmt"># 히스토리를 요약본으로 교체</span>
+    conversation_history <span class="kw">=</span> [
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: summary.content[<span class="num">0</span>].text}
+    ]</code></pre>
+  </div>
+
+  <h3 id="opt-5">5. 배치 처리</h3>
+  <p>
+    가능하면 여러 항목을 하나의 요청으로 처리:
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">배치 처리 예시</span>
+    </div>
+    <pre><code><span class="cmt"># ❌ 나쁜 예: 10개 요청</span>
+<span class="kw">for</span> email <span class="kw">in</span> emails:
+    classify(email)  <span class="cmt"># API 호출 10회</span>
+
+<span class="cmt"># ✅ 좋은 예: 1개 요청</span>
+bulk_text <span class="kw">=</span> <span class="str">"\n\n---\n\n"</span>.<span class="fn">join</span>(emails)
+classify(bulk_text)  <span class="cmt"># API 호출 1회</span></code></pre>
+  </div>
+
+  <h3 id="opt-6">6. stop_sequences 사용</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python stop_sequences</span>
+    </div>
+    <pre><code><span class="cmt"># 특정 패턴에서 생성 중단</span>
+message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    max_tokens<span class="kw">=</span><span class="num">2048</span>,
+    stop_sequences<span class="kw">=</span>[<span class="str">"\n\n---"</span>, <span class="str">"END"</span>],  <span class="cmt"># 불필요한 생성 방지</span>
+    messages<span class="kw">=</span>[<span class="kw">...</span>]
+)</code></pre>
+  </div>
+
+  <h3 id="opt-7">7. 로컬 캐싱 구현</h3>
+  <p>
+    API 응답을 로컬에 캐싱하여 동일한 요청에 대한 재호출을 방지합니다.
+    Redis나 Memcached를 사용하면 분산 환경에서도 캐시를 공유할 수 있습니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python + Redis 캐싱</span>
+      <button class="code-copy" aria-label="코드 복사">복사</button>
+    </div>
+    <pre><code><span class="kw">import</span> redis
+<span class="kw">import</span> hashlib
+<span class="kw">import</span> json
+
+cache <span class="kw">=</span> redis.Redis(host<span class="kw">=</span><span class="str">'localhost'</span>, port<span class="kw">=</span><span class="num">6379</span>)
+
+<span class="kw">def</span> <span class="fn">cached_claude_request</span>(prompt, model, max_tokens):
+    <span class="cmt"># 캐시 키 생성 (프롬프트 해시)</span>
+    cache_key <span class="kw">=</span> hashlib.md5(
+        <span class="str">f"</span>{model}<span class="str">:</span>{prompt}<span class="str">:</span>{max_tokens}<span class="str">"</span>.encode()
+    ).hexdigest()
+
+    <span class="cmt"># 캐시 확인</span>
+    cached <span class="kw">=</span> cache.get(cache_key)
+    <span class="kw">if</span> cached:
+        <span class="kw">return</span> json.loads(cached)
+
+    <span class="cmt"># 캐시 미스 - API 호출</span>
+    response <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span>model,
+        max_tokens<span class="kw">=</span>max_tokens,
+        messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+    )
+
+    <span class="cmt"># 응답 캐싱 (24시간)</span>
+    cache.setex(cache_key, <span class="num">86400</span>, json.dumps(response.content[<span class="num">0</span>].text))
+    <span class="kw">return</span> response.content[<span class="num">0</span>].text
+
+<span class="cmt"># 비용 절감 효과: 동일 요청 2회 이상 시 100% 절감</span></code></pre>
+  </div>
+
+  <h3 id="opt-8">8. 스마트 라우팅 (모델 자동 선택)</h3>
+  <p>
+    작업 복잡도를 자동으로 판단하여 Haiku → Sonnet → Opus 순으로 에스컬레이션하는 전략입니다.
+    간단한 작업은 저렴한 모델로 처리하고, 실패 시에만 더 강력한 모델을 사용합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 스마트 라우팅</span>
+      <button class="code-copy" aria-label="코드 복사">복사</button>
+    </div>
+    <pre><code><span class="kw">def</span> <span class="fn">smart_request</span>(prompt, max_retries<span class="kw">=</span><span class="num">3</span>):
+    models <span class="kw">=</span> [
+        <span class="str">"claude-haiku-4-5-20251001"</span>,    <span class="cmt"># 1단계: 저렴</span>
+        <span class="str">"claude-sonnet-4-5-20250929"</span>,   <span class="cmt"># 2단계: 균형</span>
+        <span class="str">"claude-opus-4-6"</span>               <span class="cmt"># 3단계: 강력</span>
+    ]
+
+    <span class="kw">for</span> i, model <span class="kw">in</span> <span class="fn">enumerate</span>(models):
+        <span class="kw">try</span>:
+            response <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+                model<span class="kw">=</span>model,
+                max_tokens<span class="kw">=</span><span class="num">1024</span>,
+                messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+            )
+
+            <span class="cmt"># 품질 검증 (예: 응답 길이, 특정 키워드 포함 여부)</span>
+            <span class="kw">if</span> is_valid_response(response):
+                <span class="fn">print</span>(<span class="str">f"✓ {model} 사용 (단계 {i+1})"</span>)
+                <span class="kw">return</span> response
+            <span class="kw">else</span>:
+                <span class="fn">print</span>(<span class="str">f"✗ {model} 품질 미달, 다음 모델 시도"</span>)
+
+        <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+            <span class="fn">print</span>(<span class="str">f"✗ {model} 에러: {e}"</span>)
+
+    <span class="kw">raise</span> <span class="type">Exception</span>(<span class="str">"모든 모델 시도 실패"</span>)
+
+<span class="kw">def</span> <span class="fn">is_valid_response</span>(response):
+    <span class="cmt"># 품질 검증 로직 (예: 최소 길이, 키워드 확인)</span>
+    text <span class="kw">=</span> response.content[<span class="num">0</span>].text
+    <span class="kw">return</span> <span class="fn">len</span>(text) <span class="kw">></span> <span class="num">50</span> <span class="kw">and</span> <span class="str">"오류"</span> <span class="kw">not in</span> text
+
+<span class="cmt"># 비용 절감 효과: 80% 작업이 Haiku로 해결되면 약 70% 비용 절감</span></code></pre>
+  </div>
+
+  <h3 id="opt-9">9. A/B 테스트로 최적 모델 찾기</h3>
+  <p>
+    실제 사용 패턴에서 어떤 모델이 비용 대비 성능이 좋은지 데이터 기반으로 판단합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python A/B 테스트 프레임워크</span>
+      <button class="code-copy" aria-label="코드 복사">복사</button>
+    </div>
+    <pre><code><span class="kw">import</span> random
+<span class="kw">import</span> time
+
+<span class="kw">class</span> <span class="type">ModelABTest</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.stats <span class="kw">=</span> {
+            <span class="str">"haiku"</span>: {<span class="str">"cost"</span>: <span class="num">0</span>, <span class="str">"success"</span>: <span class="num">0</span>, <span class="str">"total"</span>: <span class="num">0</span>},
+            <span class="str">"sonnet"</span>: {<span class="str">"cost"</span>: <span class="num">0</span>, <span class="str">"success"</span>: <span class="num">0</span>, <span class="str">"total"</span>: <span class="num">0</span>}
+        }
+
+    <span class="kw">def</span> <span class="fn">request</span>(<span class="kw">self</span>, prompt):
+        <span class="cmt"># 50/50 분할</span>
+        variant <span class="kw">=</span> random.choice([<span class="str">"haiku"</span>, <span class="str">"sonnet"</span>])
+        model <span class="kw">=</span> <span class="str">"claude-haiku-4-5-20251001"</span> <span class="kw">if</span> variant <span class="kw">==</span> <span class="str">"haiku"</span> <span class="kw">else</span> <span class="str">"claude-sonnet-4-5-20250929"</span>
+
+        start <span class="kw">=</span> time.time()
+        response <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+            model<span class="kw">=</span>model,
+            max_tokens<span class="kw">=</span><span class="num">1024</span>,
+            messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+        )
+        latency <span class="kw">=</span> time.time() <span class="kw">-</span> start
+
+        <span class="cmt"># 통계 수집</span>
+        cost <span class="kw">=</span> <span class="kw">self</span>.<span class="fn">calculate_cost</span>(response, variant)
+        success <span class="kw">=</span> is_valid_response(response)
+
+        <span class="kw">self</span>.stats[variant][<span class="str">"total"</span>] <span class="kw">+=</span> <span class="num">1</span>
+        <span class="kw">self</span>.stats[variant][<span class="str">"cost"</span>] <span class="kw">+=</span> cost
+        <span class="kw">if</span> success:
+            <span class="kw">self</span>.stats[variant][<span class="str">"success"</span>] <span class="kw">+=</span> <span class="num">1</span>
+
+        <span class="kw">return</span> response
+
+    <span class="kw">def</span> <span class="fn">report</span>(<span class="kw">self</span>):
+        <span class="kw">for</span> variant, data <span class="kw">in</span> <span class="kw">self</span>.stats.<span class="fn">items</span>():
+            <span class="kw">if</span> data[<span class="str">"total"</span>] <span class="kw">></span> <span class="num">0</span>:
+                success_rate <span class="kw">=</span> data[<span class="str">"success"</span>] <span class="kw">/</span> data[<span class="str">"total"</span>] <span class="kw">*</span> <span class="num">100</span>
+                avg_cost <span class="kw">=</span> data[<span class="str">"cost"</span>] <span class="kw">/</span> data[<span class="str">"total"</span>]
+                <span class="fn">print</span>(<span class="str">f"{variant}: 성공률 {success_rate:.1f}%, 평균 비용 ${avg_cost:.4f}"</span>)
+
+<span class="cmt"># 사용 예시:
+# 100회 요청 후 성공률과 비용 비교
+# Haiku: 성공률 85%, 평균 비용 $0.003
+# Sonnet: 성공률 95%, 평균 비용 $0.012
+# → 성공률 차이가 10%뿐이라면 Haiku 선택 (75% 비용 절감)</span></code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 종합 비용 절감 전략</div>
+    <p>위 9가지 전략을 조합하면 <strong>70-90% 비용 절감</strong>이 가능합니다:</p>
+    <ol>
+      <li>기본: Sonnet 대신 Haiku 사용 (75% 절감)</li>
+      <li>프롬프트 캐싱: 반복 컨텍스트에서 90% 추가 절감</li>
+      <li>로컬 캐싱: 동일 요청 100% 절감</li>
+      <li>스마트 라우팅: 작업별 최적 모델 자동 선택</li>
+      <li>A/B 테스트: 데이터 기반 의사결정</li>
+    </ol>
+    <p style="margin-top: 1rem;">
+      더 많은 최적화 팁은 <a href="claude-code.html#troubleshooting">Claude Code 트러블슈팅</a>을 참조하세요.
+    </p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="monitoring">비용 모니터링</h2>
+
+  <h3 id="console-usage">Console에서 확인</h3>
+  <p>
+    Anthropic Console의 Usage 탭에서 실시간 사용량을 확인할 수 있습니다:
+  </p>
+
+  <ul>
+    <li>일별/월별 토큰 사용량</li>
+    <li>모델별 비용 분해</li>
+    <li>API 키별 사용 통계</li>
+  </ul>
+
+  <h3 id="api-headers">API 응답 헤더</h3>
+  <p>
+    각 API 응답에 토큰 사용량이 포함됩니다:
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 사용량 확인</span>
+    </div>
+    <pre><code>message <span class="kw">=</span> client.messages.<span class="fn">create</span>(<span class="kw">...</span>)
+
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"입력 토큰: {message.usage.input_tokens}"</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"출력 토큰: {message.usage.output_tokens}"</span>)
+
+<span class="cmt"># 비용 계산</span>
+cost <span class="kw">=</span> <span class="fn">calculate_cost</span>(
+    message.usage.input_tokens,
+    message.usage.output_tokens,
+    model<span class="kw">=</span><span class="str">"sonnet"</span>
+)
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"이번 요청 비용: ${cost:.4f}"</span>)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <ul>
+    <li><a href="model-comparison.html">모델 비교</a> - 모델별 성능 및 사용 사례</li>
+    <li><a href="limitations.html">제한사항</a> - Rate limits 및 제약사항</li>
+    <li><a href="quickstart.html">빠른 시작</a> - API 사용 시작하기</li>
+  </ul>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

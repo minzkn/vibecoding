@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Continue.dev 완전 가이드 - 오픈소스 AI 코딩 도구">
+<meta property="og:description" content="Continue.dev 완전 가이드. VS Code 확장, 다중 LLM 지원, 오픈소스 AI 코딩 어시스턴트를 마스터하세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/continue.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Continue.dev 완전 가이드. 오픈소스 AI 코딩 어시스턴트의 모든 기능과 활용법을 배웁니다.">
+<meta name="keywords" content="continue.dev, vscode, ai coding, opensource, llm, claude, ollama">
+<meta name="author" content="MINZKN">
+<title>Continue.dev 완전 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Continue.dev 완전 가이드</h1>
+<p class="lead">VS Code에서 직접 사용하는 오픈소스 AI 코딩 어시스턴트. 다중 LLM 지원, 무료, 완벽한 커스터마이징.</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 빠른 시작</div>
+  <pre><code><span class="cmt"># 1. VS Code 확장 설치</span>
+Extensions → "Continue" 검색 → 설치
+
+<span class="cmt"># 2. 설정 (Cmd/Ctrl + Shift + P)</span>
+Continue: Open Config
+
+<span class="cmt"># 3. 단축키</span>
+Cmd/Ctrl + L    <span class="cmt"># 채팅 열기</span>
+Cmd/Ctrl + I    <span class="cmt"># 인라인 편집</span></code></pre>
+</div>
+
+<!-- Section 1: 소개 -->
+<section class="content-section">
+  <h2 id="introduction">소개</h2>
+
+  <p>
+    <strong>Continue.dev</strong>는 VS Code와 JetBrains IDE에서 사용할 수 있는
+    오픈소스 AI 코딩 어시스턴트입니다. GitHub Copilot과 유사하지만,
+    다양한 LLM 제공자를 자유롭게 선택하고 설정할 수 있습니다.
+  </p>
+
+  <h3 id="why-continue">왜 Continue인가?</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>오픈소스</strong></td>
+        <td>Apache 2.0 라이선스, 완전 무료, 커뮤니티 주도</td>
+      </tr>
+      <tr>
+        <td><strong>다중 LLM</strong></td>
+        <td>Claude, GPT-4, Gemini, Ollama, DeepSeek 등 모두 지원</td>
+      </tr>
+      <tr>
+        <td><strong>IDE 통합</strong></td>
+        <td>VS Code, IntelliJ, PyCharm 등 네이티브 통합</td>
+      </tr>
+      <tr>
+        <td><strong>프라이버시</strong></td>
+        <td>로컬 LLM(Ollama) 사용 시 완전한 프라이버시</td>
+      </tr>
+      <tr>
+        <td><strong>커스터마이징</strong></td>
+        <td>config.json으로 모든 설정 완벽 제어</td>
+      </tr>
+      <tr>
+        <td><strong>무료</strong></td>
+        <td>Ollama와 함께 사용 시 완전 무료</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="key-features">핵심 기능</h3>
+
+  <ul>
+    <li><strong>인라인 편집 (Cmd+I)</strong>: 코드 중간에 AI 호출</li>
+    <li><strong>채팅 (Cmd+L)</strong>: 사이드바에서 대화형 코딩</li>
+    <li><strong>자동완성</strong>: GitHub Copilot처럼 Tab 키로 완성</li>
+    <li><strong>문서 검색</strong>: @docs로 문서 참조</li>
+    <li><strong>코드베이스 검색</strong>: @codebase로 전체 프로젝트 검색</li>
+    <li><strong>컨텍스트 제공자</strong>: 파일, 터미널, 문제 등 자동 컨텍스트</li>
+  </ul>
+</section>
+
+<!-- Section 2: 설치 -->
+<section class="content-section">
+  <h2 id="installation">설치</h2>
+
+  <h3 id="install-vscode">VS Code 확장 설치</h3>
+
+  <h4>방법 1: 마켓플레이스</h4>
+  <pre><code><span class="cmt"># VS Code 열기</span>
+1. Extensions (Cmd/Ctrl + Shift + X)
+2. "Continue" 검색
+3. "Continue - Codestral, Claude, and more" 설치
+4. Reload</code></pre>
+
+  <h4>방법 2: 커맨드라인</h4>
+  <pre><code>code --install-extension continue.continue</code></pre>
+
+  <h3 id="install-jetbrains">JetBrains IDE 설치</h3>
+
+  <pre><code><span class="cmt"># IntelliJ, PyCharm, WebStorm 등</span>
+1. Settings → Plugins
+2. "Continue" 검색
+3. Install
+4. Restart IDE</code></pre>
+
+  <h3 id="first-setup">초기 설정</h3>
+
+  <p>설치 후 처음 실행 시:</p>
+
+  <pre><code><span class="cmt"># 1. Continue 사이드바 열기</span>
+Cmd/Ctrl + L
+
+<span class="cmt"># 2. LLM 제공자 선택</span>
+- Ollama (로컬, 무료)
+- Anthropic Claude
+- OpenAI GPT-4
+- Google Gemini
+- Azure OpenAI
+- 기타 커스텀
+
+<span class="cmt"># 3. API 키 입력 (필요 시)</span>
+<span class="cmt"># Ollama 선택 시 API 키 불필요</span></code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 추천 초기 설정</div>
+    <p>처음 시작한다면 Ollama를 설치하고 Continue와 연동하세요. 완전 무료로 모든 기능을 사용할 수 있습니다.</p>
+    <p><a href="ollama-integration.html">Ollama 설치 및 연동 가이드 →</a></p>
+  </div>
+</section>
+
+<!-- Section 3: 기본 사용법 -->
+<section class="content-section">
+  <h2 id="basic-usage">기본 사용법</h2>
+
+  <h3 id="inline-edit">인라인 편집 (Cmd+I)</h3>
+
+  <p>
+    코드 작성 중 AI를 즉시 호출하여 편집하거나 생성합니다.
+    가장 자주 사용하는 기능입니다.
+  </p>
+
+  <h4>사용 예시</h4>
+
+  <pre><code><span class="cmt">// 1. 함수 작성 요청</span>
+<span class="cmt">// 커서를 빈 줄에 두고 Cmd+I</span>
+
+<span class="str">[Continue]: "사용자 인증 함수 만들어줘. JWT 토큰 검증."</span>
+
+<span class="cmt">// AI가 생성:</span>
+<span class="kw">function</span> <span class="fn">verifyToken</span>(token) {
+  <span class="kw">const</span> jwt = <span class="fn">require</span>(<span class="str">'jsonwebtoken'</span>);
+  <span class="kw">try</span> {
+    <span class="kw">const</span> decoded = jwt.<span class="fn">verify</span>(token, process.env.JWT_SECRET);
+    <span class="kw">return</span> { valid: <span class="kw">true</span>, user: decoded };
+  } <span class="kw">catch</span> (error) {
+    <span class="kw">return</span> { valid: <span class="kw">false</span>, error: error.message };
+  }
+}</code></pre>
+
+  <pre><code><span class="cmt">// 2. 코드 리팩토링</span>
+<span class="cmt">// 기존 코드 선택 후 Cmd+I</span>
+
+<span class="kw">function</span> <span class="fn">processUsers</span>(users) {
+  <span class="kw">let</span> result = [];
+  <span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">0</span>; i < users.length; i++) {
+    <span class="kw">if</span> (users[i].active) {
+      result.<span class="fn">push</span>(users[i].name);
+    }
+  }
+  <span class="kw">return</span> result;
+}
+
+<span class="str">[Continue]: "이 코드를 함수형으로 리팩토링해줘"</span>
+
+<span class="cmt">// AI가 변환:</span>
+<span class="kw">const</span> <span class="fn">processUsers</span> = (users) =>
+  users
+    .<span class="fn">filter</span>(user => user.active)
+    .<span class="fn">map</span>(user => user.name);</code></pre>
+
+  <h3 id="chat">채팅 (Cmd+L)</h3>
+
+  <p>
+    사이드바에서 AI와 대화하며 코드를 작성하고 질문합니다.
+  </p>
+
+  <pre><code><span class="cmt"># 채팅 패널 열기</span>
+Cmd/Ctrl + L
+
+<span class="str">💬 You:</span> <span class="str">"React 컴포넌트 만들어줘. 사용자 프로필 카드.
+이름, 이메일, 아바타 표시. TypeScript 사용."</span>
+
+<span class="fn">🤖 Continue:</span> <span class="str">"UserProfileCard.tsx를 생성하겠습니다."</span>
+
+<span class="cmt">// 파일이 생성되고 코드가 삽입됨</span></code></pre>
+
+  <h4>채팅 슬래시 명령어</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>명령어</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>/edit</code></td>
+        <td>선택한 코드 편집</td>
+      </tr>
+      <tr>
+        <td><code>/comment</code></td>
+        <td>코드에 주석 추가</td>
+      </tr>
+      <tr>
+        <td><code>/share</code></td>
+        <td>대화 공유 링크 생성</td>
+      </tr>
+      <tr>
+        <td><code>/cmd</code></td>
+        <td>터미널 명령어 생성</td>
+      </tr>
+      <tr>
+        <td><code>/commit</code></td>
+        <td>Git 커밋 메시지 생성</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="autocomplete">자동완성 (Tab)</h3>
+
+  <p>
+    타이핑하면 자동으로 코드 제안이 나타납니다. Tab 키로 수락.
+  </p>
+
+  <pre><code><span class="cmt">// 타이핑 중...</span>
+<span class="kw">function</span> <span class="fn">fetchUser</span>(
+
+<span class="cmt">// Continue가 자동 제안 (회색 텍스트):</span>
+<span class="kw">function</span> <span class="fn">fetchUser</span>(id) {
+  <span class="kw">return</span> <span class="fn">fetch</span>(`/api/users/${id}`)
+    .<span class="fn">then</span>(res => res.<span class="fn">json</span>());
+}
+
+<span class="cmt">// Tab 키로 수락</span></code></pre>
+</section>
+
+<!-- Section 4: 고급 기능 -->
+<section class="content-section">
+  <h2 id="advanced-features">고급 기능</h2>
+
+  <h3 id="context-providers">컨텍스트 제공자</h3>
+
+  <p>
+    @ 기호로 특정 컨텍스트를 참조할 수 있습니다.
+  </p>
+
+  <h4>@codebase - 코드베이스 검색</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"@codebase 사용자 인증 로직이 어디 있어?"</span>
+
+<span class="fn">🤖 Continue:</span> <span class="str">"src/auth/verifyToken.js에 JWT 검증 로직이 있습니다."</span></code></pre>
+
+  <h4>@docs - 문서 참조</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"@docs React useEffect 사용법 알려줘"</span>
+
+<span class="fn">🤖 Continue:</span> <span class="str">"React 공식 문서를 참조했습니다. useEffect는..."</span></code></pre>
+
+  <h4>@file - 특정 파일 참조</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"@file:src/App.tsx 이 파일에 라우팅 추가해줘"</span></code></pre>
+
+  <h4>@terminal - 터미널 출력 참조</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"@terminal 이 에러 수정해줘"</span>
+
+<span class="cmt"># 터미널의 마지막 출력을 AI가 읽고 분석</span></code></pre>
+
+  <h4>@problems - VS Code 문제 패널 참조</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"@problems 모든 경고 수정해줘"</span></code></pre>
+
+  <h3 id="multifile-edit">멀티파일 편집</h3>
+
+  <p>한 번의 요청으로 여러 파일을 동시에 수정할 수 있습니다.</p>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"사용자 인증 시스템 전체 추가해줘.
+- auth.js (JWT 로직)
+- middleware.js (Express 미들웨어)
+- routes/auth.js (회원가입/로그인 라우트)
+- models/User.js (Mongoose 모델)
+
+필요한 파일 모두 생성해줘."</span>
+
+<span class="fn">🤖 Continue:</span> <span class="str">"4개 파일을 생성하겠습니다..."</span>
+
+<span class="cmt"># 파일들이 자동 생성되고 내용이 채워짐</span></code></pre>
+
+  <h3 id="custom-commands">커스텀 명령어</h3>
+
+  <p>
+    자주 사용하는 작업을 커스텀 슬래시 명령으로 저장할 수 있습니다.
+  </p>
+
+  <pre><code><span class="cmt">// config.json</span>
+{
+  <span class="str">"slashCommands"</span>: [
+    {
+      <span class="str">"name"</span>: <span class="str">"test"</span>,
+      <span class="str">"description"</span>: <span class="str">"Generate unit tests"</span>,
+      <span class="str">"prompt"</span>: <span class="str">"Write comprehensive unit tests for {{{ input }}} using Jest"</span>
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"docstring"</span>,
+      <span class="str">"description"</span>: <span class="str">"Add docstrings"</span>,
+      <span class="str">"prompt"</span>: <span class="str">"Add detailed docstrings to this code: {{{ input }}}"</span>
+    }
+  ]
+}</code></pre>
+
+  <p>사용:</p>
+  <pre><code><span class="cmt"># 코드 선택 후</span>
+<span class="str">💬 You:</span> <span class="str">"/test"</span>
+<span class="cmt"># → 자동으로 테스트 코드 생성</span></code></pre>
+</section>
+
+<!-- Section 5: 설정 -->
+<section class="content-section">
+  <h2 id="configuration">설정 (config.json)</h2>
+
+  <h3 id="open-config">설정 파일 열기</h3>
+
+  <pre><code><span class="cmt"># VS Code에서</span>
+Cmd/Ctrl + Shift + P → "Continue: Open Config"
+
+<span class="cmt"># 또는 직접 편집</span>
+~/.continue/config.json  <span class="cmt"># macOS/Linux</span>
+%USERPROFILE%\.continue\config.json  <span class="cmt"># Windows</span></code></pre>
+
+  <h3 id="llm-config">LLM 설정</h3>
+
+  <h4>Claude 설정</h4>
+  <pre><code>{
+  <span class="str">"models"</span>: [
+    {
+      <span class="str">"title"</span>: <span class="str">"Claude Sonnet 4.5"</span>,
+      <span class="str">"provider"</span>: <span class="str">"anthropic"</span>,
+      <span class="str">"model"</span>: <span class="str">"claude-sonnet-4-5-20250929"</span>,
+      <span class="str">"apiKey"</span>: <span class="str">"YOUR_ANTHROPIC_API_KEY"</span>
+    }
+  ]
+}</code></pre>
+
+  <h4>Ollama 설정 (로컬)</h4>
+  <pre><code>{
+  <span class="str">"models"</span>: [
+    {
+      <span class="str">"title"</span>: <span class="str">"Llama 3.2 (로컬)"</span>,
+      <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+      <span class="str">"model"</span>: <span class="str">"llama3.2"</span>,
+      <span class="str">"apiBase"</span>: <span class="str">"http://localhost:11434"</span>
+    }
+  ]
+}</code></pre>
+
+  <h4>다중 모델 설정</h4>
+  <pre><code>{
+  <span class="str">"models"</span>: [
+    {
+      <span class="str">"title"</span>: <span class="str">"Claude (복잡한 작업)"</span>,
+      <span class="str">"provider"</span>: <span class="str">"anthropic"</span>,
+      <span class="str">"model"</span>: <span class="str">"claude-sonnet-4-5-20250929"</span>,
+      <span class="str">"apiKey"</span>: <span class="str">"${ANTHROPIC_API_KEY}"</span>
+    },
+    {
+      <span class="str">"title"</span>: <span class="str">"GPT-4 (일반)"</span>,
+      <span class="str">"provider"</span>: <span class="str">"openai"</span>,
+      <span class="str">"model"</span>: <span class="str">"gpt-4"</span>,
+      <span class="str">"apiKey"</span>: <span class="str">"${OPENAI_API_KEY}"</span>
+    },
+    {
+      <span class="str">"title"</span>: <span class="str">"Ollama (간단)"</span>,
+      <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+      <span class="str">"model"</span>: <span class="str">"llama3.2"</span>
+    }
+  ],
+  <span class="str">"tabAutocompleteModel"</span>: {
+    <span class="str">"title"</span>: <span class="str">"Starcoder (자동완성)"</span>,
+    <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+    <span class="str">"model"</span>: <span class="str">"starcoder2:3b"</span>
+  }
+}</code></pre>
+
+  <h3 id="context-config">컨텍스트 제공자 설정</h3>
+
+  <pre><code>{
+  <span class="str">"contextProviders"</span>: [
+    {
+      <span class="str">"name"</span>: <span class="str">"code"</span>,
+      <span class="str">"params"</span>: {}
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"docs"</span>,
+      <span class="str">"params"</span>: {
+        <span class="str">"startUrl"</span>: <span class="str">"https://react.dev"</span>
+      }
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"diff"</span>,
+      <span class="str">"params"</span>: {}
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"terminal"</span>,
+      <span class="str">"params"</span>: {}
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"problems"</span>,
+      <span class="str">"params"</span>: {}
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"codebase"</span>,
+      <span class="str">"params"</span>: {}
+    }
+  ]
+}</code></pre>
+
+  <h3 id="full-config">완전한 설정 예시</h3>
+
+  <pre><code>{
+  <span class="str">"models"</span>: [
+    {
+      <span class="str">"title"</span>: <span class="str">"Claude Sonnet 4.5"</span>,
+      <span class="str">"provider"</span>: <span class="str">"anthropic"</span>,
+      <span class="str">"model"</span>: <span class="str">"claude-sonnet-4-5-20250929"</span>,
+      <span class="str">"apiKey"</span>: <span class="str">"${ANTHROPIC_API_KEY}"</span>
+    },
+    {
+      <span class="str">"title"</span>: <span class="str">"Llama 3.2"</span>,
+      <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+      <span class="str">"model"</span>: <span class="str">"llama3.2"</span>
+    }
+  ],
+  <span class="str">"tabAutocompleteModel"</span>: {
+    <span class="str">"title"</span>: <span class="str">"Starcoder"</span>,
+    <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+    <span class="str">"model"</span>: <span class="str">"starcoder2:3b"</span>
+  },
+  <span class="str">"embeddingsProvider"</span>: {
+    <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+    <span class="str">"model"</span>: <span class="str">"nomic-embed-text"</span>
+  },
+  <span class="str">"contextProviders"</span>: [
+    {
+      <span class="str">"name"</span>: <span class="str">"code"</span>,
+      <span class="str">"params"</span>: {}
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"docs"</span>,
+      <span class="str">"params"</span>: {}
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"diff"</span>,
+      <span class="str">"params"</span>: {}
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"terminal"</span>,
+      <span class="str">"params"</span>: {}
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"codebase"</span>,
+      <span class="str">"params"</span>: {}
+    }
+  ],
+  <span class="str">"slashCommands"</span>: [
+    {
+      <span class="str">"name"</span>: <span class="str">"edit"</span>,
+      <span class="str">"description"</span>: <span class="str">"Edit highlighted code"</span>
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"comment"</span>,
+      <span class="str">"description"</span>: <span class="str">"Write comments for highlighted code"</span>
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"share"</span>,
+      <span class="str">"description"</span>: <span class="str">"Export this session to markdown"</span>
+    },
+    {
+      <span class="str">"name"</span>: <span class="str">"cmd"</span>,
+      <span class="str">"description"</span>: <span class="str">"Generate a shell command"</span>
+    }
+  ]
+}</code></pre>
+</section>
+
+<!-- Section 6: Ollama 연동 -->
+<section class="content-section">
+  <h2 id="ollama-integration">Ollama 연동 (무료 사용)</h2>
+
+  <p>
+    Ollama를 사용하면 API 키 없이 완전 무료로 Continue를 사용할 수 있습니다.
+  </p>
+
+  <h3 id="ollama-setup">Ollama 설치</h3>
+
+  <pre><code><span class="cmt"># macOS/Linux</span>
+curl -fsSL https://ollama.com/install.sh | sh
+
+<span class="cmt"># Windows</span>
+<span class="cmt"># https://ollama.com 에서 다운로드</span>
+
+<span class="cmt"># 모델 다운로드</span>
+ollama pull llama3.2         <span class="cmt"># 채팅용</span>
+ollama pull starcoder2:3b    <span class="cmt"># 자동완성용</span>
+ollama pull nomic-embed-text <span class="cmt"># 임베딩용</span></code></pre>
+
+  <h3 id="ollama-config">Continue + Ollama 설정</h3>
+
+  <pre><code>{
+  <span class="str">"models"</span>: [
+    {
+      <span class="str">"title"</span>: <span class="str">"Llama 3.2"</span>,
+      <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+      <span class="str">"model"</span>: <span class="str">"llama3.2"</span>
+    }
+  ],
+  <span class="str">"tabAutocompleteModel"</span>: {
+    <span class="str">"title"</span>: <span class="str">"Starcoder"</span>,
+    <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+    <span class="str">"model"</span>: <span class="str">"starcoder2:3b"</span>
+  },
+  <span class="str">"embeddingsProvider"</span>: {
+    <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+    <span class="str">"model"</span>: <span class="str">"nomic-embed-text"</span>
+  }
+}</code></pre>
+
+  <h3 id="ollama-models">추천 Ollama 모델</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>용도</th>
+        <th>크기</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>llama3.2</code></td>
+        <td>범용 코딩</td>
+        <td>2GB</td>
+      </tr>
+      <tr>
+        <td><code>codellama</code></td>
+        <td>코드 전용</td>
+        <td>3.8GB</td>
+      </tr>
+      <tr>
+        <td><code>deepseek-coder-v2</code></td>
+        <td>고급 코딩</td>
+        <td>8.9GB</td>
+      </tr>
+      <tr>
+        <td><code>starcoder2:3b</code></td>
+        <td>자동완성</td>
+        <td>1.7GB</td>
+      </tr>
+      <tr>
+        <td><code>nomic-embed-text</code></td>
+        <td>임베딩</td>
+        <td>274MB</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><a href="ollama-integration.html">Ollama 완전 가이드 →</a></p>
+</section>
+
+<!-- Section 7: 워크플로우 -->
+<section class="content-section">
+  <h2 id="workflows">실전 워크플로우</h2>
+
+  <h3 id="new-feature">새 기능 개발</h3>
+
+  <pre><code><span class="cmt"># 1. Cmd+L로 채팅 열기</span>
+<span class="str">💬 You:</span> <span class="str">"Next.js 프로젝트에 블로그 기능 추가해줘.
+
+필요한 것:
+- app/blog/page.tsx (블로그 목록)
+- app/blog/[slug]/page.tsx (개별 글)
+- lib/posts.ts (Markdown 파싱)
+- 글 3개 샘플 (content/posts/)
+
+TypeScript + Tailwind 사용."</span>
+
+<span class="fn">🤖 Continue:</span> <span class="str">"블로그 기능을 생성하겠습니다..."</span>
+
+<span class="cmt"># 여러 파일이 자동 생성됨</span></code></pre>
+
+  <h3 id="debugging">버그 수정</h3>
+
+  <pre><code><span class="cmt"># 1. 터미널에서 에러 발생</span>
+TypeError: Cannot read property 'map' of undefined
+
+<span class="cmt"># 2. Cmd+L</span>
+<span class="str">💬 You:</span> <span class="str">"@terminal 이 에러 수정해줘"</span>
+
+<span class="fn">🤖 Continue:</span> <span class="str">"UserList.tsx의 users가 undefined입니다.
+Optional chaining을 추가하겠습니다."</span>
+
+<span class="cmt"># 자동으로 파일이 수정됨</span></code></pre>
+
+  <h3 id="refactoring">코드 리팩토링</h3>
+
+  <pre><code><span class="cmt"># 1. 코드 선택</span>
+<span class="cmt"># 2. Cmd+I</span>
+<span class="str">[Continue]:</span> <span class="str">"이 코드를 다음과 같이 개선해줘:
+- TypeScript로 변환
+- 함수형으로 리팩토링
+- 에러 처리 추가
+- JSDoc 주석 작성"</span>
+
+<span class="cmt"># AI가 즉시 리팩토링</span></code></pre>
+
+  <h3 id="testing">테스트 작성</h3>
+
+  <pre><code><span class="cmt"># 함수 선택 후 Cmd+I</span>
+<span class="str">[Continue]:</span> <span class="str">"이 함수에 대한 Jest 테스트 작성해줘.
+엣지 케이스 모두 포함."</span>
+
+<span class="cmt"># 자동으로 .test.ts 파일 생성</span></code></pre>
+
+  <h3 id="documentation">문서화</h3>
+
+  <pre><code><span class="cmt"># 코드 선택 후</span>
+<span class="str">💬 You:</span> <span class="str">"/comment"</span>
+
+<span class="cmt"># 또는</span>
+<span class="str">💬 You:</span> <span class="str">"이 모듈에 대한 README.md 작성해줘.
+설치, 사용법, API 문서 포함."</span></code></pre>
+</section>
+
+<!-- Section 8: 모범 사례 -->
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+
+  <h3 id="effective-usage">효과적인 사용법</h3>
+
+  <h4>1. 적절한 기능 선택</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>상황</th>
+        <th>추천 기능</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>빠른 코드 수정</td>
+        <td>인라인 편집 (Cmd+I)</td>
+      </tr>
+      <tr>
+        <td>복잡한 기능 추가</td>
+        <td>채팅 (Cmd+L)</td>
+      </tr>
+      <tr>
+        <td>코드 자동완성</td>
+        <td>Tab 키</td>
+      </tr>
+      <tr>
+        <td>에러 디버깅</td>
+        <td>@terminal + 채팅</td>
+      </tr>
+      <tr>
+        <td>전체 프로젝트 질문</td>
+        <td>@codebase + 채팅</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>2. 컨텍스트 제공</h4>
+  <ul>
+    <li><strong>명확한 요청</strong>: "React 컴포넌트" 대신 "React + TypeScript + Tailwind 컴포넌트"</li>
+    <li><strong>@ 활용</strong>: @file, @codebase, @docs로 정확한 컨텍스트</li>
+    <li><strong>예시 포함</strong>: 원하는 결과의 예시를 제공</li>
+  </ul>
+
+  <h4>3. 모델 전환</h4>
+  <pre><code><span class="cmt"># config.json에서 여러 모델 설정</span>
+<span class="cmt"># 간단한 작업: Ollama</span>
+<span class="cmt"># 복잡한 작업: Claude</span>
+<span class="cmt"># 채팅 중 모델 전환 가능</span></code></pre>
+
+  <h3 id="cost-optimization">비용 최적화</h3>
+
+  <ul>
+    <li><strong>Ollama 우선</strong>: 간단한 작업은 로컬 모델 사용</li>
+    <li><strong>자동완성 모델</strong>: 가벼운 모델 (starcoder2:3b) 사용</li>
+    <li><strong>컨텍스트 최소화</strong>: 필요한 파일만 @file로 참조</li>
+    <li><strong>임베딩 로컬화</strong>: Ollama의 nomic-embed-text 사용</li>
+  </ul>
+
+  <h3 id="productivity-tips">생산성 팁</h3>
+
+  <ol>
+    <li><strong>단축키 숙달</strong>: Cmd+I, Cmd+L 근육 기억</li>
+    <li><strong>슬래시 명령</strong>: /edit, /comment, /commit 활용</li>
+    <li><strong>커스텀 명령</strong>: 반복 작업을 슬래시 명령으로 저장</li>
+    <li><strong>멀티모델</strong>: 작업별로 최적 모델 사용</li>
+    <li><strong>컨텍스트 제공자</strong>: @terminal, @problems로 즉시 디버깅</li>
+  </ol>
+</section>
+
+<!-- Section 9: 비교 -->
+<section class="content-section">
+  <h2 id="comparison">다른 도구와 비교</h2>
+
+  <h3 id="vs-copilot">vs GitHub Copilot</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>Continue</th>
+        <th>GitHub Copilot</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>가격</strong></td>
+        <td>무료 (Ollama 사용 시)</td>
+        <td>$10/월</td>
+      </tr>
+      <tr>
+        <td><strong>모델 선택</strong></td>
+        <td>다양 (Claude, GPT-4, Ollama 등)</td>
+        <td>고정 (GPT-4 기반)</td>
+      </tr>
+      <tr>
+        <td><strong>오픈소스</strong></td>
+        <td>✅ Apache 2.0</td>
+        <td>❌ 독점</td>
+      </tr>
+      <tr>
+        <td><strong>채팅</strong></td>
+        <td>✅ 내장</td>
+        <td>✅ 내장</td>
+      </tr>
+      <tr>
+        <td><strong>자동완성</strong></td>
+        <td>✅</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong>로컬 모델</strong></td>
+        <td>✅ Ollama 지원</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td><strong>프라이버시</strong></td>
+        <td>완벽 (로컬 모델 사용 시)</td>
+        <td>제한적</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="vs-cursor">vs Cursor</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>Continue</th>
+        <th>Cursor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>설치</strong></td>
+        <td>VS Code 확장</td>
+        <td>별도 IDE</td>
+      </tr>
+      <tr>
+        <td><strong>가격</strong></td>
+        <td>무료</td>
+        <td>무료 / Pro $20/월</td>
+      </tr>
+      <tr>
+        <td><strong>모델</strong></td>
+        <td>모든 모델</td>
+        <td>GPT-4, Claude</td>
+      </tr>
+      <tr>
+        <td><strong>기존 설정</strong></td>
+        <td>VS Code 설정 유지</td>
+        <td>새로 설정 필요</td>
+      </tr>
+      <tr>
+        <td><strong>오픈소스</strong></td>
+        <td>✅</td>
+        <td>❌</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="vs-cline">vs Cline</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>Continue</th>
+        <th>Cline</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>자율성</strong></td>
+        <td>수동 (사용자 요청)</td>
+        <td>자율 에이전트</td>
+      </tr>
+      <tr>
+        <td><strong>파일 편집</strong></td>
+        <td>✅</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong>터미널 실행</strong></td>
+        <td>제한적 (/cmd)</td>
+        <td>✅ 완전 제어</td>
+      </tr>
+      <tr>
+        <td><strong>모델</strong></td>
+        <td>다양</td>
+        <td>주로 Claude</td>
+      </tr>
+      <tr>
+        <td><strong>사용 편의성</strong></td>
+        <td>간단, 직관적</td>
+        <td>강력, 복잡</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Section 10: 트러블슈팅 -->
+<section class="content-section">
+  <h2 id="troubleshooting">트러블슈팅</h2>
+
+  <h3 id="common-issues">일반적인 문제</h3>
+
+  <h4>❌ Continue 사이드바가 보이지 않음</h4>
+  <p><strong>해결:</strong></p>
+  <pre><code>Cmd/Ctrl + L <span class="cmt"># 사이드바 토글</span>
+<span class="cmt"># 또는</span>
+View → Command Palette → "Continue: Open Continue"</code></pre>
+
+  <h4>❌ API 키 오류</h4>
+  <p><strong>해결:</strong></p>
+  <pre><code><span class="cmt"># config.json 확인</span>
+<span class="str">"apiKey"</span>: <span class="str">"${ANTHROPIC_API_KEY}"</span>  <span class="cmt"># 환경 변수 사용</span>
+<span class="str">"apiKey"</span>: <span class="str">"sk-ant-api03-xxx"</span>      <span class="cmt"># 또는 직접 입력</span>
+
+<span class="cmt"># 환경 변수 설정</span>
+export ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxx"</span>
+code  <span class="cmt"># VS Code 재시작</span></code></pre>
+
+  <h4>❌ Ollama 연결 실패</h4>
+  <p><strong>해결:</strong></p>
+  <pre><code><span class="cmt"># Ollama 서버 확인</span>
+ollama list
+curl http://localhost:11434
+
+<span class="cmt"># Ollama 재시작</span>
+ollama serve</code></pre>
+
+  <h4>❌ 자동완성이 느림</h4>
+  <p><strong>해결:</strong></p>
+  <pre><code><span class="cmt"># 더 가벼운 모델 사용</span>
+{
+  <span class="str">"tabAutocompleteModel"</span>: {
+    <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+    <span class="str">"model"</span>: <span class="str">"starcoder2:3b"</span>  <span class="cmt"># 1.7GB, 빠름</span>
+  }
+}</code></pre>
+
+  <h4>❌ 파일이 생성되지 않음</h4>
+  <p><strong>해결:</strong></p>
+  <ul>
+    <li>더 명확한 요청 (파일 경로 명시)</li>
+    <li>워크스페이스 폴더가 열려 있는지 확인</li>
+    <li>파일 쓰기 권한 확인</li>
+  </ul>
+
+  <h3 id="debugging">디버깅</h3>
+
+  <pre><code><span class="cmt"># 개발자 도구 열기</span>
+Help → Toggle Developer Tools
+
+<span class="cmt"># Console에서 Continue 로그 확인</span>
+<span class="cmt"># 에러 메시지 확인</span></code></pre>
+</section>
+
+<!-- Section 11: 요약 -->
+<section class="content-section">
+  <h2 id="summary">요약</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">📝 핵심 요약</div>
+    <ul>
+      <li><strong>설치</strong>: VS Code 확장 마켓플레이스에서 "Continue" 설치</li>
+      <li><strong>무료</strong>: Ollama와 함께 완전 무료 사용</li>
+      <li><strong>다중 LLM</strong>: Claude, GPT-4, Gemini, Ollama 모두 지원</li>
+      <li><strong>주요 기능</strong>: 인라인 편집 (Cmd+I), 채팅 (Cmd+L), 자동완성 (Tab)</li>
+      <li><strong>컨텍스트</strong>: @codebase, @docs, @file, @terminal, @problems</li>
+      <li><strong>설정</strong>: config.json으로 완벽한 커스터마이징</li>
+      <li><strong>오픈소스</strong>: Apache 2.0, 투명하고 확장 가능</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">Continue를 사용해야 하는 경우</h3>
+
+  <ul>
+    <li>기존 VS Code 환경을 유지하면서 AI 코딩 원함</li>
+    <li>여러 LLM 제공자를 자유롭게 전환하고 싶음</li>
+    <li>완전 무료로 사용하고 싶음 (Ollama)</li>
+    <li>로컬 모델로 프라이버시 보호 필요</li>
+    <li>오픈소스 도구 선호</li>
+    <li>커스터마이징이 중요함</li>
+  </ul>
+
+  <h3 id="next-learning">다음 학습</h3>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>🦙 Ollama 연동</h3>
+      <p>무료 로컬 LLM 사용법</p>
+      <a href="ollama-integration.html" class="card-link">연동하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔧 Cursor IDE</h3>
+      <p>AI 네이티브 IDE</p>
+      <a href="cursor.html" class="card-link">비교하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🤖 Cline</h3>
+      <p>자율 AI 에이전트</p>
+      <a href="cline.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>⚙️ CLI 모범 사례</h3>
+      <p>효과적인 AI 도구 활용</p>
+      <a href="cli-best-practices.html" class="card-link">마스터하기 →</a>
+    </div>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

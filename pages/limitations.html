@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="제한사항 - Claude 문서">
+<meta property="og:description" content="Claude API 사용 제한, Rate limits, 제약사항 및 해결 방법">
+<meta property="og:url" content="https://minzkn.com/claude/pages/limitations.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude API 사용 제한, Rate limits, 제약사항 및 해결 방법">
+<meta name="keywords" content="제한사항, limitations, rate limits, 제약사항, constraints">
+<meta name="author" content="MINZKN">
+<title>제한사항 - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">제한사항 (Limitations)</h1>
+  <p class="lead">
+    Claude API는 안정적인 서비스 제공과 공정한 사용을 위해 여러 제한사항을 두고 있습니다.
+    이 페이지에서 주요 제한사항과 대응 방법을 알아보세요.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="rate-limits">Rate Limits (사용량 제한)</h2>
+  <p>
+    Claude API는 다음 단위로 사용량을 제한합니다:
+  </p>
+
+  <ul>
+    <li><strong>RPM (Requests Per Minute):</strong> 분당 요청 수</li>
+    <li><strong>TPM (Tokens Per Minute):</strong> 분당 토큰 수</li>
+    <li><strong>TPD (Tokens Per Day):</strong> 일일 토큰 수</li>
+  </ul>
+
+  <h3 id="tier-limits">티어별 제한 (예시)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>티어</th>
+        <th>RPM</th>
+        <th>TPM</th>
+        <th>TPD</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Tier 1 (초기)</strong></td>
+        <td>50</td>
+        <td>40,000</td>
+        <td>1,000,000</td>
+      </tr>
+      <tr>
+        <td><strong>Tier 2</strong></td>
+        <td>1,000</td>
+        <td>80,000</td>
+        <td>2,500,000</td>
+      </tr>
+      <tr>
+        <td><strong>Tier 3</strong></td>
+        <td>2,000</td>
+        <td>160,000</td>
+        <td>5,000,000</td>
+      </tr>
+      <tr>
+        <td><strong>Tier 4</strong></td>
+        <td>4,000</td>
+        <td>400,000</td>
+        <td>10,000,000</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 티어 승격</div>
+    <p>
+      사용 실적과 결제 이력에 따라 자동으로 티어가 승격됩니다.
+      정확한 한도는 API 응답 헤더에서 확인할 수 있습니다.
+    </p>
+  </div>
+
+  <h3 id="check-limits">Rate Limit 확인</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 응답 헤더 확인</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> anthropic
+
+client <span class="kw">=</span> anthropic.<span class="fn">Anthropic</span>()
+
+response <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    max_tokens<span class="kw">=</span><span class="num">100</span>,
+    messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hi"</span>}]
+)
+
+<span class="cmt"># 응답 헤더에 rate limit 정보 포함</span>
+<span class="cmt"># anthropic-ratelimit-requests-limit: 1000</span>
+<span class="cmt"># anthropic-ratelimit-requests-remaining: 999</span>
+<span class="cmt"># anthropic-ratelimit-tokens-limit: 80000</span>
+<span class="cmt"># anthropic-ratelimit-tokens-remaining: 79900</span></code></pre>
+  </div>
+
+  <h3 id="handle-429">429 오류 처리</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 재시도 로직</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> time
+<span class="kw">import</span> random
+
+<span class="kw">def</span> <span class="fn">call_with_retry</span>(client, max_retries<span class="kw">=</span><span class="num">5</span>, <span class="kw">**</span>kwargs):
+    <span class="kw">for</span> attempt <span class="kw">in</span> <span class="fn">range</span>(max_retries):
+        <span class="kw">try</span>:
+            <span class="kw">return</span> client.messages.<span class="fn">create</span>(<span class="kw">**</span>kwargs)
+
+        <span class="kw">except</span> anthropic.RateLimitError <span class="kw">as</span> e:
+            <span class="kw">if</span> attempt <span class="kw">==</span> max_retries <span class="kw">-</span> <span class="num">1</span>:
+                <span class="kw">raise</span>
+
+            <span class="cmt"># 지수 백오프 + 지터</span>
+            wait_time <span class="kw">=</span> (<span class="num">2</span> <span class="kw">**</span> attempt) <span class="kw">+</span> random.<span class="fn">uniform</span>(<span class="num">0</span>, <span class="num">1</span>)
+            <span class="fn">print</span>(<span class="fn">f</span><span class="str">"Rate limit 도달. {wait_time:.1f}초 대기..."</span>)
+            time.<span class="fn">sleep</span>(wait_time)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="context-window">컨텍스트 윈도우 제한</h2>
+
+  <h3 id="max-tokens">최대 토큰 수</h3>
+  <p>
+    모든 Claude 모델은 200,000 토큰의 컨텍스트 윈도우를 가집니다.
+    이는 입력 + 출력 합계입니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">토큰 계산 예시</span>
+    </div>
+    <pre><code>입력 토큰: 150,000
+출력 요청: max_tokens<span class="kw">=</span><span class="num">60000</span>
+
+합계: 150,000 <span class="kw">+</span> <span class="num">60</span>,<span class="num">000</span> <span class="kw">=</span> <span class="num">210</span>,<span class="num">000</span> <span class="kw">></span> <span class="num">200</span>,<span class="num">000</span> ❌
+
+해결: max_tokens<span class="kw">=</span><span class="num">50000</span>으로 줄이기 ✅</code></pre>
+  </div>
+
+  <h3 id="output-limit">최대 출력 토큰</h3>
+  <p>
+    모델별 최대 출력 토큰 수:
+  </p>
+
+  <ul>
+    <li><strong>Opus 4.6:</strong> 최대 4,096 토큰</li>
+    <li><strong>Sonnet 4.5:</strong> 최대 8,192 토큰</li>
+    <li><strong>Haiku 4.5:</strong> 최대 4,096 토큰</li>
+  </ul>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ max_tokens 필수</div>
+    <p>
+      <code>max_tokens</code>는 필수 파라미터입니다. 생략하면 오류가 발생합니다.
+      필요한 만큼만 설정하여 비용을 절감하세요.
+    </p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="content-policy">콘텐츠 정책</h2>
+
+  <h3 id="prohibited">금지된 사용</h3>
+  <p>
+    다음 용도로 Claude를 사용할 수 없습니다:
+  </p>
+
+  <ul>
+    <li>불법 활동 촉진 또는 지원</li>
+    <li>유해하거나 폭력적인 콘텐츠 생성</li>
+    <li>아동 착취 콘텐츠</li>
+    <li>개인정보 무단 수집 또는 처리</li>
+    <li>스팸 또는 사기</li>
+    <li>허위 정보 대량 유포</li>
+  </ul>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 위반 시 조치</div>
+    <p>
+      콘텐츠 정책 위반 시 API 접근이 정지되거나 계정이 해지될 수 있습니다.
+      자세한 내용은 <a href="https://www.anthropic.com/legal/aup" target="_blank" rel="noopener">Acceptable Use Policy</a>를 참조하세요.
+    </p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="knowledge-cutoff">지식 기준일 (Knowledge Cutoff)</h2>
+
+  <p>
+    Claude의 학습 데이터는 <strong>2025년 1월</strong>까지입니다.
+    그 이후의 정보는 알지 못합니다.
+  </p>
+
+  <h3 id="no-internet">인터넷 접근 불가</h3>
+  <p>
+    Claude는 인터넷에 접근할 수 없습니다. 실시간 정보가 필요하면:
+  </p>
+
+  <ul>
+    <li>Tool Use로 외부 API 호출</li>
+    <li>사용자가 직접 정보를 입력</li>
+    <li>RAG (Retrieval-Augmented Generation) 구축</li>
+  </ul>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Tool Use로 실시간 정보 가져오기</span>
+    </div>
+    <pre><code>tools <span class="kw">=</span> [
+    {
+        <span class="str">"name"</span>: <span class="str">"get_current_weather"</span>,
+        <span class="str">"description"</span>: <span class="str">"현재 날씨 정보를 가져옵니다"</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"location"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}
+            }
+        }
+    }
+]
+
+<span class="cmt"># Claude가 날씨 API를 호출하도록 지시</span>
+message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    max_tokens<span class="kw">=</span><span class="num">1024</span>,
+    tools<span class="kw">=</span>tools,
+    messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"서울 날씨 어때?"</span>}]
+)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="technical">기술적 제한사항</h2>
+
+  <h3 id="no-state">Stateless API</h3>
+  <p>
+    Claude API는 상태를 저장하지 않습니다. 대화 이력은 클라이언트가 관리해야 합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 대화 관리</span>
+    </div>
+    <pre><code><span class="cmt"># ❌ 서버가 대화를 기억하지 않음</span>
+client.messages.<span class="fn">create</span>(messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕"</span>}])
+client.messages.<span class="fn">create</span>(messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"내 이름 뭐야?"</span>}])
+<span class="cmt"># Claude는 이전 대화를 모름</span>
+
+<span class="cmt"># ✅ 클라이언트가 히스토리 관리</span>
+history <span class="kw">=</span> []
+history.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"내 이름은 철수야"</span>})
+msg1 <span class="kw">=</span> client.messages.<span class="fn">create</span>(messages<span class="kw">=</span>history)
+history.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: msg1.content[<span class="num">0</span>].text})
+
+history.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"내 이름 뭐야?"</span>})
+msg2 <span class="kw">=</span> client.messages.<span class="fn">create</span>(messages<span class="kw">=</span>history)
+<span class="cmt"># 이제 Claude가 "철수"라고 답함</span></code></pre>
+  </div>
+
+  <h3 id="file-size">파일 크기 제한</h3>
+  <ul>
+    <li><strong>이미지:</strong> 개당 최대 5MB (Vision)</li>
+    <li><strong>PDF:</strong> 최대 32MB (claude.ai 웹에서는 10MB)</li>
+    <li><strong>토큰 제한:</strong> 문서 크기와 무관하게 200K 토큰 이내</li>
+  </ul>
+
+  <h3 id="no-multimodal-output">출력 제한</h3>
+  <p>
+    Claude는 텍스트만 출력합니다. 이미지, 오디오, 비디오 생성은 불가능합니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="workarounds">제한사항 우회 방법</h2>
+
+  <h3 id="wa-1">1. Rate Limit 우회</h3>
+  <ul>
+    <li>요청 속도 조절 (Rate Limiting 구현)</li>
+    <li>지수 백오프로 재시도</li>
+    <li>여러 API 키 사용 (티어별로 독립)</li>
+    <li>배치 처리로 요청 수 줄이기</li>
+  </ul>
+
+  <h3 id="wa-2">2. 컨텍스트 윈도우 초과</h3>
+  <ul>
+    <li>문서를 청크로 나눠 처리</li>
+    <li>요약 후 재입력</li>
+    <li>RAG로 필요한 부분만 검색</li>
+    <li>프롬프트 압축 기법 사용</li>
+  </ul>
+
+  <h3 id="wa-3">3. 지식 기준일 초과 정보</h3>
+  <ul>
+    <li>Tool Use로 실시간 데이터 통합</li>
+    <li>사용자가 컨텍스트 제공</li>
+    <li>RAG 파이프라인 구축</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">제한사항 대응 베스트 프랙티스</h2>
+
+  <h3 id="bp-1">1. 견고한 오류 처리</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 종합 오류 처리</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">from</span> anthropic <span class="kw">import</span> (
+    Anthropic,
+    APIError,
+    RateLimitError,
+    APIConnectionError,
+    AuthenticationError
+)
+
+<span class="kw">def</span> <span class="fn">safe_call</span>(client, <span class="kw">**</span>kwargs):
+    <span class="kw">try</span>:
+        <span class="kw">return</span> client.messages.<span class="fn">create</span>(<span class="kw">**</span>kwargs)
+
+    <span class="kw">except</span> RateLimitError:
+        <span class="cmt"># 재시도 로직</span>
+        <span class="fn">print</span>(<span class="str">"Rate limit 도달. 재시도 중..."</span>)
+        <span class="kw">return</span> <span class="fn">call_with_retry</span>(client, <span class="kw">**</span>kwargs)
+
+    <span class="kw">except</span> AuthenticationError:
+        <span class="fn">print</span>(<span class="str">"API 키 오류"</span>)
+        <span class="kw">return</span> <span class="kw">None</span>
+
+    <span class="kw">except</span> APIConnectionError:
+        <span class="fn">print</span>(<span class="str">"연결 오류. 네트워크 확인"</span>)
+        <span class="kw">return</span> <span class="kw">None</span>
+
+    <span class="kw">except</span> APIError <span class="kw">as</span> e:
+        <span class="fn">print</span>(<span class="fn">f</span><span class="str">"API 오류: {e}"</span>)
+        <span class="kw">return</span> <span class="kw">None</span></code></pre>
+  </div>
+
+  <h3 id="bp-2">2. 토큰 사용량 모니터링</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 사용량 추적</span>
+    </div>
+    <pre><code><span class="kw">class</span> <span class="type">TokenTracker</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="fn">self</span>):
+        <span class="fn">self</span>.total_input <span class="kw">=</span> <span class="num">0</span>
+        <span class="fn">self</span>.total_output <span class="kw">=</span> <span class="num">0</span>
+
+    <span class="kw">def</span> <span class="fn">track</span>(<span class="fn">self</span>, message):
+        <span class="fn">self</span>.total_input <span class="kw">+=</span> message.usage.input_tokens
+        <span class="fn">self</span>.total_output <span class="kw">+=</span> message.usage.output_tokens
+
+    <span class="kw">def</span> <span class="fn">report</span>(<span class="fn">self</span>):
+        <span class="fn">print</span>(<span class="fn">f</span><span class="str">"총 입력: {<span class="fn">self</span>.total_input:,} 토큰"</span>)
+        <span class="fn">print</span>(<span class="fn">f</span><span class="str">"총 출력: {<span class="fn">self</span>.total_output:,} 토큰"</span>)
+
+tracker <span class="kw">=</span> <span class="fn">TokenTracker</span>()
+message <span class="kw">=</span> client.messages.<span class="fn">create</span>(<span class="kw">...</span>)
+tracker.<span class="fn">track</span>(message)</code></pre>
+  </div>
+
+  <h3 id="bp-3">3. 알림 설정</h3>
+  <p>
+    Console에서 사용량 임계값 알림을 설정하여 예상치 못한 과금 방지:
+  </p>
+
+  <ul>
+    <li>일일 사용량 $X 초과 시 이메일</li>
+    <li>월 사용량 한도 설정</li>
+    <li>API 키별 모니터링</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <ul>
+    <li><a href="faq.html">FAQ</a> - 자주 묻는 질문과 답변</li>
+    <li><a href="pricing.html">요금</a> - 비용 계산 및 최적화</li>
+    <li><a href="api-overview.html">API 개요</a> - API 기본 사용법</li>
+  </ul>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

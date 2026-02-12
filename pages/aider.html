@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Aider CLI 완전 가이드 - Git 통합 AI 코딩">
+<meta property="og:description" content="Aider CLI 완전 가이드. Git 통합, 다중 LLM 지원, 오픈소스 AI 코딩 도구를 마스터하세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/aider.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Aider CLI 완전 가이드. Git 통합 AI 코딩 도구의 모든 기능과 활용법을 배웁니다.">
+<meta name="keywords" content="aider, cli, git, ai coding, opensource, llm">
+<meta name="author" content="MINZKN">
+<title>Aider CLI 완전 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Aider CLI 완전 가이드</h1>
+<p class="lead">Git 통합 AI 코딩 도구 Aider를 마스터하세요. 오픈소스, 무료, 다중 LLM 지원.</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 빠른 시작</div>
+  <pre><code><span class="cmt"># 설치</span>
+pip install aider-chat
+
+<span class="cmt"># Git 저장소에서 실행</span>
+cd my-project
+git init  <span class="cmt"># Git 필요</span>
+aider
+
+<span class="cmt"># Ollama와 함께 (무료)</span>
+aider --model ollama/llama3.2</code></pre>
+</div>
+
+<section class="content-section">
+  <h2 id="introduction">소개</h2>
+
+  <p>
+    <strong>Aider</strong>는 Git 워크플로우에 최적화된 AI 코딩 CLI 도구입니다.
+    모든 변경사항을 자동으로 커밋하고, diff를 생성하며, 다양한 LLM을 지원합니다.
+  </p>
+
+  <h3 id="why-aider">왜 Aider인가?</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Git 네이티브</strong></td>
+        <td>모든 변경사항 자동 커밋, diff 생성, 브랜치 관리</td>
+      </tr>
+      <tr>
+        <td><strong>다중 LLM</strong></td>
+        <td>Claude, GPT-4, Gemini, Ollama 모두 지원</td>
+      </tr>
+      <tr>
+        <td><strong>오픈소스</strong></td>
+        <td>MIT 라이선스, 무료, 커뮤니티 활발</td>
+      </tr>
+      <tr>
+        <td><strong>스마트 편집</strong></td>
+        <td>파일 전체가 아닌 변경된 부분만 수정</td>
+      </tr>
+      <tr>
+        <td><strong>무료 사용</strong></td>
+        <td>Ollama와 함께 사용 시 완전 무료</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="installation">설치</h2>
+
+  <h3 id="install-python">Python으로 설치</h3>
+
+  <pre><code><span class="cmt"># pip로 설치</span>
+pip install aider-chat
+
+<span class="cmt"># 또는 pipx로 설치 (권장)</span>
+pipx install aider-chat
+
+<span class="cmt"># 설치 확인</span>
+aider --version</code></pre>
+
+  <h3 id="api-key">API 키 설정 (선택사항)</h3>
+
+  <pre><code><span class="cmt"># Claude 사용</span>
+export ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxx"</span>
+aider --model claude-sonnet-4-5-20250929
+
+<span class="cmt"># OpenAI 사용</span>
+export OPENAI_API_KEY=<span class="str">"sk-xxx"</span>
+aider --model gpt-4
+
+<span class="cmt"># Ollama 사용 (무료, API 키 불필요)</span>
+aider --model ollama/llama3.2</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="basic-usage">기본 사용법</h2>
+
+  <h3 id="starting">Aider 시작</h3>
+
+  <pre><code><span class="cmt"># 프로젝트 디렉토리에서</span>
+cd my-project
+
+<span class="cmt"># Git 저장소 초기화 (필수)</span>
+git init
+
+<span class="cmt"># Aider 실행</span>
+aider
+
+<span class="cmt"># 특정 파일만 포함</span>
+aider src/app.js src/utils.js
+
+<span class="cmt"># 특정 모델 지정</span>
+aider --model claude-sonnet-4-5-20250929</code></pre>
+
+  <h3 id="first-request">첫 번째 요청</h3>
+
+  <pre><code><span class="str">💬 You></span> <span class="str">"Python Flask 웹 서버 만들어줘.
+/hello 엔드포인트 추가하고, JSON 반환하게."</span>
+
+<span class="fn">🤖 Aider></span> <span class="str">"Flask 서버를 생성하겠습니다."</span>
+
+<span class="cmt"># 파일 생성</span>
+<span class="fn">Add app.py</span>
+<span class="fn">Add requirements.txt</span>
+
+<span class="cmt"># Git 자동 커밋</span>
+<span class="fn">Commit 3a7f2e1</span> <span class="str">Create Flask server with /hello endpoint</span>
+
+<span class="fn">🤖 Aider></span> <span class="str">"2개 파일을 생성하고 커밋했습니다!"</span></code></pre>
+
+  <h3 id="commands">주요 명령어</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>명령어</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>/add FILE</code></td>
+        <td>파일을 채팅에 추가</td>
+      </tr>
+      <tr>
+        <td><code>/drop FILE</code></td>
+        <td>파일 제거</td>
+      </tr>
+      <tr>
+        <td><code>/undo</code></td>
+        <td>마지막 변경 취소</td>
+      </tr>
+      <tr>
+        <td><code>/diff</code></td>
+        <td>변경사항 diff 보기</td>
+      </tr>
+      <tr>
+        <td><code>/run COMMAND</code></td>
+        <td>쉘 명령어 실행</td>
+      </tr>
+      <tr>
+        <td><code>/commit</code></td>
+        <td>수동 커밋</td>
+      </tr>
+      <tr>
+        <td><code>/clear</code></td>
+        <td>대화 초기화</td>
+      </tr>
+      <tr>
+        <td><code>/exit</code></td>
+        <td>종료</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="git-integration">Git 통합</h2>
+
+  <h3 id="auto-commit">자동 커밋</h3>
+
+  <p>
+    Aider는 모든 변경사항을 자동으로 커밋합니다. 각 커밋 메시지는 AI가 생성합니다.
+  </p>
+
+  <pre><code><span class="str">💬 You></span> <span class="str">"사용자 인증 기능 추가해줘."</span>
+
+<span class="cmt"># AI가 코드 생성</span>
+<span class="fn">Add src/auth.js</span>
+<span class="fn">Modify src/app.js</span>
+
+<span class="cmt"># 자동 커밋</span>
+<span class="fn">Commit 8b3c9a2</span> <span class="str">Add user authentication with JWT</span></code></pre>
+
+  <h3 id="diff-review">Diff 검토</h3>
+
+  <pre><code><span class="cmt"># 변경사항 확인</span>
+<span class="str">💬 You></span> <span class="str">"/diff"</span>
+
+<span class="cmt"># Git diff 표시</span>
+<span class="fn">diff --git a/src/app.js b/src/app.js</span>
+<span class="str">@@ -10,6 +10,8 @@</span>
+ const app = express();
+<span class="str">+const auth = require('./auth');</span>
+<span class="str">+app.use(auth.middleware);</span></code></pre>
+
+  <h3 id="undo">변경 취소</h3>
+
+  <pre><code><span class="str">💬 You></span> <span class="str">"/undo"</span>
+
+<span class="fn">🤖 Aider></span> <span class="str">"마지막 커밋을 되돌렸습니다."</span>
+<span class="fn">Reverted commit 8b3c9a2</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="multi-llm">다중 LLM 지원</h2>
+
+  <h3 id="supported-models">지원 모델</h3>
+
+  <pre><code><span class="cmt"># Claude</span>
+aider --model claude-sonnet-4-5-20250929
+aider --model claude-opus-4-6
+
+<span class="cmt"># OpenAI</span>
+aider --model gpt-4
+aider --model gpt-4-turbo
+
+<span class="cmt"># Gemini</span>
+aider --model gemini/gemini-pro
+
+<span class="cmt"># Ollama (로컬)</span>
+aider --model ollama/llama3.2
+aider --model ollama/codellama</code></pre>
+
+  <h3 id="model-switching">모델 전환 전략</h3>
+
+  <ul>
+    <li><strong>간단한 작업</strong>: Ollama llama3.2 (무료)</li>
+    <li><strong>복잡한 코드</strong>: Claude Sonnet (고품질)</li>
+    <li><strong>리팩토링</strong>: GPT-4 (범용)</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="workflows">실전 워크플로우</h2>
+
+  <h3 id="feature-branch">기능 브랜치 개발</h3>
+
+  <pre><code><span class="cmt"># 새 브랜치 생성</span>
+git checkout -b feature/user-auth
+
+<span class="cmt"># Aider 시작</span>
+aider
+
+<span class="str">💬 You></span> <span class="str">"사용자 인증 시스템 구현해줘.
+JWT 토큰 사용, 회원가입/로그인 API."</span>
+
+<span class="cmt"># AI가 코드 생성 및 커밋</span>
+<span class="fn">Commit a3f89d</span> <span class="str">Implement JWT authentication system</span>
+
+<span class="cmt"># 브랜치 푸시</span>
+git push origin feature/user-auth</code></pre>
+
+  <h3 id="bug-fix">버그 수정</h3>
+
+  <pre><code><span class="cmt"># 버그가 있는 파일 열기</span>
+aider src/buggy-file.js
+
+<span class="str">💬 You></span> <span class="str">"이 파일에서 TypeError 발생해.
+users.map()에서 users가 undefined일 때 에러나.
+수정해줘."</span>
+
+<span class="fn">Modify src/buggy-file.js</span>
+<span class="fn">Commit f2e8b3a</span> <span class="str">Fix TypeError: Add null check before map()</span></code></pre>
+
+  <h3 id="refactoring">리팩토링</h3>
+
+  <pre><code><span class="str">💬 You></span> <span class="str">"src/utils.js를 읽어봐.
+이 파일을 더 작은 모듈로 분리하고,
+TypeScript로 변환해줘.
+테스트 코드도 작성해줘."</span>
+
+<span class="fn">Add src/utils/string.ts</span>
+<span class="fn">Add src/utils/array.ts</span>
+<span class="fn">Add src/utils/__tests__/string.test.ts</span>
+<span class="fn">Add src/utils/__tests__/array.test.ts</span>
+<span class="fn">Delete src/utils.js</span>
+
+<span class="fn">Commit 9d4c2f1</span> <span class="str">Refactor utils to TypeScript modules with tests</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="advanced">고급 기능</h2>
+
+  <h3 id="shell-commands">쉘 명령어 실행</h3>
+
+  <pre><code><span class="cmt"># Aider 내부에서 명령어 실행</span>
+<span class="str">💬 You></span> <span class="str">"/run npm test"</span>
+
+<span class="cmt"># 테스트 실패 시 자동 수정</span>
+<span class="str">💬 You></span> <span class="str">"테스트가 실패했어. 수정해줘."</span></code></pre>
+
+  <h3 id="architect-mode">Architect 모드</h3>
+
+  <p>
+    복잡한 변경사항을 계획하고 단계별로 실행:
+  </p>
+
+  <pre><code>aider --architect
+
+<span class="str">💬 You></span> <span class="str">"전체 인증 시스템을 재설계해줘.
+OAuth 2.0 지원, refresh token, 역할 기반 권한."</span>
+
+<span class="fn">🤖 Aider></span> <span class="str">"계획을 수립하겠습니다..."</span>
+<span class="cmt"># AI가 단계별 계획 생성 및 실행</span></code></pre>
+
+  <h3 id="configuration">.aider.conf.yml</h3>
+
+  <p>프로젝트별 설정:</p>
+
+  <pre><code><span class="cmt"># .aider.conf.yml</span>
+<span class="str">model</span>: claude-sonnet-4-5-20250929
+<span class="str">auto-commits</span>: <span class="kw">true</span>
+<span class="str">dark-mode</span>: <span class="kw">true</span>
+<span class="str">edit-format</span>: diff
+
+<span class="str">map-tokens</span>: <span class="num">2048</span>
+<span class="str">cache-prompts</span>: <span class="kw">true</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+
+  <h3 id="tips">활용 팁</h3>
+
+  <ul>
+    <li><strong>작은 커밋</strong>: 한 번에 하나의 기능만 요청</li>
+    <li><strong>명확한 요청</strong>: 구체적이고 명확하게</li>
+    <li><strong>/add 활용</strong>: 관련 파일 모두 추가</li>
+    <li><strong>/diff 확인</strong>: 커밋 전 변경사항 검토</li>
+    <li><strong>Ollama 활용</strong>: 간단한 작업은 로컬 LLM</li>
+  </ul>
+
+  <h3 id="cost-optimization">비용 최적화</h3>
+
+  <ul>
+    <li>Ollama 사용 (완전 무료)</li>
+    <li><code>--map-tokens</code>로 컨텍스트 제한</li>
+    <li><code>--cache-prompts</code>로 캐싱 활성화</li>
+    <li>불필요한 파일 <code>/drop</code></li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="troubleshooting">문제 해결</h2>
+
+  <h3 id="common-issues">일반적인 문제</h3>
+
+  <h4>❌ "Not a git repository"</h4>
+  <p><strong>해결:</strong> <code>git init</code>으로 Git 초기화</p>
+
+  <h4>❌ API 키 오류</h4>
+  <p><strong>해결:</strong> 환경 변수 확인 또는 Ollama 사용</p>
+
+  <h4>❌ 파일이 수정되지 않음</h4>
+  <p><strong>해결:</strong> <code>/add FILE</code>로 파일 명시적 추가</p>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 자세한 로그</div>
+    <pre><code>aider --verbose</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="summary">요약</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">📝 핵심 요약</div>
+    <ul>
+      <li><strong>설치</strong>: <code>pip install aider-chat</code></li>
+      <li><strong>시작</strong>: <code>aider</code> (Git 저장소 필요)</li>
+      <li><strong>Git 통합</strong>: 자동 커밋, diff, undo</li>
+      <li><strong>다중 LLM</strong>: Claude, GPT-4, Ollama 지원</li>
+      <li><strong>무료 사용</strong>: Ollama와 함께 완전 무료</li>
+      <li><strong>워크플로우</strong>: 기능 개발, 버그 수정, 리팩토링</li>
+    </ul>
+  </div>
+
+  <h3 id="next-learning">다음 학습</h3>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>🦙 Ollama 연동</h3>
+      <p>무료 로컬 LLM 사용</p>
+      <a href="ollama-integration.html" class="card-link">연동하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>📊 도구 비교</h3>
+      <p>다른 CLI 도구와 비교</p>
+      <a href="cli-comparison.html" class="card-link">비교하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>✍️ 프롬프트</h3>
+      <p>효과적인 요청 방법</p>
+      <a href="prompt-for-coding.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>⚙️ CLI 모범 사례</h3>
+      <p>실전 활용 노하우</p>
+      <a href="cli-best-practices.html" class="card-link">배우기 →</a>
+    </div>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

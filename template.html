@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<parameter name="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="TEMPLATE_TITLE">
+<meta property="og:description" content="TEMPLATE_DESCRIPTION">
+<meta property="og:url" content="https://minzkn.com/claude/pages/TEMPLATE_FILE.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="TEMPLATE_DESCRIPTION">
+<meta name="keywords" content="TEMPLATE_KEYWORDS">
+<meta name="author" content="MINZKN">
+<title>TEMPLATE_TITLE - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">TEMPLATE_TITLE</h1>
+<p class="page-description">TEMPLATE_DESCRIPTION</p>
+
+<!--
+  ⚠️ 중요: 목차 생성을 위한 필수 조건
+  1. 최소 3개 이상의 <h2 id="..."> 태그 필요
+  2. 모든 h2 태그에 고유한 id 속성 필수
+  3. h2는 <main class="main-content"> 안에 위치
+-->
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>이 문서는 TEMPLATE_TITLE에 대한 종합 가이드입니다.</p>
+
+  <!-- SVG 다이어그램 예제 -->
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200"
+         style="width:100%;max-width:600px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="template-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Box 1 -->
+      <rect x="50" y="50" width="120" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="110" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">
+        Component A
+      </text>
+
+      <!-- Arrow -->
+      <line x1="170" y1="80" x2="280" y2="80"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#template-arrow)"/>
+
+      <!-- Box 2 -->
+      <rect x="280" y="50" width="120" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="340" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">
+        Component B
+      </text>
+    </svg>
+    <p class="diagram-caption">그림 1: 컴포넌트 간 관계</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="usage">사용법</h2>
+  <p>실전 활용 예제를 제공합니다.</p>
+
+  <!-- Code 예제 -->
+  <pre><code><span class="kw">import</span> anthropic
+
+<span class="cmt"># Initialize the client</span>
+client = anthropic.<span class="fn">Anthropic</span>(
+    api_key=<span class="str">"your-api-key"</span>
+)
+
+<span class="cmt"># Create a message</span>
+message = client.messages.<span class="fn">create</span>(
+    model=<span class="str">"claude-sonnet-4-5-20250929"</span>,
+    max_tokens=<span class="num">1024</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello, Claude!"</span>}
+    ]
+)
+<span class="kw">print</span>(message.content)</code></pre>
+
+  <div class="info-box tip">
+    <strong>💡 팁:</strong> API 키는 환경 변수로 관리하는 것이 안전합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="examples">예제</h2>
+  <p>다양한 활용 예제를 확인하세요.</p>
+
+  <h3 id="example-1">예제 1: 기본 사용</h3>
+  <p>가장 기본적인 사용 방법입니다.</p>
+
+  <h3 id="example-2">예제 2: 고급 기능</h3>
+  <p>Tool Use, Vision 등 고급 기능 활용 예제입니다.</p>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li>명확하고 구체적인 프롬프트 작성</li>
+    <li>적절한 컨텍스트 제공</li>
+    <li>에러 처리 구현</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://docs.anthropic.com" target="_blank" rel="noopener">Anthropic 공식 문서</a></li>
+    <li><a href="https://github.com/anthropics" target="_blank" rel="noopener">Anthropic GitHub</a></li>
+  </ul>
+
+  <div class="info-box info">
+    <strong>다음 학습:</strong>
+    <ul>
+      <li><a href="related-page.html">관련 페이지</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar =====
+  ⚠️ 중요: 이 구조를 정확히 유지해야 목차가 생성됩니다!
+  - <div class="toc-title">목차</div>
+  - <div class="toc-nav"></div>
+  JavaScript가 이 container에 동적으로 목차를 생성합니다.
+-->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

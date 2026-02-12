@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="API 키 관리 - 보안과 시크릿 관리 완전 가이드">
+<meta property="og:description" content="LLM API 키를 안전하게 관리하고 유출을 방지하는 모범 사례">
+<meta property="og:url" content="https://minzkn.com/claude/pages/api-key-management.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="API 키 보안 완전 가이드. 환경 변수, 시크릿 관리자, 키 로테이션, 유출 대응까지.">
+<meta name="keywords" content="api key management security 보안 환경변수 시크릿 관리">
+<meta name="author" content="MINZKN">
+<title>API 키 관리 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">API 키 관리</h1>
+<p class="lead">LLM API 키를 안전하게 관리하고 유출을 방지하는 완벽한 보안 가이드</p>
+
+<div class="info-box warning">
+  <div class="info-box-title">⚠️ API 키 유출 시 심각한 문제</div>
+  <ul>
+    <li><strong>금전적 손실</strong>: 무단 사용으로 수천~수만 달러 청구 가능</li>
+    <li><strong>데이터 유출</strong>: 프롬프트와 응답에 민감한 정보가 포함될 수 있음</li>
+    <li><strong>서비스 중단</strong>: Rate limit 초과로 정상 서비스 영향</li>
+    <li><strong>계정 정지</strong>: Anthropic/OpenAI 계정 영구 정지 가능</li>
+  </ul>
+  <p><strong>절대로 Git에 커밋하지 마세요!</strong></p>
+</div>
+
+<section class="content-section">
+  <h2 id="why-security">API 키 보안이 중요한 이유</h2>
+
+  <h3 id="real-cases">실제 사례</h3>
+
+  <div class="info-box danger">
+    <div class="info-box-title">💸 실제 피해 사례</div>
+
+    <h4>사례 1: GitHub 커밋으로 $72,000 청구</h4>
+    <p>
+      한 개발자가 실수로 OpenAI API 키를 GitHub에 커밋.
+      자동화된 봇이 키를 스캔하여 24시간 내에 $72,000 상당의 토큰을 사용했습니다.
+    </p>
+
+    <h4>사례 2: .env 파일이 Docker 이미지에 포함</h4>
+    <p>
+      .env 파일을 .dockerignore에 추가하지 않아 Docker Hub에 공개 이미지로 푸시됨.
+      48시간 후 Anthropic API 한도 초과로 서비스 중단.
+    </p>
+
+    <h4>사례 3: 클라이언트 사이드에 하드코딩</h4>
+    <p>
+      React 앱에 API 키를 직접 하드코딩. 번들 파일에서 키를 추출하여 악용됨.
+      개발자는 소스맵을 통해 키가 노출된 것을 몰랐습니다.
+    </p>
+  </div>
+
+  <h3 id="threat-model">위협 모델</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>위협</th>
+        <th>발생 확률</th>
+        <th>영향도</th>
+        <th>대응 방법</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Git 커밋 실수</strong></td>
+        <td>높음</td>
+        <td>치명적</td>
+        <td>.gitignore, pre-commit 훅</td>
+      </tr>
+      <tr>
+        <td><strong>로그 파일 노출</strong></td>
+        <td>중간</td>
+        <td>높음</td>
+        <td>로그에 키 제외, 마스킹</td>
+      </tr>
+      <tr>
+        <td><strong>의존성 취약점</strong></td>
+        <td>중간</td>
+        <td>중간</td>
+        <td>정기 업데이트, 감사</td>
+      </tr>
+      <tr>
+        <td><strong>내부자 악용</strong></td>
+        <td>낮음</td>
+        <td>높음</td>
+        <td>역할 기반 접근, 감사 로그</td>
+      </tr>
+      <tr>
+        <td><strong>클라이언트 노출</strong></td>
+        <td>높음</td>
+        <td>치명적</td>
+        <td>서버 프록시, 토큰 제한</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="key-types">API 키 유형별 보안 요구사항</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>키 유형</th>
+        <th>권한</th>
+        <th>사용처</th>
+        <th>보안 수준</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>프로덕션 키</strong></td>
+        <td>전체 접근</td>
+        <td>실제 서비스</td>
+        <td>최고 (Vault 등)</td>
+      </tr>
+      <tr>
+        <td><strong>개발 키</strong></td>
+        <td>Rate limit 낮음</td>
+        <td>로컬 개발</td>
+        <td>높음 (.env)</td>
+      </tr>
+      <tr>
+        <td><strong>테스트 키</strong></td>
+        <td>읽기 전용 또는 제한</td>
+        <td>CI/CD</td>
+        <td>중간 (GitHub Secrets)</td>
+      </tr>
+      <tr>
+        <td><strong>일회용 키</strong></td>
+        <td>단일 요청</td>
+        <td>데모, 프리뷰</td>
+        <td>낮음 (짧은 TTL)</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="env-vars">환경 변수 사용</h2>
+
+  <h3 id="env-basic">기본 사용법</h3>
+
+  <h4>1. .env 파일 생성</h4>
+
+<pre><code><span class="cmt"># 프로젝트 루트에 .env 파일 생성</span>
+<span class="cmt"># NEVER commit this file!</span>
+
+<span class="cmt"># Anthropic (Claude)</span>
+ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+<span class="cmt"># OpenAI (GPT, o1)</span>
+OPENAI_API_KEY=sk-proj-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+<span class="cmt"># Google (Gemini)</span>
+GOOGLE_API_KEY=AIzaSyxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+<span class="cmt"># Ollama (로컬 LLM)</span>
+OLLAMA_HOST=http://localhost:11434
+
+<span class="cmt"># 앱 설정</span>
+APP_ENV=development
+LOG_LEVEL=debug</code></pre>
+
+  <h4>2. .gitignore 설정 (필수!)</h4>
+
+<pre><code><span class="cmt"># .gitignore - 절대 커밋되지 않도록</span>
+
+<span class="cmt"># 환경 변수 파일</span>
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+<span class="cmt"># 키 파일</span>
+*.key
+*.pem
+secrets.json
+credentials.json
+
+<span class="cmt"># macOS</span>
+.DS_Store
+
+<span class="cmt"># 에디터</span>
+.vscode/settings.json
+.idea/</code></pre>
+
+  <h4>3. .env.example 작성 (권장)</h4>
+
+<pre><code><span class="cmt"># .env.example - Git에 커밋하여 팀과 공유</span>
+
+<span class="cmt"># Anthropic API Key (https://console.anthropic.com/)</span>
+ANTHROPIC_API_KEY=sk-ant-api03-your-key-here
+
+<span class="cmt"># OpenAI API Key (https://platform.openai.com/api-keys)</span>
+OPENAI_API_KEY=sk-proj-your-key-here
+
+<span class="cmt"># Google API Key (optional)</span>
+GOOGLE_API_KEY=
+
+<span class="cmt"># Ollama Host (default: http://localhost:11434)</span>
+OLLAMA_HOST=http://localhost:11434</code></pre>
+
+  <h3 id="env-python">Python에서 사용</h3>
+
+<pre><code><span class="cmt"># 1. python-dotenv 설치</span>
+pip install python-dotenv
+
+<span class="cmt"># 2. 코드에서 사용</span>
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">import</span> os
+
+<span class="cmt"># .env 로드</span>
+load_dotenv()
+
+<span class="cmt"># 환경 변수 읽기</span>
+api_key = os.getenv(<span class="str">'ANTHROPIC_API_KEY'</span>)
+
+<span class="cmt"># 기본값 제공</span>
+host = os.getenv(<span class="str">'OLLAMA_HOST'</span>, <span class="str">'http://localhost:11434'</span>)
+
+<span class="cmt"># 필수 변수 검증</span>
+<span class="kw">if not</span> api_key:
+    <span class="kw">raise</span> ValueError(<span class="str">"ANTHROPIC_API_KEY가 설정되지 않았습니다!"</span>)
+
+<span class="cmt"># 3. Anthropic 클라이언트</span>
+<span class="kw">import</span> anthropic
+
+client = anthropic.Anthropic(
+    api_key=os.getenv(<span class="str">'ANTHROPIC_API_KEY'</span>)
+)</code></pre>
+
+  <h4>환경별 설정 (.env.development, .env.production)</h4>
+
+<pre><code><span class="cmt"># .env.development</span>
+ANTHROPIC_API_KEY=sk-ant-api03-dev-key
+APP_ENV=development
+LOG_LEVEL=debug
+
+<span class="cmt"># .env.production</span>
+ANTHROPIC_API_KEY=sk-ant-api03-prod-key
+APP_ENV=production
+LOG_LEVEL=info
+
+<span class="cmt"># Python 코드</span>
+<span class="kw">import</span> os
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+
+<span class="cmt"># 환경에 따라 .env 파일 선택</span>
+env = os.getenv(<span class="str">'APP_ENV'</span>, <span class="str">'development'</span>)
+load_dotenv(f<span class="str">'.env.{env}'</span>)</code></pre>
+
+  <h3 id="env-nodejs">Node.js/TypeScript에서 사용</h3>
+
+<pre><code><span class="cmt">// 1. dotenv 설치</span>
+npm install dotenv
+
+<span class="cmt">// 2. 앱 시작 시 로드 (server.ts 또는 index.ts)</span>
+<span class="kw">import</span> <span class="str">'dotenv/config'</span>;  <span class="cmt">// ES6</span>
+<span class="cmt">// 또는</span>
+<span class="kw">require</span>(<span class="str">'dotenv'</span>).config();  <span class="cmt">// CommonJS</span>
+
+<span class="cmt">// 3. 환경 변수 사용</span>
+<span class="kw">const</span> apiKey = process.env.ANTHROPIC_API_KEY;
+
+<span class="cmt">// 4. TypeScript 타입 정의</span>
+<span class="cmt">// env.d.ts</span>
+<span class="kw">declare</span> <span class="kw">namespace</span> NodeJS {
+  <span class="kw">interface</span> ProcessEnv {
+    ANTHROPIC_API_KEY: string;
+    OPENAI_API_KEY: string;
+    OLLAMA_HOST?: string;
+    APP_ENV: <span class="str">'development'</span> | <span class="str">'production'</span>;
+  }
+}
+
+<span class="cmt">// 5. 검증 함수</span>
+<span class="kw">function</span> <span class="fn">validateEnv</span>() {
+  <span class="kw">const</span> required = [<span class="str">'ANTHROPIC_API_KEY'</span>, <span class="str">'OPENAI_API_KEY'</span>];
+  <span class="kw">for</span> (<span class="kw">const</span> key <span class="kw">of</span> required) {
+    <span class="kw">if</span> (!process.env[key]) {
+      <span class="kw">throw new</span> Error(<span class="str">`Missing required env: </span>${key}<span class="str">`</span>);
+    }
+  }
+}
+
+validateEnv();</code></pre>
+
+  <h3 id="env-shell">쉘 환경 변수 설정</h3>
+
+<pre><code><span class="cmt"># ~/.zshrc 또는 ~/.bashrc</span>
+
+<span class="cmt"># API 키 설정 (개발 환경에만!)</span>
+<span class="kw">export</span> ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-..."</span>
+<span class="kw">export</span> OPENAI_API_KEY=<span class="str">"sk-proj-..."</span>
+
+<span class="cmt"># 또는 별도 파일로 분리 (더 안전)</span>
+<span class="cmt"># ~/.api_keys (권한: 600)</span>
+<span class="kw">export</span> ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-..."</span>
+<span class="kw">export</span> OPENAI_API_KEY=<span class="str">"sk-proj-..."</span>
+
+<span class="cmt"># ~/.zshrc에서 로드</span>
+<span class="kw">if</span> [ -f ~/.api_keys ]; <span class="kw">then</span>
+  source ~/.api_keys
+<span class="kw">fi</span>
+
+<span class="cmt"># 권한 설정 (본인만 읽기)</span>
+chmod 600 ~/.api_keys</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="secret-managers">시크릿 관리자 사용</h2>
+
+  <h3 id="manager-1password">1Password (개인/소규모 팀)</h3>
+
+  <h4>1. 1Password CLI 설치</h4>
+
+<pre><code><span class="cmt"># macOS</span>
+brew install --cask 1password-cli
+
+<span class="cmt"># Ubuntu/Debian</span>
+curl -sS https://downloads.1password.com/linux/keys/1password.asc | \
+  sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
+echo <span class="str">'deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 stable main'</span> | \
+  sudo tee /etc/apt/sources.list.d/1password.list
+sudo apt update && sudo apt install 1password-cli
+
+<span class="cmt"># 로그인</span>
+eval $(op signin)</code></pre>
+
+  <h4>2. API 키 저장</h4>
+
+<pre><code><span class="cmt"># 대화형으로 저장</span>
+op item create --category=<span class="str">"API Credential"</span> \
+  --title=<span class="str">"Anthropic API Key"</span> \
+  --vault=<span class="str">"Development"</span> \
+  <span class="str">"username=ANTHROPIC_API_KEY"</span> \
+  <span class="str">"credential=sk-ant-api03-..."</span></code></pre>
+
+  <h4>3. 코드에서 사용</h4>
+
+<pre><code><span class="cmt"># Python</span>
+<span class="kw">import</span> subprocess
+<span class="kw">import</span> json
+
+<span class="kw">def</span> <span class="fn">get_secret</span>(item_name, field=<span class="str">'credential'</span>):
+    result = subprocess.run(
+        [<span class="str">'op'</span>, <span class="str">'item'</span>, <span class="str">'get'</span>, item_name, <span class="str">'--fields'</span>, field, <span class="str">'--format'</span>, <span class="str">'json'</span>],
+        capture_output=<span class="kw">True</span>,
+        text=<span class="kw">True</span>
+    )
+    <span class="kw">return</span> json.loads(result.stdout)[<span class="str">'value'</span>]
+
+api_key = get_secret(<span class="str">'Anthropic API Key'</span>)</code></pre>
+
+<pre><code><span class="cmt">// Node.js</span>
+<span class="kw">import</span> { execSync } from <span class="str">'child_process'</span>;
+
+<span class="kw">function</span> <span class="fn">getSecret</span>(itemName: string, field = <span class="str">'credential'</span>): string {
+  <span class="kw">const</span> output = execSync(
+    <span class="str">`op item get "</span>${itemName}<span class="str">" --fields </span>${field}<span class="str">`</span>,
+    { encoding: <span class="str">'utf-8'</span> }
+  );
+  <span class="kw">return</span> output.trim();
+}
+
+<span class="kw">const</span> apiKey = getSecret(<span class="str">'Anthropic API Key'</span>);</code></pre>
+
+  <h3 id="manager-bitwarden">Bitwarden (오픈소스 대안)</h3>
+
+<pre><code><span class="cmt"># CLI 설치</span>
+<span class="cmt"># macOS</span>
+brew install bitwarden-cli
+
+<span class="cmt"># Ubuntu/Debian</span>
+sudo snap install bw
+
+<span class="cmt"># 로그인</span>
+bw login
+export BW_SESSION=<span class="str">"$(bw unlock --raw)"</span>
+
+<span class="cmt"># API 키 저장</span>
+bw create item --organizationid null \
+  --name <span class="str">"Anthropic API Key"</span> \
+  --username <span class="str">"ANTHROPIC_API_KEY"</span> \
+  --password <span class="str">"sk-ant-api03-..."</span>
+
+<span class="cmt"># 키 가져오기</span>
+bw get password <span class="str">"Anthropic API Key"</span></code></pre>
+
+  <h3 id="manager-aws">AWS Secrets Manager (프로덕션)</h3>
+
+<pre><code><span class="cmt"># AWS CLI 설치</span>
+<span class="cmt"># macOS</span>
+brew install awscli
+
+<span class="cmt"># Ubuntu/Debian</span>
+sudo apt install awscli
+
+<span class="cmt"># 인증 설정</span>
+aws configure
+
+<span class="cmt"># 시크릿 생성</span>
+aws secretsmanager create-secret \
+  --name prod/anthropic/api-key \
+  --secret-string <span class="str">"sk-ant-api03-..."</span>
+
+<span class="cmt"># 시크릿 읽기</span>
+aws secretsmanager get-secret-value \
+  --secret-id prod/anthropic/api-key \
+  --query SecretString \
+  --output text</code></pre>
+
+  <h4>Python 코드에서 사용</h4>
+
+<pre><code><span class="kw">import</span> boto3
+<span class="kw">from</span> botocore.exceptions <span class="kw">import</span> ClientError
+
+<span class="kw">def</span> <span class="fn">get_secret</span>(secret_name, region_name=<span class="str">"us-west-2"</span>):
+    session = boto3.session.Session()
+    client = session.client(
+        service_name=<span class="str">'secretsmanager'</span>,
+        region_name=region_name
+    )
+
+    <span class="kw">try</span>:
+        response = client.get_secret_value(SecretId=secret_name)
+        <span class="kw">return</span> response[<span class="str">'SecretString'</span>]
+    <span class="kw">except</span> ClientError <span class="kw">as</span> e:
+        <span class="kw">raise</span> Exception(f<span class="str">"Failed to retrieve secret: {e}"</span>)
+
+<span class="cmt"># 사용</span>
+api_key = get_secret(<span class="str">'prod/anthropic/api-key'</span>)</code></pre>
+
+  <h3 id="manager-gcp">Google Secret Manager</h3>
+
+<pre><code><span class="cmt"># gcloud CLI 설치</span>
+<span class="cmt"># macOS</span>
+brew install --cask google-cloud-sdk
+
+<span class="cmt"># Ubuntu/Debian</span>
+sudo snap install google-cloud-sdk --classic
+
+<span class="cmt"># 인증</span>
+gcloud auth login
+gcloud config set project YOUR_PROJECT_ID
+
+<span class="cmt"># 시크릿 생성</span>
+echo -n <span class="str">"sk-ant-api03-..."</span> | \
+  gcloud secrets create anthropic-api-key \
+    --data-file=- \
+    --replication-policy=<span class="str">"automatic"</span>
+
+<span class="cmt"># 시크릿 읽기</span>
+gcloud secrets versions access latest --secret=<span class="str">"anthropic-api-key"</span></code></pre>
+
+  <h4>Python 코드</h4>
+
+<pre><code><span class="kw">from</span> google.cloud <span class="kw">import</span> secretmanager
+
+<span class="kw">def</span> <span class="fn">get_secret</span>(project_id, secret_id, version_id=<span class="str">"latest"</span>):
+    client = secretmanager.SecretManagerServiceClient()
+    name = f<span class="str">"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"</span>
+    response = client.access_secret_version(request={<span class="str">"name"</span>: name})
+    <span class="kw">return</span> response.payload.data.decode(<span class="str">"UTF-8"</span>)
+
+api_key = get_secret(<span class="str">"my-project"</span>, <span class="str">"anthropic-api-key"</span>)</code></pre>
+
+  <h3 id="manager-hashicorp">HashiCorp Vault (엔터프라이즈)</h3>
+
+<pre><code><span class="cmt"># Vault 설치</span>
+<span class="cmt"># macOS</span>
+brew tap hashicorp/tap
+brew install hashicorp/tap/vault
+
+<span class="cmt"># 개발 서버 시작</span>
+vault server -dev
+
+<span class="cmt"># 환경 변수 설정</span>
+<span class="kw">export</span> VAULT_ADDR=<span class="str">'http://127.0.0.1:8200'</span>
+<span class="kw">export</span> VAULT_TOKEN=<span class="str">"root"</span>  <span class="cmt"># 개발 전용</span>
+
+<span class="cmt"># 시크릿 저장</span>
+vault kv put secret/anthropic api_key=<span class="str">"sk-ant-api03-..."</span>
+
+<span class="cmt"># 시크릿 읽기</span>
+vault kv get -field=api_key secret/anthropic</code></pre>
+
+<pre><code><span class="cmt"># Python</span>
+<span class="kw">import</span> hvac
+
+client = hvac.Client(url=<span class="str">'http://127.0.0.1:8200'</span>, token=<span class="str">'root'</span>)
+secret = client.secrets.kv.v2.read_secret_version(path=<span class="str">'anthropic'</span>)
+api_key = secret[<span class="str">'data'</span>][<span class="str">'data'</span>][<span class="str">'api_key'</span>]</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="gitignore">Git 커밋 방지</h2>
+
+  <h3 id="gitignore-file">완벽한 .gitignore</h3>
+
+<pre><code><span class="cmt"># ========== 환경 변수 ==========</span>
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+.env.test
+
+<span class="cmt"># ========== API 키 파일 ==========</span>
+*.key
+*.pem
+*.p12
+*.pfx
+secrets.json
+credentials.json
+service-account.json
+
+<span class="cmt"># ========== 설정 파일 ==========</span>
+config/secrets.yml
+config/credentials.yml
+.secrets/
+.credentials/
+
+<span class="cmt"># ========== 데이터베이스 ==========</span>
+*.db
+*.sqlite
+*.sqlite3
+
+<span class="cmt"># ========== 로그 ==========</span>
+*.log
+logs/
+
+<span class="cmt"># ========== OS ==========</span>
+.DS_Store
+Thumbs.db
+
+<span class="cmt"># ========== 에디터 ==========</span>
+.vscode/settings.json
+.idea/workspace.xml
+*.swp
+*.swo
+
+<span class="cmt"># ========== 의존성 ==========</span>
+node_modules/
+venv/
+__pycache__/
+*.pyc</code></pre>
+
+  <h3 id="pre-commit-hook">Pre-commit 훅 (자동 검증)</h3>
+
+<pre><code><span class="cmt"># .git/hooks/pre-commit</span>
+<span class="pp">#!/bin/bash</span>
+
+<span class="cmt"># API 키 패턴 정의</span>
+<span class="kw">PATTERNS</span>=(
+  <span class="str">"sk-ant-"</span>           <span class="cmt"># Anthropic</span>
+  <span class="str">"sk-proj-"</span>          <span class="cmt"># OpenAI (project)</span>
+  <span class="str">"sk-[a-zA-Z0-9]{48}"</span> <span class="cmt"># OpenAI (legacy)</span>
+  <span class="str">"AIzaSy"</span>            <span class="cmt"># Google</span>
+  <span class="str">"AKIA[0-9A-Z]{16}"</span>   <span class="cmt"># AWS Access Key</span>
+  <span class="str">"ghp_[a-zA-Z0-9]{36}"</span> <span class="cmt"># GitHub Personal Access Token</span>
+)
+
+<span class="cmt"># 스테이징된 파일 검사</span>
+<span class="kw">for</span> pattern <span class="kw">in</span> <span class="str">"${PATTERNS[@]}"</span>; <span class="kw">do</span>
+  <span class="kw">if</span> git diff --cached | grep -E <span class="str">"$pattern"</span> &gt;/dev/null; <span class="kw">then</span>
+    echo <span class="str">"❌ ERROR: API 키가 감지되었습니다!"</span>
+    echo <span class="str">"   패턴: $pattern"</span>
+    echo <span class="str">""</span>
+    echo <span class="str">"   다음 명령어로 변경사항 취소:"</span>
+    echo <span class="str">"   git reset HEAD &lt;file&gt;"</span>
+    exit 1
+  <span class="kw">fi</span>
+<span class="kw">done</span>
+
+<span class="cmt"># .env 파일 검사</span>
+<span class="kw">if</span> git diff --cached --name-only | grep -E <span class="str">'^\.env'</span> &gt;/dev/null; <span class="kw">then</span>
+  echo <span class="str">"❌ ERROR: .env 파일을 커밋하려고 합니다!"</span>
+  echo <span class="str">"   .env 파일은 절대 커밋하지 마세요."</span>
+  exit 1
+<span class="kw">fi</span>
+
+echo <span class="str">"✅ Pre-commit 검증 통과"</span>
+exit 0</code></pre>
+
+<pre><code><span class="cmt"># 실행 권한 부여</span>
+chmod +x .git/hooks/pre-commit</code></pre>
+
+  <h3 id="gitleaks">Gitleaks (자동 스캔 도구)</h3>
+
+<pre><code><span class="cmt"># 설치</span>
+<span class="cmt"># macOS</span>
+brew install gitleaks
+
+<span class="cmt"># Ubuntu/Debian</span>
+wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.1/gitleaks_8.18.1_linux_x64.tar.gz
+tar -xzf gitleaks_8.18.1_linux_x64.tar.gz
+sudo mv gitleaks /usr/local/bin/
+
+<span class="cmt"># 현재 브랜치 스캔</span>
+gitleaks detect --source . --verbose
+
+<span class="cmt"># Git 히스토리 전체 스캔</span>
+gitleaks detect --source . --log-opts <span class="str">"--all"</span>
+
+<span class="cmt"># Pre-commit 훅으로 통합</span>
+gitleaks protect --staged --verbose</code></pre>
+
+  <h4>.gitleaks.toml 설정</h4>
+
+<pre><code>title = <span class="str">"Custom Gitleaks Config"</span>
+
+[[rules]]
+id = <span class="str">"anthropic-api-key"</span>
+description = <span class="str">"Anthropic API Key"</span>
+regex = <span class="str">'''sk-ant-api03-[A-Za-z0-9_-]{95}'''</span>
+
+[[rules]]
+id = <span class="str">"openai-api-key"</span>
+description = <span class="str">"OpenAI API Key"</span>
+regex = <span class="str">'''sk-proj-[A-Za-z0-9_-]{43,}'''</span>
+
+[[rules]]
+id = <span class="str">"google-api-key"</span>
+description = <span class="str">"Google API Key"</span>
+regex = <span class="str">'''AIzaSy[A-Za-z0-9_-]{33}'''</span>
+
+[allowlist]
+paths = [
+  <span class="str">'''.env.example'''</span>,
+  <span class="str">'''docs/'''</span>
+]</code></pre>
+
+  <h3 id="github-secret-scan">GitHub Secret Scanning</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 GitHub의 자동 스캔</div>
+    <p>
+      GitHub는 공개 저장소에 푸시된 모든 커밋을 자동으로 스캔하여
+      API 키를 탐지합니다. 감지 시 저장소 소유자와 API 제공자에게 알림이 전송됩니다.
+    </p>
+  </div>
+
+<pre><code><span class="cmt"># Private 저장소에서도 활성화 (Settings → Security)</span>
+<span class="cmt"># 1. Settings → Code security and analysis</span>
+<span class="cmt"># 2. Secret scanning → Enable</span>
+<span class="cmt"># 3. Push protection → Enable (권장)</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="production">프로덕션 베스트 프랙티스</h2>
+
+  <h3 id="prod-proxy">백엔드 프록시 패턴</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 절대 클라이언트에 API 키 노출 금지!</div>
+    <p>
+      React, Vue, Angular 등 프론트엔드 앱에서는 API 키를 절대 하드코딩하지 마세요.
+      백엔드 서버를 프록시로 사용하세요.
+    </p>
+  </div>
+
+  <h4>Node.js 프록시 서버 예제</h4>
+
+<pre><code><span class="cmt">// server.js</span>
+<span class="kw">import</span> express <span class="kw">from</span> <span class="str">'express'</span>;
+<span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> app = express();
+app.use(express.json());
+
+<span class="cmt">// API 키는 서버 환경 변수에만 존재</span>
+<span class="kw">const</span> client = <span class="kw">new</span> Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
+<span class="cmt">// 프록시 엔드포인트</span>
+app.post(<span class="str">'/api/chat'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">try</span> {
+    <span class="cmt">// 1. 사용자 인증 검증</span>
+    <span class="kw">const</span> userId = req.headers[<span class="str">'x-user-id'</span>];
+    <span class="kw">if</span> (!userId) <span class="kw">return</span> res.status(401).json({ error: <span class="str">'Unauthorized'</span> });
+
+    <span class="cmt">// 2. Rate limiting (사용자당)</span>
+    <span class="kw">const</span> rateLimit = <span class="kw">await</span> checkRateLimit(userId);
+    <span class="kw">if</span> (!rateLimit.allowed) {
+      <span class="kw">return</span> res.status(429).json({ error: <span class="str">'Rate limit exceeded'</span> });
+    }
+
+    <span class="cmt">// 3. Claude API 호출</span>
+    <span class="kw">const</span> message = <span class="kw">await</span> client.messages.create({
+      model: <span class="str">'claude-sonnet-4'</span>,
+      max_tokens: 4096,
+      messages: req.body.messages,
+    });
+
+    <span class="cmt">// 4. 사용량 로깅</span>
+    <span class="kw">await</span> logUsage(userId, message.usage);
+
+    res.json(message);
+  } <span class="kw">catch</span> (error) {
+    console.error(<span class="str">'Proxy error:'</span>, error);
+    res.status(500).json({ error: <span class="str">'Internal server error'</span> });
+  }
+});
+
+app.listen(3000);</code></pre>
+
+  <h4>Python Flask 프록시</h4>
+
+<pre><code><span class="kw">from</span> flask <span class="kw">import</span> Flask, request, jsonify
+<span class="kw">from</span> anthropic <span class="kw">import</span> Anthropic
+<span class="kw">import</span> os
+
+app = Flask(__name__)
+client = Anthropic(api_key=os.getenv(<span class="str">'ANTHROPIC_API_KEY'</span>))
+
+<span class="pp">@app.route</span>(<span class="str">'/api/chat'</span>, methods=[<span class="str">'POST'</span>])
+<span class="kw">def</span> <span class="fn">chat_proxy</span>():
+    <span class="cmt"># 인증 검증</span>
+    user_id = request.headers.get(<span class="str">'X-User-Id'</span>)
+    <span class="kw">if not</span> user_id:
+        <span class="kw">return</span> jsonify({<span class="str">'error'</span>: <span class="str">'Unauthorized'</span>}), 401
+
+    <span class="cmt"># Rate limiting</span>
+    <span class="kw">if not</span> check_rate_limit(user_id):
+        <span class="kw">return</span> jsonify({<span class="str">'error'</span>: <span class="str">'Rate limit exceeded'</span>}), 429
+
+    <span class="cmt"># Claude API 호출</span>
+    message = client.messages.create(
+        model=<span class="str">'claude-sonnet-4'</span>,
+        max_tokens=4096,
+        messages=request.json[<span class="str">'messages'</span>]
+    )
+
+    <span class="cmt"># 사용량 로깅</span>
+    log_usage(user_id, message.usage)
+
+    <span class="kw">return</span> jsonify(message.model_dump())
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    app.run(port=5000)</code></pre>
+
+  <h3 id="prod-rotation">키 로테이션</h3>
+
+  <h4>로테이션 전략</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>주기</th>
+        <th>트리거</th>
+        <th>자동화</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>정기 로테이션</strong></td>
+        <td>매 90일</td>
+        <td>Cron + Secret Manager API</td>
+      </tr>
+      <tr>
+        <td><strong>침해 시</strong></td>
+        <td>유출 감지 즉시</td>
+        <td>수동 + 알림</td>
+      </tr>
+      <tr>
+        <td><strong>직원 퇴사</strong></td>
+        <td>접근 권한 변경 시</td>
+        <td>수동</td>
+      </tr>
+      <tr>
+        <td><strong>취약점 발견</strong></td>
+        <td>보안 감사 후</td>
+        <td>수동</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>AWS Secrets Manager 자동 로테이션</h4>
+
+<pre><code><span class="cmt"># Lambda 함수로 자동 로테이션 설정</span>
+aws secretsmanager rotate-secret \
+  --secret-id prod/anthropic/api-key \
+  --rotation-lambda-arn arn:aws:lambda:us-west-2:123456789012:function:RotateAnthropicKey \
+  --rotation-rules AutomaticallyAfterDays=90</code></pre>
+
+  <h4>수동 로테이션 스크립트</h4>
+
+<pre><code><span class="pp">#!/bin/bash</span>
+<span class="cmt"># rotate-api-key.sh</span>
+
+<span class="cmt"># 1. 새 API 키 생성 (Anthropic Console에서)</span>
+echo <span class="str">"1. https://console.anthropic.com/ 에서 새 API 키 생성"</span>
+read -p <span class="str">"새 API 키: "</span> NEW_KEY
+
+<span class="cmt"># 2. AWS Secrets Manager 업데이트</span>
+aws secretsmanager update-secret \
+  --secret-id prod/anthropic/api-key \
+  --secret-string <span class="str">"$NEW_KEY"</span>
+
+<span class="cmt"># 3. 앱 재시작 (새 키 로드)</span>
+kubectl rollout restart deployment/api-server
+
+<span class="cmt"># 4. 구 키가 더 이상 사용되지 않는지 모니터링 (1주일)</span>
+echo <span class="str">"✅ 새 키 배포 완료"</span>
+echo <span class="str">"⏰ 1주일 후 구 키를 Anthropic Console에서 삭제하세요"</span></code></pre>
+
+  <h3 id="prod-monitoring">사용량 모니터링</h3>
+
+<pre><code><span class="cmt"># Python: 모든 API 호출 로깅</span>
+<span class="kw">import</span> logging
+<span class="kw">import</span> json
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+<span class="kw">def</span> <span class="fn">log_api_usage</span>(user_id, model, usage):
+    log_entry = {
+        <span class="str">"timestamp"</span>: datetime.utcnow().isoformat(),
+        <span class="str">"user_id"</span>: user_id,
+        <span class="str">"model"</span>: model,
+        <span class="str">"input_tokens"</span>: usage.input_tokens,
+        <span class="str">"output_tokens"</span>: usage.output_tokens,
+        <span class="str">"cost_usd"</span>: calculate_cost(model, usage),
+    }
+    logging.info(json.dumps(log_entry))
+
+<span class="kw">def</span> <span class="fn">calculate_cost</span>(model, usage):
+    <span class="cmt"># Claude Sonnet 4 가격 (2024년 기준)</span>
+    <span class="kw">if</span> model == <span class="str">'claude-sonnet-4'</span>:
+        input_cost = usage.input_tokens / 1_000_000 * 3.00
+        output_cost = usage.output_tokens / 1_000_000 * 15.00
+        <span class="kw">return</span> input_cost + output_cost
+    <span class="cmt"># 다른 모델...</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="leak-response">키 유출 시 대응</h2>
+
+  <h3 id="leak-checklist">즉시 조치 체크리스트</h3>
+
+  <div class="info-box danger">
+    <div class="info-box-title">🚨 API 키 유출 시 즉시 조치</div>
+
+    <h4>1분 이내</h4>
+    <ol>
+      <li>
+        <strong>API 키 즉시 삭제</strong>
+        <ul>
+          <li>Anthropic: <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com/settings/keys</a></li>
+          <li>OpenAI: <a href="https://platform.openai.com/api-keys" target="_blank">platform.openai.com/api-keys</a></li>
+          <li>Google: <a href="https://console.cloud.google.com/apis/credentials" target="_blank">console.cloud.google.com/apis/credentials</a></li>
+        </ul>
+      </li>
+      <li><strong>새 키 생성</strong> 및 안전하게 저장</li>
+    </ol>
+
+    <h4>10분 이내</h4>
+    <ol start="3">
+      <li><strong>Git 히스토리에서 제거</strong> (아래 참조)</li>
+      <li><strong>사용량 확인</strong>: 대시보드에서 비정상 사용 패턴 확인</li>
+      <li><strong>팀 알림</strong>: 모든 팀원에게 키 업데이트 알림</li>
+    </ol>
+
+    <h4>1시간 이내</h4>
+    <ol start="6">
+      <li><strong>청구 확인</strong>: 비정상 요금 발생 여부 확인</li>
+      <li><strong>지원팀 연락</strong>: 필요 시 환불 요청</li>
+      <li><strong>보안 감사</strong>: 다른 키도 유출되었는지 전체 점검</li>
+    </ol>
+  </div>
+
+  <h3 id="leak-git-history">Git 히스토리에서 키 제거</h3>
+
+  <h4>방법 1: git filter-repo (권장)</h4>
+
+<pre><code><span class="cmt"># git-filter-repo 설치</span>
+<span class="cmt"># macOS</span>
+brew install git-filter-repo
+
+<span class="cmt"># Ubuntu/Debian</span>
+pip3 install git-filter-repo
+
+<span class="cmt"># 특정 문자열 히스토리에서 제거</span>
+git filter-repo --replace-text <span class="str">&lt;(echo "sk-ant-api03-OLD_KEY==&gt;***REMOVED***")</span>
+
+<span class="cmt"># 특정 파일 히스토리에서 완전 삭제</span>
+git filter-repo --path .env --invert-paths
+
+<span class="cmt"># Force push (주의: 협업 시 팀원과 조율 필요)</span>
+git push origin --force --all</code></pre>
+
+  <h4>방법 2: BFG Repo-Cleaner</h4>
+
+<pre><code><span class="cmt"># BFG 다운로드</span>
+<span class="cmt"># https://rtyley.github.io/bfg-repo-cleaner/</span>
+
+<span class="cmt"># 저장소 미러 클론</span>
+git clone --mirror https://github.com/user/repo.git
+
+<span class="cmt"># 문자열 제거</span>
+java -jar bfg.jar --replace-text replacements.txt repo.git
+
+<span class="cmt"># replacements.txt 내용:</span>
+<span class="cmt"># sk-ant-api03-OLD_KEY==&gt;***REMOVED***</span>
+
+<span class="cmt"># 정리 및 푸시</span>
+cd repo.git
+git reflog expire --expire=now --all
+git gc --prune=now --aggressive
+git push</code></pre>
+
+  <h3 id="leak-prevention">재발 방지</h3>
+
+<pre><code><span class="cmt"># 1. Pre-commit 훅 설치 (위 참조)</span>
+chmod +x .git/hooks/pre-commit
+
+<span class="cmt"># 2. Gitleaks CI 추가 (.github/workflows/gitleaks.yml)</span>
+name: gitleaks
+on: [push, pull_request]
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+
+<span class="cmt"># 3. GitHub Branch Protection</span>
+<span class="cmt"># Settings → Branches → Add rule</span>
+<span class="cmt"># ✅ Require status checks to pass (gitleaks)</span>
+
+<span class="cmt"># 4. 팀 교육</span>
+<span class="cmt"># - API 키 보안 중요성 교육</span>
+<span class="cmt"># - .env.example 사용법</span>
+<span class="cmt"># - 시크릿 관리자 사용법</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">종합 베스트 프랙티스</h2>
+
+  <h3 id="best-do">반드시 해야 할 것 ✅</h3>
+
+  <ul>
+    <li><strong>환경 변수 사용</strong>: .env 파일 또는 시크릿 관리자</li>
+    <li><strong>.gitignore 설정</strong>: .env, *.key 등 즉시 추가</li>
+    <li><strong>Pre-commit 훅</strong>: 커밋 전 자동 검증</li>
+    <li><strong>백엔드 프록시</strong>: 클라이언트에 키 노출 금지</li>
+    <li><strong>키 분리</strong>: 개발/테스트/프로덕션 키 분리</li>
+    <li><strong>최소 권한</strong>: 필요한 권한만 부여</li>
+    <li><strong>정기 로테이션</strong>: 90일마다 키 갱신</li>
+    <li><strong>사용량 모니터링</strong>: 이상 패턴 감지</li>
+    <li><strong>Rate limiting</strong>: 사용자당 요청 제한</li>
+    <li><strong>로깅</strong>: 모든 API 호출 로그 (키 제외)</li>
+  </ul>
+
+  <h3 id="best-dont">절대 하지 말아야 할 것 ❌</h3>
+
+  <ul>
+    <li><strong>Git 커밋</strong>: API 키를 절대 커밋하지 않기</li>
+    <li><strong>하드코딩</strong>: 소스 코드에 직접 작성</li>
+    <li><strong>클라이언트 노출</strong>: 브라우저에서 접근 가능하게</li>
+    <li><strong>로그 출력</strong>: console.log()에 키 포함</li>
+    <li><strong>이메일/슬랙</strong>: 평문으로 공유</li>
+    <li><strong>스크린샷</strong>: 키가 보이는 화면 캡처</li>
+    <li><strong>공개 저장소</strong>: .env를 public repo에 포함</li>
+    <li><strong>단일 키</strong>: 모든 환경에서 같은 키 사용</li>
+    <li><strong>무제한 권한</strong>: 필요 이상의 권한 부여</li>
+    <li><strong>방치</strong>: 키를 수년간 로테이션 없이 사용</li>
+  </ul>
+
+  <h3 id="best-checklist">보안 체크리스트</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>항목</th>
+        <th>개발</th>
+        <th>스테이징</th>
+        <th>프로덕션</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>.env 파일 사용</strong></td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>❌ (시크릿 관리자)</td>
+      </tr>
+      <tr>
+        <td><strong>.gitignore 설정</strong></td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong>Pre-commit 훅</strong></td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong>시크릿 관리자</strong></td>
+        <td>선택</td>
+        <td>권장</td>
+        <td>✅ 필수</td>
+      </tr>
+      <tr>
+        <td><strong>키 로테이션</strong></td>
+        <td>불필요</td>
+        <td>매 180일</td>
+        <td>✅ 매 90일</td>
+      </tr>
+      <tr>
+        <td><strong>사용량 모니터링</strong></td>
+        <td>선택</td>
+        <td>권장</td>
+        <td>✅ 필수</td>
+      </tr>
+      <tr>
+        <td><strong>Rate limiting</strong></td>
+        <td>불필요</td>
+        <td>권장</td>
+        <td>✅ 필수</td>
+      </tr>
+      <tr>
+        <td><strong>로깅</strong></td>
+        <td>기본</td>
+        <td>상세</td>
+        <td>✅ 감사 로그</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="tools-summary">도구 비교</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>용도</th>
+        <th>비용</th>
+        <th>난이도</th>
+        <th>추천 대상</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>.env 파일</strong></td>
+        <td>로컬 개발</td>
+        <td>무료</td>
+        <td>⭐</td>
+        <td>개인, 소규모 프로젝트</td>
+      </tr>
+      <tr>
+        <td><strong>1Password</strong></td>
+        <td>팀 협업</td>
+        <td>$8/월/인</td>
+        <td>⭐⭐</td>
+        <td>소규모 팀, 스타트업</td>
+      </tr>
+      <tr>
+        <td><strong>Bitwarden</strong></td>
+        <td>팀 협업 (오픈소스)</td>
+        <td>무료/$3/월</td>
+        <td>⭐⭐</td>
+        <td>예산 제약 있는 팀</td>
+      </tr>
+      <tr>
+        <td><strong>AWS Secrets Manager</strong></td>
+        <td>프로덕션 (AWS)</td>
+        <td>$0.40/시크릿/월</td>
+        <td>⭐⭐⭐</td>
+        <td>AWS 사용 중인 기업</td>
+      </tr>
+      <tr>
+        <td><strong>GCP Secret Manager</strong></td>
+        <td>프로덕션 (GCP)</td>
+        <td>$0.06/시크릿/월</td>
+        <td>⭐⭐⭐</td>
+        <td>GCP 사용 중인 기업</td>
+      </tr>
+      <tr>
+        <td><strong>HashiCorp Vault</strong></td>
+        <td>엔터프라이즈</td>
+        <td>무료/유료</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>대기업, 복잡한 인프라</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🚀 다음에 읽을 내용</div>
+    <ul>
+      <li><a href="dev-environment.html">LLM 개발 환경 구축</a> - 완벽한 개발 환경 설정</li>
+      <li><a href="docker-llm.html">Docker LLM 환경</a> - 컨테이너로 일관된 환경</li>
+      <li><a href="ci-cd-llm.html">CI/CD & LLM</a> - 자동화 파이프라인에 LLM 통합</li>
+      <li><a href="monitoring-costs.html">비용 모니터링</a> - API 사용량 추적 및 최적화</li>
+    </ul>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

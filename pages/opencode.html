@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="OpenCode - VS Code 오픈소스 AI 확장">
+<meta property="og:description" content="OpenCode VS Code 확장 완전 가이드. 설치, 설정, 사용법을 배웁니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/opencode.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="OpenCode VS Code 확장 가이드. 오픈소스 AI 코딩 어시스턴트 완전 정복.">
+<meta name="keywords" content="opencode, vscode, 확장, extension, ai coding, opensource">
+<meta name="author" content="MINZKN">
+<title>OpenCode - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">OpenCode</h1>
+<p class="lead">VS Code를 위한 오픈소스 AI 코딩 어시스턴트</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 빠른 시작</div>
+  <ol>
+    <li>VS Code Extensions에서 "OpenCode" 검색</li>
+    <li>Install 클릭</li>
+    <li>API 키 설정 (Claude, GPT-4, 또는 Ollama)</li>
+    <li>Cmd+K (Mac) 또는 Ctrl+K (Windows)로 시작</li>
+  </ol>
+</div>
+
+<section class="content-section">
+  <h2 id="introduction">소개</h2>
+
+  <p>
+    <strong>OpenCode</strong>는 VS Code를 위한 오픈소스 AI 코딩 어시스턴트입니다.
+    다양한 LLM을 지원하며, 인라인 편집, 채팅, 자동완성 기능을 제공합니다.
+  </p>
+
+  <h3 id="features">주요 기능</h3>
+
+  <ul>
+    <li><strong>인라인 편집</strong>: 코드 블록 선택 후 즉시 수정</li>
+    <li><strong>채팅 인터페이스</strong>: 사이드바에서 AI와 대화</li>
+    <li><strong>자동완성</strong>: Tab으로 코드 제안 수락</li>
+    <li><strong>다중 LLM</strong>: Claude, GPT-4, Gemini, Ollama 지원</li>
+    <li><strong>오픈소스</strong>: MIT 라이선스, 무료</li>
+    <li><strong>프라이버시</strong>: 로컬 LLM 사용 가능</li>
+  </ul>
+
+  <h3 id="vs-others">다른 도구와 비교</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>OpenCode</th>
+        <th>Continue.dev</th>
+        <th>Cursor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>오픈소스</td>
+        <td>✅ MIT</td>
+        <td>✅ Apache</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td>가격</td>
+        <td>무료</td>
+        <td>무료</td>
+        <td>$20/월</td>
+      </tr>
+      <tr>
+        <td>다중 LLM</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td>인라인 편집</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td>자동완성</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="installation">설치 및 설정</h2>
+
+  <h3 id="install">설치</h3>
+
+  <ol>
+    <li>VS Code 열기</li>
+    <li>Extensions (Ctrl+Shift+X 또는 Cmd+Shift+X)</li>
+    <li>"OpenCode" 검색</li>
+    <li><strong>Install</strong> 클릭</li>
+  </ol>
+
+  <h3 id="config">설정</h3>
+
+  <h4>Claude API 사용</h4>
+  <pre><code><span class="cmt">// settings.json</span>
+{
+  <span class="str">"opencode.provider"</span>: <span class="str">"anthropic"</span>,
+  <span class="str">"opencode.apiKey"</span>: <span class="str">"sk-ant-api03-xxx"</span>,
+  <span class="str">"opencode.model"</span>: <span class="str">"claude-sonnet-4-5-20250929"</span>
+}</code></pre>
+
+  <h4>Ollama 사용 (무료)</h4>
+  <pre><code><span class="cmt">// settings.json</span>
+{
+  <span class="str">"opencode.provider"</span>: <span class="str">"ollama"</span>,
+  <span class="str">"opencode.model"</span>: <span class="str">"llama3.2"</span>,
+  <span class="str">"opencode.ollamaUrl"</span>: <span class="str">"http://localhost:11434"</span>
+}</code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 권장 설정</div>
+    <ul>
+      <li><strong>Claude Sonnet 4.5</strong>: 최고 품질</li>
+      <li><strong>Ollama Llama 3.2</strong>: 무료, 오프라인</li>
+      <li><strong>GPT-4</strong>: 범용 성능</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="usage">사용법</h2>
+
+  <h3 id="inline-edit">인라인 편집</h3>
+
+  <ol>
+    <li>코드 블록 선택</li>
+    <li><code>Cmd+K</code> (Mac) 또는 <code>Ctrl+K</code> (Windows)</li>
+    <li>원하는 변경사항 입력</li>
+    <li>Enter → AI가 코드 수정</li>
+  </ol>
+
+  <p><strong>예시:</strong></p>
+  <pre><code><span class="cmt">// 선택한 코드</span>
+<span class="kw">function</span> <span class="fn">add</span>(a, b) {
+  <span class="kw">return</span> a + b;
+}
+
+<span class="cmt">// Cmd+K 후 입력: "타입스크립트로 변환하고 JSDoc 추가"</span>
+
+<span class="cmt">// AI가 생성</span>
+<span class="cmt">/**
+ * Adds two numbers together
+ * @param a - First number
+ * @param b - Second number
+ * @returns Sum of a and b
+ */</span>
+<span class="kw">function</span> <span class="fn">add</span>(a: <span class="type">number</span>, b: <span class="type">number</span>): <span class="type">number</span> {
+  <span class="kw">return</span> a + b;
+}</code></pre>
+
+  <h3 id="chat">채팅 인터페이스</h3>
+
+  <ol>
+    <li>사이드바에서 OpenCode 아이콘 클릭</li>
+    <li>채팅 입력창에 질문 또는 요청</li>
+    <li>AI 응답 확인</li>
+    <li>코드 블록 클릭 → 자동 삽입</li>
+  </ol>
+
+  <h3 id="autocomplete">자동완성</h3>
+
+  <p>
+    코드를 작성하면 자동으로 제안이 나타납니다.
+    <code>Tab</code> 키로 수락, <code>Esc</code>로 거부.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="tips">활용 팁</h2>
+
+  <ul>
+    <li><strong>단축키 익히기</strong>: Cmd+K (인라인), Cmd+I (채팅)</li>
+    <li><strong>컨텍스트 제공</strong>: 관련 파일 함께 열어두기</li>
+    <li><strong>반복 작업</strong>: 템플릿 저장하여 재사용</li>
+    <li><strong>Ollama 활용</strong>: 간단한 작업은 로컬 LLM</li>
+  </ul>
+
+  <div class="info-box info">
+    <div class="info-box-title">📚 더 알아보기</div>
+    <ul>
+      <li><a href="cli-comparison.html">다른 도구와 비교</a></li>
+      <li><a href="continue.html">Continue.dev (유사 도구)</a></li>
+      <li><a href="ollama-integration.html">Ollama 연동</a></li>
+    </ul>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

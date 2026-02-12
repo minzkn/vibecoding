@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Claude CLI 5분 시작 - 첫 Vibe Coding 경험">
+<meta property="og:description" content="Claude CLI를 5분 안에 설치하고 첫 번째 Vibe Coding 프로젝트를 시작하세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/quickstart-claude-cli.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude CLI 빠른 시작 가이드. API 키 발급부터 첫 프로젝트까지 5분 안에 완료합니다.">
+<meta name="keywords" content="claude cli, quickstart, 빠른 시작, vibe coding, anthropic api">
+<meta name="author" content="MINZKN">
+<title>Claude CLI 5분 시작 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Claude CLI 5분 시작</h1>
+<p class="lead">Claude CLI를 설치하고 첫 번째 Vibe Coding 프로젝트를 5분 안에 시작하세요.</p>
+
+<!-- Quick Start Info-box -->
+<div class="info-box tip">
+  <div class="info-box-title">⏱️ 5분 체크리스트</div>
+  <ol>
+    <li>✅ Anthropic API 키 발급 (2분)</li>
+    <li>✅ Claude CLI 실행 (1분)</li>
+    <li>✅ 첫 번째 프로젝트 생성 (2분)</li>
+  </ol>
+  <p><strong>필요한 것:</strong> 터미널, Node.js (14+), 신용카드 (무료 크레딧 제공)</p>
+</div>
+
+<!-- Section 1: 소개 -->
+<section class="content-section">
+  <h2 id="overview">Claude CLI란?</h2>
+
+  <p>
+    <strong>Claude CLI (Claude Code)</strong>는 Anthropic이 공식 제공하는 커맨드라인 인터페이스입니다.
+    터미널에서 Claude와 대화하며 코드를 생성하고, 파일을 수정하며, 프로젝트를 관리할 수 있습니다.
+  </p>
+
+  <h3 id="why-claude-cli">왜 Claude CLI인가?</h3>
+
+  <ul>
+    <li><strong>공식 도구</strong>: Anthropic이 직접 개발 및 유지보수</li>
+    <li><strong>최신 모델</strong>: Claude 4.6 Opus, 4.5 Sonnet 즉시 지원</li>
+    <li><strong>최고 품질</strong>: 코드 생성 품질이 다른 도구들보다 우수</li>
+    <li><strong>간단한 사용</strong>: <code>npx claude</code> 한 줄로 시작</li>
+    <li><strong>MCP 지원</strong>: Model Context Protocol 네이티브 통합</li>
+  </ul>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ API 키 필요</div>
+    <p>
+      Claude CLI는 Anthropic API를 사용하므로 API 키가 필요합니다.
+      무료 크레딧($5)이 제공되지만, 이후 유료입니다.
+    </p>
+    <p>
+      <strong>무료로 시작하고 싶다면:</strong> <a href="quickstart-local.html">Ollama 로컬 시작</a>을 참고하세요.
+    </p>
+  </div>
+</section>
+
+<!-- Section 2: Step 1 - API 키 발급 -->
+<section class="content-section">
+  <h2 id="api-key">Step 1: Anthropic API 키 발급</h2>
+
+  <p>
+    Claude CLI를 사용하려면 먼저 Anthropic Console에서 API 키를 발급받아야 합니다.
+  </p>
+
+  <h3 id="create-account">1-1. 계정 생성</h3>
+
+  <ol>
+    <li><a href="https://console.anthropic.com" target="_blank" rel="noopener">https://console.anthropic.com</a> 접속</li>
+    <li><strong>Sign Up</strong> 클릭 (Google 계정 또는 이메일)</li>
+    <li>이메일 인증 완료</li>
+  </ol>
+
+  <div class="info-box info">
+    <div class="info-box-title">🎁 무료 크레딧</div>
+    <p>
+      신규 가입 시 <strong>$5 크레딧</strong>이 제공됩니다.
+      이는 약 1,000,000 입력 토큰 (A4 용지 약 3,000장)에 해당합니다.
+    </p>
+    <p>
+      초보자가 연습하기에 충분한 양입니다!
+    </p>
+  </div>
+
+  <h3 id="get-api-key">1-2. API 키 생성</h3>
+
+  <ol>
+    <li>로그인 후 좌측 메뉴에서 <strong>API Keys</strong> 클릭</li>
+    <li><strong>Create Key</strong> 버튼 클릭</li>
+    <li>키 이름 입력 (예: "my-claude-cli")</li>
+    <li><strong>Create Key</strong> 확인</li>
+    <li>생성된 키를 복사 (⚠️ 한 번만 표시됩니다!)</li>
+  </ol>
+
+  <pre><code><span class="cmt"># API 키 예시 (실제로는 훨씬 길어요)</span>
+sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxxxxx...</code></pre>
+
+  <div class="info-box warning">
+    <div class="info-box-title">🔐 보안 주의사항</div>
+    <ul>
+      <li>API 키는 <strong>절대 공개하지 마세요</strong> (GitHub, 블로그 등)</li>
+      <li>키를 분실하면 재생성 필요</li>
+      <li>환경 변수로 관리 권장</li>
+    </ul>
+    <p><a href="api-key-management.html">API 키 안전 관리 가이드 →</a></p>
+  </div>
+
+  <h3 id="set-env">1-3. 환경 변수 설정</h3>
+
+  <p>
+    API 키를 환경 변수로 설정하면 매번 입력할 필요가 없습니다.
+  </p>
+
+  <h4>macOS / Linux (bash/zsh)</h4>
+  <pre><code><span class="cmt"># ~/.bashrc 또는 ~/.zshrc에 추가</span>
+<span class="kw">export</span> ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxxxxxx"</span>
+
+<span class="cmt"># 즉시 적용</span>
+source ~/.bashrc  <span class="cmt"># 또는 source ~/.zshrc</span></code></pre>
+
+  <h4>Windows (PowerShell)</h4>
+  <pre><code><span class="cmt"># 현재 세션만</span>
+$env:ANTHROPIC_API_KEY = <span class="str">"sk-ant-api03-xxxxxxx"</span>
+
+<span class="cmt"># 영구 설정 (시스템 환경 변수)</span>
+[System.Environment]::SetEnvironmentVariable(<span class="str">"ANTHROPIC_API_KEY"</span>, <span class="str">"sk-ant-api03-xxxxxxx"</span>, <span class="str">"User"</span>)</code></pre>
+
+  <h4>Windows (CMD)</h4>
+  <pre><code><span class="cmt"># 현재 세션만</span>
+set ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxx</code></pre>
+
+  <h3 id="verify-key">1-4. API 키 확인</h3>
+
+  <pre><code><span class="cmt"># 설정 확인 (macOS/Linux)</span>
+echo $ANTHROPIC_API_KEY
+
+<span class="cmt"># Windows (PowerShell)</span>
+echo $env:ANTHROPIC_API_KEY</code></pre>
+
+  <p>
+    키가 출력되면 성공입니다! ✅
+  </p>
+</section>
+
+<!-- Section 3: Step 2 - Claude CLI 실행 -->
+<section class="content-section">
+  <h2 id="install-cli">Step 2: Claude CLI 실행</h2>
+
+  <p>
+    Claude CLI는 설치 없이 <code>npx</code>로 바로 실행할 수 있습니다.
+  </p>
+
+  <h3 id="prerequisites">2-1. 사전 요구사항 확인</h3>
+
+  <p>
+    Node.js 14 이상이 필요합니다:
+  </p>
+
+  <pre><code><span class="cmt"># Node.js 버전 확인</span>
+node --version
+
+<span class="cmt"># 예상 출력</span>
+v18.17.0  <span class="cmt"># 14 이상이면 OK</span></code></pre>
+
+  <div class="info-box info">
+    <div class="info-box-title">Node.js가 없다면?</div>
+    <p><a href="https://nodejs.org" target="_blank" rel="noopener">Node.js 공식 사이트</a>에서 LTS 버전을 다운로드하세요.</p>
+    <p>또는:</p>
+    <ul>
+      <li><strong>macOS:</strong> <code>brew install node</code></li>
+      <li><strong>Windows:</strong> <code>winget install OpenJS.NodeJS</code></li>
+      <li><strong>Linux:</strong> <code>sudo apt install nodejs npm</code></li>
+    </ul>
+  </div>
+
+  <h3 id="run-cli">2-2. Claude CLI 실행</h3>
+
+  <pre><code><span class="cmt"># npx로 즉시 실행 (설치 불필요)</span>
+npx claude
+
+<span class="cmt"># 처음 실행 시 패키지 다운로드 메시지가 나올 수 있습니다</span>
+<span class="str">Need to install the following packages:
+  @anthropic-ai/claude-cli
+Ok to proceed? (y)</span>
+
+<span class="cmt"># y 입력 후 Enter</span></code></pre>
+
+  <p>
+    잠시 후 Claude CLI가 시작됩니다:
+  </p>
+
+  <pre><code><span class="fn">╭────────────────────────────────────────╮</span>
+<span class="fn">│  Welcome to Claude Code CLI            │</span>
+<span class="fn">│  Type your request or 'help' for info │</span>
+<span class="fn">╰────────────────────────────────────────╯</span>
+
+<span class="str">💬 You:</span> _</code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 전역 설치 (선택사항)</div>
+    <p>
+      자주 사용한다면 전역 설치가 편리합니다:
+    </p>
+    <pre><code><span class="cmt"># 전역 설치</span>
+npm install -g @anthropic-ai/claude-cli
+
+<span class="cmt"># 이제 짧은 명령어로 실행</span>
+claude</code></pre>
+  </div>
+
+  <h3 id="first-command">2-3. 첫 번째 명령어</h3>
+
+  <p>
+    Claude에게 간단한 요청을 해봅시다:
+  </p>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"안녕, Claude! 간단한 인사말을 출력하는 Python 스크립트 만들어줘."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"안녕하세요! Python 인사말 스크립트를 만들겠습니다."</span>
+
+<span class="cmt"># 파일 생성됨</span>
+Created: hello.py
+
+<span class="cmt"># 내용 확인</span>
+<span class="kw">def</span> <span class="fn">main</span>():
+    <span class="kw">print</span>(<span class="str">"안녕하세요! Claude CLI에 오신 것을 환영합니다."</span>)
+    <span class="kw">print</span>(<span class="str">"Vibe Coding의 세계를 즐겨보세요!"</span>)
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    main()
+
+<span class="fn">🤖 Claude:</span> <span class="str">"hello.py 파일을 생성했습니다. `python hello.py`로 실행해보세요!"</span></code></pre>
+
+  <p>
+    파일이 생성되었습니다! 실행해봅시다:
+  </p>
+
+  <pre><code><span class="cmt"># 새 터미널 창 열기 (또는 Claude CLI 종료 후)</span>
+python hello.py
+
+<span class="cmt"># 출력</span>
+안녕하세요! Claude CLI에 오신 것을 환영합니다.
+Vibe Coding의 세계를 즐겨보세요!</code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎉 축하합니다!</div>
+    <p>
+      첫 번째 AI 생성 코드를 실행했습니다! 이제 더 복잡한 프로젝트를 만들어봅시다.
+    </p>
+  </div>
+</section>
+
+<!-- Section 4: Step 3 - 첫 번째 프로젝트 -->
+<section class="content-section">
+  <h2 id="first-project">Step 3: 첫 번째 실전 프로젝트</h2>
+
+  <p>
+    실용적인 <strong>TODO 웹 앱</strong>을 만들어봅시다. HTML + CSS + JavaScript로 구성됩니다.
+  </p>
+
+  <h3 id="project-setup">3-1. 프로젝트 디렉토리 생성</h3>
+
+  <pre><code><span class="cmt"># 작업 디렉토리 생성</span>
+mkdir todo-app
+cd todo-app
+
+<span class="cmt"># Claude CLI 시작</span>
+npx claude</code></pre>
+
+  <h3 id="project-request">3-2. 프로젝트 요청</h3>
+
+  <p>
+    Claude에게 구체적인 요구사항을 전달합니다:
+  </p>
+
+  <pre><code><span class="str">💬 You:</span>
+<span class="str">"HTML, CSS, JavaScript로 TODO 웹 앱을 만들어줘.
+
+요구사항:
+1. 할 일 입력 필드 (Enter로 추가)
+2. 할 일 목록 (체크박스 + 텍스트 + 삭제 버튼)
+3. 완료된 항목은 취소선 표시
+4. localStorage에 저장 (새로고침해도 유지)
+5. 남은 할 일 개수 표시
+6. 깔끔한 UI (파스텔 톤 색상)
+7. 반응형 디자인 (모바일 지원)
+
+파일 3개로 나눠줘:
+- index.html
+- style.css
+- script.js"</span></code></pre>
+
+  <h3 id="ai-response">3-3. AI 응답 확인</h3>
+
+  <pre><code><span class="fn">🤖 Claude:</span> <span class="str">"TODO 웹 앱을 생성하겠습니다!"</span>
+
+<span class="cmt"># 파일 생성 중...</span>
+Creating index.html...
+Creating style.css...
+Creating script.js...
+
+<span class="fn">🤖 Claude:</span> <span class="str">"3개 파일을 생성했습니다.
+
+📄 index.html
+- 시맨틱 HTML5 구조
+- 입력 필드와 할 일 목록 컨테이너
+- 남은 할 일 카운터
+
+🎨 style.css
+- 파스텔 톤 색상 (#e3f2fd, #fff9c4 등)
+- Flexbox 레이아웃
+- 반응형 미디어 쿼리
+- 부드러운 트랜지션 애니메이션
+
+⚙️ script.js
+- 할 일 추가/삭제/완료 토글
+- localStorage 영구 저장
+- 카운터 자동 업데이트
+- Enter 키 이벤트
+
+브라우저에서 index.html을 열어 테스트해보세요!"</span></code></pre>
+
+  <h3 id="test-app">3-4. 앱 테스트</h3>
+
+  <pre><code><span class="cmt"># 간단한 HTTP 서버 실행</span>
+<span class="cmt"># Python 3 사용</span>
+python3 -m http.server 8000
+
+<span class="cmt"># 또는 Node.js</span>
+npx serve
+
+<span class="cmt"># 브라우저에서 열기</span>
+open http://localhost:8000</code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">✅ 테스트 체크리스트</div>
+    <ul>
+      <li>✅ 할 일 입력 후 Enter → 목록에 추가됨</li>
+      <li>✅ 체크박스 클릭 → 취소선 표시</li>
+      <li>✅ 삭제 버튼 → 항목 제거</li>
+      <li>✅ 페이지 새로고침 → 데이터 유지됨</li>
+      <li>✅ 창 크기 조절 → 반응형 레이아웃</li>
+      <li>✅ 남은 할 일 개수 표시</li>
+    </ul>
+  </div>
+
+  <h3 id="improve-app">3-5. 앱 개선하기</h3>
+
+  <p>
+    Claude와 대화하며 기능을 추가해봅시다:
+  </p>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"좋아! 이제 다음 기능들 추가해줘:
+1. 다크모드 토글 버튼
+2. 완료된 항목을 아래로 이동
+3. '모두 삭제' 버튼
+4. 할 일에 우선순위 표시 (High/Medium/Low)"</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"모든 기능을 추가했습니다!
+
+✨ 변경사항:
+1. index.html - 다크모드 토글, 모두 삭제 버튼, 우선순위 select 추가
+2. style.css - 다크모드 스타일, 우선순위별 색상 (빨강/노랑/초록)
+3. script.js - 자동 정렬 로직, 다크모드 전환, 일괄 삭제 기능
+
+localStorage에 다크모드 설정도 저장됩니다."</span></code></pre>
+
+  <p>
+    페이지를 새로고침하면 새로운 기능들이 적용됩니다!
+  </p>
+
+  <h3 id="understand-code">3-6. 코드 이해하기</h3>
+
+  <p>
+    생성된 코드가 이해되지 않는다면 Claude에게 물어보세요:
+  </p>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"script.js에서 localStorage.setItem은 어떻게 작동해?"</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"localStorage.setItem은 브라우저의 로컬 스토리지에 데이터를 저장하는 함수입니다.
+
+문법:
+```javascript
+localStorage.setItem(key, value)
+```
+
+우리 앱에서는:
+```javascript
+localStorage.setItem('todos', JSON.stringify(todosArray));
+```
+
+- 'todos': 저장할 데이터의 키 (이름)
+- JSON.stringify(): JavaScript 객체를 문자열로 변환
+  (localStorage는 문자열만 저장 가능)
+
+데이터 읽기:
+```javascript
+const saved = localStorage.getItem('todos');
+const todos = JSON.parse(saved); // 문자열을 객체로 변환
+```
+
+이렇게 하면 브라우저를 닫았다 열어도 데이터가 유지됩니다!"</span></code></pre>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 학습 팁</div>
+    <p>
+      AI가 생성한 코드를 그냥 복사하지 말고, 각 부분이 무엇을 하는지 이해하세요.
+      이해가 안 되는 부분은 Claude에게 질문하면 친절하게 설명해줍니다!
+    </p>
+  </div>
+</section>
+
+<!-- Section 5: 다음 단계 -->
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <p>
+    Claude CLI 기본을 마스터했습니다! 이제 더 고급 기능을 배워봅시다:
+  </p>
+
+  <h3 id="advanced-features">고급 기능</h3>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>📁 멀티파일 프로젝트</h3>
+      <p>복잡한 프로젝트에서 여러 파일을 동시에 편집하는 방법</p>
+      <a href="claude-cli.html#multifile" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔧 프로젝트 컨텍스트</h3>
+      <p><code>.claude/instructions.md</code>로 프로젝트별 설정 관리</p>
+      <a href="claude-cli.html#project-context" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔌 MCP 통합</h3>
+      <p>Model Context Protocol로 외부 도구 연동</p>
+      <a href="mcp-intro.html" class="card-link">MCP 가이드 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>💰 비용 최적화</h3>
+      <p>Prompt Caching, 모델 전환으로 API 비용 절감</p>
+      <a href="monitoring-costs.html" class="card-link">절감 전략 →</a>
+    </div>
+  </div>
+
+  <h3 id="practice-projects">연습 프로젝트</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>난이도</th>
+        <th>프로젝트</th>
+        <th>예상 시간</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>⭐ 초급</td>
+        <td>계산기 앱 (HTML/CSS/JS)</td>
+        <td>10분</td>
+      </tr>
+      <tr>
+        <td>⭐ 초급</td>
+        <td>날씨 정보 앱 (API 연동)</td>
+        <td>15분</td>
+      </tr>
+      <tr>
+        <td>⭐⭐ 중급</td>
+        <td>Markdown 에디터 (실시간 미리보기)</td>
+        <td>30분</td>
+      </tr>
+      <tr>
+        <td>⭐⭐ 중급</td>
+        <td>영화 검색 앱 (TMDB API)</td>
+        <td>45분</td>
+      </tr>
+      <tr>
+        <td>⭐⭐⭐ 고급</td>
+        <td>실시간 채팅 앱 (WebSocket)</td>
+        <td>2시간</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="resources">추가 학습 자료</h3>
+
+  <ul>
+    <li><a href="claude-cli.html">Claude CLI 완전 가이드</a> - 모든 기능 상세 설명</li>
+    <li><a href="prompt-for-coding.html">코딩용 프롬프트</a> - 효과적인 요청 방법</li>
+    <li><a href="cli-best-practices.html">CLI 모범 사례</a> - 실전 노하우</li>
+    <li><a href="api-key-management.html">API 키 관리</a> - 보안 설정</li>
+  </ul>
+</section>
+
+<!-- Section 6: 문제 해결 -->
+<section class="content-section">
+  <h2 id="troubleshooting">문제 해결</h2>
+
+  <h3 id="common-issues">일반적인 문제</h3>
+
+  <h4>❌ "API key not found" 오류</h4>
+  <p><strong>원인:</strong> 환경 변수가 설정되지 않음</p>
+  <p><strong>해결:</strong></p>
+  <pre><code><span class="cmt"># 환경 변수 확인</span>
+echo $ANTHROPIC_API_KEY
+
+<span class="cmt"># 비어있다면 다시 설정</span>
+export ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxxxxxx"</span></code></pre>
+
+  <h4>❌ "npx: command not found"</h4>
+  <p><strong>원인:</strong> Node.js가 설치되지 않음</p>
+  <p><strong>해결:</strong> <a href="https://nodejs.org" target="_blank" rel="noopener">Node.js 설치</a></p>
+
+  <h4>❌ "Rate limit exceeded"</h4>
+  <p><strong>원인:</strong> 너무 많은 요청을 빠르게 보냄</p>
+  <p><strong>해결:</strong> 잠시 기다렸다가 재시도 (보통 1분)</p>
+
+  <h4>❌ 파일이 생성되지 않음</h4>
+  <p><strong>원인:</strong> 디렉토리 권한 문제 또는 요청이 불명확</p>
+  <p><strong>해결:</strong></p>
+  <ul>
+    <li>현재 디렉토리 쓰기 권한 확인</li>
+    <li>더 구체적인 요청으로 다시 시도</li>
+    <li>파일 경로를 명시적으로 지정</li>
+  </ul>
+
+  <h4>❌ "Insufficient credits"</h4>
+  <p><strong>원인:</strong> 무료 크레딧 소진</p>
+  <p><strong>해결:</strong></p>
+  <ul>
+    <li><a href="https://console.anthropic.com/settings/billing" target="_blank" rel="noopener">Billing 페이지</a>에서 결제 수단 추가</li>
+    <li>또는 <a href="quickstart-local.html">Ollama</a>로 전환 (무료)</li>
+  </ul>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 도움 받기</div>
+    <p>
+      위 방법으로 해결되지 않는다면:
+    </p>
+    <ul>
+      <li><a href="https://docs.anthropic.com" target="_blank" rel="noopener">Anthropic 공식 문서</a></li>
+      <li><a href="https://discord.gg/anthropic" target="_blank" rel="noopener">Anthropic Discord</a></li>
+      <li><a href="https://reddit.com/r/ClaudeAI" target="_blank" rel="noopener">Reddit /r/ClaudeAI</a></li>
+      <li><a href="faq.html">이 사이트 FAQ</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- Summary -->
+<section class="content-section">
+  <h2 id="summary">요약</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">🎉 축하합니다!</div>
+    <p>
+      Claude CLI를 성공적으로 시작했습니다! 이제 여러분은:
+    </p>
+    <ul>
+      <li>✅ Anthropic API 키를 발급받았습니다</li>
+      <li>✅ Claude CLI를 실행했습니다</li>
+      <li>✅ 첫 번째 AI 생성 코드를 만들었습니다</li>
+      <li>✅ 실전 TODO 웹 앱을 완성했습니다</li>
+      <li>✅ Claude와 대화하며 기능을 개선했습니다</li>
+    </ul>
+    <p>
+      이제 Vibe Coding의 세계를 자유롭게 탐험하세요!
+    </p>
+  </div>
+
+  <h3 id="next-recommended">다음 추천 학습</h3>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>📖 Claude CLI 완전 가이드</h3>
+      <p>모든 기능과 고급 옵션 마스터하기</p>
+      <a href="claude-cli.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>💡 프롬프트 기본</h3>
+      <p>효과적인 프롬프트 작성 기법 배우기</p>
+      <a href="prompt-basics.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🦙 Ollama 시작</h3>
+      <p>무료 로컬 LLM으로 비용 절감하기</p>
+      <a href="quickstart-local.html" class="card-link">시작하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔧 다른 CLI 도구</h3>
+      <p>Aider, Continue 등 다른 도구 비교하기</p>
+      <a href="cli-tools-overview.html" class="card-link">비교하기 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== Inline TOC (Aside) ===== -->
+<aside class="inline-toc">
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="프롬프트 기본 - Claude 문서">
+<meta property="og:description" content="효과적인 Claude 프롬프트 작성을 위한 기본 원칙과 기법">
+<meta property="og:url" content="https://minzkn.com/claude/pages/prompt-basics.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="효과적인 Claude 프롬프트 작성을 위한 기본 원칙과 기법">
+<meta name="keywords" content="Claude, prompt engineering, prompting, 프롬프트, 엔지니어링">
+<meta name="author" content="MINZKN">
+<title>프롬프트 기본 - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">프롬프트 기본</h1>
+  <p class="lead">
+    효과적인 프롬프트는 Claude로부터 원하는 결과를 얻는 핵심입니다.
+    이 페이지에서는 프롬프트 작성의 기본 원칙과 실용적인 기법을 다룹니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="quick-start">처음 시작하기</h2>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎓 프롬프트 엔지니어링이 처음이신가요?</div>
+    <p><strong>핵심 원칙 3가지:</strong></p>
+    <ol>
+      <li><strong>명확하게</strong> - "코드 작성해줘" ❌ → "Python으로 CSV 읽는 함수 작성해줘" ✅</li>
+      <li><strong>맥락 제공</strong> - 목적, 대상 독자, 제약사항 명시</li>
+      <li><strong>예제 포함</strong> - 원하는 출력 형식의 예시 제공</li>
+    </ol>
+    <p style="margin-top: 1em;">
+      💡 <strong>비유</strong>: 프롬프트는 "요리 레시피"와 같습니다. 재료(입력), 조리법(단계), 완성품 사진(예시)이 명확할수록 좋은 결과!
+    </p>
+  </div>
+
+  <!-- Prompt Quality Improvement Process Diagram -->
+  <figure style="margin: 2.5rem 0;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300"
+         style="width:100%;max-width:800px;height:auto;display:block;margin:0 auto;">
+      <defs>
+        <marker id="prompt-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Title -->
+      <text x="400" y="25" text-anchor="middle" fill="var(--diagram-text)" font-size="15" font-weight="bold">
+        프롬프트 품질 개선 프로세스
+      </text>
+
+      <!-- Step 1: Vague Prompt -->
+      <rect x="50" y="50" width="140" height="70" rx="8"
+            fill="var(--info-bg-danger)" stroke="var(--accent-danger)" stroke-width="2"/>
+      <text x="120" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        ❌ 모호한 프롬프트
+      </text>
+      <text x="120" y="95" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        "코드 작성해줘"
+      </text>
+      <text x="120" y="110" text-anchor="middle" fill="var(--accent-danger)" font-size="9">
+        결과: 불명확
+      </text>
+
+      <!-- Arrow 1 -->
+      <line x1="190" y1="85" x2="240" y2="85"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#prompt-arrow)"/>
+      <text x="215" y="75" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        개선
+      </text>
+
+      <!-- Step 2: Add Details -->
+      <rect x="240" y="50" width="140" height="70" rx="8"
+            fill="var(--info-bg-warning)" stroke="var(--accent-warning)" stroke-width="2"/>
+      <text x="310" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        🟡 세부사항 추가
+      </text>
+      <text x="310" y="92" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        "Python으로 CSV
+      </text>
+      <text x="310" y="106" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        읽는 함수"
+      </text>
+
+      <!-- Arrow 2 -->
+      <line x1="380" y1="85" x2="430" y2="85"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#prompt-arrow)"/>
+      <text x="405" y="75" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        정제
+      </text>
+
+      <!-- Step 3: Add Context -->
+      <rect x="430" y="50" width="140" height="70" rx="8"
+            fill="var(--info-bg-info)" stroke="var(--accent-info)" stroke-width="2"/>
+      <text x="500" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        🔵 맥락 + 제약
+      </text>
+      <text x="500" y="92" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        + 제약사항
+      </text>
+      <text x="500" y="106" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        + 예상 입출력
+      </text>
+
+      <!-- Arrow 3 -->
+      <line x1="570" y1="85" x2="620" y2="85"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#prompt-arrow)"/>
+      <text x="595" y="75" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        완성
+      </text>
+
+      <!-- Step 4: Excellent Prompt -->
+      <rect x="620" y="50" width="140" height="70" rx="8"
+            fill="var(--accent-primary)" fill-opacity="0.2"
+            stroke="var(--accent-primary)" stroke-width="2.5"/>
+      <text x="690" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        ✅ 우수한 프롬프트
+      </text>
+      <text x="690" y="95" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        정확한 결과!
+      </text>
+
+      <!-- Quality Indicators -->
+      <rect x="50" y="150" width="170" height="130" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="135" y="173" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        품질 지표
+      </text>
+      <text x="60" y="195" fill="var(--text-secondary)" font-size="9">
+        ❌ 모호함 (30% 성공률)
+      </text>
+      <text x="60" y="213" fill="var(--text-secondary)" font-size="9">
+        🟡 부분 명확 (60%)
+      </text>
+      <text x="60" y="231" fill="var(--text-secondary)" font-size="9">
+        🔵 명확 (85%)
+      </text>
+      <text x="60" y="249" fill="var(--text-secondary)" font-size="9">
+        ✅ 우수 (95%+)
+      </text>
+      <text x="60" y="270" fill="var(--accent-primary)" font-size="9" font-weight="bold">
+        목표: 95% 이상!
+      </text>
+
+      <!-- Key Elements -->
+      <rect x="240" y="150" width="520" height="130" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="500" y="173" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        우수한 프롬프트의 5가지 요소
+      </text>
+      <text x="250" y="195" fill="var(--diagram-text)" font-size="10">
+        1️⃣ <tspan font-weight="bold">명확한 목적</tspan>: 무엇을 원하는지 구체적으로
+      </text>
+      <text x="250" y="213" fill="var(--diagram-text)" font-size="10">
+        2️⃣ <tspan font-weight="bold">충분한 맥락</tspan>: 대상, 제약사항, 목적 명시
+      </text>
+      <text x="250" y="231" fill="var(--diagram-text)" font-size="10">
+        3️⃣ <tspan font-weight="bold">명시적 형식</tspan>: JSON, Markdown 등 출력 형식 지정
+      </text>
+      <text x="250" y="249" fill="var(--diagram-text)" font-size="10">
+        4️⃣ <tspan font-weight="bold">예제 제공</tspan>: 원하는 스타일의 샘플
+      </text>
+      <text x="250" y="267" fill="var(--diagram-text)" font-size="10">
+        5️⃣ <tspan font-weight="bold">제약사항</tspan>: 피해야 할 것, 지켜야 할 규칙
+      </text>
+    </svg>
+    <figcaption style="text-align: center; margin-top: 0.8rem; font-size: 0.95rem; color: var(--text-tertiary);">
+      그림 1: 프롬프트 품질 개선 프로세스 - 모호함에서 우수함으로
+    </figcaption>
+  </figure>
+</section>
+
+<section class="content-section">
+  <h2 id="principles">기본 원칙</h2>
+
+  <h3 id="be-clear">명확하게</h3>
+  <p>
+    프롬프트는 구체적이고 명확해야 합니다. 모호한 요청보다는 정확한 지시사항을 제공하세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">❌ 나쁜 예</span>
+    </div>
+    <pre><code>코드 좀 써줘</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">✅ 좋은 예</span>
+    </div>
+    <pre><code>Python으로 CSV 파일을 읽어서 각 행의 두 번째 열 값을 합산하는 함수를 작성해주세요.
+함수 이름은 sum_second_column이어야 하고, pandas를 사용하지 말고 표준 라이브러리만 사용해주세요.</code></pre>
+  </div>
+
+  <h3 id="provide-context">맥락 제공</h3>
+  <p>
+    작업의 목적, 대상 독자, 제약사항 등을 명시하면 더 나은 결과를 얻을 수 있습니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">✅ 좋은 예</span>
+    </div>
+    <pre><code>초등학교 5학년 학생들을 위한 광합성 설명을 작성해주세요.
+전문 용어는 피하고, 쉬운 비유를 사용해서 설명해주세요.
+3-4 문단 정도의 길이로 작성해주세요.</code></pre>
+  </div>
+
+  <h3 id="break-down">단계별 분해</h3>
+  <p>
+    복잡한 작업은 여러 단계로 나누어 요청하세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">✅ 좋은 예</span>
+    </div>
+    <pre><code>다음 작업을 단계별로 수행해주세요:
+
+1. 주어진 텍스트에서 이메일 주소를 모두 추출
+2. 추출한 이메일 주소의 도메인별로 그룹화
+3. 각 도메인별 개수를 JSON 형식으로 출력
+
+텍스트: [...]</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="formatting">형식 지정</h2>
+  <p>
+    원하는 출력 형식을 명시하면 Claude가 일관된 형식으로 응답합니다.
+  </p>
+
+  <h3 id="structured-output">구조화된 출력</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">프롬프트</span>
+    </div>
+    <pre><code>다음 제품 리뷰를 분석하고 JSON 형식으로 결과를 제공해주세요:
+
+{
+  "sentiment": "긍정/중립/부정",
+  "rating": 1-5,
+  "key_points": ["포인트1", "포인트2", ...],
+  "summary": "한 줄 요약"
+}
+
+리뷰: [...]</code></pre>
+  </div>
+
+  <h3 id="markdown">마크다운 형식</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">프롬프트</span>
+    </div>
+    <pre><code>Python 리스트 컴프리헨션에 대한 가이드를 작성해주세요.
+
+다음 형식으로 작성해주세요:
+- 제목은 ## 마크다운 헤더 사용
+- 코드 예제는 ```python 코드 블록 사용
+- 핵심 포인트는 **볼드** 처리
+- 주의사항은 > 인용구 사용</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="examples">예제 제공</h2>
+  <p>
+    원하는 스타일이나 형식의 예제를 제공하면 Claude가 패턴을 학습하여 유사한 출력을 생성합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">프롬프트 (Few-shot)</span>
+    </div>
+    <pre><code>다음 형식으로 제품 설명을 작성해주세요:
+
+예제 1:
+입력: 노트북 - 16GB RAM, 512GB SSD, 15.6" 화면
+출력: 🖥️ **강력한 성능**: 16GB RAM으로 멀티태스킹이 원활합니다.
+💾 **넉넉한 저장공간**: 512GB SSD로 빠른 부팅과 파일 접근이 가능합니다.
+📺 **몰입감 있는 화면**: 15.6인치 대화면으로 작업 효율을 높입니다.
+
+예제 2:
+입력: 스마트폰 - 128GB, 6.5" OLED, 5G
+출력: 📱 **대용량 저장**: 128GB로 사진과 영상을 마음껏 저장하세요.
+✨ **선명한 디스플레이**: 6.5인치 OLED로 생생한 화질을 경험하세요.
+⚡ **초고속 연결**: 5G 지원으로 빠른 인터넷을 즐기세요.
+
+이제 다음 제품을 같은 형식으로 설명해주세요:
+입력: 태블릿 - 256GB, 11" LCD, WiFi</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="constraints">제약사항 명시</h2>
+  <p>
+    지켜야 할 규칙이나 피해야 할 사항을 명확히 하세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">프롬프트</span>
+    </div>
+    <pre><code>JavaScript로 배열에서 중복을 제거하는 함수를 작성해주세요.
+
+제약사항:
+- ES6+ 문법 사용
+- Set을 사용하지 말 것
+- 원본 배열은 변경하지 말 것
+- 시간 복잡도는 O(n)이어야 함
+- 함수 이름: removeDuplicates</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="role-playing">역할 부여</h2>
+  <p>
+    Claude에게 특정 전문가 역할을 부여하면 해당 관점에서 응답합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">시스템 프롬프트</span>
+    </div>
+    <pre><code>당신은 20년 경력의 시니어 백엔드 개발자입니다.
+코드 리뷰를 수행할 때 다음 사항에 집중합니다:
+- 성능과 확장성
+- 보안 취약점
+- 코드 가독성과 유지보수성
+- 베스트 프랙티스 준수
+
+건설적이고 구체적인 피드백을 제공하되, 긍정적인 부분도 언급합니다.</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="iterative">반복적 개선</h2>
+  <p>
+    첫 응답이 완벽하지 않다면 추가 지시사항으로 개선하세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">대화 예시</span>
+    </div>
+    <pre><code>사용자: Python으로 간단한 계산기를 만들어줘
+Claude: [기본 계산기 코드 제공]
+
+사용자: 좋아요. 이제 다음 기능을 추가해주세요:
+1. 나눗셈 시 0으로 나누는 경우 에러 처리
+2. 결과를 소수점 둘째 자리까지 반올림
+3. 사용자가 'quit' 입력 시 프로그램 종료
+
+Claude: [개선된 코드 제공]</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="before-after">Before / After 비교</h2>
+  <p>
+    실제 프롬프트 개선 사례를 통해 효과적인 프롬프트 작성법을 배워보세요.
+  </p>
+
+  <h3 id="example-1">예제 1: 코드 작성 요청</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 50%;">❌ Before (모호함)</th>
+        <th style="width: 50%;">✅ After (명확함)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>프롬프트:</strong><br>
+          "Python으로 정렬 함수 만들어줘"
+          <br><br>
+          <strong>문제점:</strong>
+          <ul style="font-size: 0.9em; margin: 0.5em 0;">
+            <li>어떤 정렬 알고리즘?</li>
+            <li>입력 형식?</li>
+            <li>제약사항 불명확</li>
+          </ul>
+        </td>
+        <td>
+          <strong>프롬프트:</strong><br>
+          "Python으로 병합 정렬(Merge Sort)을 구현해주세요.<br><br>
+          요구사항:<br>
+          - 함수 이름: merge_sort<br>
+          - 입력: 정수 리스트<br>
+          - 출력: 오름차순 정렬된 리스트<br>
+          - 원본 리스트는 변경하지 않음<br>
+          - 타입 힌트 포함"
+          <br><br>
+          <strong>개선점:</strong>
+          <ul style="font-size: 0.9em; margin: 0.5em 0;">
+            <li>✅ 알고리즘 명시</li>
+            <li>✅ 입출력 형식 명확</li>
+            <li>✅ 제약사항 구체적</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="example-2">예제 2: 문서 작성 요청</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 50%;">❌ Before</th>
+        <th style="width: 50%;">✅ After</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>프롬프트:</strong><br>
+          "블로그 글 써줘"
+          <br><br>
+          <strong>결과:</strong><br>
+          주제, 어조, 길이 모두 불명확 → 일반적인 글
+        </td>
+        <td>
+          <strong>프롬프트:</strong><br>
+          "기술 블로그 글을 작성해주세요.<br><br>
+          주제: Python 가상환경 사용법<br>
+          대상 독자: 프로그래밍 입문자<br>
+          어조: 친근하고 교육적<br>
+          길이: 800-1000단어<br>
+          구조:<br>
+          1. 가상환경이 필요한 이유<br>
+          2. venv 설치 및 설정 (예제 포함)<br>
+          3. 자주 하는 실수와 해결법<br>
+          4. 요약 및 다음 단계"
+          <br><br>
+          <strong>결과:</strong><br>
+          정확히 원하는 형식과 내용!
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="example-3">예제 3: 데이터 분석 요청</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 50%;">❌ Before</th>
+        <th style="width: 50%;">✅ After</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>프롬프트:</strong><br>
+          "이 데이터 분석해줘<br>
+          [데이터 붙여넣기]"
+          <br><br>
+          <strong>결과:</strong><br>
+          일반적인 통계만 제공
+        </td>
+        <td>
+          <strong>프롬프트:</strong><br>
+          "다음 매출 데이터를 분석해주세요:<br>
+          [데이터 붙여넣기]<br><br>
+          분석 목표:<br>
+          - 월별 매출 트렌드 파악<br>
+          - 전년 대비 성장률 계산<br>
+          - 이상치 탐지 (급증/급감)<br>
+          <br>
+          출력 형식:<br>
+          ## 요약<br>
+          - 핵심 인사이트 3가지<br>
+          <br>
+          ## 상세 분석<br>
+          - 월별 데이터 테이블<br>
+          - 성장률 그래프 (Python 코드)<br>
+          <br>
+          ## 권장사항<br>
+          - 비즈니스 액션 아이템"
+          <br><br>
+          <strong>결과:</strong><br>
+          구조화된 인사이트 + 실행 가능한 권장사항!
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip" style="margin-top: 2rem;">
+    <div class="info-box-title">💡 핵심 패턴</div>
+    <p><strong>모호한 프롬프트 → 명확한 프롬프트 변환 공식:</strong></p>
+    <ol>
+      <li><strong>무엇</strong>: 정확한 작업 정의</li>
+      <li><strong>왜</strong>: 목적과 맥락 제공</li>
+      <li><strong>어떻게</strong>: 구체적인 요구사항, 제약사항, 형식</li>
+      <li><strong>예시</strong>: 원하는 스타일의 샘플</li>
+    </ol>
+    <p style="margin-top: 1em;">
+      이 패턴을 따르면 90% 이상 원하는 결과를 얻을 수 있습니다!
+    </p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="dos-and-donts">해야 할 것 / 하지 말아야 할 것</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">✅ 해야 할 것</div>
+    <ul>
+      <li>구체적이고 명확한 지시사항 제공</li>
+      <li>원하는 형식과 구조 명시</li>
+      <li>예제 제공 (Few-shot learning)</li>
+      <li>제약사항과 요구사항 명확히 하기</li>
+      <li>복잡한 작업은 단계별로 분해</li>
+    </ul>
+  </div>
+
+  <div class="info-box warning">
+    <div class="info-box-title">❌ 하지 말아야 할 것</div>
+    <ul>
+      <li>모호하거나 불명확한 요청</li>
+      <li>너무 많은 작업을 한 번에 요청</li>
+      <li>필요한 맥락 정보 생략</li>
+      <li>암묵적 기대사항 (명시적으로 표현하기)</li>
+      <li>부정적이거나 공격적인 표현</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="templates">유용한 템플릿</h2>
+
+  <h3 id="template-analysis">분석 템플릿</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>다음 [대상]을 분석해주세요:
+
+[대상 내용]
+
+다음 측면에서 분석해주세요:
+1. [측면 1]
+2. [측면 2]
+3. [측면 3]
+
+각 측면에 대해:
+- 주요 발견사항
+- 근거
+- 개선 제안 (해당되는 경우)</code></pre>
+  </div>
+
+  <h3 id="template-code">코드 작성 템플릿</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>[언어]로 [기능]을 구현해주세요.
+
+요구사항:
+- [요구사항 1]
+- [요구사항 2]
+- [요구사항 3]
+
+제약사항:
+- [제약사항 1]
+- [제약사항 2]
+
+예상 입력: [입력 예시]
+예상 출력: [출력 예시]</code></pre>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

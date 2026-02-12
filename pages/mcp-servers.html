@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP 서버 개발 - AI Vibe Coding 가이드 /with MINZKN</title>
+<meta name="description" content="Python과 TypeScript로 MCP 서버를 개발하는 완전 가이드">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">MCP 서버 개발</h1>
+<p class="lead">MCP 서버는 AI 클라이언트에게 도구, 리소스, 프롬프트를 제공하는 서비스입니다. Python과 TypeScript SDK를 사용하여 강력하고 재사용 가능한 MCP 서버를 개발하는 방법을 학습합니다.</p>
+
+<div class="info-box tip">
+<strong>빠른 시작</strong>
+<ul>
+<li>Python: <code>pip install mcp</code> 또는 <code>uv add mcp</code></li>
+<li>TypeScript: <code>npm install @modelcontextprotocol/sdk</code></li>
+<li>서버는 Tools, Resources, Prompts 제공 가능</li>
+<li>stdio 또는 HTTP SSE 전송 지원</li>
+</ul>
+</div>
+
+<section class="content-section">
+<h2 id="python-setup">Python 서버 개발</h2>
+
+<h3 id="installation">설치</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># pip 사용</span>
+pip install mcp
+
+<span class="cmt"># uv 사용 (권장)</span>
+uv pip install mcp
+
+<span class="cmt"># 또는 프로젝트 의존성에 추가</span>
+uv add mcp
+</code></pre>
+</div>
+
+<h3 id="basic-server">기본 서버 구조</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">#!/usr/bin/env python3</span>
+<span class="str">"""
+간단한 MCP 서버 예제
+"""</span>
+
+<span class="kw">from</span> mcp.server <span class="kw">import</span> Server
+<span class="kw">from</span> mcp.server.stdio <span class="kw">import</span> stdio_server
+<span class="kw">from</span> mcp.types <span class="kw">import</span> Tool, TextContent
+
+<span class="cmt"># 서버 인스턴스 생성</span>
+server = Server(<span class="str">"my-mcp-server"</span>)
+
+<span class="cmt"># 도구 등록</span>
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">hello</span>(name: <span class="type">str</span> = <span class="str">"World"</span>) -> <span class="type">str</span>:
+    <span class="str">"""
+    인사 메시지를 반환합니다.
+
+    Args:
+        name: 인사할 이름
+
+    Returns:
+        인사 메시지
+    """</span>
+    <span class="kw">return</span> <span class="type">f</span><span class="str">"Hello, {name}!"</span>
+
+<span class="cmt"># 메인 함수</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="cmt"># stdio 전송으로 서버 실행</span>
+    <span class="kw">async</span> <span class="kw">with</span> stdio_server() <span class="kw">as</span> (read_stream, write_stream):
+        <span class="kw">await</span> server.run(
+            read_stream,
+            write_stream,
+            server.create_initialization_options()
+        )
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    <span class="kw">import</span> asyncio
+    asyncio.<span class="fn">run</span>(<span class="fn">main</span>())
+</code></pre>
+</div>
+
+<h3 id="python-tools">도구 (Tools) 구현</h3>
+
+<h4>1. 간단한 도구</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">add</span>(a: <span class="type">float</span>, b: <span class="type">float</span>) -> <span class="type">float</span>:
+    <span class="str">"""두 숫자를 더합니다."""</span>
+    <span class="kw">return</span> a + b
+
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">multiply</span>(a: <span class="type">float</span>, b: <span class="type">float</span>) -> <span class="type">float</span>:
+    <span class="str">"""두 숫자를 곱합니다."""</span>
+    <span class="kw">return</span> a * b
+</code></pre>
+</div>
+
+<h4>2. 복잡한 입력/출력</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> typing <span class="kw">import</span> <span class="type">List</span>, <span class="type">Dict</span>, <span class="type">Any</span>
+<span class="kw">from</span> mcp.types <span class="kw">import</span> TextContent, ImageContent, EmbeddedResource
+
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">search_files</span>(
+    directory: <span class="type">str</span>,
+    pattern: <span class="type">str</span>,
+    max_results: <span class="type">int</span> = <span class="num">10</span>
+) -> <span class="type">List</span>[<span class="type">Dict</span>[<span class="type">str</span>, <span class="type">Any</span>]]:
+    <span class="str">"""
+    디렉토리에서 파일을 검색합니다.
+
+    Args:
+        directory: 검색할 디렉토리
+        pattern: 파일명 패턴 (glob)
+        max_results: 최대 결과 수
+
+    Returns:
+        파일 정보 리스트
+    """</span>
+    <span class="kw">import</span> os
+    <span class="kw">import</span> glob
+
+    search_path = os.path.<span class="fn">join</span>(directory, pattern)
+    files = <span class="fn">glob</span>.<span class="fn">glob</span>(search_path, recursive=<span class="kw">True</span>)
+
+    results = []
+    <span class="kw">for</span> filepath <span class="kw">in</span> files[:max_results]:
+        stat = os.<span class="fn">stat</span>(filepath)
+        results.<span class="fn">append</span>({
+            <span class="str">"path"</span>: filepath,
+            <span class="str">"size"</span>: stat.st_size,
+            <span class="str">"modified"</span>: stat.st_mtime
+        })
+
+    <span class="kw">return</span> results
+</code></pre>
+</div>
+
+<h4>3. 파일 작업 도구</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> os
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">read_file</span>(path: <span class="type">str</span>) -> <span class="type">str</span>:
+    <span class="str">"""파일 내용을 읽습니다."""</span>
+    <span class="kw">with</span> <span class="fn">open</span>(path, <span class="str">'r'</span>, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+        <span class="kw">return</span> f.read()
+
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">write_file</span>(path: <span class="type">str</span>, content: <span class="type">str</span>) -> <span class="type">str</span>:
+    <span class="str">"""파일에 내용을 씁니다."""</span>
+    <span class="cmt"># 디렉토리가 없으면 생성</span>
+    os.<span class="fn">makedirs</span>(os.path.<span class="fn">dirname</span>(path), exist_ok=<span class="kw">True</span>)
+
+    <span class="kw">with</span> <span class="fn">open</span>(path, <span class="str">'w'</span>, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+        f.<span class="fn">write</span>(content)
+
+    <span class="kw">return</span> <span class="type">f</span><span class="str">"파일 작성 완료: {path}"</span>
+
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">list_directory</span>(path: <span class="type">str</span>) -> <span class="type">List</span>[<span class="type">Dict</span>[<span class="type">str</span>, <span class="type">Any</span>]]:
+    <span class="str">"""디렉토리 내용을 나열합니다."""</span>
+    items = []
+    <span class="kw">for</span> entry <span class="kw">in</span> os.<span class="fn">listdir</span>(path):
+        full_path = os.path.<span class="fn">join</span>(path, entry)
+        is_dir = os.path.<span class="fn">isdir</span>(full_path)
+
+        items.<span class="fn">append</span>({
+            <span class="str">"name"</span>: entry,
+            <span class="str">"path"</span>: full_path,
+            <span class="str">"type"</span>: <span class="str">"directory"</span> <span class="kw">if</span> is_dir <span class="kw">else</span> <span class="str">"file"</span>
+        })
+
+    <span class="kw">return</span> items
+</code></pre>
+</div>
+
+<h4>4. 에러 처리</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> mcp.server <span class="kw">import</span> McpError
+
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">safe_read_file</span>(path: <span class="type">str</span>) -> <span class="type">str</span>:
+    <span class="str">"""안전하게 파일을 읽습니다."""</span>
+    <span class="cmt"># 경로 검증</span>
+    <span class="kw">if</span> <span class="str">".."</span> <span class="kw">in</span> path:
+        <span class="kw">raise</span> <span class="fn">McpError</span>(
+            code=<span class="num">-32602</span>,
+            message=<span class="str">"Invalid path: path traversal not allowed"</span>
+        )
+
+    <span class="cmt"># 파일 존재 확인</span>
+    <span class="kw">if</span> <span class="kw">not</span> os.path.<span class="fn">exists</span>(path):
+        <span class="kw">raise</span> <span class="fn">McpError</span>(
+            code=<span class="num">-32001</span>,
+            message=<span class="str">"File not found"</span>,
+            data={<span class="str">"path"</span>: path}
+        )
+
+    <span class="cmt"># 읽기 권한 확인</span>
+    <span class="kw">if</span> <span class="kw">not</span> os.<span class="fn">access</span>(path, os.R_OK):
+        <span class="kw">raise</span> <span class="fn">McpError</span>(
+            code=<span class="num">-32002</span>,
+            message=<span class="str">"Permission denied"</span>,
+            data={<span class="str">"path"</span>: path}
+        )
+
+    <span class="kw">try</span>:
+        <span class="kw">with</span> <span class="fn">open</span>(path, <span class="str">'r'</span>, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+            <span class="kw">return</span> f.read()
+    <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+        <span class="kw">raise</span> <span class="fn">McpError</span>(
+            code=<span class="num">-32603</span>,
+            message=<span class="type">f</span><span class="str">"Failed to read file: {e}"</span>
+        )
+</code></pre>
+</div>
+
+<h3 id="python-resources">리소스 (Resources) 구현</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> mcp.types <span class="kw">import</span> Resource, TextContent
+
+<span class="cmt"># 1. 리소스 목록 핸들러</span>
+<span class="pp">@server.list_resources()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">list_resources</span>() -> <span class="type">List</span>[Resource]:
+    <span class="str">"""사용 가능한 리소스 목록을 반환합니다."""</span>
+    <span class="kw">return</span> [
+        <span class="fn">Resource</span>(
+            uri=<span class="str">"file:///etc/hosts"</span>,
+            name=<span class="str">"System hosts file"</span>,
+            description=<span class="str">"시스템 호스트 파일"</span>,
+            mimeType=<span class="str">"text/plain"</span>
+        ),
+        <span class="fn">Resource</span>(
+            uri=<span class="str">"config://app"</span>,
+            name=<span class="str">"Application config"</span>,
+            description=<span class="str">"애플리케이션 설정"</span>,
+            mimeType=<span class="str">"application/json"</span>
+        )
+    ]
+
+<span class="cmt"># 2. 리소스 읽기 핸들러</span>
+<span class="pp">@server.read_resource()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">read_resource</span>(uri: <span class="type">str</span>) -> <span class="type">str</span>:
+    <span class="str">"""리소스 내용을 읽습니다."""</span>
+    <span class="kw">if</span> uri.<span class="fn">startswith</span>(<span class="str">"file://"</span>):
+        path = uri[<span class="num">7</span>:]  <span class="cmt"># "file://" 제거</span>
+        <span class="kw">with</span> <span class="fn">open</span>(path, <span class="str">'r'</span>) <span class="kw">as</span> f:
+            <span class="kw">return</span> f.read()
+
+    <span class="kw">elif</span> uri == <span class="str">"config://app"</span>:
+        <span class="kw">import</span> json
+        config = {
+            <span class="str">"version"</span>: <span class="str">"1.0.0"</span>,
+            <span class="str">"debug"</span>: <span class="kw">False</span>
+        }
+        <span class="kw">return</span> json.<span class="fn">dumps</span>(config, indent=<span class="num">2</span>)
+
+    <span class="kw">else</span>:
+        <span class="kw">raise</span> <span class="fn">McpError</span>(
+            code=<span class="num">-32602</span>,
+            message=<span class="type">f</span><span class="str">"Unknown resource URI: {uri}"</span>
+        )
+</code></pre>
+</div>
+
+<h4>동적 리소스</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="pp">@server.list_resources()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">list_project_files</span>() -> <span class="type">List</span>[Resource]:
+    <span class="str">"""프로젝트 파일을 동적으로 리소스로 제공합니다."""</span>
+    resources = []
+    project_dir = <span class="str">"/path/to/project"</span>
+
+    <span class="kw">for</span> root, dirs, files <span class="kw">in</span> os.<span class="fn">walk</span>(project_dir):
+        <span class="kw">for</span> filename <span class="kw">in</span> files:
+            <span class="kw">if</span> filename.<span class="fn">endswith</span>((<span class="str">'.py'</span>, <span class="str">'.js'</span>, <span class="str">'.ts'</span>)):
+                filepath = os.path.<span class="fn">join</span>(root, filename)
+                uri = <span class="type">f</span><span class="str">"file://{filepath}"</span>
+
+                resources.<span class="fn">append</span>(<span class="fn">Resource</span>(
+                    uri=uri,
+                    name=filename,
+                    description=<span class="type">f</span><span class="str">"Source file: {filepath}"</span>,
+                    mimeType=<span class="str">"text/plain"</span>
+                ))
+
+    <span class="kw">return</span> resources
+</code></pre>
+</div>
+
+<h3 id="python-prompts">프롬프트 (Prompts) 구현</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> mcp.types <span class="kw">import</span> Prompt, PromptMessage, TextContent
+
+<span class="cmt"># 1. 프롬프트 목록</span>
+<span class="pp">@server.list_prompts()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">list_prompts</span>() -> <span class="type">List</span>[Prompt]:
+    <span class="str">"""사용 가능한 프롬프트 목록을 반환합니다."""</span>
+    <span class="kw">return</span> [
+        <span class="fn">Prompt</span>(
+            name=<span class="str">"code-review"</span>,
+            description=<span class="str">"코드 리뷰 프롬프트"</span>,
+            arguments=[
+                {
+                    <span class="str">"name"</span>: <span class="str">"language"</span>,
+                    <span class="str">"description"</span>: <span class="str">"프로그래밍 언어"</span>,
+                    <span class="str">"required"</span>: <span class="kw">True</span>
+                },
+                {
+                    <span class="str">"name"</span>: <span class="str">"code"</span>,
+                    <span class="str">"description"</span>: <span class="str">"리뷰할 코드"</span>,
+                    <span class="str">"required"</span>: <span class="kw">True</span>
+                }
+            ]
+        ),
+        <span class="fn">Prompt</span>(
+            name=<span class="str">"translate"</span>,
+            description=<span class="str">"번역 프롬프트"</span>,
+            arguments=[
+                {
+                    <span class="str">"name"</span>: <span class="str">"text"</span>,
+                    <span class="str">"description"</span>: <span class="str">"번역할 텍스트"</span>,
+                    <span class="str">"required"</span>: <span class="kw">True</span>
+                },
+                {
+                    <span class="str">"name"</span>: <span class="str">"target_lang"</span>,
+                    <span class="str">"description"</span>: <span class="str">"목표 언어"</span>,
+                    <span class="str">"required"</span>: <span class="kw">True</span>
+                }
+            ]
+        )
+    ]
+
+<span class="cmt"># 2. 프롬프트 가져오기</span>
+<span class="pp">@server.get_prompt()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">get_prompt</span>(name: <span class="type">str</span>, arguments: <span class="type">Dict</span>[<span class="type">str</span>, <span class="type">str</span>]) -> <span class="type">List</span>[PromptMessage]:
+    <span class="str">"""프롬프트를 생성하여 반환합니다."""</span>
+    <span class="kw">if</span> name == <span class="str">"code-review"</span>:
+        language = arguments.<span class="fn">get</span>(<span class="str">"language"</span>)
+        code = arguments.<span class="fn">get</span>(<span class="str">"code"</span>)
+
+        prompt_text = <span class="type">f</span><span class="str">"""다음 {language} 코드를 리뷰해주세요:
+
+```{language}
+{code}
+```
+
+다음 관점에서 검토해주세요:
+1. 코드 품질 및 가독성
+2. 성능 최적화 가능성
+3. 보안 취약점
+4. 베스트 프랙티스 준수 여부
+5. 개선 제안
+
+각 항목에 대해 구체적인 피드백을 제공해주세요."""</span>
+
+        <span class="kw">return</span> [
+            <span class="fn">PromptMessage</span>(
+                role=<span class="str">"user"</span>,
+                content=<span class="fn">TextContent</span>(type=<span class="str">"text"</span>, text=prompt_text)
+            )
+        ]
+
+    <span class="kw">elif</span> name == <span class="str">"translate"</span>:
+        text = arguments.<span class="fn">get</span>(<span class="str">"text"</span>)
+        target_lang = arguments.<span class="fn">get</span>(<span class="str">"target_lang"</span>)
+
+        prompt_text = <span class="type">f</span><span class="str">"""다음 텍스트를 {target_lang}로 번역해주세요:
+
+{text}
+
+번역 시 다음을 고려해주세요:
+- 자연스러운 표현 사용
+- 문화적 맥락 반영
+- 전문 용어의 정확한 번역"""</span>
+
+        <span class="kw">return</span> [
+            <span class="fn">PromptMessage</span>(
+                role=<span class="str">"user"</span>,
+                content=<span class="fn">TextContent</span>(type=<span class="str">"text"</span>, text=prompt_text)
+            )
+        ]
+
+    <span class="kw">else</span>:
+        <span class="kw">raise</span> <span class="fn">McpError</span>(
+            code=<span class="num">-32602</span>,
+            message=<span class="type">f</span><span class="str">"Unknown prompt: {name}"</span>
+        )
+</code></pre>
+</div>
+
+<h3 id="python-complete-example">완전한 Python 서버 예제</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">#!/usr/bin/env python3</span>
+<span class="str">"""
+완전한 MCP 파일시스템 서버
+"""</span>
+
+<span class="kw">import</span> os
+<span class="kw">import</span> json
+<span class="kw">from</span> typing <span class="kw">import</span> <span class="type">List</span>, <span class="type">Dict</span>, <span class="type">Any</span>
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="kw">from</span> mcp.server <span class="kw">import</span> Server, McpError
+<span class="kw">from</span> mcp.server.stdio <span class="kw">import</span> stdio_server
+<span class="kw">from</span> mcp.types <span class="kw">import</span> Resource, Prompt, PromptMessage, TextContent
+
+<span class="cmt"># 서버 생성</span>
+server = Server(<span class="str">"filesystem-server"</span>)
+
+<span class="cmt"># 허용된 디렉토리 (보안)</span>
+ALLOWED_DIRS = [
+    str(Path.<span class="fn">home</span>() / <span class="str">"Documents"</span>),
+    str(Path.<span class="fn">home</span>() / <span class="str">"Projects"</span>)
+]
+
+<span class="kw">def</span> <span class="fn">is_path_allowed</span>(path: <span class="type">str</span>) -> <span class="type">bool</span>:
+    <span class="str">"""경로가 허용된 디렉토리 내에 있는지 확인합니다."""</span>
+    abs_path = os.path.<span class="fn">abspath</span>(path)
+    <span class="kw">return</span> <span class="fn">any</span>(abs_path.<span class="fn">startswith</span>(allowed) <span class="kw">for</span> allowed <span class="kw">in</span> ALLOWED_DIRS)
+
+<span class="cmt"># ===== 도구 =====</span>
+
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">read_file</span>(path: <span class="type">str</span>) -> <span class="type">str</span>:
+    <span class="str">"""파일 내용을 읽습니다."""</span>
+    <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(path):
+        <span class="kw">raise</span> <span class="fn">McpError</span>(code=<span class="num">-32602</span>, message=<span class="str">"Path not allowed"</span>)
+
+    <span class="kw">try</span>:
+        <span class="kw">with</span> <span class="fn">open</span>(path, <span class="str">'r'</span>, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+            <span class="kw">return</span> f.read()
+    <span class="kw">except</span> <span class="type">FileNotFoundError</span>:
+        <span class="kw">raise</span> <span class="fn">McpError</span>(code=<span class="num">-32001</span>, message=<span class="str">"File not found"</span>)
+    <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+        <span class="kw">raise</span> <span class="fn">McpError</span>(code=<span class="num">-32603</span>, message=<span class="type">str</span>(e))
+
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">write_file</span>(path: <span class="type">str</span>, content: <span class="type">str</span>) -> <span class="type">str</span>:
+    <span class="str">"""파일에 내용을 씁니다."""</span>
+    <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(path):
+        <span class="kw">raise</span> <span class="fn">McpError</span>(code=<span class="num">-32602</span>, message=<span class="str">"Path not allowed"</span>)
+
+    <span class="kw">try</span>:
+        os.<span class="fn">makedirs</span>(os.path.<span class="fn">dirname</span>(path), exist_ok=<span class="kw">True</span>)
+        <span class="kw">with</span> <span class="fn">open</span>(path, <span class="str">'w'</span>, encoding=<span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+            f.<span class="fn">write</span>(content)
+        <span class="kw">return</span> <span class="type">f</span><span class="str">"Successfully wrote {len(content)} bytes to {path}"</span>
+    <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+        <span class="kw">raise</span> <span class="fn">McpError</span>(code=<span class="num">-32603</span>, message=<span class="type">str</span>(e))
+
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">list_directory</span>(path: <span class="type">str</span>) -> <span class="type">List</span>[<span class="type">Dict</span>[<span class="type">str</span>, <span class="type">Any</span>]]:
+    <span class="str">"""디렉토리 내용을 나열합니다."""</span>
+    <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(path):
+        <span class="kw">raise</span> <span class="fn">McpError</span>(code=<span class="num">-32602</span>, message=<span class="str">"Path not allowed"</span>)
+
+    <span class="kw">try</span>:
+        items = []
+        <span class="kw">for</span> entry <span class="kw">in</span> os.<span class="fn">listdir</span>(path):
+            full_path = os.path.<span class="fn">join</span>(path, entry)
+            stat = os.<span class="fn">stat</span>(full_path)
+
+            items.<span class="fn">append</span>({
+                <span class="str">"name"</span>: entry,
+                <span class="str">"path"</span>: full_path,
+                <span class="str">"type"</span>: <span class="str">"directory"</span> <span class="kw">if</span> os.path.<span class="fn">isdir</span>(full_path) <span class="kw">else</span> <span class="str">"file"</span>,
+                <span class="str">"size"</span>: stat.st_size,
+                <span class="str">"modified"</span>: stat.st_mtime
+            })
+
+        <span class="kw">return</span> items
+    <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+        <span class="kw">raise</span> <span class="fn">McpError</span>(code=<span class="num">-32603</span>, message=<span class="type">str</span>(e))
+
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">search_files</span>(
+    directory: <span class="type">str</span>,
+    pattern: <span class="type">str</span>,
+    max_results: <span class="type">int</span> = <span class="num">50</span>
+) -> <span class="type">List</span>[<span class="type">str</span>]:
+    <span class="str">"""파일을 검색합니다."""</span>
+    <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(directory):
+        <span class="kw">raise</span> <span class="fn">McpError</span>(code=<span class="num">-32602</span>, message=<span class="str">"Path not allowed"</span>)
+
+    <span class="kw">import</span> glob
+
+    search_path = os.path.<span class="fn">join</span>(directory, <span class="str">"**"</span>, pattern)
+    results = <span class="fn">glob</span>.<span class="fn">glob</span>(search_path, recursive=<span class="kw">True</span>)
+    <span class="kw">return</span> results[:max_results]
+
+<span class="cmt"># ===== 리소스 =====</span>
+
+<span class="pp">@server.list_resources()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">list_resources</span>() -> <span class="type">List</span>[Resource]:
+    <span class="str">"""허용된 디렉토리를 리소스로 나열합니다."""</span>
+    resources = []
+    <span class="kw">for</span> dir_path <span class="kw">in</span> ALLOWED_DIRS:
+        <span class="kw">if</span> os.path.<span class="fn">exists</span>(dir_path):
+            resources.<span class="fn">append</span>(<span class="fn">Resource</span>(
+                uri=<span class="type">f</span><span class="str">"file://{dir_path}"</span>,
+                name=os.path.<span class="fn">basename</span>(dir_path),
+                description=<span class="type">f</span><span class="str">"Directory: {dir_path}"</span>,
+                mimeType=<span class="str">"text/directory"</span>
+            ))
+    <span class="kw">return</span> resources
+
+<span class="pp">@server.read_resource()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">read_resource</span>(uri: <span class="type">str</span>) -> <span class="type">str</span>:
+    <span class="str">"""리소스를 읽습니다."""</span>
+    <span class="kw">if</span> <span class="kw">not</span> uri.<span class="fn">startswith</span>(<span class="str">"file://"</span>):
+        <span class="kw">raise</span> <span class="fn">McpError</span>(code=<span class="num">-32602</span>, message=<span class="str">"Only file:// URIs supported"</span>)
+
+    path = uri[<span class="num">7</span>:]
+    <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(path):
+        <span class="kw">raise</span> <span class="fn">McpError</span>(code=<span class="num">-32602</span>, message=<span class="str">"Path not allowed"</span>)
+
+    <span class="kw">if</span> os.path.<span class="fn">isdir</span>(path):
+        <span class="cmt"># 디렉토리 내용을 JSON으로 반환</span>
+        items = <span class="kw">await</span> <span class="fn">list_directory</span>(path)
+        <span class="kw">return</span> json.<span class="fn">dumps</span>(items, indent=<span class="num">2</span>)
+    <span class="kw">else</span>:
+        <span class="cmt"># 파일 내용 반환</span>
+        <span class="kw">return</span> <span class="kw">await</span> <span class="fn">read_file</span>(path)
+
+<span class="cmt"># ===== 메인 =====</span>
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="kw">async</span> <span class="kw">with</span> stdio_server() <span class="kw">as</span> (read_stream, write_stream):
+        <span class="kw">await</span> server.run(
+            read_stream,
+            write_stream,
+            server.create_initialization_options()
+        )
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    <span class="kw">import</span> asyncio
+    asyncio.<span class="fn">run</span>(<span class="fn">main</span>())
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="typescript-setup">TypeScript 서버 개발</h2>
+
+<h3 id="ts-installation">설치 및 프로젝트 설정</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 프로젝트 초기화</span>
+mkdir my-mcp-server
+cd my-mcp-server
+npm init -y
+
+<span class="cmt"># 의존성 설치</span>
+npm install @modelcontextprotocol/sdk
+npm install -D typescript @types/node
+
+<span class="cmt"># TypeScript 설정</span>
+npx tsc --init
+</code></pre>
+</div>
+
+<h4>tsconfig.json</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">JSON</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>{
+  <span class="str">"compilerOptions"</span>: {
+    <span class="str">"target"</span>: <span class="str">"ES2022"</span>,
+    <span class="str">"module"</span>: <span class="str">"Node16"</span>,
+    <span class="str">"moduleResolution"</span>: <span class="str">"Node16"</span>,
+    <span class="str">"outDir"</span>: <span class="str">"./dist"</span>,
+    <span class="str">"rootDir"</span>: <span class="str">"./src"</span>,
+    <span class="str">"strict"</span>: <span class="kw">true</span>,
+    <span class="str">"esModuleInterop"</span>: <span class="kw">true</span>,
+    <span class="str">"skipLibCheck"</span>: <span class="kw">true</span>,
+    <span class="str">"forceConsistentCasingInFileNames"</span>: <span class="kw">true</span>
+  },
+  <span class="str">"include"</span>: [<span class="str">"src/**/*"</span>],
+  <span class="str">"exclude"</span>: [<span class="str">"node_modules"</span>]
+}
+</code></pre>
+</div>
+
+<h3 id="ts-basic-server">기본 TypeScript 서버</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TypeScript</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">#!/usr/bin/env node</span>
+<span class="cmt">// src/index.ts</span>
+
+<span class="kw">import</span> { Server } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/server/index.js"</span>;
+<span class="kw">import</span> { StdioServerTransport } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/server/stdio.js"</span>;
+<span class="kw">import</span> {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  Tool
+} <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/types.js"</span>;
+
+<span class="cmt">// 서버 생성</span>
+<span class="kw">const</span> server = <span class="kw">new</span> <span class="fn">Server</span>(
+  {
+    name: <span class="str">"my-mcp-server"</span>,
+    version: <span class="str">"1.0.0"</span>
+  },
+  {
+    capabilities: {
+      tools: {}
+    }
+  }
+);
+
+<span class="cmt">// 도구 목록</span>
+<span class="kw">const</span> TOOLS: Tool[] = [
+  {
+    name: <span class="str">"hello"</span>,
+    description: <span class="str">"인사 메시지를 반환합니다"</span>,
+    inputSchema: {
+      type: <span class="str">"object"</span>,
+      properties: {
+        name: {
+          type: <span class="str">"string"</span>,
+          description: <span class="str">"인사할 이름"</span>
+        }
+      },
+      required: []
+    }
+  }
+];
+
+<span class="cmt">// 도구 목록 핸들러</span>
+server.<span class="fn">setRequestHandler</span>(ListToolsRequestSchema, <span class="kw">async</span> () => ({
+  tools: TOOLS
+}));
+
+<span class="cmt">// 도구 호출 핸들러</span>
+server.<span class="fn">setRequestHandler</span>(CallToolRequestSchema, <span class="kw">async</span> (request) => {
+  <span class="kw">const</span> { name, arguments: args } = request.params;
+
+  <span class="kw">if</span> (name === <span class="str">"hello"</span>) {
+    <span class="kw">const</span> userName = (args <span class="kw">as</span> { name?: <span class="type">string</span> }).name || <span class="str">"World"</span>;
+    <span class="kw">return</span> {
+      content: [
+        {
+          type: <span class="str">"text"</span>,
+          text: `Hello, ${userName}!`
+        }
+      ]
+    };
+  }
+
+  <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="type">`Unknown tool: ${name}`</span>);
+});
+
+<span class="cmt">// 서버 실행</span>
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">main</span>() {
+  <span class="kw">const</span> transport = <span class="kw">new</span> <span class="fn">StdioServerTransport</span>();
+  <span class="kw">await</span> server.<span class="fn">connect</span>(transport);
+}
+
+<span class="fn">main</span>().<span class="fn">catch</span>(console.error);
+</code></pre>
+</div>
+
+<h3 id="ts-tools">TypeScript 도구 구현</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TypeScript</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> * <span class="kw">as</span> fs <span class="kw">from</span> <span class="str">"fs/promises"</span>;
+<span class="kw">import</span> * <span class="kw">as</span> path <span class="kw">from</span> <span class="str">"path"</span>;
+
+<span class="cmt">// 도구 정의</span>
+<span class="kw">const</span> TOOLS: Tool[] = [
+  {
+    name: <span class="str">"read_file"</span>,
+    description: <span class="str">"파일 내용을 읽습니다"</span>,
+    inputSchema: {
+      type: <span class="str">"object"</span>,
+      properties: {
+        path: {
+          type: <span class="str">"string"</span>,
+          description: <span class="str">"파일 경로"</span>
+        }
+      },
+      required: [<span class="str">"path"</span>]
+    }
+  },
+  {
+    name: <span class="str">"write_file"</span>,
+    description: <span class="str">"파일에 내용을 씁니다"</span>,
+    inputSchema: {
+      type: <span class="str">"object"</span>,
+      properties: {
+        path: {
+          type: <span class="str">"string"</span>,
+          description: <span class="str">"파일 경로"</span>
+        },
+        content: {
+          type: <span class="str">"string"</span>,
+          description: <span class="str">"파일 내용"</span>
+        }
+      },
+      required: [<span class="str">"path"</span>, <span class="str">"content"</span>]
+    }
+  },
+  {
+    name: <span class="str">"list_directory"</span>,
+    description: <span class="str">"디렉토리 내용을 나열합니다"</span>,
+    inputSchema: {
+      type: <span class="str">"object"</span>,
+      properties: {
+        path: {
+          type: <span class="str">"string"</span>,
+          description: <span class="str">"디렉토리 경로"</span>
+        }
+      },
+      required: [<span class="str">"path"</span>]
+    }
+  }
+];
+
+<span class="cmt">// 도구 구현</span>
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">readFile</span>(filePath: <span class="type">string</span>): Promise<<span class="type">string</span>> {
+  <span class="kw">const</span> content = <span class="kw">await</span> fs.<span class="fn">readFile</span>(filePath, <span class="str">"utf-8"</span>);
+  <span class="kw">return</span> content;
+}
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">writeFile</span>(filePath: <span class="type">string</span>, content: <span class="type">string</span>): Promise<<span class="type">string</span>> {
+  <span class="kw">await</span> fs.<span class="fn">mkdir</span>(path.<span class="fn">dirname</span>(filePath), { recursive: <span class="kw">true</span> });
+  <span class="kw">await</span> fs.<span class="fn">writeFile</span>(filePath, content, <span class="str">"utf-8"</span>);
+  <span class="kw">return</span> <span class="type">`Successfully wrote ${content.length} bytes to ${filePath}`</span>;
+}
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">listDirectory</span>(dirPath: <span class="type">string</span>) {
+  <span class="kw">const</span> entries = <span class="kw">await</span> fs.<span class="fn">readdir</span>(dirPath, { withFileTypes: <span class="kw">true</span> });
+
+  <span class="kw">const</span> items = <span class="kw">await</span> Promise.<span class="fn">all</span>(
+    entries.<span class="fn">map</span>(<span class="kw">async</span> (entry) => {
+      <span class="kw">const</span> fullPath = path.<span class="fn">join</span>(dirPath, entry.name);
+      <span class="kw">const</span> stats = <span class="kw">await</span> fs.<span class="fn">stat</span>(fullPath);
+
+      <span class="kw">return</span> {
+        name: entry.name,
+        path: fullPath,
+        type: entry.<span class="fn">isDirectory</span>() ? <span class="str">"directory"</span> : <span class="str">"file"</span>,
+        size: stats.size,
+        modified: stats.mtime
+      };
+    })
+  );
+
+  <span class="kw">return</span> items;
+}
+
+<span class="cmt">// 도구 호출 핸들러</span>
+server.<span class="fn">setRequestHandler</span>(CallToolRequestSchema, <span class="kw">async</span> (request) => {
+  <span class="kw">const</span> { name, arguments: args } = request.params;
+
+  <span class="kw">try</span> {
+    <span class="kw">switch</span> (name) {
+      <span class="kw">case</span> <span class="str">"read_file"</span>: {
+        <span class="kw">const</span> { path } = args <span class="kw">as</span> { path: <span class="type">string</span> };
+        <span class="kw">const</span> content = <span class="kw">await</span> <span class="fn">readFile</span>(path);
+        <span class="kw">return</span> {
+          content: [{ type: <span class="str">"text"</span>, text: content }]
+        };
+      }
+
+      <span class="kw">case</span> <span class="str">"write_file"</span>: {
+        <span class="kw">const</span> { path, content } = args <span class="kw">as</span> { path: <span class="type">string</span>; content: <span class="type">string</span> };
+        <span class="kw">const</span> result = <span class="kw">await</span> <span class="fn">writeFile</span>(path, content);
+        <span class="kw">return</span> {
+          content: [{ type: <span class="str">"text"</span>, text: result }]
+        };
+      }
+
+      <span class="kw">case</span> <span class="str">"list_directory"</span>: {
+        <span class="kw">const</span> { path } = args <span class="kw">as</span> { path: <span class="type">string</span> };
+        <span class="kw">const</span> items = <span class="kw">await</span> <span class="fn">listDirectory</span>(path);
+        <span class="kw">return</span> {
+          content: [{ type: <span class="str">"text"</span>, text: JSON.<span class="fn">stringify</span>(items, <span class="kw">null</span>, <span class="num">2</span>) }]
+        };
+      }
+
+      <span class="kw">default</span>:
+        <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="type">`Unknown tool: ${name}`</span>);
+    }
+  } <span class="kw">catch</span> (error) {
+    <span class="kw">const</span> errorMessage = error <span class="kw">instanceof</span> Error ? error.message : String(error);
+    <span class="kw">return</span> {
+      content: [{ type: <span class="str">"text"</span>, text: <span class="type">`Error: ${errorMessage}`</span> }],
+      isError: <span class="kw">true</span>
+    };
+  }
+});
+</code></pre>
+</div>
+
+<h3 id="ts-resources">TypeScript 리소스 구현</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TypeScript</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> {
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
+  Resource
+} <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/types.js"</span>;
+
+<span class="cmt">// 리소스 목록 핸들러</span>
+server.<span class="fn">setRequestHandler</span>(ListResourcesRequestSchema, <span class="kw">async</span> () => {
+  <span class="kw">const</span> resources: Resource[] = [
+    {
+      uri: <span class="str">"file:///etc/hosts"</span>,
+      name: <span class="str">"System hosts"</span>,
+      description: <span class="str">"시스템 호스트 파일"</span>,
+      mimeType: <span class="str">"text/plain"</span>
+    },
+    {
+      uri: <span class="str">"config://app"</span>,
+      name: <span class="str">"App config"</span>,
+      description: <span class="str">"애플리케이션 설정"</span>,
+      mimeType: <span class="str">"application/json"</span>
+    }
+  ];
+
+  <span class="kw">return</span> { resources };
+});
+
+<span class="cmt">// 리소스 읽기 핸들러</span>
+server.<span class="fn">setRequestHandler</span>(ReadResourceRequestSchema, <span class="kw">async</span> (request) => {
+  <span class="kw">const</span> { uri } = request.params;
+
+  <span class="kw">if</span> (uri.<span class="fn">startsWith</span>(<span class="str">"file://"</span>)) {
+    <span class="kw">const</span> filePath = uri.<span class="fn">slice</span>(<span class="num">7</span>);
+    <span class="kw">const</span> content = <span class="kw">await</span> fs.<span class="fn">readFile</span>(filePath, <span class="str">"utf-8"</span>);
+
+    <span class="kw">return</span> {
+      contents: [
+        {
+          uri,
+          mimeType: <span class="str">"text/plain"</span>,
+          text: content
+        }
+      ]
+    };
+  }
+
+  <span class="kw">if</span> (uri === <span class="str">"config://app"</span>) {
+    <span class="kw">const</span> config = {
+      version: <span class="str">"1.0.0"</span>,
+      debug: <span class="kw">false</span>
+    };
+
+    <span class="kw">return</span> {
+      contents: [
+        {
+          uri,
+          mimeType: <span class="str">"application/json"</span>,
+          text: JSON.<span class="fn">stringify</span>(config, <span class="kw">null</span>, <span class="num">2</span>)
+        }
+      ]
+    };
+  }
+
+  <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="type">`Unknown resource: ${uri}`</span>);
+});
+</code></pre>
+</div>
+
+<h3 id="ts-complete-example">완전한 TypeScript 서버 예제</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TypeScript</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">#!/usr/bin/env node</span>
+<span class="cmt">// src/index.ts - 완전한 파일시스템 MCP 서버</span>
+
+<span class="kw">import</span> { Server } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/server/index.js"</span>;
+<span class="kw">import</span> { StdioServerTransport } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/server/stdio.js"</span>;
+<span class="kw">import</span> {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
+  Tool,
+  Resource
+} <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/types.js"</span>;
+<span class="kw">import</span> * <span class="kw">as</span> fs <span class="kw">from</span> <span class="str">"fs/promises"</span>;
+<span class="kw">import</span> * <span class="kw">as</span> path <span class="kw">from</span> <span class="str">"path"</span>;
+<span class="kw">import</span> { glob } <span class="kw">from</span> <span class="str">"glob"</span>;
+
+<span class="cmt">// 허용된 디렉토리</span>
+<span class="kw">const</span> ALLOWED_DIRS = [
+  path.<span class="fn">join</span>(process.<span class="fn">env</span>.HOME || <span class="str">""</span>, <span class="str">"Documents"</span>),
+  path.<span class="fn">join</span>(process.<span class="fn">env</span>.HOME || <span class="str">""</span>, <span class="str">"Projects"</span>)
+];
+
+<span class="kw">function</span> <span class="fn">isPathAllowed</span>(filePath: <span class="type">string</span>): <span class="type">boolean</span> {
+  <span class="kw">const</span> absolute = path.<span class="fn">resolve</span>(filePath);
+  <span class="kw">return</span> ALLOWED_DIRS.<span class="fn">some</span>((dir) => absolute.<span class="fn">startsWith</span>(dir));
+}
+
+<span class="cmt">// 서버 생성</span>
+<span class="kw">const</span> server = <span class="kw">new</span> <span class="fn">Server</span>(
+  {
+    name: <span class="str">"filesystem-server"</span>,
+    version: <span class="str">"1.0.0"</span>
+  },
+  {
+    capabilities: {
+      tools: {},
+      resources: {}
+    }
+  }
+);
+
+<span class="cmt">// 도구 정의</span>
+<span class="kw">const</span> TOOLS: Tool[] = [
+  {
+    name: <span class="str">"read_file"</span>,
+    description: <span class="str">"파일 내용을 읽습니다"</span>,
+    inputSchema: {
+      type: <span class="str">"object"</span>,
+      properties: {
+        path: { type: <span class="str">"string"</span>, description: <span class="str">"파일 경로"</span> }
+      },
+      required: [<span class="str">"path"</span>]
+    }
+  },
+  {
+    name: <span class="str">"write_file"</span>,
+    description: <span class="str">"파일에 내용을 씁니다"</span>,
+    inputSchema: {
+      type: <span class="str">"object"</span>,
+      properties: {
+        path: { type: <span class="str">"string"</span>, description: <span class="str">"파일 경로"</span> },
+        content: { type: <span class="str">"string"</span>, description: <span class="str">"파일 내용"</span> }
+      },
+      required: [<span class="str">"path"</span>, <span class="str">"content"</span>]
+    }
+  },
+  {
+    name: <span class="str">"list_directory"</span>,
+    description: <span class="str">"디렉토리 내용을 나열합니다"</span>,
+    inputSchema: {
+      type: <span class="str">"object"</span>,
+      properties: {
+        path: { type: <span class="str">"string"</span>, description: <span class="str">"디렉토리 경로"</span> }
+      },
+      required: [<span class="str">"path"</span>]
+    }
+  },
+  {
+    name: <span class="str">"search_files"</span>,
+    description: <span class="str">"파일을 검색합니다"</span>,
+    inputSchema: {
+      type: <span class="str">"object"</span>,
+      properties: {
+        directory: { type: <span class="str">"string"</span>, description: <span class="str">"검색 디렉토리"</span> },
+        pattern: { type: <span class="str">"string"</span>, description: <span class="str">"파일명 패턴 (glob)"</span> }
+      },
+      required: [<span class="str">"directory"</span>, <span class="str">"pattern"</span>]
+    }
+  }
+];
+
+<span class="cmt">// 핸들러 등록</span>
+server.<span class="fn">setRequestHandler</span>(ListToolsRequestSchema, <span class="kw">async</span> () => ({ tools: TOOLS }));
+
+server.<span class="fn">setRequestHandler</span>(CallToolRequestSchema, <span class="kw">async</span> (request) => {
+  <span class="kw">const</span> { name, arguments: args } = request.params;
+
+  <span class="kw">try</span> {
+    <span class="kw">switch</span> (name) {
+      <span class="kw">case</span> <span class="str">"read_file"</span>: {
+        <span class="kw">const</span> { path: filePath } = args <span class="kw">as</span> { path: <span class="type">string</span> };
+        <span class="kw">if</span> (!<span class="fn">isPathAllowed</span>(filePath)) {
+          <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">"Path not allowed"</span>);
+        }
+        <span class="kw">const</span> content = <span class="kw">await</span> fs.<span class="fn">readFile</span>(filePath, <span class="str">"utf-8"</span>);
+        <span class="kw">return</span> { content: [{ type: <span class="str">"text"</span>, text: content }] };
+      }
+
+      <span class="kw">case</span> <span class="str">"write_file"</span>: {
+        <span class="kw">const</span> { path: filePath, content } = args <span class="kw">as</span> { path: <span class="type">string</span>; content: <span class="type">string</span> };
+        <span class="kw">if</span> (!<span class="fn">isPathAllowed</span>(filePath)) {
+          <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">"Path not allowed"</span>);
+        }
+        <span class="kw">await</span> fs.<span class="fn">mkdir</span>(path.<span class="fn">dirname</span>(filePath), { recursive: <span class="kw">true</span> });
+        <span class="kw">await</span> fs.<span class="fn">writeFile</span>(filePath, content, <span class="str">"utf-8"</span>);
+        <span class="kw">return</span> { content: [{ type: <span class="str">"text"</span>, text: <span class="type">`Wrote to ${filePath}`</span> }] };
+      }
+
+      <span class="kw">case</span> <span class="str">"list_directory"</span>: {
+        <span class="kw">const</span> { path: dirPath } = args <span class="kw">as</span> { path: <span class="type">string</span> };
+        <span class="kw">if</span> (!<span class="fn">isPathAllowed</span>(dirPath)) {
+          <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">"Path not allowed"</span>);
+        }
+        <span class="kw">const</span> entries = <span class="kw">await</span> fs.<span class="fn">readdir</span>(dirPath, { withFileTypes: <span class="kw">true</span> });
+        <span class="kw">const</span> items = entries.<span class="fn">map</span>((e) => ({
+          name: e.name,
+          type: e.<span class="fn">isDirectory</span>() ? <span class="str">"directory"</span> : <span class="str">"file"</span>
+        }));
+        <span class="kw">return</span> { content: [{ type: <span class="str">"text"</span>, text: JSON.<span class="fn">stringify</span>(items, <span class="kw">null</span>, <span class="num">2</span>) }] };
+      }
+
+      <span class="kw">case</span> <span class="str">"search_files"</span>: {
+        <span class="kw">const</span> { directory, pattern } = args <span class="kw">as</span> { directory: <span class="type">string</span>; pattern: <span class="type">string</span> };
+        <span class="kw">if</span> (!<span class="fn">isPathAllowed</span>(directory)) {
+          <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">"Path not allowed"</span>);
+        }
+        <span class="kw">const</span> files = <span class="kw">await</span> <span class="fn">glob</span>(pattern, { cwd: directory });
+        <span class="kw">return</span> { content: [{ type: <span class="str">"text"</span>, text: JSON.<span class="fn">stringify</span>(files, <span class="kw">null</span>, <span class="num">2</span>) }] };
+      }
+
+      <span class="kw">default</span>:
+        <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="type">`Unknown tool: ${name}`</span>);
+    }
+  } <span class="kw">catch</span> (error) {
+    <span class="kw">return</span> {
+      content: [{ type: <span class="str">"text"</span>, text: <span class="type">`Error: ${error}`</span> }],
+      isError: <span class="kw">true</span>
+    };
+  }
+});
+
+<span class="cmt">// 리소스 핸들러</span>
+server.<span class="fn">setRequestHandler</span>(ListResourcesRequestSchema, <span class="kw">async</span> () => {
+  <span class="kw">const</span> resources: Resource[] = ALLOWED_DIRS
+    .<span class="fn">filter</span>((dir) => fs.<span class="fn">access</span>(dir).<span class="fn">then</span>(() => <span class="kw">true</span>).<span class="fn">catch</span>(() => <span class="kw">false</span>))
+    .<span class="fn">map</span>((dir) => ({
+      uri: <span class="type">`file://${dir}`</span>,
+      name: path.<span class="fn">basename</span>(dir),
+      description: <span class="type">`Directory: ${dir}`</span>,
+      mimeType: <span class="str">"text/directory"</span>
+    }));
+
+  <span class="kw">return</span> { resources };
+});
+
+server.<span class="fn">setRequestHandler</span>(ReadResourceRequestSchema, <span class="kw">async</span> (request) => {
+  <span class="kw">const</span> { uri } = request.params;
+
+  <span class="kw">if</span> (!uri.<span class="fn">startsWith</span>(<span class="str">"file://"</span>)) {
+    <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">"Only file:// URIs supported"</span>);
+  }
+
+  <span class="kw">const</span> filePath = uri.<span class="fn">slice</span>(<span class="num">7</span>);
+  <span class="kw">if</span> (!<span class="fn">isPathAllowed</span>(filePath)) {
+    <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">"Path not allowed"</span>);
+  }
+
+  <span class="kw">const</span> content = <span class="kw">await</span> fs.<span class="fn">readFile</span>(filePath, <span class="str">"utf-8"</span>);
+
+  <span class="kw">return</span> {
+    contents: [{
+      uri,
+      mimeType: <span class="str">"text/plain"</span>,
+      text: content
+    }]
+  };
+});
+
+<span class="cmt">// 서버 실행</span>
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">main</span>() {
+  <span class="kw">const</span> transport = <span class="kw">new</span> <span class="fn">StdioServerTransport</span>();
+  <span class="kw">await</span> server.<span class="fn">connect</span>(transport);
+}
+
+<span class="fn">main</span>().<span class="fn">catch</span>(console.error);
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="packaging">패키징 및 배포</h2>
+
+<h3 id="python-packaging">Python 패키징</h3>
+
+<h4>pyproject.toml</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TOML</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>[project]
+name = <span class="str">"mcp-server-filesystem"</span>
+version = <span class="str">"1.0.0"</span>
+description = <span class="str">"MCP filesystem server"</span>
+authors = [{ name = <span class="str">"Your Name"</span>, email = <span class="str">"you@example.com"</span> }]
+requires-python = <span class="str">">=3.10"</span>
+dependencies = [
+    <span class="str">"mcp>=0.1.0"</span>
+]
+
+[project.scripts]
+mcp-server-filesystem = <span class="str">"mcp_server_filesystem:main"</span>
+
+[build-system]
+requires = [<span class="str">"hatchling"</span>]
+build-backend = <span class="str">"hatchling.build"</span>
+</code></pre>
+</div>
+
+<h4>설치 및 실행</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 개발 모드 설치</span>
+uv pip install -e .
+
+<span class="cmt"># 또는 pip</span>
+pip install -e .
+
+<span class="cmt"># 서버 실행</span>
+mcp-server-filesystem
+</code></pre>
+</div>
+
+<h3 id="typescript-packaging">TypeScript 패키징</h3>
+
+<h4>package.json</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">JSON</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>{
+  <span class="str">"name"</span>: <span class="str">"@myorg/mcp-server-filesystem"</span>,
+  <span class="str">"version"</span>: <span class="str">"1.0.0"</span>,
+  <span class="str">"description"</span>: <span class="str">"MCP filesystem server"</span>,
+  <span class="str">"type"</span>: <span class="str">"module"</span>,
+  <span class="str">"bin"</span>: {
+    <span class="str">"mcp-server-filesystem"</span>: <span class="str">"./dist/index.js"</span>
+  },
+  <span class="str">"scripts"</span>: {
+    <span class="str">"build"</span>: <span class="str">"tsc"</span>,
+    <span class="str">"prepare"</span>: <span class="str">"npm run build"</span>
+  },
+  <span class="str">"dependencies"</span>: {
+    <span class="str">"@modelcontextprotocol/sdk"</span>: <span class="str">"^0.1.0"</span>
+  },
+  <span class="str">"devDependencies"</span>: {
+    <span class="str">"typescript"</span>: <span class="str">"^5.3.0"</span>,
+    <span class="str">"@types/node"</span>: <span class="str">"^20.0.0"</span>
+  }
+}
+</code></pre>
+</div>
+
+<h4>빌드 및 실행</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 빌드</span>
+npm run build
+
+<span class="cmt"># 글로벌 설치</span>
+npm install -g .
+
+<span class="cmt"># 서버 실행</span>
+mcp-server-filesystem
+</code></pre>
+</div>
+
+<h3 id="publishing">배포</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># Python (PyPI)</span>
+uv build
+uv publish
+
+<span class="cmt"># TypeScript (npm)</span>
+npm publish
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="testing">테스트</h2>
+
+<h3 id="manual-testing">수동 테스트</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># MCP Inspector 사용</span>
+npx @modelcontextprotocol/inspector python server.py
+
+<span class="cmt"># 또는 TypeScript 서버</span>
+npx @modelcontextprotocol/inspector node dist/index.js
+</code></pre>
+</div>
+
+<p>브라우저에서 <code>http://localhost:5173</code>을 열어 서버를 테스트할 수 있습니다.</p>
+
+<h3 id="automated-testing">자동화 테스트 (Python)</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> pytest
+<span class="kw">from</span> mcp.client <span class="kw">import</span> Client
+<span class="kw">from</span> mcp.client.stdio <span class="kw">import</span> StdioClientTransport
+
+<span class="pp">@pytest.mark.asyncio</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">test_server</span>():
+    client = Client({<span class="str">"name"</span>: <span class="str">"test"</span>, <span class="str">"version"</span>: <span class="str">"1.0.0"</span>}, {<span class="str">"capabilities"</span>: {<span class="str">"tools"</span>: {}}})
+
+    transport = <span class="fn">StdioClientTransport</span>({
+        <span class="str">"command"</span>: <span class="str">"python"</span>,
+        <span class="str">"args"</span>: [<span class="str">"server.py"</span>]
+    })
+
+    <span class="kw">await</span> client.connect(transport)
+
+    <span class="cmt"># 도구 목록 테스트</span>
+    tools = <span class="kw">await</span> client.list_tools()
+    <span class="kw">assert</span> <span class="fn">len</span>(tools) > <span class="num">0</span>
+
+    <span class="cmt"># 도구 호출 테스트</span>
+    result = <span class="kw">await</span> client.call_tool(<span class="str">"hello"</span>, {<span class="str">"name"</span>: <span class="str">"Test"</span>})
+    <span class="kw">assert</span> <span class="str">"Hello, Test!"</span> <span class="kw">in</span> result
+
+    <span class="kw">await</span> client.close()
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="best-practices">모범 사례</h2>
+
+<div class="info-box tip">
+<strong>서버 개발 권장사항</strong>
+<ol>
+<li><strong>보안:</strong> 경로 검증, 권한 확인, 입력 검증 필수</li>
+<li><strong>에러 처리:</strong> 명확한 에러 메시지와 적절한 에러 코드 사용</li>
+<li><strong>문서화:</strong> 도구 설명과 입력 스키마를 상세히 작성</li>
+<li><strong>성능:</strong> 비동기 작업 사용, 대용량 데이터 스트리밍 고려</li>
+<li><strong>로깅:</strong> 디버깅을 위한 적절한 로깅 구현</li>
+<li><strong>테스트:</strong> 자동화 테스트 작성</li>
+</ol>
+</div>
+
+<h3 id="security">보안 고려사항</h3>
+
+<table>
+<thead>
+<tr>
+<th>위험</th>
+<th>대응</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>경로 탐색 (Path Traversal)</td>
+<td>허용 목록 사용, <code>..</code> 검증</td>
+</tr>
+<tr>
+<td>명령 주입</td>
+<td>입력 검증, 이스케이핑</td>
+</tr>
+<tr>
+<td>리소스 소진</td>
+<td>크기 제한, 타임아웃 설정</td>
+</tr>
+<tr>
+<td>민감 정보 노출</td>
+<td>환경 변수, 시크릿 파일 제외</td>
+</tr>
+</tbody>
+</table>
+</section>
+
+<section class="content-section">
+<h2 id="next-steps">다음 단계</h2>
+
+<ul>
+<li><a href="mcp-clients.html">MCP 클라이언트</a> - Claude Desktop, CLI에서 서버 사용하기</li>
+<li><a href="mcp-examples.html">MCP 실전 예제</a> - 데이터베이스, API, Git 통합 예제</li>
+<li><a href="mcp-advanced.html">MCP 고급 주제</a> - 보안, 성능, 배포 전략</li>
+</ul>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

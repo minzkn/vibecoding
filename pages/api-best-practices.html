@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM API 모범 사례 - AI Vibe Coding 가이드 /with MINZKN</title>
+<meta name="description" content="프로덕션 환경의 LLM API 에러 처리, Rate Limiting, 타임아웃, 캐싱, 로깅, 모니터링, 보안 및 비용 추적">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">LLM API 모범 사례</h1>
+<p class="lead">LLM API를 프로덕션 환경에 안전하고 효율적으로 배포하려면 에러 처리, Rate Limiting, 타임아웃, 캐싱, 로깅, 모니터링, 보안 등 여러 측면을 고려해야 합니다. 이 가이드는 안정적이고 비용 효율적인 LLM 서비스를 구축하는 데 필요한 모든 모범 사례를 다룹니다.</p>
+
+<div class="info-box tip">
+<strong>핵심 포인트</strong>
+<ul>
+<li>지수 백오프 재시도로 일시적 오류 자동 복구</li>
+<li>Rate Limiting 대응으로 서비스 중단 방지</li>
+<li>적절한 타임아웃 설정으로 리소스 낭비 차단</li>
+<li>캐싱으로 비용 90% 절감 가능</li>
+<li>구조화된 로깅과 모니터링으로 문제 조기 발견</li>
+<li>API 키 보안 및 데이터 암호화</li>
+<li>프로덕션 체크리스트 20항목 완벽 준수</li>
+</ul>
+</div>
+
+<section class="content-section">
+<h2 id="error-handling">에러 처리</h2>
+
+<h3 id="error-types">에러 유형</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">에러</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>LLM API 주요 에러 유형:
+
+<span class="cmt">// 1. Rate Limit Error (429)</span>
+원인: 요청 한도 초과 (RPM, TPM, RPD)
+대응: 지수 백오프 재시도, Rate Limiter 구현
+
+<span class="cmt">// 2. Timeout Error</span>
+원인: 네트워크 지연, 긴 생성 시간
+대응: 타임아웃 증가, 스트리밍 사용
+
+<span class="cmt">// 3. Invalid Request (400)</span>
+원인: 잘못된 파라미터, 모델명 오타
+대응: 입력 검증, 스키마 정의
+
+<span class="cmt">// 4. Authentication Error (401)</span>
+원인: 잘못된 API 키, 만료된 키
+대응: 키 검증, 자동 갱신 메커니즘
+
+<span class="cmt">// 5. Context Length Error (400)</span>
+원인: 입력 토큰이 모델 한도 초과
+대응: 토큰 계산, 컨텍스트 트리밍
+
+<span class="cmt">// 6. Server Error (500, 502, 503)</span>
+원인: API 제공자 장애
+대응: 폴백 제공자, Circuit Breaker
+
+<span class="cmt">// 7. Content Filter (400)</span>
+원인: 유해 콘텐츠 감지
+대응: 프롬프트 수정, 사용자 알림
+</code></pre>
+</div>
+
+<h3 id="retry-strategy">재시도 전략</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> time
+<span class="kw">import</span> random
+<span class="kw">from</span> typing <span class="kw">import</span> Callable, TypeVar, Any
+<span class="kw">import</span> logging
+
+logger = logging.getLogger(__name__)
+T = TypeVar(<span class="str">'T'</span>)
+
+<span class="kw">def</span> <span class="fn">exponential_backoff_retry</span>(
+    func: Callable[..., T],
+    max_retries: <span class="type">int</span> = <span class="num">5</span>,
+    base_delay: <span class="type">float</span> = <span class="num">1.0</span>,
+    max_delay: <span class="type">float</span> = <span class="num">60.0</span>,
+    exponential_base: <span class="type">float</span> = <span class="num">2.0</span>,
+    jitter: <span class="type">bool</span> = <span class="kw">True</span>,
+    retriable_exceptions: <span class="type">tuple</span> = <span class="kw">None</span>
+) -&gt; Callable[..., T]:
+    <span class="str">"""
+    지수 백오프 재시도 데코레이터
+
+    Args:
+        max_retries: 최대 재시도 횟수
+        base_delay: 초기 대기 시간 (초)
+        max_delay: 최대 대기 시간 (초)
+        exponential_base: 지수 베이스
+        jitter: 랜덤 지터 추가 (Thundering Herd 방지)
+        retriable_exceptions: 재시도할 예외 튜플
+    """</span>
+    <span class="kw">if</span> retriable_exceptions <span class="kw">is</span> <span class="kw">None</span>:
+        <span class="kw">from</span> openai <span class="kw">import</span> RateLimitError, APIConnectionError, APITimeoutError
+        retriable_exceptions = (RateLimitError, APIConnectionError, APITimeoutError)
+
+    <span class="kw">def</span> <span class="fn">decorator</span>(*args, **kwargs) -&gt; T:
+        last_exception = <span class="kw">None</span>
+
+        <span class="kw">for</span> attempt <span class="kw">in</span> <span class="fn">range</span>(max_retries + <span class="num">1</span>):
+            <span class="kw">try</span>:
+                <span class="kw">return</span> func(*args, **kwargs)
+
+            <span class="kw">except</span> retriable_exceptions <span class="kw">as</span> e:
+                last_exception = e
+
+                <span class="kw">if</span> attempt == max_retries:
+                    logger.error(<span class="str">f"Max retries ({max_retries}) exceeded"</span>)
+                    <span class="kw">raise</span>
+
+                <span class="cmt"># 대기 시간 계산</span>
+                delay = <span class="fn">min</span>(base_delay * (exponential_base ** attempt), max_delay)
+
+                <span class="cmt"># 지터 추가 (±25%)</span>
+                <span class="kw">if</span> jitter:
+                    delay *= (<span class="num">0.75</span> + <span class="num">0.5</span> * random.random())
+
+                logger.warning(
+                    <span class="str">f"Attempt {attempt + 1}/{max_retries} failed: {e}. "</span>
+                    <span class="str">f"Retrying in {delay:.2f}s..."</span>
+                )
+
+                time.sleep(delay)
+
+            <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+                <span class="cmt"># 재시도 불가능한 예외는 즉시 발생</span>
+                logger.error(<span class="str">f"Non-retriable error: {e}"</span>)
+                <span class="kw">raise</span>
+
+        <span class="kw">raise</span> last_exception
+
+    <span class="kw">return</span> decorator
+
+
+<span class="cmt"># 사용 예제</span>
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+client = OpenAI()
+
+@exponential_backoff_retry
+<span class="kw">def</span> <span class="fn">call_llm</span>(prompt: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    response = client.chat.completions.create(
+        model=<span class="str">"gpt-4o"</span>,
+        messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}],
+        timeout=<span class="num">30</span>
+    )
+    <span class="kw">return</span> response.choices[<span class="num">0</span>].message.content
+
+<span class="cmt"># 자동으로 재시도</span>
+<span class="kw">try</span>:
+    result = call_llm(<span class="str">"Explain quantum computing"</span>)
+<span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="str">f"Failed after retries: {e}"</span>)
+</code></pre>
+</div>
+
+<h3 id="tenacity-library">Tenacity 라이브러리 사용</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># pip install tenacity</span>
+
+<span class="kw">from</span> tenacity <span class="kw">import</span> (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type,
+    before_sleep_log
+)
+<span class="kw">from</span> openai <span class="kw">import</span> RateLimitError, APIConnectionError
+<span class="kw">import</span> logging
+
+logger = logging.getLogger(__name__)
+
+@retry(
+    stop=stop_after_attempt(<span class="num">5</span>),
+    wait=wait_exponential(multiplier=<span class="num">1</span>, min=<span class="num">2</span>, max=<span class="num">60</span>),
+    retry=retry_if_exception_type((RateLimitError, APIConnectionError)),
+    before_sleep=before_sleep_log(logger, logging.WARNING)
+)
+<span class="kw">def</span> <span class="fn">resilient_llm_call</span>(messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+    response = client.chat.completions.create(
+        model=<span class="str">"gpt-4o"</span>,
+        messages=messages
+    )
+    <span class="kw">return</span> response.choices[<span class="num">0</span>].message.content
+
+
+<span class="cmt"># 조건부 재시도 (Rate Limit 에러 시 더 오래 대기)</span>
+<span class="kw">from</span> tenacity <span class="kw">import</span> wait_chain, wait_fixed
+
+@retry(
+    wait=wait_chain(
+        wait_fixed(<span class="num">2</span>),  <span class="cmt"># 첫 2회: 2초</span>
+        wait_exponential(min=<span class="num">4</span>, max=<span class="num">60</span>)  <span class="cmt"># 이후: 지수 백오프</span>
+    ),
+    retry=retry_if_exception_type(RateLimitError)
+)
+<span class="kw">def</span> <span class="fn">rate_limited_call</span>(prompt: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    <span class="kw">return</span> client.chat.completions.create(
+        model=<span class="str">"gpt-4o"</span>,
+        messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+    ).choices[<span class="num">0</span>].message.content
+</code></pre>
+</div>
+
+<h3 id="context-length">컨텍스트 길이 에러 처리</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> tiktoken
+
+<span class="kw">def</span> <span class="fn">count_tokens</span>(text: <span class="type">str</span>, model: <span class="type">str</span> = <span class="str">"gpt-4o"</span>) -&gt; <span class="type">int</span>:
+    <span class="str">"""정확한 토큰 수 계산"""</span>
+    encoding = tiktoken.encoding_for_model(model)
+    <span class="kw">return</span> <span class="fn">len</span>(encoding.encode(text))
+
+<span class="kw">def</span> <span class="fn">trim_messages</span>(messages: <span class="type">list</span>, max_tokens: <span class="type">int</span>, model: <span class="type">str</span>) -&gt; <span class="type">list</span>:
+    <span class="str">"""메시지를 토큰 한도 내로 트리밍"""</span>
+    total_tokens = <span class="fn">sum</span>(count_tokens(msg[<span class="str">'content'</span>], model) <span class="kw">for</span> msg <span class="kw">in</span> messages)
+
+    <span class="kw">if</span> total_tokens &lt;= max_tokens:
+        <span class="kw">return</span> messages
+
+    <span class="cmt"># 시스템 메시지는 유지, 오래된 대화부터 제거</span>
+    system_msg = [messages[<span class="num">0</span>]] <span class="kw">if</span> messages[<span class="num">0</span>][<span class="str">'role'</span>] == <span class="str">'system'</span> <span class="kw">else</span> []
+    user_messages = messages[<span class="num">1</span>:] <span class="kw">if</span> system_msg <span class="kw">else</span> messages
+
+    <span class="cmt"># 최신 메시지부터 역순으로 추가</span>
+    trimmed = []
+    current_tokens = count_tokens(system_msg[<span class="num">0</span>][<span class="str">'content'</span>], model) <span class="kw">if</span> system_msg <span class="kw">else</span> <span class="num">0</span>
+
+    <span class="kw">for</span> msg <span class="kw">in</span> <span class="fn">reversed</span>(user_messages):
+        msg_tokens = count_tokens(msg[<span class="str">'content'</span>], model)
+        <span class="kw">if</span> current_tokens + msg_tokens &lt;= max_tokens:
+            trimmed.insert(<span class="num">0</span>, msg)
+            current_tokens += msg_tokens
+        <span class="kw">else</span>:
+            <span class="kw">break</span>
+
+    <span class="kw">return</span> system_msg + trimmed
+
+
+<span class="cmt"># 자동 트리밍 래퍼</span>
+<span class="kw">def</span> <span class="fn">safe_chat_completion</span>(messages: <span class="type">list</span>, model: <span class="type">str</span> = <span class="str">"gpt-4o"</span>, max_tokens: <span class="type">int</span> = <span class="num">100000</span>):
+    <span class="str">"""컨텍스트 길이 자동 관리"""</span>
+    <span class="kw">try</span>:
+        <span class="kw">return</span> client.chat.completions.create(
+            model=model,
+            messages=messages
+        )
+    <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+        <span class="kw">if</span> <span class="str">"context_length_exceeded"</span> <span class="kw">in</span> <span class="fn">str</span>(e):
+            logger.warning(<span class="str">"Context length exceeded, trimming..."</span>)
+            trimmed = trim_messages(messages, max_tokens, model)
+            <span class="kw">return</span> client.chat.completions.create(
+                model=model,
+                messages=trimmed
+            )
+        <span class="kw">raise</span>
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="rate-limiting">Rate Limiting 대응</h2>
+
+<h3 id="rate-limits">Rate Limit 이해</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">한도</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>주요 LLM 제공자 Rate Limits (2026년 1월):
+
+<span class="cmt">// OpenAI (Tier 5 기준)</span>
+GPT-4o:
+  RPM (요청/분): <span class="num">10,000</span>
+  TPM (토큰/분): <span class="num">30,000,000</span>
+  RPD (요청/일): <span class="num">10,000</span>
+
+GPT-4o Mini:
+  RPM: <span class="num">30,000</span>
+  TPM: <span class="num">150,000,000</span>
+  RPD: 제한 없음
+
+<span class="cmt">// Anthropic</span>
+Claude Opus:
+  RPM: <span class="num">5,000</span>
+  TPM: <span class="num">10,000,000</span>
+
+Claude Sonnet:
+  RPM: <span class="num">5,000</span>
+  TPM: <span class="num">20,000,000</span>
+
+<span class="cmt">// Google</span>
+Gemini Pro:
+  RPM: <span class="num">1,500</span>
+  TPM: <span class="num">4,000,000</span>
+
+<span class="cmt">// 계층별 차이</span>
+Tier 1 (무료): RPM <span class="num">500</span>, TPM <span class="num">200,000</span>
+Tier 2 ($50+): RPM <span class="num">5,000</span>, TPM <span class="num">450,000</span>
+Tier 5 ($1,000+): RPM <span class="num">10,000</span>, TPM <span class="num">30,000,000</span>
+</code></pre>
+</div>
+
+<h3 id="rate-limiter">Rate Limiter 구현</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> time
+<span class="kw">from</span> collections <span class="kw">import</span> deque
+<span class="kw">from</span> threading <span class="kw">import</span> Lock
+
+<span class="kw">class</span> <span class="type">TokenBucketRateLimiter</span>:
+    <span class="str">"""토큰 버킷 알고리즘 기반 Rate Limiter"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, rpm: <span class="type">int</span>, tpm: <span class="type">int</span>):
+        <span class="str">"""
+        Args:
+            rpm: 분당 요청 한도
+            tpm: 분당 토큰 한도
+        """</span>
+        <span class="kw">self</span>.rpm = rpm
+        <span class="kw">self</span>.tpm = tpm
+
+        <span class="kw">self</span>.request_tokens = rpm
+        <span class="kw">self</span>.token_tokens = tpm
+
+        <span class="kw">self</span>.last_refill = time.time()
+        <span class="kw">self</span>.lock = Lock()
+
+    <span class="kw">def</span> <span class="fn">_refill</span>(<span class="kw">self</span>):
+        <span class="str">"""경과 시간에 따라 토큰 리필"""</span>
+        now = time.time()
+        elapsed = now - <span class="kw">self</span>.last_refill
+
+        <span class="cmt"># 분당 한도이므로 초당 리필율 계산</span>
+        request_refill = elapsed * (<span class="kw">self</span>.rpm / <span class="num">60</span>)
+        token_refill = elapsed * (<span class="kw">self</span>.tpm / <span class="num">60</span>)
+
+        <span class="kw">self</span>.request_tokens = <span class="fn">min</span>(<span class="kw">self</span>.rpm, <span class="kw">self</span>.request_tokens + request_refill)
+        <span class="kw">self</span>.token_tokens = <span class="fn">min</span>(<span class="kw">self</span>.tpm, <span class="kw">self</span>.token_tokens + token_refill)
+
+        <span class="kw">self</span>.last_refill = now
+
+    <span class="kw">def</span> <span class="fn">acquire</span>(<span class="kw">self</span>, estimated_tokens: <span class="type">int</span> = <span class="num">1000</span>) -&gt; <span class="type">float</span>:
+        <span class="str">"""
+        토큰 획득 시도
+
+        Returns:
+            대기 시간 (초). 0이면 즉시 사용 가능.
+        """</span>
+        <span class="kw">with</span> <span class="kw">self</span>.lock:
+            <span class="kw">self</span>._refill()
+
+            <span class="cmt"># 요청 및 토큰 모두 충분한지 확인</span>
+            <span class="kw">if</span> <span class="kw">self</span>.request_tokens &gt;= <span class="num">1</span> <span class="kw">and</span> <span class="kw">self</span>.token_tokens &gt;= estimated_tokens:
+                <span class="kw">self</span>.request_tokens -= <span class="num">1</span>
+                <span class="kw">self</span>.token_tokens -= estimated_tokens
+                <span class="kw">return</span> <span class="num">0.0</span>
+
+            <span class="cmt"># 대기 시간 계산</span>
+            wait_for_request = <span class="fn">max</span>(<span class="num">0</span>, (<span class="num">1</span> - <span class="kw">self</span>.request_tokens) / (<span class="kw">self</span>.rpm / <span class="num">60</span>))
+            wait_for_tokens = <span class="fn">max</span>(<span class="num">0</span>, (estimated_tokens - <span class="kw">self</span>.token_tokens) / (<span class="kw">self</span>.tpm / <span class="num">60</span>))
+
+            <span class="kw">return</span> <span class="fn">max</span>(wait_for_request, wait_for_tokens)
+
+
+<span class="cmt"># 사용</span>
+limiter = TokenBucketRateLimiter(rpm=<span class="num">10000</span>, tpm=<span class="num">30_000_000</span>)
+
+<span class="kw">def</span> <span class="fn">rate_limited_call</span>(messages: <span class="type">list</span>, estimated_tokens: <span class="type">int</span> = <span class="num">1000</span>):
+    <span class="cmt"># 토큰 획득 (필요시 대기)</span>
+    wait_time = limiter.acquire(estimated_tokens)
+    <span class="kw">if</span> wait_time &gt; <span class="num">0</span>:
+        logger.info(<span class="str">f"Rate limit approached, waiting {wait_time:.2f}s"</span>)
+        time.sleep(wait_time)
+
+    <span class="cmt"># API 호출</span>
+    <span class="kw">return</span> client.chat.completions.create(
+        model=<span class="str">"gpt-4o"</span>,
+        messages=messages
+    )
+</code></pre>
+</div>
+
+<h3 id="sliding-window">슬라이딩 윈도우 Rate Limiter</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> collections <span class="kw">import</span> deque
+<span class="kw">from</span> threading <span class="kw">import</span> Lock
+<span class="kw">import</span> time
+
+<span class="kw">class</span> <span class="type">SlidingWindowRateLimiter</span>:
+    <span class="str">"""슬라이딩 윈도우 기반 Rate Limiter (더 정확)"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, max_requests: <span class="type">int</span>, window_seconds: <span class="type">int</span> = <span class="num">60</span>):
+        <span class="kw">self</span>.max_requests = max_requests
+        <span class="kw">self</span>.window_seconds = window_seconds
+        <span class="kw">self</span>.requests = deque()
+        <span class="kw">self</span>.lock = Lock()
+
+    <span class="kw">def</span> <span class="fn">_remove_old_requests</span>(<span class="kw">self</span>):
+        <span class="str">"""윈도우 밖의 오래된 요청 제거"""</span>
+        now = time.time()
+        cutoff = now - <span class="kw">self</span>.window_seconds
+
+        <span class="kw">while</span> <span class="kw">self</span>.requests <span class="kw">and</span> <span class="kw">self</span>.requests[<span class="num">0</span>] &lt; cutoff:
+            <span class="kw">self</span>.requests.popleft()
+
+    <span class="kw">def</span> <span class="fn">acquire</span>(<span class="kw">self</span>) -&gt; <span class="type">bool</span>:
+        <span class="str">"""요청 허용 여부"""</span>
+        <span class="kw">with</span> <span class="kw">self</span>.lock:
+            <span class="kw">self</span>._remove_old_requests()
+
+            <span class="kw">if</span> <span class="fn">len</span>(<span class="kw">self</span>.requests) &lt; <span class="kw">self</span>.max_requests:
+                <span class="kw">self</span>.requests.append(time.time())
+                <span class="kw">return</span> <span class="kw">True</span>
+
+            <span class="kw">return</span> <span class="kw">False</span>
+
+    <span class="kw">def</span> <span class="fn">wait_if_needed</span>(<span class="kw">self</span>):
+        <span class="str">"""필요시 대기"""</span>
+        <span class="kw">while</span> <span class="kw">not</span> <span class="kw">self</span>.acquire():
+            <span class="cmt"># 가장 오래된 요청이 만료될 때까지 대기</span>
+            <span class="kw">with</span> <span class="kw">self</span>.lock:
+                <span class="kw">if</span> <span class="kw">self</span>.requests:
+                    wait_time = <span class="kw">self</span>.requests[<span class="num">0</span>] + <span class="kw">self</span>.window_seconds - time.time()
+                    <span class="kw">if</span> wait_time &gt; <span class="num">0</span>:
+                        time.sleep(wait_time + <span class="num">0.1</span>)
+
+
+<span class="cmt"># 사용</span>
+limiter = SlidingWindowRateLimiter(max_requests=<span class="num">10000</span>, window_seconds=<span class="num">60</span>)
+
+<span class="kw">def</span> <span class="fn">api_call</span>(prompt: <span class="type">str</span>):
+    limiter.wait_if_needed()
+    <span class="kw">return</span> client.chat.completions.create(
+        model=<span class="str">"gpt-4o"</span>,
+        messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+    )
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="timeout">타임아웃 설정</h2>
+
+<h3 id="timeout-config">적절한 타임아웃</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">타임아웃</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>권장 타임아웃 설정:
+
+<span class="cmt">// 짧은 응답 (요약, 분류)</span>
+타임아웃: <span class="num">10</span>-<span class="num">15</span>초
+이유: 짧은 출력, 빠른 실패 선호
+
+<span class="cmt">// 중간 길이 응답 (일반 대화)</span>
+타임아웃: <span class="num">30</span>-<span class="num">60</span>초
+이유: 대부분의 요청 처리, 네트워크 지연 고려
+
+<span class="cmt">// 긴 응답 (코드 생성, 긴 분석)</span>
+타임아웃: <span class="num">90</span>-<span class="num">120</span>초
+이유: 복잡한 추론, 긴 출력
+
+<span class="cmt">// 스트리밍</span>
+연결 타임아웃: <span class="num">10</span>초 (첫 바이트)
+읽기 타임아웃: <span class="num">5</span>초 (청크 간)
+총 타임아웃: 제한 없음
+
+<span class="cmt">// 주의사항</span>
+• 너무 짧음 → 정상 요청도 실패
+• 너무 김 → 리소스 낭비, 사용자 대기
+• 스트리밍 사용 시 총 타임아웃 길게 설정
+</code></pre>
+</div>
+
+<h3 id="timeout-implementation">타임아웃 구현</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> httpx
+
+<span class="cmt"># 1. OpenAI SDK 타임아웃 설정</span>
+client = OpenAI(
+    timeout=<span class="num">30.0</span>,  <span class="cmt"># 총 타임아웃</span>
+    max_retries=<span class="num">2</span>
+)
+
+<span class="cmt"># 2. 세밀한 타임아웃 제어</span>
+client = OpenAI(
+    timeout=httpx.Timeout(
+        connect=<span class="num">5.0</span>,  <span class="cmt"># 연결 타임아웃</span>
+        read=<span class="num">30.0</span>,     <span class="cmt"># 읽기 타임아웃</span>
+        write=<span class="num">5.0</span>,    <span class="cmt"># 쓰기 타임아웃</span>
+        pool=<span class="num">5.0</span>      <span class="cmt"># 풀 타임아웃</span>
+    )
+)
+
+<span class="cmt"># 3. 요청별 타임아웃 오버라이드</span>
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=messages,
+    timeout=<span class="num">60.0</span>  <span class="cmt"># 이 요청만 60초</span>
+)
+
+<span class="cmt"># 4. 스트리밍 타임아웃</span>
+stream = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=messages,
+    stream=<span class="kw">True</span>,
+    timeout=httpx.Timeout(<span class="num">10.0</span>, read=<span class="num">5.0</span>)  <span class="cmt"># 청크당 5초</span>
+)
+
+<span class="kw">for</span> chunk <span class="kw">in</span> stream:
+    <span class="fn">print</span>(chunk.choices[<span class="num">0</span>].delta.content, end=<span class="str">""</span>)
+
+
+<span class="cmt"># 5. 타임아웃 에러 처리</span>
+<span class="kw">from</span> openai <span class="kw">import</span> APITimeoutError
+
+<span class="kw">try</span>:
+    response = client.chat.completions.create(
+        model=<span class="str">"gpt-4o"</span>,
+        messages=messages,
+        timeout=<span class="num">30.0</span>
+    )
+<span class="kw">except</span> APITimeoutError:
+    logger.warning(<span class="str">"Request timed out, falling back to shorter prompt"</span>)
+    <span class="cmt"># 프롬프트 축소 또는 다른 모델 시도</span>
+    response = client.chat.completions.create(
+        model=<span class="str">"gpt-4o-mini"</span>,  <span class="cmt"># 더 빠른 모델</span>
+        messages=trim_messages(messages, max_tokens=<span class="num">2000</span>),
+        timeout=<span class="num">15.0</span>
+    )
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="caching">캐싱 전략</h2>
+
+<h3 id="cache-types">캐싱 유형</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">유형</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 정확한 매칭 캐시</span>
+입력이 완전히 동일한 경우만 캐시 히트
+장점: 구현 간단, 안전
+단점: 히트율 낮음
+사용처: FAQ, 정적 콘텐츠
+
+<span class="cmt">// 2. 시맨틱 캐시</span>
+의미가 유사한 쿼리도 캐시 히트
+장점: 높은 히트율
+단점: 임베딩 비용, 복잡도
+사용처: 유사 질문 많은 환경
+
+<span class="cmt">// 3. 프롬프트 캐싱 (제공자 네이티브)</span>
+Claude, OpenAI의 프롬프트 캐싱 기능
+장점: 공식 지원, 90% 비용 절감
+단점: 제공자 종속
+사용처: 긴 컨텍스트 반복 사용
+
+<span class="cmt">// 4. 응답 캐싱</span>
+LLM 응답 자체를 캐싱
+장점: 즉시 응답, 비용 제로
+단점: 스토리지 필요, 신선도 관리
+사용처: 정적 데이터 조회
+</code></pre>
+</div>
+
+<h3 id="exact-cache">정확한 매칭 캐시 (Redis)</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> redis
+<span class="kw">import</span> hashlib
+<span class="kw">import</span> json
+
+<span class="kw">class</span> <span class="type">LLMCache</span>:
+    <span class="str">"""Redis 기반 LLM 응답 캐시"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, redis_url: <span class="type">str</span> = <span class="str">"redis://localhost:6379"</span>, ttl: <span class="type">int</span> = <span class="num">3600</span>):
+        <span class="kw">self</span>.redis = redis.from_url(redis_url)
+        <span class="kw">self</span>.ttl = ttl  <span class="cmt"># Time To Live (초)</span>
+
+    <span class="kw">def</span> <span class="fn">_generate_key</span>(<span class="kw">self</span>, model: <span class="type">str</span>, messages: <span class="type">list</span>, **kwargs) -&gt; <span class="type">str</span>:
+        <span class="str">"""캐시 키 생성 (입력 해시)"""</span>
+        cache_input = {
+            <span class="str">'model'</span>: model,
+            <span class="str">'messages'</span>: messages,
+            <span class="str">'params'</span>: kwargs
+        }
+        serialized = json.dumps(cache_input, sort_keys=<span class="kw">True</span>)
+        hash_digest = hashlib.sha256(serialized.encode()).hexdigest()
+        <span class="kw">return</span> <span class="str">f"llm_cache:{hash_digest}"</span>
+
+    <span class="kw">def</span> <span class="fn">get</span>(<span class="kw">self</span>, model: <span class="type">str</span>, messages: <span class="type">list</span>, **kwargs) -&gt; <span class="type">str</span> | <span class="kw">None</span>:
+        <span class="str">"""캐시된 응답 조회"""</span>
+        key = <span class="kw">self</span>._generate_key(model, messages, **kwargs)
+        cached = <span class="kw">self</span>.redis.get(key)
+
+        <span class="kw">if</span> cached:
+            logger.info(<span class="str">f"Cache HIT: {key[:16]}..."</span>)
+            <span class="kw">return</span> json.loads(cached)
+
+        logger.info(<span class="str">f"Cache MISS: {key[:16]}..."</span>)
+        <span class="kw">return</span> <span class="kw">None</span>
+
+    <span class="kw">def</span> <span class="fn">set</span>(<span class="kw">self</span>, model: <span class="type">str</span>, messages: <span class="type">list</span>, response: <span class="type">str</span>, **kwargs):
+        <span class="str">"""응답 캐싱"""</span>
+        key = <span class="kw">self</span>._generate_key(model, messages, **kwargs)
+        <span class="kw">self</span>.redis.setex(key, <span class="kw">self</span>.ttl, json.dumps(response))
+        logger.info(<span class="str">f"Cached response: {key[:16]}..."</span>)
+
+    <span class="kw">def</span> <span class="fn">invalidate</span>(<span class="kw">self</span>, pattern: <span class="type">str</span> = <span class="str">"llm_cache:*"</span>):
+        <span class="str">"""캐시 무효화"""</span>
+        keys = <span class="kw">self</span>.redis.keys(pattern)
+        <span class="kw">if</span> keys:
+            <span class="kw">self</span>.redis.delete(*keys)
+        logger.info(<span class="str">f"Invalidated {len(keys)} cache entries"</span>)
+
+
+<span class="cmt"># 사용</span>
+cache = LLMCache(ttl=<span class="num">3600</span>)  <span class="cmt"># 1시간</span>
+
+<span class="kw">def</span> <span class="fn">cached_chat</span>(model: <span class="type">str</span>, messages: <span class="type">list</span>, **kwargs) -&gt; <span class="type">str</span>:
+    <span class="cmt"># 캐시 확인</span>
+    cached_response = cache.get(model, messages, **kwargs)
+    <span class="kw">if</span> cached_response:
+        <span class="kw">return</span> cached_response
+
+    <span class="cmt"># 캐시 미스 → API 호출</span>
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        **kwargs
+    )
+
+    result = response.choices[<span class="num">0</span>].message.content
+
+    <span class="cmt"># 응답 캐싱</span>
+    cache.set(model, messages, result, **kwargs)
+
+    <span class="kw">return</span> result
+
+
+<span class="cmt"># 테스트</span>
+<span class="fn">print</span>(cached_chat(<span class="str">"gpt-4o"</span>, [{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello"</span>}]))  <span class="cmt"># MISS</span>
+<span class="fn">print</span>(cached_chat(<span class="str">"gpt-4o"</span>, [{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello"</span>}]))  <span class="cmt"># HIT</span>
+</code></pre>
+</div>
+
+<h3 id="semantic-cache">시맨틱 캐시</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> sklearn.metrics.pairwise <span class="kw">import</span> cosine_similarity
+
+client = OpenAI()
+
+<span class="kw">class</span> <span class="type">SemanticCache</span>:
+    <span class="str">"""임베딩 기반 시맨틱 캐시"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, similarity_threshold: <span class="type">float</span> = <span class="num">0.95</span>):
+        <span class="kw">self</span>.cache = []  <span class="cmt"># [(embedding, query, response), ...]</span>
+        <span class="kw">self</span>.threshold = similarity_threshold
+
+    <span class="kw">def</span> <span class="fn">_get_embedding</span>(<span class="kw">self</span>, text: <span class="type">str</span>) -&gt; np.ndarray:
+        <span class="str">"""텍스트 임베딩 생성"""</span>
+        response = client.embeddings.create(
+            model=<span class="str">"text-embedding-3-small"</span>,
+            input=text
+        )
+        <span class="kw">return</span> np.array(response.data[<span class="num">0</span>].embedding)
+
+    <span class="kw">def</span> <span class="fn">get</span>(<span class="kw">self</span>, query: <span class="type">str</span>) -&gt; <span class="type">str</span> | <span class="kw">None</span>:
+        <span class="str">"""유사한 쿼리의 캐시된 응답 찾기"""</span>
+        <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>.cache:
+            <span class="kw">return</span> <span class="kw">None</span>
+
+        query_embedding = <span class="kw">self</span>._get_embedding(query)
+
+        <span class="cmt"># 모든 캐시 항목과 유사도 계산</span>
+        max_similarity = <span class="num">0.0</span>
+        best_response = <span class="kw">None</span>
+
+        <span class="kw">for</span> cached_embedding, cached_query, cached_response <span class="kw">in</span> <span class="kw">self</span>.cache:
+            similarity = cosine_similarity(
+                [query_embedding],
+                [cached_embedding]
+            )[<span class="num">0</span>][<span class="num">0</span>]
+
+            <span class="kw">if</span> similarity &gt; max_similarity:
+                max_similarity = similarity
+                best_response = cached_response
+
+        <span class="cmt"># 임계값 초과 시 캐시 히트</span>
+        <span class="kw">if</span> max_similarity &gt;= <span class="kw">self</span>.threshold:
+            logger.info(<span class="str">f"Semantic cache HIT (similarity: {max_similarity:.3f})"</span>)
+            <span class="kw">return</span> best_response
+
+        logger.info(<span class="str">f"Semantic cache MISS (best: {max_similarity:.3f})"</span>)
+        <span class="kw">return</span> <span class="kw">None</span>
+
+    <span class="kw">def</span> <span class="fn">set</span>(<span class="kw">self</span>, query: <span class="type">str</span>, response: <span class="type">str</span>):
+        <span class="str">"""쿼리와 응답 캐싱"""</span>
+        embedding = <span class="kw">self</span>._get_embedding(query)
+        <span class="kw">self</span>.cache.append((embedding, query, response))
+
+        <span class="cmt"># 캐시 크기 제한 (LRU)</span>
+        <span class="kw">if</span> <span class="fn">len</span>(<span class="kw">self</span>.cache) &gt; <span class="num">1000</span>:
+            <span class="kw">self</span>.cache.pop(<span class="num">0</span>)
+
+
+<span class="cmt"># 사용</span>
+semantic_cache = SemanticCache(similarity_threshold=<span class="num">0.95</span>)
+
+queries = [
+    <span class="str">"Python이란 무엇인가요?"</span>,
+    <span class="str">"Python이 뭐에요?"</span>,  <span class="cmt"># 유사 → 캐시 히트</span>
+    <span class="str">"자바스크립트란?"</span>,  <span class="cmt"># 다름 → 캐시 미스</span>
+]
+
+<span class="kw">for</span> q <span class="kw">in</span> queries:
+    cached = semantic_cache.get(q)
+    <span class="kw">if</span> cached:
+        <span class="fn">print</span>(<span class="str">f"Cached: {cached[:50]}..."</span>)
+    <span class="kw">else</span>:
+        response = client.chat.completions.create(
+            model=<span class="str">"gpt-4o"</span>,
+            messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: q}]
+        ).choices[<span class="num">0</span>].message.content
+
+        semantic_cache.set(q, response)
+        <span class="fn">print</span>(<span class="str">f"Fresh: {response[:50]}..."</span>)
+</code></pre>
+</div>
+
+<h3 id="prompt-caching">프롬프트 캐싱 (제공자 네이티브)</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># Claude 프롬프트 캐싱</span>
+<span class="kw">from</span> anthropic <span class="kw">import</span> Anthropic
+
+client = Anthropic()
+
+<span class="cmt"># 긴 시스템 프롬프트 (캐싱 대상)</span>
+long_context = <span class="str">"""
+[10,000 토큰의 문서, API 명세, 코드베이스 등]
+"""</span>
+
+response = client.messages.create(
+    model=<span class="str">"claude-4-sonnet"</span>,
+    max_tokens=<span class="num">1000</span>,
+    system=[
+        {
+            <span class="str">"type"</span>: <span class="str">"text"</span>,
+            <span class="str">"text"</span>: long_context,
+            <span class="str">"cache_control"</span>: {<span class="str">"type"</span>: <span class="str">"ephemeral"</span>}  <span class="cmt"># 캐싱 활성화</span>
+        }
+    ],
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"이 문서에 대한 질문..."</span>}
+    ]
+)
+
+<span class="cmt"># 비용 절감 확인</span>
+<span class="fn">print</span>(<span class="str">f"Cache creation tokens: {response.usage.cache_creation_input_tokens}"</span>)
+<span class="fn">print</span>(<span class="str">f"Cache read tokens: {response.usage.cache_read_input_tokens}"</span>)
+<span class="fn">print</span>(<span class="str">f"Regular input tokens: {response.usage.input_tokens}"</span>)
+
+<span class="cmt"># 캐시 히트 시: cache_read_input_tokens 비용 90% 할인</span>
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="logging">로깅 및 모니터링</h2>
+
+<h3 id="structured-logging">구조화된 로깅</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> logging
+<span class="kw">import</span> json
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> typing <span class="kw">import</span> Any
+
+<span class="kw">class</span> <span class="type">JSONFormatter</span>(logging.Formatter):
+    <span class="str">"""JSON 형식 로그"""</span>
+
+    <span class="kw">def</span> <span class="fn">format</span>(<span class="kw">self</span>, record: logging.LogRecord) -&gt; <span class="type">str</span>:
+        log_data = {
+            <span class="str">"timestamp"</span>: datetime.utcnow().isoformat(),
+            <span class="str">"level"</span>: record.levelname,
+            <span class="str">"logger"</span>: record.name,
+            <span class="str">"message"</span>: record.getMessage(),
+        }
+
+        <span class="cmt"># 추가 필드</span>
+        <span class="kw">if</span> <span class="fn">hasattr</span>(record, <span class="str">'extra_fields'</span>):
+            log_data.update(record.extra_fields)
+
+        <span class="kw">if</span> record.exc_info:
+            log_data[<span class="str">"exception"</span>] = <span class="kw">self</span>.formatException(record.exc_info)
+
+        <span class="kw">return</span> json.dumps(log_data)
+
+
+<span class="cmt"># 로거 설정</span>
+logger = logging.getLogger(<span class="str">"llm_service"</span>)
+logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler()
+handler.setFormatter(JSONFormatter())
+logger.addHandler(handler)
+
+
+<span class="cmt"># LLM 호출 로깅 래퍼</span>
+<span class="kw">import</span> time
+<span class="kw">from</span> functools <span class="kw">import</span> wraps
+
+<span class="kw">def</span> <span class="fn">log_llm_call</span>(func):
+    @wraps(func)
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        start_time = time.time()
+        model = kwargs.get(<span class="str">'model'</span>, <span class="str">'unknown'</span>)
+        messages = kwargs.get(<span class="str">'messages'</span>, [])
+
+        <span class="kw">try</span>:
+            result = func(*args, **kwargs)
+            latency = time.time() - start_time
+
+            <span class="cmt"># 성공 로그</span>
+            logger.info(
+                <span class="str">"LLM call successful"</span>,
+                extra={<span class="str">'extra_fields'</span>: {
+                    <span class="str">"model"</span>: model,
+                    <span class="str">"latency_ms"</span>: <span class="fn">int</span>(latency * <span class="num">1000</span>),
+                    <span class="str">"input_tokens"</span>: result.usage.prompt_tokens,
+                    <span class="str">"output_tokens"</span>: result.usage.completion_tokens,
+                    <span class="str">"total_tokens"</span>: result.usage.total_tokens,
+                    <span class="str">"cost_usd"</span>: calculate_cost(model, result.usage),
+                    <span class="str">"message_count"</span>: <span class="fn">len</span>(messages),
+                    <span class="str">"status"</span>: <span class="str">"success"</span>
+                }}
+            )
+
+            <span class="kw">return</span> result
+
+        <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+            latency = time.time() - start_time
+
+            <span class="cmt"># 실패 로그</span>
+            logger.error(
+                <span class="str">f"LLM call failed: {e}"</span>,
+                extra={<span class="str">'extra_fields'</span>: {
+                    <span class="str">"model"</span>: model,
+                    <span class="str">"latency_ms"</span>: <span class="fn">int</span>(latency * <span class="num">1000</span>),
+                    <span class="str">"error_type"</span>: <span class="fn">type</span>(e).__name__,
+                    <span class="str">"status"</span>: <span class="str">"error"</span>
+                }},
+                exc_info=<span class="kw">True</span>
+            )
+            <span class="kw">raise</span>
+
+    <span class="kw">return</span> wrapper
+
+
+@log_llm_call
+<span class="kw">def</span> <span class="fn">call_llm</span>(**kwargs):
+    <span class="kw">return</span> client.chat.completions.create(**kwargs)
+</code></pre>
+</div>
+
+<h3 id="metrics">메트릭 수집</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># Prometheus 메트릭</span>
+<span class="kw">from</span> prometheus_client <span class="kw">import</span> Counter, Histogram, Gauge
+
+<span class="cmt"># 메트릭 정의</span>
+llm_requests_total = Counter(
+    <span class="str">'llm_requests_total'</span>,
+    <span class="str">'Total LLM API requests'</span>,
+    [<span class="str">'model'</span>, <span class="str">'status'</span>]
+)
+
+llm_latency_seconds = Histogram(
+    <span class="str">'llm_latency_seconds'</span>,
+    <span class="str">'LLM API latency'</span>,
+    [<span class="str">'model'</span>],
+    buckets=(<span class="num">0.1</span>, <span class="num">0.5</span>, <span class="num">1.0</span>, <span class="num">2.0</span>, <span class="num">5.0</span>, <span class="num">10.0</span>, <span class="num">30.0</span>, <span class="num">60.0</span>)
+)
+
+llm_tokens_total = Counter(
+    <span class="str">'llm_tokens_total'</span>,
+    <span class="str">'Total tokens processed'</span>,
+    [<span class="str">'model'</span>, <span class="str">'type'</span>]  <span class="cmt"># type: input/output</span>
+)
+
+llm_cost_usd_total = Counter(
+    <span class="str">'llm_cost_usd_total'</span>,
+    <span class="str">'Total cost in USD'</span>,
+    [<span class="str">'model'</span>]
+)
+
+llm_active_requests = Gauge(
+    <span class="str">'llm_active_requests'</span>,
+    <span class="str">'Number of active LLM requests'</span>,
+    [<span class="str">'model'</span>]
+)
+
+
+<span class="cmt"># 메트릭 래퍼</span>
+<span class="kw">def</span> <span class="fn">track_metrics</span>(func):
+    @wraps(func)
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        model = kwargs.get(<span class="str">'model'</span>, <span class="str">'unknown'</span>)
+
+        llm_active_requests.labels(model=model).inc()
+        start = time.time()
+
+        <span class="kw">try</span>:
+            result = func(*args, **kwargs)
+            latency = time.time() - start
+
+            <span class="cmt"># 성공 메트릭</span>
+            llm_requests_total.labels(model=model, status=<span class="str">'success'</span>).inc()
+            llm_latency_seconds.labels(model=model).observe(latency)
+
+            llm_tokens_total.labels(model=model, <span class="fn">type</span>=<span class="str">'input'</span>).inc(
+                result.usage.prompt_tokens
+            )
+            llm_tokens_total.labels(model=model, <span class="fn">type</span>=<span class="str">'output'</span>).inc(
+                result.usage.completion_tokens
+            )
+
+            cost = calculate_cost(model, result.usage)
+            llm_cost_usd_total.labels(model=model).inc(cost)
+
+            <span class="kw">return</span> result
+
+        <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+            <span class="cmt"># 실패 메트릭</span>
+            llm_requests_total.labels(model=model, status=<span class="str">'error'</span>).inc()
+            <span class="kw">raise</span>
+
+        <span class="kw">finally</span>:
+            llm_active_requests.labels(model=model).dec()
+
+    <span class="kw">return</span> wrapper
+
+
+<span class="cmt"># Prometheus 엔드포인트</span>
+<span class="kw">from</span> prometheus_client <span class="kw">import</span> start_http_server
+
+start_http_server(<span class="num">9090</span>)  <span class="cmt"># http://localhost:9090/metrics</span>
+</code></pre>
+</div>
+
+<h3 id="alerting">알림 설정</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">yaml</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># Prometheus Alert Rules (prometheus_rules.yml)</span>
+<span class="kw">groups:</span>
+  - <span class="kw">name:</span> llm_alerts
+    <span class="kw">interval:</span> 30s
+    <span class="kw">rules:</span>
+      <span class="cmt"># 높은 에러율</span>
+      - <span class="kw">alert:</span> HighLLMErrorRate
+        <span class="kw">expr:</span> |
+          (
+            <span class="fn">rate</span>(llm_requests_total{status=<span class="str">"error"</span>}[5m])
+            /
+            <span class="fn">rate</span>(llm_requests_total[5m])
+          ) &gt; <span class="num">0.05</span>
+        <span class="kw">for:</span> 5m
+        <span class="kw">labels:</span>
+          <span class="kw">severity:</span> warning
+        <span class="kw">annotations:</span>
+          <span class="kw">summary:</span> <span class="str">"High LLM error rate"</span>
+          <span class="kw">description:</span> <span class="str">"Error rate {{ $value | humanizePercentage }} for {{ $labels.model }}"</span>
+
+      <span class="cmt"># 느린 응답</span>
+      - <span class="kw">alert:</span> SlowLLMResponse
+        <span class="kw">expr:</span> |
+          histogram_quantile(<span class="num">0.95</span>, llm_latency_seconds_bucket) &gt; <span class="num">30</span>
+        <span class="kw">for:</span> 10m
+        <span class="kw">labels:</span>
+          <span class="kw">severity:</span> info
+        <span class="kw">annotations:</span>
+          <span class="kw">summary:</span> <span class="str">"Slow LLM responses"</span>
+          <span class="kw">description:</span> <span class="str">"P95 latency {{ $value }}s for {{ $labels.model }}"</span>
+
+      <span class="cmt"># 높은 비용</span>
+      - <span class="kw">alert:</span> HighLLMCost
+        <span class="kw">expr:</span> |
+          <span class="fn">increase</span>(llm_cost_usd_total[1h]) &gt; <span class="num">100</span>
+        <span class="kw">for:</span> 5m
+        <span class="kw">labels:</span>
+          <span class="kw">severity:</span> critical
+        <span class="kw">annotations:</span>
+          <span class="kw">summary:</span> <span class="str">"High LLM cost"</span>
+          <span class="kw">description:</span> <span class="str">"Cost ${{ $value }} in last hour"</span>
+
+      <span class="cmt"># Rate Limit 접근</span>
+      - <span class="kw">alert:</span> ApproachingRateLimit
+        <span class="kw">expr:</span> |
+          <span class="fn">rate</span>(llm_requests_total[1m]) &gt; <span class="num">150</span>  <span class="cmt"># RPM 10k의 90%</span>
+        <span class="kw">for:</span> 2m
+        <span class="kw">labels:</span>
+          <span class="kw">severity:</span> warning
+        <span class="kw">annotations:</span>
+          <span class="kw">summary:</span> <span class="str">"Approaching rate limit"</span>
+          <span class="kw">description:</span> <span class="str">"{{ $value }} req/min for {{ $labels.model }}"</span>
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="security">보안</h2>
+
+<h3 id="api-key-security">API 키 보안</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">모범 사례</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 환경 변수 사용</span>
+❌ 나쁨:
+  api_key = <span class="str">"sk-proj-abc123..."</span>  <span class="cmt"># 하드코딩</span>
+
+✅ 좋음:
+  api_key = os.getenv(<span class="str">"OPENAI_API_KEY"</span>)
+
+<span class="cmt">// 2. .env 파일 (로컬 개발)</span>
+<span class="cmt"># .env</span>
+OPENAI_API_KEY=sk-proj-...
+ANTHROPIC_API_KEY=sk-ant-...
+
+<span class="cmt"># .gitignore에 추가</span>
+.env
+*.env
+
+<span class="cmt">// 3. 비밀 관리 서비스 (프로덕션)</span>
+AWS Secrets Manager
+Google Cloud Secret Manager
+Azure Key Vault
+HashiCorp Vault
+
+<span class="cmt">// 4. 키 로테이션</span>
+• 정기적으로 API 키 갱신 (<span class="num">90</span>일마다)
+• 침해 의심 시 즉시 폐기
+• 여러 키 사용 (서비스별, 환경별)
+
+<span class="cmt">// 5. 최소 권한 원칙</span>
+• 필요한 권한만 부여 (예: read-only)
+• 프로젝트별 키 분리
+• 개발/스테이징/프로덕션 키 분리
+
+<span class="cmt">// 6. 로그에서 키 제외</span>
+❌ 나쁨:
+  logger.info(<span class="str">f"Using key: {api_key}"</span>)
+
+✅ 좋음:
+  logger.info(<span class="str">f"Using key: {api_key[:8]}..."</span>)
+</code></pre>
+</div>
+
+<h3 id="api-key-management">API 키 관리 코드</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 환경 변수</span>
+<span class="kw">import</span> os
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+
+load_dotenv()  <span class="cmt"># .env 파일 로드</span>
+
+api_key = os.getenv(<span class="str">"OPENAI_API_KEY"</span>)
+<span class="kw">if</span> <span class="kw">not</span> api_key:
+    <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"OPENAI_API_KEY not set"</span>)
+
+
+<span class="cmt"># AWS Secrets Manager</span>
+<span class="kw">import</span> boto3
+<span class="kw">import</span> json
+
+<span class="kw">def</span> <span class="fn">get_secret</span>(secret_name: <span class="type">str</span>) -&gt; <span class="type">dict</span>:
+    client = boto3.client(<span class="str">'secretsmanager'</span>, region_name=<span class="str">'us-east-1'</span>)
+    response = client.get_secret_value(SecretId=secret_name)
+    <span class="kw">return</span> json.loads(response[<span class="str">'SecretString'</span>])
+
+secrets = get_secret(<span class="str">'prod/llm/api-keys'</span>)
+openai_key = secrets[<span class="str">'openai'</span>]
+anthropic_key = secrets[<span class="str">'anthropic'</span>]
+
+
+<span class="cmt"># 키 마스킹 헬퍼</span>
+<span class="kw">def</span> <span class="fn">mask_api_key</span>(key: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    <span class="str">"""API 키를 안전하게 표시"""</span>
+    <span class="kw">if</span> <span class="kw">not</span> key <span class="kw">or</span> <span class="fn">len</span>(key) &lt; <span class="num">12</span>:
+        <span class="kw">return</span> <span class="str">"***"</span>
+    <span class="kw">return</span> <span class="str">f"{key[:8]}...{key[-4:]}"</span>
+
+logger.info(<span class="str">f"Using API key: {mask_api_key(api_key)}"</span>)
+</code></pre>
+</div>
+
+<h3 id="input-validation">입력 검증</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, Field, validator
+
+<span class="kw">class</span> <span class="type">ChatRequest</span>(BaseModel):
+    <span class="str">"""입력 검증 스키마"""</span>
+
+    model: <span class="type">str</span> = Field(..., regex=<span class="str">r'^(gpt-4o|claude-4-sonnet|gemini-pro)$'</span>)
+    messages: <span class="type">list</span> = Field(..., min_items=<span class="num">1</span>, max_items=<span class="num">100</span>)
+    temperature: <span class="type">float</span> = Field(<span class="num">0.7</span>, ge=<span class="num">0.0</span>, le=<span class="num">2.0</span>)
+    max_tokens: <span class="type">int</span> = Field(<span class="num">1000</span>, ge=<span class="num">1</span>, le=<span class="num">4000</span>)
+
+    @validator(<span class="str">'messages'</span>)
+    <span class="kw">def</span> <span class="fn">validate_messages</span>(<span class="kw">cls</span>, v):
+        <span class="kw">for</span> msg <span class="kw">in</span> v:
+            <span class="kw">if</span> <span class="str">'role'</span> <span class="kw">not</span> <span class="kw">in</span> msg <span class="kw">or</span> <span class="str">'content'</span> <span class="kw">not</span> <span class="kw">in</span> msg:
+                <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"Message must have 'role' and 'content'"</span>)
+
+            <span class="kw">if</span> msg[<span class="str">'role'</span>] <span class="kw">not</span> <span class="kw">in</span> [<span class="str">'system'</span>, <span class="str">'user'</span>, <span class="str">'assistant'</span>]:
+                <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">f"Invalid role: {msg['role']}"</span>)
+
+            <span class="cmt"># 콘텐츠 길이 제한 (프롬프트 인젝션 방지)</span>
+            <span class="kw">if</span> <span class="fn">len</span>(msg[<span class="str">'content'</span>]) &gt; <span class="num">50000</span>:
+                <span class="kw">raise</span> <span class="type">ValueError</span>(<span class="str">"Message content too long"</span>)
+
+        <span class="kw">return</span> v
+
+
+<span class="cmt"># 사용</span>
+<span class="kw">try</span>:
+    request = ChatRequest(
+        model=<span class="str">"gpt-4o"</span>,
+        messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello"</span>}]
+    )
+<span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+    logger.error(<span class="str">f"Invalid request: {e}"</span>)
+    <span class="kw">raise</span>
+</code></pre>
+</div>
+
+<h3 id="data-privacy">데이터 프라이버시</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">모범 사례</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. PII 제거 (개인 식별 정보)</span>
+<span class="kw">import</span> re
+
+<span class="kw">def</span> <span class="fn">redact_pii</span>(text: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    <span class="str">"""민감 정보 마스킹"""</span>
+    <span class="cmt"># 이메일</span>
+    text = re.sub(<span class="str">r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'</span>,
+                  <span class="str">'[EMAIL]'</span>, text)
+
+    <span class="cmt"># 전화번호</span>
+    text = re.sub(<span class="str">r'\b\d{3}[-.]?\d{3,4}[-.]?\d{4}\b'</span>,
+                  <span class="str">'[PHONE]'</span>, text)
+
+    <span class="cmt"># 신용카드 (간단한 패턴)</span>
+    text = re.sub(<span class="str">r'\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b'</span>,
+                  <span class="str">'[CARD]'</span>, text)
+
+    <span class="kw">return</span> text
+
+
+<span class="cmt">// 2. 데이터 암호화</span>
+<span class="kw">from</span> cryptography.fernet <span class="kw">import</span> Fernet
+
+<span class="kw">class</span> <span class="type">SecureStorage</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, key: <span class="type">bytes</span>):
+        <span class="kw">self</span>.cipher = Fernet(key)
+
+    <span class="kw">def</span> <span class="fn">encrypt</span>(<span class="kw">self</span>, data: <span class="type">str</span>) -&gt; <span class="type">bytes</span>:
+        <span class="kw">return</span> <span class="kw">self</span>.cipher.encrypt(data.encode())
+
+    <span class="kw">def</span> <span class="fn">decrypt</span>(<span class="kw">self</span>, encrypted: <span class="type">bytes</span>) -&gt; <span class="type">str</span>:
+        <span class="kw">return</span> <span class="kw">self</span>.cipher.decrypt(encrypted).decode()
+
+
+<span class="cmt">// 3. 로그에서 민감 정보 제외</span>
+• 사용자 프롬프트 전체 로깅 금지
+• 응답 내용 샘플링만 로깅
+• 개인 정보 필터링 후 로깅
+
+<span class="cmt">// 4. 데이터 보존 정책</span>
+• 필요 기간만 저장 (<span class="num">30</span>일, <span class="num">90</span>일)
+• 자동 삭제 스크립트
+• 사용자 요청 시 즉시 삭제
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="production-checklist">프로덕션 체크리스트</h2>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">체크리스트</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">## 1. 에러 처리</span>
+☐ 지수 백오프 재시도 구현
+☐ Circuit Breaker 패턴 적용
+☐ 타임아웃 설정 (연결, 읽기, 총)
+☐ 모든 예외 유형 처리 (Rate Limit, Timeout, Auth, etc.)
+☐ 컨텍스트 길이 초과 시 자동 트리밍
+
+<span class="cmt">## 2. Rate Limiting</span>
+☐ Rate Limiter 구현 (RPM, TPM 모두)
+☐ 여러 계정/키로 로드 밸런싱
+☐ Rate Limit 접근 시 알림
+☐ 요청 큐 구현 (급증 대응)
+
+<span class="cmt">## 3. 성능</span>
+☐ 캐싱 전략 (정확/시맨틱/프롬프트)
+☐ 스트리밍 사용 (긴 응답)
+☐ 적절한 모델 선택 (작업 복잡도 기반)
+☐ 응답 시간 P95 &lt; 5초
+☐ 동시 요청 처리 (비동기)
+
+<span class="cmt">## 4. 비용 최적화</span>
+☐ 비용 추적 및 알림
+☐ 일일/월간 예산 제한
+☐ 캐시 히트율 &gt; 30%
+☐ 단순 작업 → 저렴한 모델
+☐ 토큰 사용량 모니터링
+
+<span class="cmt">## 5. 로깅 및 모니터링</span>
+☐ 구조화된 로깅 (JSON)
+☐ 메트릭 수집 (Prometheus/CloudWatch)
+☐ 대시보드 구축 (Grafana)
+☐ 알림 설정 (에러율, 지연시간, 비용)
+☐ 분산 추적 (Jaeger/DataDog)
+
+<span class="cmt">## 6. 보안</span>
+☐ API 키 환경 변수/비밀 관리 서비스
+☐ HTTPS 강제
+☐ 입력 검증 (길이, 형식, 악성 콘텐츠)
+☐ PII 자동 제거
+☐ 로그에서 민감 정보 제외
+☐ Rate Limiting (사용자별)
+
+<span class="cmt">## 7. 가용성</span>
+☐ 폴백 제공자 설정 (주 → 보조 → 로컬)
+☐ Health Check 엔드포인트
+☐ 자동 복구 메커니즘
+☐ 점진적 배포 (Canary, Blue/Green)
+☐ 장애 시나리오 테스트
+
+<span class="cmt">## 8. 테스트</span>
+☐ 단위 테스트 (모킹)
+☐ 통합 테스트 (실제 API)
+☐ 부하 테스트 (예상 트래픽 2배)
+☐ 장애 주입 테스트 (Chaos Engineering)
+☐ 회귀 테스트 (품질 검증)
+
+<span class="cmt">## 9. 문서화</span>
+☐ API 문서 (OpenAPI/Swagger)
+☐ Runbook (장애 대응)
+☐ 아키텍처 다이어그램
+☐ 비용 모델 문서
+☐ 온콜 가이드
+
+<span class="cmt">## 10. 규정 준수</span>
+☐ GDPR 준수 (EU 사용자)
+☐ CCPA 준수 (캘리포니아)
+☐ 데이터 보존 정책
+☐ 사용자 동의 관리
+☐ 감사 로그
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="example-production">프로덕션급 통합 예제</h2>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># production_llm_client.py</span>
+
+<span class="kw">import</span> os
+<span class="kw">import</span> time
+<span class="kw">import</span> logging
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI, APIError, RateLimitError, APITimeoutError
+<span class="kw">from</span> anthropic <span class="kw">import</span> Anthropic, APIConnectionError
+<span class="kw">from</span> tenacity <span class="kw">import</span> retry, stop_after_attempt, wait_exponential
+<span class="kw">from</span> prometheus_client <span class="kw">import</span> Counter, Histogram
+<span class="kw">import</span> redis
+
+logger = logging.getLogger(__name__)
+
+<span class="cmt"># 메트릭</span>
+requests_total = Counter(<span class="str">'llm_requests_total'</span>, <span class="str">'Total requests'</span>, [<span class="str">'provider'</span>, <span class="str">'status'</span>])
+latency_seconds = Histogram(<span class="str">'llm_latency_seconds'</span>, <span class="str">'Latency'</span>, [<span class="str">'provider'</span>])
+cost_total = Counter(<span class="str">'llm_cost_usd_total'</span>, <span class="str">'Total cost'</span>, [<span class="str">'provider'</span>])
+
+
+@dataclass
+<span class="kw">class</span> <span class="type">LLMConfig</span>:
+    <span class="str">"""LLM 클라이언트 설정"""</span>
+    openai_key: <span class="type">str</span>
+    anthropic_key: <span class="type">str</span>
+    redis_url: <span class="type">str</span> = <span class="str">"redis://localhost:6379"</span>
+    cache_ttl: <span class="type">int</span> = <span class="num">3600</span>
+    timeout: <span class="type">float</span> = <span class="num">30.0</span>
+    max_retries: <span class="type">int</span> = <span class="num">3</span>
+    daily_budget: <span class="type">float</span> = <span class="num">100.0</span>
+
+
+<span class="kw">class</span> <span class="type">ProductionLLMClient</span>:
+    <span class="str">"""
+    프로덕션 환경의 LLM 클라이언트
+    - 재시도, 폴백, 캐싱, 메트릭, 비용 추적
+    """</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, config: LLMConfig):
+        <span class="kw">self</span>.config = config
+        <span class="kw">self</span>.openai = OpenAI(api_key=config.openai_key, timeout=config.timeout)
+        <span class="kw">self</span>.anthropic = Anthropic(api_key=config.anthropic_key, timeout=config.timeout)
+        <span class="kw">self</span>.cache = redis.from_url(config.redis_url)
+        <span class="kw">self</span>.daily_spend = <span class="num">0.0</span>
+
+    <span class="kw">def</span> <span class="fn">_check_budget</span>(<span class="kw">self</span>, estimated_cost: <span class="type">float</span>):
+        <span class="kw">if</span> <span class="kw">self</span>.daily_spend + estimated_cost &gt; <span class="kw">self</span>.config.daily_budget:
+            <span class="kw">raise</span> <span class="type">Exception</span>(<span class="str">f"Daily budget ${self.config.daily_budget} exceeded"</span>)
+
+    <span class="kw">def</span> <span class="fn">_get_cache_key</span>(<span class="kw">self</span>, model: <span class="type">str</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        <span class="kw">import</span> hashlib, json
+        key_data = json.dumps({<span class="str">'model'</span>: model, <span class="str">'messages'</span>: messages}, sort_keys=<span class="kw">True</span>)
+        <span class="kw">return</span> <span class="str">f"llm:{hashlib.sha256(key_data.encode()).hexdigest()}"</span>
+
+    @retry(
+        stop=stop_after_attempt(<span class="num">3</span>),
+        wait=wait_exponential(min=<span class="num">2</span>, max=<span class="num">60</span>),
+        retry_error_callback=<span class="kw">lambda</span> _: <span class="kw">None</span>
+    )
+    <span class="kw">def</span> <span class="fn">_call_openai</span>(<span class="kw">self</span>, model: <span class="type">str</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        response = <span class="kw">self</span>.openai.chat.completions.create(
+            model=model,
+            messages=messages
+        )
+
+        <span class="cmt"># 비용 추적</span>
+        cost = (
+            response.usage.prompt_tokens * <span class="num">2.5</span> / <span class="num">1_000_000</span> +
+            response.usage.completion_tokens * <span class="num">10</span> / <span class="num">1_000_000</span>
+        )
+        <span class="kw">self</span>.daily_spend += cost
+        cost_total.labels(provider=<span class="str">'openai'</span>).inc(cost)
+
+        <span class="kw">return</span> response.choices[<span class="num">0</span>].message.content
+
+    <span class="kw">def</span> <span class="fn">_call_anthropic</span>(<span class="kw">self</span>, model: <span class="type">str</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        response = <span class="kw">self</span>.anthropic.messages.create(
+            model=model,
+            messages=messages,
+            max_tokens=<span class="num">2000</span>
+        )
+
+        cost = (
+            response.usage.input_tokens * <span class="num">3</span> / <span class="num">1_000_000</span> +
+            response.usage.output_tokens * <span class="num">15</span> / <span class="num">1_000_000</span>
+        )
+        <span class="kw">self</span>.daily_spend += cost
+        cost_total.labels(provider=<span class="str">'anthropic'</span>).inc(cost)
+
+        <span class="kw">return</span> response.content[<span class="num">0</span>].text
+
+    <span class="kw">def</span> <span class="fn">chat</span>(<span class="kw">self</span>, model: <span class="type">str</span>, messages: <span class="type">list</span>, use_cache: <span class="type">bool</span> = <span class="kw">True</span>) -&gt; <span class="type">str</span>:
+        <span class="str">"""
+        채팅 완성 (캐싱, 재시도, 폴백 포함)
+
+        Args:
+            model: 모델 이름 (예: 'gpt-4o', 'claude-4-sonnet')
+            messages: 메시지 리스트
+            use_cache: 캐싱 사용 여부
+
+        Returns:
+            LLM 응답
+        """</span>
+        start_time = time.time()
+
+        <span class="cmt"># 1. 캐시 확인</span>
+        <span class="kw">if</span> use_cache:
+            cache_key = <span class="kw">self</span>._get_cache_key(model, messages)
+            cached = <span class="kw">self</span>.cache.get(cache_key)
+            <span class="kw">if</span> cached:
+                logger.info(<span class="str">"Cache HIT"</span>)
+                <span class="kw">return</span> cached.decode()
+
+        <span class="cmt"># 2. 예산 확인</span>
+        <span class="kw">self</span>._check_budget(estimated_cost=<span class="num">0.05</span>)
+
+        <span class="cmt"># 3. API 호출 (폴백 체인)</span>
+        providers = [
+            (<span class="str">'openai'</span>, <span class="kw">self</span>._call_openai, <span class="str">'gpt-4o'</span>),
+            (<span class="str">'anthropic'</span>, <span class="kw">self</span>._call_anthropic, <span class="str">'claude-4-sonnet'</span>),
+        ]
+
+        last_error = <span class="kw">None</span>
+
+        <span class="kw">for</span> provider_name, provider_func, fallback_model <span class="kw">in</span> providers:
+            <span class="kw">try</span>:
+                logger.info(<span class="str">f"Trying {provider_name}..."</span>)
+                result = provider_func(fallback_model, messages)
+
+                <span class="cmt"># 성공 메트릭</span>
+                requests_total.labels(provider=provider_name, status=<span class="str">'success'</span>).inc()
+                latency = time.time() - start_time
+                latency_seconds.labels(provider=provider_name).observe(latency)
+
+                <span class="cmt"># 캐싱</span>
+                <span class="kw">if</span> use_cache:
+                    <span class="kw">self</span>.cache.setex(cache_key, <span class="kw">self</span>.config.cache_ttl, result)
+
+                <span class="kw">return</span> result
+
+            <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+                last_error = e
+                requests_total.labels(provider=provider_name, status=<span class="str">'error'</span>).inc()
+                logger.warning(<span class="str">f"{provider_name} failed: {e}"</span>)
+                <span class="kw">continue</span>
+
+        <span class="cmt"># 모든 제공자 실패</span>
+        <span class="kw">raise</span> <span class="type">Exception</span>(<span class="str">f"All providers failed. Last error: {last_error}"</span>)
+
+
+<span class="cmt"># 사용 예제</span>
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    config = LLMConfig(
+        openai_key=os.getenv(<span class="str">"OPENAI_API_KEY"</span>),
+        anthropic_key=os.getenv(<span class="str">"ANTHROPIC_API_KEY"</span>),
+        daily_budget=<span class="num">50.0</span>
+    )
+
+    client = ProductionLLMClient(config)
+
+    <span class="kw">try</span>:
+        response = client.chat(
+            model=<span class="str">"gpt-4o"</span>,
+            messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Explain quantum computing"</span>}]
+        )
+        <span class="fn">print</span>(response)
+    <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+        logger.error(<span class="str">f"Failed: {e}"</span>)
+</code></pre>
+</div>
+
+</section>
+
+<div class="info-box tip">
+<strong>핵심 요약</strong>
+<ul>
+<li>에러 처리: 지수 백오프 재시도, Circuit Breaker, 타임아웃</li>
+<li>Rate Limiting: 토큰 버킷, 슬라이딩 윈도우, 여러 계정 로드 밸런싱</li>
+<li>캐싱: 정확한 매칭, 시맨틱, 프롬프트 캐싱으로 비용 90% 절감</li>
+<li>로깅: 구조화된 로그, Prometheus 메트릭, 알림</li>
+<li>보안: API 키 보호, 입력 검증, PII 제거</li>
+<li>프로덕션 체크리스트 20항목 준수</li>
+</ul>
+</div>
+
+<nav class="page-nav"></nav>
+</main>
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="TypeScript SDK - Claude 문서">
+<meta property="og:description" content="Claude TypeScript/JavaScript SDK 완벽 가이드">
+<meta property="og:url" content="https://minzkn.com/claude/pages/typescript-sdk.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude TypeScript/JavaScript SDK 완벽 가이드">
+<meta name="keywords" content="TypeScript SDK, JavaScript, Node.js, Claude API">
+<meta name="author" content="MINZKN">
+<title>TypeScript SDK - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">TypeScript / JavaScript SDK</h1>
+  <p class="lead">
+    Anthropic의 공식 TypeScript SDK를 사용하면 Node.js 애플리케이션과 웹 서비스에서
+    Claude API를 type-safe하게 사용할 수 있습니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="installation">설치</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">npm</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>npm install @anthropic-ai/sdk</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">yarn</span>
+    </div>
+    <pre><code>yarn add @anthropic-ai/sdk</code></pre>
+  </div>
+
+  <h3 id="requirements">요구사항</h3>
+  <ul>
+    <li>Node.js 18 이상</li>
+    <li>TypeScript 4.5 이상 (TypeScript 사용 시)</li>
+  </ul>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 브라우저에서 사용 금지</div>
+    <p>
+      이 SDK는 <strong>서버 사이드 전용</strong>입니다. 브라우저에서 직접 사용하면 API 키가 노출됩니다.
+      프론트엔드에서 사용하려면 백엔드 API를 만들어 프록시하세요.
+    </p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="quickstart">빠른 시작</h2>
+
+  <h3 id="typescript">TypeScript</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> client <span class="kw">=</span> <span class="kw">new</span> <span class="fn">Anthropic</span>({
+  apiKey: process.env.<span class="str">ANTHROPIC_API_KEY</span>,
+});
+
+<span class="kw">const</span> message <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+  model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+  max_tokens: <span class="num">1024</span>,
+  messages: [
+    {role: <span class="str">'user'</span>, content: <span class="str">'안녕하세요, Claude!'</span>}
+  ],
+});
+
+console.<span class="fn">log</span>(message.content[<span class="num">0</span>].text);</code></pre>
+  </div>
+
+  <h3 id="javascript">JavaScript (CommonJS)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">JavaScript</span>
+    </div>
+    <pre><code><span class="kw">const</span> Anthropic <span class="kw">=</span> <span class="fn">require</span>(<span class="str">'@anthropic-ai/sdk'</span>);
+
+<span class="kw">const</span> client <span class="kw">=</span> <span class="kw">new</span> <span class="fn">Anthropic</span>({
+  apiKey: process.env.<span class="str">ANTHROPIC_API_KEY</span>,
+});
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">main</span>() {
+  <span class="kw">const</span> message <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+    model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+    max_tokens: <span class="num">1024</span>,
+    messages: [{role: <span class="str">'user'</span>, content: <span class="str">'Hello!'</span>}],
+  });
+
+  console.<span class="fn">log</span>(message.content[<span class="num">0</span>].text);
+}
+
+<span class="fn">main</span>();</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="sdk-architecture">SDK 구조</h2>
+  <p>
+    TypeScript SDK는 여러 계층으로 구성되어 있으며, 각 계층은 명확한 역할을 담당합니다.
+    이 구조를 이해하면 디버깅과 최적화에 도움이 됩니다.
+  </p>
+
+  <figure style="margin: 2.5rem 0;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 550"
+         style="width: 100%; max-width: 600px; height: auto; display: block; margin: 0 auto;">
+      <defs>
+        <marker id="ts-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Title -->
+      <text x="300" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--diagram-text)">
+        TypeScript SDK 계층 구조
+      </text>
+
+      <!-- Layer 1: Application Code -->
+      <rect x="100" y="50" width="400" height="70" rx="8"
+            fill="var(--accent-glow)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="300" y="75" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">
+        애플리케이션 코드
+      </text>
+      <text x="300" y="95" text-anchor="middle" font-size="11" fill="var(--text-secondary)">
+        Your Node.js / TypeScript App
+      </text>
+      <text x="300" y="110" text-anchor="middle" font-size="9" fill="var(--text-tertiary)" font-style="italic">
+        client.messages.create(...)
+      </text>
+
+      <!-- Arrow 1 -->
+      <line x1="300" y1="120" x2="300" y2="145"
+            stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#ts-arrow)"/>
+
+      <!-- Layer 2: Anthropic SDK -->
+      <rect x="100" y="145" width="400" height="70" rx="8"
+            fill="var(--diagram-primary)" stroke="var(--diagram-border)" stroke-width="2"/>
+      <text x="300" y="170" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">
+        Anthropic TypeScript SDK
+      </text>
+      <text x="300" y="190" text-anchor="middle" font-size="11" fill="var(--text-secondary)">
+        @anthropic-ai/sdk
+      </text>
+      <text x="300" y="205" text-anchor="middle" font-size="9" fill="var(--text-tertiary)" font-style="italic">
+        타입 안전성, 요청 생성, 응답 파싱
+      </text>
+
+      <!-- Arrow 2 -->
+      <line x1="300" y1="215" x2="300" y2="240"
+            stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#ts-arrow)"/>
+
+      <!-- Layer 3: HTTP Client -->
+      <rect x="100" y="240" width="400" height="70" rx="8"
+            fill="var(--diagram-primary)" stroke="var(--diagram-border)" stroke-width="2"/>
+      <text x="300" y="265" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">
+        HTTP 클라이언트
+      </text>
+      <text x="300" y="285" text-anchor="middle" font-size="11" fill="var(--text-secondary)">
+        node-fetch / axios (내장)
+      </text>
+      <text x="300" y="300" text-anchor="middle" font-size="9" fill="var(--text-tertiary)" font-style="italic">
+        HTTP 연결, 재시도, 타임아웃 처리
+      </text>
+
+      <!-- Arrow 3 -->
+      <line x1="300" y1="310" x2="300" y2="335"
+            stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#ts-arrow)"/>
+
+      <!-- Layer 4: REST API -->
+      <rect x="100" y="335" width="400" height="70" rx="8"
+            fill="var(--diagram-primary)" stroke="var(--diagram-border)" stroke-width="2"/>
+      <text x="300" y="360" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">
+        Claude REST API
+      </text>
+      <text x="300" y="380" text-anchor="middle" font-size="11" fill="var(--text-secondary)">
+        POST /v1/messages
+      </text>
+      <text x="300" y="395" text-anchor="middle" font-size="9" fill="var(--text-tertiary)" font-style="italic">
+        api.anthropic.com
+      </text>
+
+      <!-- Arrow 4 -->
+      <line x1="300" y1="405" x2="300" y2="430"
+            stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#ts-arrow)"/>
+
+      <!-- Layer 5: Claude Models -->
+      <rect x="100" y="430" width="400" height="70" rx="8"
+            fill="var(--accent-primary)" fill-opacity="0.2"
+            stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="300" y="455" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">
+        Claude 모델
+      </text>
+      <text x="300" y="475" text-anchor="middle" font-size="11" fill="var(--text-secondary)">
+        Opus 4.6 / Sonnet 4.5 / Haiku 4.5
+      </text>
+      <text x="300" y="490" text-anchor="middle" font-size="9" fill="var(--text-tertiary)" font-style="italic">
+        AI 응답 생성
+      </text>
+    </svg>
+    <p class="diagram-caption">그림: TypeScript SDK의 5계층 아키텍처 - 애플리케이션부터 AI 모델까지</p>
+  </figure>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 각 계층의 역할</div>
+    <ul style="margin-top: 0.5em;">
+      <li><strong>애플리케이션 코드</strong>: SDK 메서드 호출, 비즈니스 로직 처리</li>
+      <li><strong>Anthropic SDK</strong>: TypeScript 타입 안전성, JSON 직렬화, 에러 처리</li>
+      <li><strong>HTTP 클라이언트</strong>: 네트워크 통신, 재시도 로직, 타임아웃</li>
+      <li><strong>REST API</strong>: 인증, 라우팅, 요청 검증</li>
+      <li><strong>Claude 모델</strong>: 자연어 이해 및 생성</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="messages-api">Messages API</h2>
+
+  <h3 id="basic">기본 메시지</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript 타입 안전성</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> client <span class="kw">=</span> <span class="kw">new</span> <span class="fn">Anthropic</span>();
+
+<span class="kw">const</span> message: Anthropic.Message <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+  model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+  max_tokens: <span class="num">1024</span>,
+  messages: [
+    {role: <span class="str">'user'</span>, content: <span class="str">'TypeScript로 피보나치 함수 작성'</span>}
+  ],
+});
+
+<span class="cmt">// 타입 안전 접근</span>
+<span class="kw">const</span> text: <span class="type">string</span> <span class="kw">=</span> message.content[<span class="num">0</span>].text;
+<span class="kw">const</span> inputTokens: <span class="type">number</span> <span class="kw">=</span> message.usage.input_tokens;
+<span class="kw">const</span> outputTokens: <span class="type">number</span> <span class="kw">=</span> message.usage.output_tokens;</code></pre>
+  </div>
+
+  <h3 id="conversation">대화 관리</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript 대화 히스토리</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">type</span> <span class="type">Message</span> <span class="kw">=</span> {
+  role: <span class="str">'user'</span> <span class="kw">|</span> <span class="str">'assistant'</span>;
+  content: <span class="type">string</span>;
+};
+
+<span class="kw">const</span> conversation: <span class="type">Message</span>[] <span class="kw">=</span> [];
+
+<span class="cmt">// 1번째 메시지</span>
+conversation.<span class="fn">push</span>({role: <span class="str">'user'</span>, content: <span class="str">'React 컴포넌트 만들어줘'</span>});
+<span class="kw">const</span> msg1 <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+  model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+  max_tokens: <span class="num">2048</span>,
+  messages: conversation,
+});
+conversation.<span class="fn">push</span>({role: <span class="str">'assistant'</span>, content: msg1.content[<span class="num">0</span>].text});
+
+<span class="cmt">// 2번째 메시지 (이전 대화 기억)</span>
+conversation.<span class="fn">push</span>({role: <span class="str">'user'</span>, content: <span class="str">'TypeScript로 변환해줘'</span>});
+<span class="kw">const</span> msg2 <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+  model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+  max_tokens: <span class="num">2048</span>,
+  messages: conversation,
+});
+
+console.<span class="fn">log</span>(msg2.content[<span class="num">0</span>].text);</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="streaming">스트리밍</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript 스트리밍</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">const</span> stream <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+  model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+  max_tokens: <span class="num">1024</span>,
+  messages: [{role: <span class="str">'user'</span>, content: <span class="str">'긴 이야기 들려줘'</span>}],
+  stream: <span class="kw">true</span>,
+});
+
+<span class="kw">for</span> <span class="kw">await</span> (<span class="kw">const</span> event <span class="kw">of</span> stream) {
+  <span class="kw">if</span> (event.<span class="fn">type</span> <span class="kw">===</span> <span class="str">'content_block_delta'</span> <span class="kw">&&</span>
+      event.delta.<span class="fn">type</span> <span class="kw">===</span> <span class="str">'text_delta'</span>) {
+    process.stdout.<span class="fn">write</span>(event.delta.text);
+  }
+}</code></pre>
+  </div>
+
+  <h3 id="stream-helper">스트림 헬퍼</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript 간편 스트리밍</span>
+    </div>
+    <pre><code><span class="kw">const</span> stream <span class="kw">=</span> client.messages.<span class="fn">stream</span>({
+  model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+  max_tokens: <span class="num">1024</span>,
+  messages: [{role: <span class="str">'user'</span>, content: <span class="str">'안녕'</span>}],
+});
+
+stream
+  .<span class="fn">on</span>(<span class="str">'text'</span>, (text) <span class="kw">=></span> process.stdout.<span class="fn">write</span>(text))
+  .<span class="fn">on</span>(<span class="str">'end'</span>, () <span class="kw">=></span> console.<span class="fn">log</span>(<span class="str">'\n완료!'</span>))
+  .<span class="fn">on</span>(<span class="str">'error'</span>, (err) <span class="kw">=></span> console.<span class="fn">error</span>(err));
+
+<span class="cmt">// 또는 최종 메시지 얻기</span>
+<span class="kw">const</span> finalMessage <span class="kw">=</span> <span class="kw">await</span> stream.<span class="fn">finalMessage</span>();
+console.<span class="fn">log</span>(finalMessage.content[<span class="num">0</span>].text);</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="express">Express.js 통합</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Express.js + Claude API</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> express <span class="kw">from</span> <span class="str">'express'</span>;
+<span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> app <span class="kw">=</span> <span class="fn">express</span>();
+<span class="kw">const</span> client <span class="kw">=</span> <span class="kw">new</span> <span class="fn">Anthropic</span>();
+
+app.<span class="fn">use</span>(express.<span class="fn">json</span>());
+
+app.<span class="fn">post</span>(<span class="str">'/api/chat'</span>, <span class="kw">async</span> (req, res) <span class="kw">=></span> {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> {messages} <span class="kw">=</span> req.body;
+
+    <span class="kw">const</span> message <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+      model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+      max_tokens: <span class="num">1024</span>,
+      messages,
+    });
+
+    res.<span class="fn">json</span>({
+      response: message.content[<span class="num">0</span>].text,
+      usage: message.usage,
+    });
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(error);
+    res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({error: <span class="str">'Internal server error'</span>});
+  }
+});
+
+app.<span class="fn">listen</span>(<span class="num">3000</span>, () <span class="kw">=></span> console.<span class="fn">log</span>(<span class="str">'Server running on port 3000'</span>));</code></pre>
+  </div>
+
+  <h3 id="sse-streaming">SSE 스트리밍 (Express)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Express.js SSE 스트리밍</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>app.<span class="fn">post</span>(<span class="str">'/api/chat/stream'</span>, <span class="kw">async</span> (req, res) <span class="kw">=></span> {
+  <span class="kw">const</span> {messages} <span class="kw">=</span> req.body;
+
+  <span class="cmt">// SSE 헤더 설정</span>
+  res.<span class="fn">setHeader</span>(<span class="str">'Content-Type'</span>, <span class="str">'text/event-stream'</span>);
+  res.<span class="fn">setHeader</span>(<span class="str">'Cache-Control'</span>, <span class="str">'no-cache'</span>);
+  res.<span class="fn">setHeader</span>(<span class="str">'Connection'</span>, <span class="str">'keep-alive'</span>);
+
+  <span class="kw">const</span> stream <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+    model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+    max_tokens: <span class="num">1024</span>,
+    messages,
+    stream: <span class="kw">true</span>,
+  });
+
+  <span class="kw">for</span> <span class="kw">await</span> (<span class="kw">const</span> event <span class="kw">of</span> stream) {
+    <span class="kw">if</span> (event.<span class="fn">type</span> <span class="kw">===</span> <span class="str">'content_block_delta'</span> <span class="kw">&&</span>
+        event.delta.<span class="fn">type</span> <span class="kw">===</span> <span class="str">'text_delta'</span>) {
+      res.<span class="fn">write</span>(<span class="str">`data: ${</span>JSON.<span class="fn">stringify</span>({text: event.delta.text})<span class="str">}\n\n`</span>);
+    }
+  }
+
+  res.<span class="fn">write</span>(<span class="str">'data: [DONE]\n\n'</span>);
+  res.<span class="fn">end</span>();
+});</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="nextjs">Next.js 통합</h2>
+
+  <h3 id="api-route">API Route (App Router)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">app/api/chat/route.ts</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> {NextRequest, NextResponse} <span class="kw">from</span> <span class="str">'next/server'</span>;
+<span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> client <span class="kw">=</span> <span class="kw">new</span> <span class="fn">Anthropic</span>();
+
+<span class="kw">export</span> <span class="kw">async</span> <span class="kw">function</span> <span class="fn">POST</span>(req: <span class="type">NextRequest</span>) {
+  <span class="kw">const</span> {messages} <span class="kw">=</span> <span class="kw">await</span> req.<span class="fn">json</span>();
+
+  <span class="kw">const</span> message <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+    model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+    max_tokens: <span class="num">1024</span>,
+    messages,
+  });
+
+  <span class="kw">return</span> NextResponse.<span class="fn">json</span>({
+    response: message.content[<span class="num">0</span>].text,
+  });
+}</code></pre>
+  </div>
+
+  <h3 id="nextjs-streaming">Next.js 스트리밍</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">app/api/chat/stream/route.ts</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> {NextRequest} <span class="kw">from</span> <span class="str">'next/server'</span>;
+<span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> client <span class="kw">=</span> <span class="kw">new</span> <span class="fn">Anthropic</span>();
+
+<span class="kw">export</span> <span class="kw">async</span> <span class="kw">function</span> <span class="fn">POST</span>(req: <span class="type">NextRequest</span>) {
+  <span class="kw">const</span> {messages} <span class="kw">=</span> <span class="kw">await</span> req.<span class="fn">json</span>();
+
+  <span class="kw">const</span> encoder <span class="kw">=</span> <span class="kw">new</span> <span class="fn">TextEncoder</span>();
+
+  <span class="kw">const</span> stream <span class="kw">=</span> <span class="kw">new</span> <span class="fn">ReadableStream</span>({
+    <span class="kw">async</span> <span class="fn">start</span>(controller) {
+      <span class="kw">const</span> anthropicStream <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+        model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+        max_tokens: <span class="num">1024</span>,
+        messages,
+        stream: <span class="kw">true</span>,
+      });
+
+      <span class="kw">for</span> <span class="kw">await</span> (<span class="kw">const</span> event <span class="kw">of</span> anthropicStream) {
+        <span class="kw">if</span> (event.<span class="fn">type</span> <span class="kw">===</span> <span class="str">'content_block_delta'</span> <span class="kw">&&</span>
+            event.delta.<span class="fn">type</span> <span class="kw">===</span> <span class="str">'text_delta'</span>) {
+          controller.<span class="fn">enqueue</span>(encoder.<span class="fn">encode</span>(event.delta.text));
+        }
+      }
+
+      controller.<span class="fn">close</span>();
+    },
+  });
+
+  <span class="kw">return</span> <span class="kw">new</span> <span class="fn">Response</span>(stream, {
+    headers: {<span class="str">'Content-Type'</span>: <span class="str">'text/plain; charset=utf-8'</span>},
+  });
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="error-handling">오류 처리</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript 오류 처리</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> client <span class="kw">=</span> <span class="kw">new</span> <span class="fn">Anthropic</span>();
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">callClaudeWithRetry</span>(messages: <span class="type">any</span>[], maxRetries <span class="kw">=</span> <span class="num">3</span>) {
+  <span class="kw">for</span> (<span class="kw">let</span> attempt <span class="kw">=</span> <span class="num">0</span>; attempt <span class="kw"><</span> maxRetries; attempt<span class="kw">++</span>) {
+    <span class="kw">try</span> {
+      <span class="kw">return</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+        model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+        max_tokens: <span class="num">1024</span>,
+        messages,
+      });
+    } <span class="kw">catch</span> (error) {
+      <span class="kw">if</span> (error <span class="kw">instanceof</span> Anthropic.APIError) {
+        console.<span class="fn">log</span>(error.status);  <span class="cmt">// 400, 401, 429 등</span>
+        console.<span class="fn">log</span>(error.name);    <span class="cmt">// RateLimitError 등</span>
+        console.<span class="fn">log</span>(error.message);
+
+        <span class="kw">if</span> (error.status <span class="kw">===</span> <span class="num">429</span>) {
+          <span class="cmt">// Rate limit → 재시도</span>
+          <span class="kw">const</span> delay <span class="kw">=</span> <span class="num">1000</span> <span class="kw">*</span> (<span class="num">2</span> <span class="kw">**</span> attempt);
+          <span class="kw">await</span> <span class="kw">new</span> <span class="fn">Promise</span>(resolve <span class="kw">=></span> <span class="fn">setTimeout</span>(resolve, delay));
+          <span class="kw">continue</span>;
+        }
+
+        <span class="kw">throw</span> error;  <span class="cmt">// 다른 오류는 즉시 throw</span>
+      }
+
+      <span class="kw">throw</span> error;
+    }
+  }
+
+  <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">'Max retries exceeded'</span>);
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">베스트 프랙티스</h2>
+
+  <h3 id="env-variables">1. 환경 변수 (.env)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">.env 파일</span>
+    </div>
+    <pre><code>ANTHROPIC_API_KEY<span class="kw">=</span>sk-ant-api03-YOUR_KEY_HERE</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (dotenv)</span>
+    </div>
+    <pre><code><span class="kw">import</span> <span class="str">'dotenv/config'</span>;
+<span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> client <span class="kw">=</span> <span class="kw">new</span> <span class="fn">Anthropic</span>();  <span class="cmt">// 자동으로 process.env 읽음</span></code></pre>
+  </div>
+
+  <h3 id="types">2. 타입 안전성 활용</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript 타입</span>
+    </div>
+    <pre><code><span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">type</span> <span class="type">MessageParam</span> <span class="kw">=</span> Anthropic.MessageParam;
+<span class="kw">type</span> <span class="type">Message</span> <span class="kw">=</span> Anthropic.Message;
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">chat</span>(messages: <span class="type">MessageParam</span>[]): <span class="type">Promise</span><span class="kw"><</span><span class="type">string</span><span class="kw">></span> {
+  <span class="kw">const</span> message: <span class="type">Message</span> <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+    model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+    max_tokens: <span class="num">1024</span>,
+    messages,
+  });
+
+  <span class="kw">return</span> message.content[<span class="num">0</span>].text;
+}</code></pre>
+  </div>
+
+  <h3 id="singleton">3. 클라이언트 싱글톤</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">lib/claude.ts (싱글톤)</span>
+    </div>
+    <pre><code><span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">let</span> client: Anthropic <span class="kw">|</span> <span class="kw">null</span> <span class="kw">=</span> <span class="kw">null</span>;
+
+<span class="kw">export</span> <span class="kw">function</span> <span class="fn">getClaudeClient</span>(): <span class="type">Anthropic</span> {
+  <span class="kw">if</span> (<span class="kw">!</span>client) {
+    client <span class="kw">=</span> <span class="kw">new</span> <span class="fn">Anthropic</span>();
+  }
+  <span class="kw">return</span> client;
+}
+
+<span class="cmt">// 사용</span>
+<span class="kw">import</span> {getClaudeClient} <span class="kw">from</span> <span class="str">'./lib/claude'</span>;
+
+<span class="kw">const</span> client <span class="kw">=</span> <span class="fn">getClaudeClient</span>();</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="testing">테스트</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Jest 모킹</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> {jest} <span class="kw">from</span> <span class="str">'@jest/globals'</span>;
+<span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+jest.<span class="fn">mock</span>(<span class="str">'@anthropic-ai/sdk'</span>);
+
+<span class="fn">describe</span>(<span class="str">'Claude Chat'</span>, () <span class="kw">=></span> {
+  <span class="fn">it</span>(<span class="str">'should return response'</span>, <span class="kw">async</span> () <span class="kw">=></span> {
+    <span class="kw">const</span> mockCreate <span class="kw">=</span> jest.<span class="fn">fn</span>().<span class="fn">mockResolvedValue</span>({
+      content: [{text: <span class="str">'Mocked response'</span>}],
+      usage: {input_tokens: <span class="num">10</span>, output_tokens: <span class="num">5</span>},
+    });
+
+    Anthropic.<span class="fn">prototype</span>.messages <span class="kw">=</span> {create: mockCreate} <span class="kw">as</span> <span class="kw">any</span>;
+
+    <span class="kw">const</span> client <span class="kw">=</span> <span class="kw">new</span> <span class="fn">Anthropic</span>();
+    <span class="kw">const</span> result <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>({
+      model: <span class="str">'claude-sonnet-4-5-20250929'</span>,
+      max_tokens: <span class="num">100</span>,
+      messages: [{role: <span class="str">'user'</span>, content: <span class="str">'Hi'</span>}],
+    });
+
+    <span class="fn">expect</span>(result.content[<span class="num">0</span>].text).<span class="fn">toBe</span>(<span class="str">'Mocked response'</span>);
+  });
+});</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>TypeScript SDK를 익혔다면 실전 프로젝트에 적용해보세요:</p>
+
+  <ul>
+    <li><a href="conversational-agent.html">대화형 에이전트</a> - Next.js 챗봇 구축</li>
+    <li><a href="code-generation.html">코드 생성</a> - CLI 도구 만들기</li>
+    <li><a href="tool-use.html">Tool Use</a> - 함수 호출 구현</li>
+    <li><a href="streaming.html">스트리밍</a> - 실시간 응답 처리</li>
+  </ul>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

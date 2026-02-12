@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Ollama 트러블슈팅 - 설치, 실행, GPU, 성능 문제 해결">
+<meta property="og:description" content="Ollama 설치 오류, 실행 문제, GPU 미감지, 성능 저하, 일반 에러 메시지 완전 해결 가이드">
+<meta property="og:url" content="https://minzkn.com/claude/pages/ollama-troubleshooting.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Ollama 트러블슈팅 가이드. 설치, 실행, GPU, 성능 문제 완전 해결.">
+<meta name="keywords" content="ollama 트러블슈팅, error, gpu 문제, 성능 저하, 설치 오류">
+<meta name="author" content="MINZKN">
+<title>Ollama 트러블슈팅 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Ollama 트러블슈팅</h1>
+<p class="lead">설치 문제, 실행 오류, GPU 인식, 성능 저하 등 모든 문제 해결 가이드</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">🔍 빠른 진단</div>
+  <p><strong>증상별 바로가기:</strong></p>
+  <ul>
+    <li><a href="#install-errors">설치 실패</a> - "command not found", 권한 오류</li>
+    <li><a href="#connection-errors">연결 실패</a> - "connection refused", 포트 문제</li>
+    <li><a href="#gpu-issues">GPU 미감지</a> - CPU만 사용, CUDA 오류</li>
+    <li><a href="#performance-issues">성능 저하</a> - 느린 응답, 메모리 부족</li>
+    <li><a href="#model-errors">모델 오류</a> - 다운로드 실패, 실행 불가</li>
+    <li><a href="#common-errors">일반 에러</a> - 20가지 흔한 오류 메시지</li>
+  </ul>
+</div>
+
+<section class="content-section">
+  <h2 id="install-errors">설치 문제</h2>
+
+  <h3 id="install-command-not-found">1. "ollama: command not found"</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>$ ollama --version
+bash: ollama: command not found</code></pre>
+  </div>
+
+  <h4>원인</h4>
+  <ul>
+    <li>Ollama가 설치되지 않음</li>
+    <li>PATH에 Ollama 경로가 없음</li>
+    <li>설치가 중간에 실패함</li>
+  </ul>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. Ollama 설치 확인</span>
+which ollama
+<span class="cmt"># 출력 없음 → 미설치</span>
+
+<span class="cmt"># 2. 재설치 (Linux/macOS)</span>
+curl -fsSL https://ollama.com/install.sh | sh
+
+<span class="cmt"># 3. 수동 PATH 추가 (필요시)</span>
+<span class="kw">export</span> PATH=<span class="str">"/usr/local/bin:$PATH"</span>
+<span class="kw">echo</span> <span class="str">'export PATH="/usr/local/bin:$PATH"'</span> &gt;&gt; ~/.bashrc
+source ~/.bashrc
+
+<span class="cmt"># 4. 확인</span>
+ollama --version</code></pre>
+
+  <h4>Windows</h4>
+
+  <pre><code><span class="cmt"># PowerShell에서</span>
+Get-Command ollama
+<span class="cmt"># CommandNotFoundException → 재설치 필요</span>
+
+<span class="cmt"># 환경 변수 PATH 확인</span>
+$env:Path -split <span class="str">';'</span> | Select-String ollama
+
+<span class="cmt"># PATH 추가 (영구 설정)</span>
+[System.Environment]::SetEnvironmentVariable(
+    <span class="str">'Path'</span>,
+    $env:Path + <span class="str">';C:\Users\[사용자]\AppData\Local\Programs\Ollama\bin'</span>,
+    [System.EnvironmentVariableTarget]::User
+)</code></pre>
+
+  <h3 id="install-permission">2. 권한 오류 (Permission Denied)</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>Permission denied when trying to install Ollama</code></pre>
+  </div>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># Linux - sudo 권한으로 재설치</span>
+curl -fsSL https://ollama.com/install.sh | sudo sh
+
+<span class="cmt"># macOS - 관리자 권한</span>
+sudo curl -fsSL https://ollama.com/install.sh | sh
+
+<span class="cmt"># 파일 권한 확인</span>
+ls -la /usr/local/bin/ollama
+<span class="cmt"># -rwxr-xr-x ... ollama</span>
+
+<span class="cmt"># 권한 수정 (필요시)</span>
+sudo chmod +x /usr/local/bin/ollama</code></pre>
+
+  <h3 id="install-systemd">3. systemd 서비스 생성 실패</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>Failed to enable unit: Unit file ollama.service does not exist</code></pre>
+  </div>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. 서비스 파일 수동 생성</span>
+sudo tee /etc/systemd/system/ollama.service &lt;&lt;EOF
+[Unit]
+Description=Ollama Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/ollama serve
+User=ollama
+Group=ollama
+Restart=always
+RestartSec=3
+Environment="OLLAMA_HOST=0.0.0.0:11434"
+
+[Install]
+WantedBy=default.target
+EOF
+
+<span class="cmt"># 2. 사용자 생성 (없으면)</span>
+sudo useradd -r -s /bin/false -m -d /usr/share/ollama ollama
+
+<span class="cmt"># 3. systemd 리로드 및 시작</span>
+sudo systemctl daemon-reload
+sudo systemctl enable ollama
+sudo systemctl start ollama
+
+<span class="cmt"># 4. 상태 확인</span>
+sudo systemctl status ollama</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="connection-errors">연결 문제</h2>
+
+  <h3 id="connection-refused">1. "Connection Refused" (포트 11434)</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>curl: (7) Failed to connect to localhost port 11434: Connection refused</code></pre>
+  </div>
+
+  <h4>원인</h4>
+  <ul>
+    <li>Ollama 서비스가 실행되지 않음</li>
+    <li>포트 11434가 다른 프로세스에 의해 사용 중</li>
+    <li>방화벽이 포트를 차단</li>
+  </ul>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. Ollama 서비스 상태 확인</span>
+<span class="cmt"># Linux</span>
+sudo systemctl status ollama
+<span class="cmt"># Active: active (running) 이어야 함</span>
+
+<span class="cmt"># macOS</span>
+ps aux | grep ollama
+<span class="cmt"># ollama serve 프로세스가 있어야 함</span>
+
+<span class="cmt"># Windows</span>
+Get-Service Ollama
+
+<span class="cmt"># 2. 서비스 시작</span>
+<span class="cmt"># Linux</span>
+sudo systemctl start ollama
+
+<span class="cmt"># macOS</span>
+ollama serve &amp;
+
+<span class="cmt"># 3. 포트 사용 확인</span>
+sudo lsof -i :11434
+<span class="cmt"># ollama ... LISTEN 이어야 함</span>
+
+<span class="cmt"># 다른 프로세스가 사용 중이면 종료</span>
+sudo kill -9 [PID]
+
+<span class="cmt"># 4. 방화벽 확인 (Linux)</span>
+sudo ufw status
+sudo ufw allow 11434/tcp
+
+<span class="cmt"># 5. 재시작</span>
+sudo systemctl restart ollama</code></pre>
+
+  <h3 id="connection-timeout">2. "Connection Timeout" (원격 접속)</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>curl: (28) Failed to connect to 192.168.1.100 port 11434: Connection timed out</code></pre>
+  </div>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. OLLAMA_HOST 환경 변수 설정 (0.0.0.0으로)</span>
+<span class="cmt"># Linux - systemd 서비스 편집</span>
+sudo systemctl edit ollama
+<span class="cmt"># 다음 추가:</span>
+[Service]
+Environment=<span class="str">"OLLAMA_HOST=0.0.0.0:11434"</span>
+
+sudo systemctl restart ollama
+
+<span class="cmt"># 2. 방화벽 포트 열기</span>
+<span class="cmt"># Ubuntu/Debian</span>
+sudo ufw allow 11434/tcp
+
+<span class="cmt"># CentOS/RHEL</span>
+sudo firewall-cmd --permanent --add-port=11434/tcp
+sudo firewall-cmd --reload
+
+<span class="cmt"># 3. 클라우드 보안 그룹 설정 (AWS, GCP 등)</span>
+<span class="cmt"># Inbound 규칙: TCP 11434 허용</span>
+
+<span class="cmt"># 4. 테스트</span>
+curl http://[서버IP]:11434/api/tags</code></pre>
+
+  <h3 id="connection-ssl">3. SSL/TLS 오류</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>SSL certificate problem: unable to get local issuer certificate</code></pre>
+  </div>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. 인증서 무시 (테스트 전용)</span>
+curl -k https://localhost:11434/api/tags
+
+<span class="cmt"># 2. CA 인증서 설치 (프로덕션)</span>
+<span class="cmt"># Ubuntu/Debian</span>
+sudo apt install ca-certificates
+sudo update-ca-certificates
+
+<span class="cmt"># 3. Python requests에서</span>
+<span class="kw">import</span> requests
+response = requests.post(
+    <span class="str">'https://localhost:11434/api/generate'</span>,
+    json={...},
+    verify=<span class="kw">False</span>  <span class="cmt"># 또는 인증서 경로</span>
+)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="gpu-issues">GPU 문제</h2>
+
+  <h3 id="gpu-not-detected">1. GPU 미감지 (NVIDIA)</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>Ollama는 실행되지만 CPU만 사용, GPU 사용률 0%</code></pre>
+  </div>
+
+  <h4>진단</h4>
+
+  <pre><code><span class="cmt"># 1. nvidia-smi 실행</span>
+nvidia-smi
+<span class="cmt"># GPU 정보가 표시되어야 함</span>
+
+<span class="cmt"># 오류 발생 시 → 드라이버 문제</span>
+<span class="cmt"># "NVIDIA-SMI has failed..." → 드라이버 재설치 필요</span>
+
+<span class="cmt"># 2. CUDA 버전 확인</span>
+nvcc --version
+<span class="cmt"># CUDA 11.8+ 필요</span>
+
+<span class="cmt"># 3. Ollama 로그 확인</span>
+sudo journalctl -u ollama -n 100
+<span class="cmt"># "GPU" 또는 "CUDA" 관련 메시지 찾기</span></code></pre>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. NVIDIA 드라이버 재설치 (Ubuntu)</span>
+<span class="cmt"># 기존 드라이버 제거</span>
+sudo apt purge nvidia-*
+sudo apt autoremove
+
+<span class="cmt"># 최신 드라이버 설치</span>
+sudo apt update
+sudo apt install nvidia-driver-535
+
+<span class="cmt"># 재부팅 필수</span>
+sudo reboot
+
+<span class="cmt"># 2. CUDA Toolkit 설치 (선택사항)</span>
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+sudo dpkg -i cuda-keyring_1.1-1_all.deb
+sudo apt update
+sudo apt install cuda-toolkit-12-3
+
+<span class="cmt"># 3. Ollama 재시작</span>
+sudo systemctl restart ollama
+
+<span class="cmt"># 4. GPU 사용 확인</span>
+ollama run llama3.2 <span class="str">"Hello"</span>
+<span class="cmt"># 동시에 다른 터미널에서</span>
+watch -n 1 nvidia-smi
+<span class="cmt"># GPU 사용률이 올라가야 함</span></code></pre>
+
+  <h3 id="gpu-oom">2. GPU 메모리 부족 (OOM)</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>CUDA out of memory. Tried to allocate X MiB</code></pre>
+  </div>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. 더 작은 모델 사용</span>
+ollama pull llama3.2:3b      <span class="cmt"># 3B 모델 (2GB VRAM)</span>
+ollama pull phi3:mini        <span class="cmt"># Phi-3 Mini (2GB VRAM)</span>
+
+<span class="cmt"># 2. 양자화 버전 사용</span>
+ollama pull llama3.2:7b-q4_0  <span class="cmt"># 4-bit 양자화 (4GB VRAM)</span>
+
+<span class="cmt"># 3. GPU 레이어 수 제한</span>
+<span class="kw">export</span> OLLAMA_NUM_GPU=<span class="num">20</span>  <span class="cmt"># 일부만 GPU, 나머지는 CPU</span>
+sudo systemctl restart ollama
+
+<span class="cmt"># 4. 컨텍스트 윈도우 줄이기</span>
+<span class="cmt"># Modelfile</span>
+<span class="kw">PARAMETER</span> num_ctx 2048  <span class="cmt"># 기본 4096 → 2048</span>
+
+<span class="cmt"># 5. 다른 GPU 프로세스 종료</span>
+nvidia-smi
+<span class="cmt"># GPU 메모리 사용 중인 프로세스 확인</span>
+kill -9 [PID]</code></pre>
+
+  <h3 id="gpu-multi">3. 다중 GPU 설정</h3>
+
+  <pre><code><span class="cmt"># 특정 GPU만 사용</span>
+<span class="kw">export</span> CUDA_VISIBLE_DEVICES=0  <span class="cmt"># GPU 0만 사용</span>
+<span class="kw">export</span> CUDA_VISIBLE_DEVICES=0,1  <span class="cmt"># GPU 0, 1 사용</span>
+
+<span class="cmt"># systemd 서비스에 적용</span>
+sudo systemctl edit ollama
+[Service]
+Environment=<span class="str">"CUDA_VISIBLE_DEVICES=0,1"</span>
+
+sudo systemctl restart ollama
+
+<span class="cmt"># 확인</span>
+nvidia-smi
+<span class="cmt"># 지정한 GPU만 사용 중이어야 함</span></code></pre>
+
+  <h3 id="gpu-amd">4. AMD GPU (ROCm) 문제</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 실험적 지원</div>
+    <p>AMD GPU는 ROCm을 통해 지원되지만, NVIDIA CUDA보다 안정성이 낮습니다.</p>
+  </div>
+
+  <pre><code><span class="cmt"># ROCm 설치 (Ubuntu)</span>
+wget https://repo.radeon.com/amdgpu-install/latest/ubuntu/focal/amdgpu-install_*_all.deb
+sudo dpkg -i amdgpu-install_*_all.deb
+sudo amdgpu-install --usecase=rocm
+
+<span class="cmt"># 재부팅</span>
+sudo reboot
+
+<span class="cmt"># ROCm 확인</span>
+rocm-smi
+
+<span class="cmt"># Ollama 재시작</span>
+sudo systemctl restart ollama</code></pre>
+
+  <h3 id="gpu-apple-silicon">5. Apple Silicon (M1/M2/M3) 최적화</h3>
+
+  <pre><code><span class="cmt"># Metal 가속 자동 활성화 (설정 불필요)</span>
+ollama run llama3.2
+
+<span class="cmt"># 메모리 압력 모니터링</span>
+sudo memory_pressure
+
+<span class="cmt"># Activity Monitor에서 확인</span>
+<span class="cmt"># GPU 탭에서 "ollama" 프로세스의 GPU 사용률 확인</span>
+
+<span class="cmt"># 메모리 스왑 최소화</span>
+<span class="cmt"># 더 작은 모델 사용</span>
+ollama pull llama3.2:3b  <span class="cmt"># M1 8GB에 적합</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="performance-issues">성능 문제</h2>
+
+  <h3 id="perf-slow">1. 응답 속도가 매우 느림</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <p>1-2 tokens/sec 이하, 응답에 수 분 소요</p>
+  </div>
+
+  <h4>원인 및 해결</h4>
+
+  <pre><code><span class="cmt"># 1. CPU만 사용 (GPU 미활용)</span>
+<span class="cmt"># → GPU 설정 확인 (위 GPU 섹션 참조)</span>
+nvidia-smi  <span class="cmt"># GPU 사용률 0% → 문제</span>
+
+<span class="cmt"># 2. 모델이 너무 큼</span>
+<span class="cmt"># → 더 작은 모델 사용</span>
+ollama pull llama3.2:7b  <span class="cmt"># 70B → 7B</span>
+
+<span class="cmt"># 3. RAM 부족 (스왑 사용)</span>
+free -h
+<span class="cmt"># Swap 사용량이 높으면 문제</span>
+<span class="cmt"># → 모델 크기 줄이기 또는 RAM 증설</span>
+
+<span class="cmt"># 4. 컨텍스트 윈도우가 너무 큼</span>
+<span class="cmt"># Modelfile</span>
+<span class="kw">PARAMETER</span> num_ctx 2048  <span class="cmt"># 8192 → 2048</span>
+
+<span class="cmt"># 5. 다른 프로세스가 리소스 사용</span>
+top
+<span class="cmt"># CPU/메모리 많이 쓰는 프로세스 종료</span></code></pre>
+
+  <h3 id="perf-memory">2. 메모리 부족 (OOM Killed)</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>Killed
+dmesg | grep -i "out of memory"
+# Out of memory: Killed process [PID] (ollama)</code></pre>
+  </div>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. 메모리 사용량 확인</span>
+free -h
+<span class="cmt"># 사용 가능한 메모리 확인</span>
+
+<span class="cmt"># 2. 더 작은 모델 사용</span>
+<span class="cmt"># 모델별 RAM 요구사항:</span>
+<span class="cmt"># - 3B: 8GB</span>
+<span class="cmt"># - 7B: 16GB</span>
+<span class="cmt"># - 13B: 24GB</span>
+<span class="cmt"># - 70B: 64GB+</span>
+
+ollama pull phi3:mini  <span class="cmt"># 3B, 8GB RAM</span>
+
+<span class="cmt"># 3. 양자화 버전 사용</span>
+ollama pull llama3.2:7b-q4_0  <span class="cmt"># 절반 크기</span>
+
+<span class="cmt"># 4. 스왑 메모리 증가 (임시 방편)</span>
+sudo fallocate -l 8G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+<span class="cmt"># 5. 동시 실행 모델 수 제한</span>
+<span class="kw">export</span> OLLAMA_MAX_LOADED_MODELS=1
+sudo systemctl restart ollama</code></pre>
+
+  <h3 id="perf-disk">3. 디스크 공간 부족</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>Error: no space left on device</code></pre>
+  </div>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. 디스크 사용량 확인</span>
+df -h
+<span class="cmt"># ~/.ollama 경로의 사용량 확인</span>
+
+du -sh ~/.ollama/models
+<span class="cmt"># 모델 총 크기 확인</span>
+
+<span class="cmt"># 2. 미사용 모델 삭제</span>
+ollama list
+ollama rm [모델명]
+
+<span class="cmt"># 3. 모델 저장 경로 변경 (더 큰 디스크로)</span>
+<span class="cmt"># Linux</span>
+sudo systemctl edit ollama
+[Service]
+Environment=<span class="str">"OLLAMA_MODELS=/mnt/storage/ollama"</span>
+
+sudo mkdir -p /mnt/storage/ollama
+sudo chown ollama:ollama /mnt/storage/ollama
+sudo systemctl restart ollama
+
+<span class="cmt"># 4. Docker 이미지 정리 (Docker 사용 시)</span>
+docker system prune -a</code></pre>
+
+  <h3 id="perf-concurrent">4. 동시 요청 시 느려짐</h3>
+
+  <pre><code><span class="cmt"># 병렬 요청 수 증가</span>
+<span class="kw">export</span> OLLAMA_NUM_PARALLEL=4  <span class="cmt"># 기본 1 → 4</span>
+
+<span class="cmt"># systemd 서비스</span>
+sudo systemctl edit ollama
+[Service]
+Environment=<span class="str">"OLLAMA_NUM_PARALLEL=4"</span>
+
+sudo systemctl restart ollama
+
+<span class="cmt"># 주의: 메모리 사용량 증가</span>
+<span class="cmt"># 병렬 처리 수 = 동시 로드 모델 수</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="model-errors">모델 문제</h2>
+
+  <h3 id="model-download-fail">1. 모델 다운로드 실패</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>Error: failed to download model
+Error: unexpected EOF</code></pre>
+  </div>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. 네트워크 연결 확인</span>
+ping ollama.com
+curl https://ollama.com
+
+<span class="cmt"># 2. 재시도 (단순 네트워크 오류)</span>
+ollama pull llama3.2
+
+<span class="cmt"># 3. 기존 부분 다운로드 삭제 후 재시도</span>
+rm -rf ~/.ollama/models/blobs/sha256-*
+ollama pull llama3.2
+
+<span class="cmt"># 4. 프록시 설정 (필요시)</span>
+<span class="kw">export</span> HTTP_PROXY=<span class="str">"http://proxy.example.com:8080"</span>
+<span class="kw">export</span> HTTPS_PROXY=<span class="str">"http://proxy.example.com:8080"</span>
+
+<span class="cmt"># 5. DNS 문제 (드문 경우)</span>
+<span class="kw">echo</span> <span class="str">"1.1.1.1"</span> | sudo tee /etc/resolv.conf</code></pre>
+
+  <h3 id="model-corrupted">2. 손상된 모델 파일</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>Error: invalid model file
+Error: checksum mismatch</code></pre>
+  </div>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. 모델 삭제</span>
+ollama rm llama3.2
+
+<span class="cmt"># 2. 캐시 정리</span>
+rm -rf ~/.ollama/models/manifests/registry.ollama.ai/library/llama3.2
+rm -rf ~/.ollama/models/blobs/sha256-*
+
+<span class="cmt"># 3. 재다운로드</span>
+ollama pull llama3.2
+
+<span class="cmt"># 4. 여전히 실패 시 - Ollama 재설치</span>
+sudo systemctl stop ollama
+sudo rm -rf ~/.ollama
+curl -fsSL https://ollama.com/install.sh | sh
+ollama pull llama3.2</code></pre>
+
+  <h3 id="model-not-found">3. "Model Not Found"</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">증상</div>
+    <pre><code>Error: model 'llama3.2' not found</code></pre>
+  </div>
+
+  <h4>해결 방법</h4>
+
+  <pre><code><span class="cmt"># 1. 설치된 모델 확인</span>
+ollama list
+<span class="cmt"># 목록에 없으면 다운로드 필요</span>
+
+<span class="cmt"># 2. 모델 다운로드</span>
+ollama pull llama3.2
+
+<span class="cmt"># 3. 모델 이름 오타 확인</span>
+<span class="cmt"># 정확한 이름: llama3.2 (llama-3.2 ❌)</span>
+
+<span class="cmt"># 4. 사용 가능한 모델 검색</span>
+curl https://ollama.com/api/tags | jq <span class="str">'.models[] | .name'</span></code></pre>
+
+  <h3 id="model-version">4. 모델 버전 충돌</h3>
+
+  <pre><code><span class="cmt"># 특정 버전 다운로드</span>
+ollama pull llama3.2:latest
+ollama pull llama3.2:7b-q4_0
+
+<span class="cmt"># 모든 버전 확인</span>
+ollama list
+<span class="cmt"># llama3.2:latest</span>
+<span class="cmt"># llama3.2:7b-q4_0</span>
+
+<span class="cmt"># 특정 버전 실행</span>
+ollama run llama3.2:7b-q4_0
+
+<span class="cmt"># 기본 버전 (latest) 변경</span>
+ollama rm llama3.2:latest
+ollama pull llama3.2:7b-q4_0
+ollama tag llama3.2:7b-q4_0 llama3.2:latest</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="common-errors">일반적인 에러 메시지 (A-Z)</h2>
+
+  <h3 id="err-1">1. "API version mismatch"</h3>
+
+  <pre><code><span class="cmt"># Ollama 버전 불일치</span>
+<span class="cmt"># 해결: Ollama 업데이트</span>
+curl -fsSL https://ollama.com/install.sh | sh
+sudo systemctl restart ollama</code></pre>
+
+  <h3 id="err-2">2. "context window exceeded"</h3>
+
+  <pre><code><span class="cmt"># 입력 토큰이 모델의 컨텍스트 윈도우 초과</span>
+<span class="cmt"># 해결: 입력 줄이기 또는 num_ctx 증가</span>
+<span class="kw">PARAMETER</span> num_ctx 8192  <span class="cmt"># Modelfile</span></code></pre>
+
+  <h3 id="err-3">3. "embedding model not found"</h3>
+
+  <pre><code><span class="cmt"># 임베딩 모델 미설치</span>
+ollama pull nomic-embed-text</code></pre>
+
+  <h3 id="err-4">4. "failed to load model"</h3>
+
+  <pre><code><span class="cmt"># 메모리 부족 또는 손상된 모델</span>
+<span class="cmt"># 1. 메모리 확인</span>
+free -h
+
+<span class="cmt"># 2. 모델 재다운로드</span>
+ollama rm llama3.2
+ollama pull llama3.2</code></pre>
+
+  <h3 id="err-5">5. "invalid modelfile syntax"</h3>
+
+  <pre><code><span class="cmt"># Modelfile 문법 오류</span>
+<span class="cmt"># 확인: 대소문자, 따옴표, 줄바꿈</span>
+<span class="kw">FROM</span> llama3.2  <span class="cmt"># 올바름</span>
+<span class="kw">from</span> llama3.2  <span class="cmt"># 잘못됨 (소문자)</span>
+
+<span class="kw">SYSTEM</span> <span class="str">"..."</span>  <span class="cmt"># 따옴표 필수</span></code></pre>
+
+  <h3 id="err-6">6. "model is too large"</h3>
+
+  <pre><code><span class="cmt"># 모델이 메모리보다 큼</span>
+<span class="cmt"># 해결: 양자화 버전 사용</span>
+ollama pull llama3.2:7b-q4_0  <span class="cmt"># 7b 대신</span></code></pre>
+
+  <h3 id="err-7">7. "NUMA node not available"</h3>
+
+  <pre><code><span class="cmt"># CPU NUMA 설정 문제 (무시 가능)</span>
+<span class="cmt"># 성능에 영향 없음, 경고 메시지일 뿐</span></code></pre>
+
+  <h3 id="err-8">8. "port already in use"</h3>
+
+  <pre><code><span class="cmt"># 포트 11434가 이미 사용 중</span>
+sudo lsof -i :11434
+sudo kill -9 [PID]
+
+<span class="cmt"># 또는 다른 포트 사용</span>
+<span class="kw">export</span> OLLAMA_HOST=0.0.0.0:11435
+sudo systemctl restart ollama</code></pre>
+
+  <h3 id="err-9">9. "request timeout"</h3>
+
+  <pre><code><span class="cmt"># 모델 응답이 너무 느림</span>
+<span class="cmt"># API 호출 시 타임아웃 증가</span>
+requests.post(..., timeout=<span class="num">300</span>)  <span class="cmt"># 5분</span>
+
+<span class="cmt"># 또는 더 빠른 모델 사용</span>
+ollama pull llama3.2:3b</code></pre>
+
+  <h3 id="err-10">10. "stream error"</h3>
+
+  <pre><code><span class="cmt"># 스트리밍 응답 중 연결 끊김</span>
+<span class="cmt"># 해결: 재시도 또는 stream=false 사용</span>
+{
+  <span class="str">"model"</span>: <span class="str">"llama3.2"</span>,
+  <span class="str">"prompt"</span>: <span class="str">"..."</span>,
+  <span class="str">"stream"</span>: <span class="kw">false</span>  <span class="cmt"># 스트리밍 비활성화</span>
+}</code></pre>
+
+  <h3 id="err-11">11. "temperature out of range"</h3>
+
+  <pre><code><span class="cmt"># temperature 값이 범위 밖 (0.0 ~ 2.0)</span>
+<span class="kw">PARAMETER</span> temperature 0.8  <span class="cmt"># 0.0 ~ 2.0 사이</span></code></pre>
+
+  <h3 id="err-12">12. "unable to locate model"</h3>
+
+  <pre><code><span class="cmt"># 커스텀 모델 파일 경로 오류</span>
+<span class="cmt"># Modelfile의 FROM 경로 확인</span>
+<span class="kw">FROM</span> ./model.gguf  <span class="cmt"># 상대 경로</span>
+<span class="kw">FROM</span> /absolute/path/model.gguf  <span class="cmt"># 절대 경로</span></code></pre>
+
+  <h3 id="err-13">13. "unsupported model format"</h3>
+
+  <pre><code><span class="cmt"># GGUF 형식이 아닌 파일</span>
+<span class="cmt"># 해결: GGUF 변환 (llama.cpp 사용)</span>
+python convert.py --outtype f16 --outfile model.gguf model/</code></pre>
+
+  <h3 id="err-14">14. "WSL GPU not available"</h3>
+
+  <pre><code><span class="cmt"># WSL2에서 GPU 미지원</span>
+<span class="cmt"># 1. Windows NVIDIA 드라이버 최신 버전 설치</span>
+<span class="cmt"># 2. WSL2에서 nvidia-smi 실행 확인</span>
+nvidia-smi
+
+<span class="cmt"># 3. CUDA WSL 설정</span>
+<span class="cmt"># https://docs.nvidia.com/cuda/wsl-user-guide/</span></code></pre>
+
+  <h3 id="err-15">15. "model loading timeout"</h3>
+
+  <pre><code><span class="cmt"># 모델 로드에 시간 오래 걸림</span>
+<span class="cmt"># OLLAMA_KEEP_ALIVE 증가</span>
+<span class="kw">export</span> OLLAMA_KEEP_ALIVE=30m  <span class="cmt"># 기본 5m</span>
+sudo systemctl restart ollama</code></pre>
+
+  <h3 id="err-16">16. "CUDA driver version insufficient"</h3>
+
+  <pre><code><span class="cmt"># CUDA 드라이버 버전 낮음</span>
+nvidia-smi
+<span class="cmt"># Driver Version 확인</span>
+
+<span class="cmt"># 535 이상 필요</span>
+sudo apt install nvidia-driver-535
+sudo reboot</code></pre>
+
+  <h3 id="err-17">17. "Metal not available"</h3>
+
+  <pre><code><span class="cmt"># macOS에서 Metal 미지원 (구형 Mac)</span>
+<span class="cmt"># CPU 모드로 동작 (정상)</span>
+<span class="cmt"># Intel Mac은 Metal 미지원</span></code></pre>
+
+  <h3 id="err-18">18. "quantization not supported"</h3>
+
+  <pre><code><span class="cmt"># 지원되지 않는 양자화 형식</span>
+<span class="cmt"># 사용 가능: Q4_0, Q5_K_M, Q8_0 등</span>
+ollama pull llama3.2:7b-q4_0  <span class="cmt"># 올바름</span></code></pre>
+
+  <h3 id="err-19">19. "disk write error"</h3>
+
+  <pre><code><span class="cmt"># 디스크 쓰기 권한 또는 공간 문제</span>
+<span class="cmt"># 1. 권한 확인</span>
+ls -ld ~/.ollama
+<span class="cmt"># drwxr-xr-x 사용자 사용자</span>
+
+<span class="cmt"># 2. 공간 확인</span>
+df -h
+
+<span class="cmt"># 3. 권한 수정</span>
+sudo chown -R $USER:$USER ~/.ollama</code></pre>
+
+  <h3 id="err-20">20. "unexpected token in JSON"</h3>
+
+  <pre><code><span class="cmt"># API 요청 JSON 형식 오류</span>
+<span class="cmt"># 올바른 형식:</span>
+{
+  <span class="str">"model"</span>: <span class="str">"llama3.2"</span>,
+  <span class="str">"prompt"</span>: <span class="str">"Hello"</span>,
+  <span class="str">"stream"</span>: <span class="kw">false</span>
+}
+
+<span class="cmt"># 잘못된 예:</span>
+<span class="cmt"># - 따옴표 누락</span>
+<span class="cmt"># - 마지막 쉼표</span>
+<span class="cmt"># - 잘못된 불린 값 (False → false)</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="debug-tools">디버깅 도구</h2>
+
+  <h3 id="debug-logs">로그 확인</h3>
+
+  <pre><code><span class="cmt"># Linux (systemd)</span>
+sudo journalctl -u ollama -f
+sudo journalctl -u ollama -n 100  <span class="cmt"># 최근 100줄</span>
+sudo journalctl -u ollama --since <span class="str">"1 hour ago"</span>
+
+<span class="cmt"># macOS</span>
+tail -f ~/.ollama/logs/server.log
+
+<span class="cmt"># Docker</span>
+docker logs -f ollama
+docker logs --tail 100 ollama
+
+<span class="cmt"># 디버그 모드 활성화</span>
+<span class="kw">export</span> OLLAMA_DEBUG=1
+sudo systemctl restart ollama</code></pre>
+
+  <h3 id="debug-api">API 테스트</h3>
+
+  <pre><code><span class="cmt"># 1. 서버 상태 확인</span>
+curl http://localhost:11434/api/tags
+
+<span class="cmt"># 2. 모델 목록</span>
+curl http://localhost:11434/api/tags | jq
+
+<span class="cmt"># 3. 간단한 생성 테스트</span>
+curl http://localhost:11434/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "Hello",
+  "stream": false
+}'</span> | jq
+
+<span class="cmt"># 4. 스트리밍 테스트</span>
+curl http://localhost:11434/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "Tell me a story",
+  "stream": true
+}'</span></code></pre>
+
+  <h3 id="debug-monitoring">시스템 모니터링</h3>
+
+  <pre><code><span class="cmt"># CPU, 메모리 사용률</span>
+top
+htop
+
+<span class="cmt"># GPU 모니터링 (NVIDIA)</span>
+watch -n 1 nvidia-smi
+
+<span class="cmt"># 네트워크 연결</span>
+netstat -tuln | grep 11434
+ss -tuln | grep 11434
+
+<span class="cmt"># 디스크 I/O</span>
+iostat -x 1
+
+<span class="cmt"># 프로세스 상세 정보</span>
+ps aux | grep ollama
+pstree -p | grep ollama</code></pre>
+
+  <h3 id="debug-benchmark">벤치마크</h3>
+
+  <pre><code><span class="cmt"># 간단한 성능 테스트</span>
+time ollama run llama3.2 <span class="str">"Count from 1 to 100"</span>
+
+<span class="cmt"># Python 벤치마크 스크립트</span>
+<span class="kw">import</span> time
+<span class="kw">import</span> requests
+
+<span class="kw">def</span> <span class="fn">benchmark</span>(model, prompt, iterations=<span class="num">10</span>):
+    times = []
+    <span class="kw">for</span> _ <span class="kw">in</span> range(iterations):
+        start = time.time()
+        response = requests.post(
+            <span class="str">'http://localhost:11434/api/generate'</span>,
+            json={<span class="str">'model'</span>: model, <span class="str">'prompt'</span>: prompt, <span class="str">'stream'</span>: <span class="kw">False</span>}
+        )
+        duration = time.time() - start
+        times.append(duration)
+
+    <span class="kw">print</span>(<span class="str">f"평균: {sum(times)/len(times):.2f}초"</span>)
+    <span class="kw">print</span>(<span class="str">f"최소: {min(times):.2f}초"</span>)
+    <span class="kw">print</span>(<span class="str">f"최대: {max(times):.2f}초"</span>)
+
+benchmark(<span class="str">"llama3.2"</span>, <span class="str">"Hello, how are you?"</span>)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="faq">자주 묻는 질문 (FAQ)</h2>
+
+  <h3 id="faq-1">Q1. Ollama를 완전히 삭제하려면?</h3>
+
+  <pre><code><span class="cmt"># Linux</span>
+sudo systemctl stop ollama
+sudo systemctl disable ollama
+sudo rm /etc/systemd/system/ollama.service
+sudo rm /usr/local/bin/ollama
+rm -rf ~/.ollama
+
+<span class="cmt"># macOS</span>
+rm -rf /Applications/Ollama.app
+rm -rf ~/.ollama
+rm /usr/local/bin/ollama
+
+<span class="cmt"># Windows</span>
+<span class="cmt"># 제어판 → 프로그램 제거</span>
+<span class="cmt"># %USERPROFILE%\.ollama 폴더 삭제</span></code></pre>
+
+  <h3 id="faq-2">Q2. 모델 다운로드 폴더를 옮기려면?</h3>
+
+  <pre><code><span class="cmt"># 1. 새 폴더로 모델 복사</span>
+sudo mkdir -p /mnt/storage/ollama
+sudo cp -r ~/.ollama/* /mnt/storage/ollama/
+
+<span class="cmt"># 2. 환경 변수 설정</span>
+sudo systemctl edit ollama
+[Service]
+Environment=<span class="str">"OLLAMA_MODELS=/mnt/storage/ollama"</span>
+
+<span class="cmt"># 3. 재시작</span>
+sudo systemctl restart ollama
+
+<span class="cmt"># 4. 확인</span>
+ollama list</code></pre>
+
+  <h3 id="faq-3">Q3. API 키 인증을 추가하려면?</h3>
+
+  <pre><code><span class="cmt"># NGINX 리버스 프록시에 Basic Auth 추가</span>
+<span class="cmt"># nginx.conf</span>
+location / {
+    auth_basic <span class="str">"Restricted"</span>;
+    auth_basic_user_file /etc/nginx/.htpasswd;
+    proxy_pass http://localhost:11434;
+}
+
+<span class="cmt"># htpasswd 생성</span>
+sudo htpasswd -c /etc/nginx/.htpasswd admin
+
+<span class="cmt"># 사용</span>
+curl -u admin:password http://your-server/api/generate ...</code></pre>
+
+  <h3 id="faq-4">Q4. 여러 모델을 동시에 사용하려면?</h3>
+
+  <pre><code><span class="cmt"># OLLAMA_MAX_LOADED_MODELS 증가</span>
+<span class="kw">export</span> OLLAMA_MAX_LOADED_MODELS=3  <span class="cmt"># 최대 3개</span>
+sudo systemctl restart ollama
+
+<span class="cmt"># 주의: 메모리 사용량 증가</span>
+<span class="cmt"># 모델당 3-7GB → 총 9-21GB 필요</span></code></pre>
+
+  <h3 id="faq-5">Q5. Ollama를 백그라운드에서 실행하지 않으려면?</h3>
+
+  <pre><code><span class="cmt"># Linux - systemd 비활성화</span>
+sudo systemctl stop ollama
+sudo systemctl disable ollama
+
+<span class="cmt"># 수동 실행 (포그라운드)</span>
+ollama serve
+
+<span class="cmt"># 또는 백그라운드</span>
+ollama serve &amp;
+
+<span class="cmt"># 종료</span>
+pkill ollama</code></pre>
+
+  <h3 id="faq-6">Q6. 특정 IP만 접속 허용하려면?</h3>
+
+  <pre><code><span class="cmt"># 방화벽 규칙 (UFW)</span>
+sudo ufw deny 11434/tcp
+sudo ufw allow from 192.168.1.0/24 to any port 11434
+
+<span class="cmt"># NGINX에서 IP 제한</span>
+location / {
+    allow 192.168.1.0/24;
+    deny all;
+    proxy_pass http://localhost:11434;
+}</code></pre>
+
+  <h3 id="faq-7">Q7. CPU 사용량이 너무 높습니다</h3>
+
+  <pre><code><span class="cmt"># 1. GPU 사용 확인 (GPU 있으면)</span>
+nvidia-smi
+
+<span class="cmt"># 2. 더 작은 모델 사용</span>
+ollama pull phi3:mini
+
+<span class="cmt"># 3. 컨텍스트 윈도우 줄이기</span>
+<span class="kw">PARAMETER</span> num_ctx 1024
+
+<span class="cmt"># 4. 동시 요청 수 제한</span>
+<span class="kw">export</span> OLLAMA_NUM_PARALLEL=1</code></pre>
+
+  <h3 id="faq-8">Q8. 오프라인 환경에서 사용하려면?</h3>
+
+  <pre><code><span class="cmt"># 1. 인터넷 연결된 PC에서 모델 다운로드</span>
+ollama pull llama3.2
+
+<span class="cmt"># 2. 모델 폴더 압축</span>
+tar -czf ollama-models.tar.gz ~/.ollama
+
+<span class="cmt"># 3. 오프라인 PC로 전송</span>
+scp ollama-models.tar.gz user@offline-pc:~
+
+<span class="cmt"># 4. 오프라인 PC에서 압축 해제</span>
+tar -xzf ollama-models.tar.gz -C ~/
+
+<span class="cmt"># 5. Ollama 설치 (인터넷 필요)</span>
+<span class="cmt"># 설치 파일을 미리 다운로드하여 전송</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="resources">추가 리소스</h2>
+
+  <h3 id="res-official">공식 문서</h3>
+  <ul>
+    <li><a href="https://github.com/ollama/ollama" target="_blank">GitHub - ollama/ollama</a></li>
+    <li><a href="https://ollama.com/library" target="_blank">Model Library</a></li>
+    <li><a href="https://github.com/ollama/ollama/blob/main/docs/api.md" target="_blank">API Documentation</a></li>
+  </ul>
+
+  <h3 id="res-community">커뮤니티</h3>
+  <ul>
+    <li><a href="https://discord.gg/ollama" target="_blank">Discord Server</a></li>
+    <li><a href="https://www.reddit.com/r/ollama/" target="_blank">Reddit - r/ollama</a></li>
+    <li><a href="https://www.reddit.com/r/LocalLLaMA/" target="_blank">Reddit - r/LocalLLaMA</a></li>
+  </ul>
+
+  <h3 id="res-tools">관련 도구</h3>
+  <ul>
+    <li><a href="https://github.com/continuedev/continue" target="_blank">Continue.dev</a> - VS Code 확장</li>
+    <li><a href="https://github.com/paul-gauthier/aider" target="_blank">Aider</a> - CLI 코딩 도구</li>
+    <li><a href="https://github.com/open-webui/open-webui" target="_blank">Open WebUI</a> - 웹 인터페이스</li>
+    <li><a href="https://github.com/langchain-ai/langchain" target="_blank">LangChain</a> - 프레임워크</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <p>문제를 해결했다면, 이제 Ollama를 실전에서 활용해봅시다!</p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📚 계속 학습하기</div>
+    <ol>
+      <li><a href="ollama-intro.html">Ollama 소개</a> - 기본 개념 복습</li>
+      <li><a href="ollama-integration.html">도구 연동</a> - Continue, Aider 설정</li>
+      <li><a href="ollama-advanced.html">고급 활용</a> - Modelfile, RAG, 에이전트</li>
+    </ol>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 문제 해결 체크리스트</div>
+    <ol>
+      <li><strong>로그 확인</strong>: <code>sudo journalctl -u ollama -n 100</code></li>
+      <li><strong>서비스 재시작</strong>: <code>sudo systemctl restart ollama</code></li>
+      <li><strong>모델 재다운로드</strong>: <code>ollama rm → ollama pull</code></li>
+      <li><strong>GPU 확인</strong>: <code>nvidia-smi</code></li>
+      <li><strong>메모리 확인</strong>: <code>free -h</code></li>
+      <li><strong>디스크 확인</strong>: <code>df -h</code></li>
+      <li><strong>API 테스트</strong>: <code>curl localhost:11434/api/tags</code></li>
+      <li><strong>최종 수단</strong>: Ollama 재설치</li>
+    </ol>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

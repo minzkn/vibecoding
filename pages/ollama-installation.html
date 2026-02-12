@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Ollama 설치 가이드 - Windows, macOS, Linux">
+<meta property="og:description" content="모든 운영체제에서 Ollama를 설치하고 첫 번째 모델을 실행하는 완전 가이드">
+<meta property="og:url" content="https://minzkn.com/claude/pages/ollama-installation.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Ollama 설치 완전 가이드. Windows, macOS, Linux에서 설치 및 설정 방법.">
+<meta name="keywords" content="ollama 설치, installation, windows, macos, linux, setup">
+<meta name="author" content="MINZKN">
+<title>Ollama 설치 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Ollama 설치</h1>
+<p class="lead">모든 운영체제에서 Ollama를 설치하고 첫 번째 LLM 모델 실행하기</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 빠른 설치</div>
+  <p><strong>Linux/macOS (1분):</strong></p>
+  <pre><code>curl -fsSL https://ollama.com/install.sh | sh</code></pre>
+  <p><strong>Windows:</strong></p>
+  <ol>
+    <li><a href="https://ollama.com/download/windows" target="_blank">ollama.com/download/windows</a>에서 설치 파일 다운로드</li>
+    <li>실행 파일 더블클릭</li>
+    <li>Next → Install → Finish</li>
+  </ol>
+</div>
+
+<section class="content-section">
+  <h2 id="system-requirements">시스템 요구사항</h2>
+
+  <h3 id="minimum-specs">최소 사양</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>항목</th>
+        <th>최소 요구사항</th>
+        <th>권장 사양</th>
+        <th>이상적 환경</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>RAM</strong></td>
+        <td>8GB (3B 모델)</td>
+        <td>16GB (7B 모델)</td>
+        <td>32GB+ (13B+ 모델)</td>
+      </tr>
+      <tr>
+        <td><strong>디스크</strong></td>
+        <td>10GB 여유 공간</td>
+        <td>50GB 여유 공간</td>
+        <td>100GB+ SSD</td>
+      </tr>
+      <tr>
+        <td><strong>CPU</strong></td>
+        <td>x86_64 또는 ARM64</td>
+        <td>4코어 이상</td>
+        <td>8코어+ (AVX2 지원)</td>
+      </tr>
+      <tr>
+        <td><strong>GPU</strong></td>
+        <td>선택사항 (CPU만으로도 동작)</td>
+        <td>NVIDIA GPU (6GB+ VRAM)</td>
+        <td>NVIDIA GPU (12GB+ VRAM)</td>
+      </tr>
+      <tr>
+        <td><strong>OS</strong></td>
+        <td colspan="3">macOS 11+, Windows 10+, Linux (kernel 4.x+)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 모델별 메모리 요구사항</div>
+    <ul>
+      <li><strong>1-3B 모델</strong> (Phi-3 Mini, Gemma 2B): 8GB RAM</li>
+      <li><strong>7B 모델</strong> (Llama 3.2 7B, Mistral 7B): 16GB RAM</li>
+      <li><strong>13B 모델</strong> (CodeLlama 13B): 24GB RAM</li>
+      <li><strong>34B+ 모델</strong> (Mixtral 8x7B, Llama 70B): 48GB+ RAM 또는 GPU</li>
+    </ul>
+    <p><strong>팁</strong>: 양자화(Q4_0)를 사용하면 메모리 요구량이 절반으로 줄어듭니다.</p>
+  </div>
+
+  <h3 id="gpu-support">GPU 지원</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>플랫폼</th>
+        <th>GPU</th>
+        <th>자동 감지</th>
+        <th>비고</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>macOS</strong></td>
+        <td>Apple Silicon (M1/M2/M3)</td>
+        <td>✅ 자동</td>
+        <td>Metal 가속 (매우 빠름)</td>
+      </tr>
+      <tr>
+        <td><strong>Linux</strong></td>
+        <td>NVIDIA (CUDA 11.8+)</td>
+        <td>✅ 자동</td>
+        <td>드라이버 설치 필요</td>
+      </tr>
+      <tr>
+        <td><strong>Linux</strong></td>
+        <td>AMD (ROCm 5.7+)</td>
+        <td>⚠️ 수동 설정</td>
+        <td>실험적 지원</td>
+      </tr>
+      <tr>
+        <td><strong>Windows</strong></td>
+        <td>NVIDIA (CUDA 11.8+)</td>
+        <td>✅ 자동</td>
+        <td>WSL2 사용 권장</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ GPU 없어도 괜찮습니다!</div>
+    <p>
+      Ollama는 CPU만으로도 충분히 사용 가능합니다. GPU는 속도를 2-10배 향상시키지만,
+      3B-7B 모델은 CPU에서도 실용적인 속도로 동작합니다.
+    </p>
+    <ul>
+      <li><strong>CPU (16GB RAM)</strong>: Llama 3.2 7B → 10-20 tokens/sec</li>
+      <li><strong>GPU (RTX 3060 12GB)</strong>: Llama 3.2 7B → 50-100 tokens/sec</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="linux">Linux 설치</h2>
+
+  <h3 id="linux-auto">자동 설치 (권장)</h3>
+
+  <p>공식 설치 스크립트를 사용하면 1분 안에 설치 완료:</p>
+
+  <pre><code><span class="cmt"># Ollama 설치</span>
+curl -fsSL https://ollama.com/install.sh | sh
+
+<span class="cmt"># 설치 확인</span>
+ollama --version
+<span class="cmt"># ollama version 0.1.x</span>
+
+<span class="cmt"># 서비스 상태 확인</span>
+systemctl status ollama
+<span class="cmt"># ● ollama.service - Ollama Service</span>
+<span class="cmt">#    Loaded: loaded</span>
+<span class="cmt">#    Active: active (running)</span></code></pre>
+
+  <p>설치 스크립트는 다음 작업을 자동으로 수행합니다:</p>
+  <ul>
+    <li>Ollama 바이너리 다운로드 (<code>/usr/local/bin/ollama</code>)</li>
+    <li><code>ollama</code> 사용자 및 그룹 생성</li>
+    <li>systemd 서비스 파일 생성 (<code>/etc/systemd/system/ollama.service</code>)</li>
+    <li>서비스 자동 시작 설정</li>
+    <li>GPU 드라이버 감지 (NVIDIA CUDA, AMD ROCm)</li>
+  </ul>
+
+  <h3 id="linux-manual">수동 설치</h3>
+
+  <p>특정 버전을 설치하거나 커스텀 설정이 필요한 경우:</p>
+
+  <pre><code><span class="cmt"># 1. 바이너리 다운로드</span>
+sudo curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/local/bin/ollama
+sudo chmod +x /usr/local/bin/ollama
+
+<span class="cmt"># 2. 사용자 및 그룹 생성</span>
+sudo useradd -r -s /bin/false -m -d /usr/share/ollama ollama
+
+<span class="cmt"># 3. systemd 서비스 파일 생성</span>
+sudo tee /etc/systemd/system/ollama.service &lt;&lt;EOF
+[Unit]
+Description=Ollama Service
+After=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/ollama serve
+User=ollama
+Group=ollama
+Restart=always
+RestartSec=3
+Environment="OLLAMA_HOST=0.0.0.0:11434"
+
+[Install]
+WantedBy=default.target
+EOF
+
+<span class="cmt"># 4. 서비스 시작</span>
+sudo systemctl daemon-reload
+sudo systemctl enable ollama
+sudo systemctl start ollama</code></pre>
+
+  <h3 id="linux-nvidia">NVIDIA GPU 설정 (Linux)</h3>
+
+  <p>CUDA를 설치하면 Ollama가 자동으로 GPU를 감지합니다:</p>
+
+  <pre><code><span class="cmt"># 1. NVIDIA 드라이버 설치 (Ubuntu/Debian)</span>
+sudo apt update
+sudo apt install nvidia-driver-535
+
+<span class="cmt"># 2. CUDA Toolkit 설치 (선택사항)</span>
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
+sudo dpkg -i cuda-keyring_1.1-1_all.deb
+sudo apt update
+sudo apt install cuda-toolkit-12-3
+
+<span class="cmt"># 3. 재부팅</span>
+sudo reboot
+
+<span class="cmt"># 4. GPU 확인</span>
+nvidia-smi
+<span class="cmt"># +-----------------------------------------------------------------------------+</span>
+<span class="cmt"># | NVIDIA-SMI 535.x       Driver Version: 535.x       CUDA Version: 12.2     |</span>
+
+<span class="cmt"># 5. Ollama에서 GPU 사용 확인</span>
+ollama run llama3.2
+<span class="cmt"># GPU가 감지되면 자동으로 사용됩니다</span></code></pre>
+
+  <h3 id="linux-distros">배포판별 설치</h3>
+
+  <h4>Ubuntu / Debian</h4>
+  <pre><code>curl -fsSL https://ollama.com/install.sh | sh</code></pre>
+
+  <h4>Fedora / RHEL / CentOS</h4>
+  <pre><code>curl -fsSL https://ollama.com/install.sh | sh</code></pre>
+
+  <h4>Arch Linux</h4>
+  <pre><code><span class="cmt"># AUR 사용</span>
+yay -S ollama
+
+<span class="cmt"># 또는 공식 스크립트</span>
+curl -fsSL https://ollama.com/install.sh | sh</code></pre>
+
+  <h4>Alpine Linux</h4>
+  <pre><code><span class="cmt"># 수동 설치 (공식 스크립트가 Alpine 미지원)</span>
+wget https://ollama.com/download/ollama-linux-amd64
+sudo mv ollama-linux-amd64 /usr/local/bin/ollama
+sudo chmod +x /usr/local/bin/ollama</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="macos">macOS 설치</h2>
+
+  <h3 id="macos-download">다운로드 및 설치</h3>
+
+  <p><strong>방법 1: 공식 앱 다운로드 (권장)</strong></p>
+  <ol>
+    <li><a href="https://ollama.com/download/mac" target="_blank">ollama.com/download/mac</a> 접속</li>
+    <li><code>Ollama-darwin.zip</code> 다운로드</li>
+    <li>압축 해제 후 <code>Ollama.app</code>를 <code>Applications</code> 폴더로 이동</li>
+    <li><code>Ollama.app</code> 실행 → 메뉴바에 라마 아이콘 표시됨</li>
+  </ol>
+
+  <p><strong>방법 2: 명령줄 설치</strong></p>
+  <pre><code><span class="cmt"># 설치 스크립트 실행</span>
+curl -fsSL https://ollama.com/install.sh | sh
+
+<span class="cmt"># 확인</span>
+ollama --version</code></pre>
+
+  <p><strong>방법 3: Homebrew</strong></p>
+  <pre><code><span class="cmt"># Homebrew로 설치</span>
+brew install ollama
+
+<span class="cmt"># 서비스 시작</span>
+brew services start ollama</code></pre>
+
+  <h3 id="macos-apple-silicon">Apple Silicon (M1/M2/M3) 최적화</h3>
+
+  <p>
+    Ollama는 Apple Silicon에서 <strong>Metal</strong> 가속을 자동으로 사용합니다.
+    별도 설정 없이 GPU 가속이 적용됩니다!
+  </p>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🚀 Apple Silicon 성능</div>
+    <ul>
+      <li><strong>M1 (8GB)</strong>: Llama 3.2 3B → 40-60 tokens/sec</li>
+      <li><strong>M1 Pro (16GB)</strong>: Llama 3.2 7B → 30-50 tokens/sec</li>
+      <li><strong>M2 Max (32GB)</strong>: Llama 3.1 13B → 20-40 tokens/sec</li>
+      <li><strong>M3 Max (64GB)</strong>: Mixtral 8x7B → 15-30 tokens/sec</li>
+    </ul>
+    <p>Metal 가속으로 NVIDIA GPU와 비슷하거나 더 빠른 속도!</p>
+  </div>
+
+  <pre><code><span class="cmt"># Metal 사용 확인</span>
+ollama run llama3.2 <span class="str">"Hello"</span>
+<span class="cmt"># 로그에 "Metal" 또는 "GPU"가 표시되면 가속 사용 중</span>
+
+<span class="cmt"># 메모리 압력 모니터링</span>
+<span class="kw">while</span> <span class="kw">true</span>; <span class="kw">do</span>
+  vm_stat | grep <span class="str">"Pages active"</span>
+  sleep 1
+<span class="kw">done</span></code></pre>
+
+  <h3 id="macos-menu-bar">메뉴바 앱 사용법</h3>
+
+  <p>Ollama.app을 실행하면 메뉴바에 라마 아이콘이 표시됩니다:</p>
+
+  <ul>
+    <li><strong>아이콘 클릭</strong> → 모델 목록, 실행 중인 모델 확인</li>
+    <li><strong>Run a model</strong> → 모델 선택하여 터미널에서 실행</li>
+    <li><strong>Pull a model</strong> → 새 모델 다운로드</li>
+    <li><strong>Quit Ollama</strong> → 서비스 종료</li>
+  </ul>
+
+  <p>백그라운드 서비스는 로그인 시 자동 시작됩니다.</p>
+</section>
+
+<section class="content-section">
+  <h2 id="windows">Windows 설치</h2>
+
+  <h3 id="windows-download">설치 프로그램 다운로드</h3>
+
+  <ol>
+    <li><a href="https://ollama.com/download/windows" target="_blank">ollama.com/download/windows</a> 접속</li>
+    <li><code>OllamaSetup.exe</code> 다운로드</li>
+    <li>다운로드한 파일 더블클릭</li>
+    <li>UAC 프롬프트 허용 (관리자 권한 필요)</li>
+    <li>설치 마법사 진행:
+      <ul>
+        <li>License Agreement 동의</li>
+        <li>설치 경로 선택 (기본: <code>C:\Users\[사용자]\AppData\Local\Programs\Ollama</code>)</li>
+        <li>Install 클릭</li>
+      </ul>
+    </li>
+    <li>설치 완료 → <strong>시작 메뉴</strong>에 Ollama 추가됨</li>
+  </ol>
+
+  <h3 id="windows-verify">설치 확인</h3>
+
+  <pre><code><span class="cmt"># PowerShell 또는 CMD 열기</span>
+ollama --version
+<span class="cmt"># ollama version 0.1.x</span>
+
+<span class="cmt"># 서비스 상태 확인</span>
+Get-Service Ollama
+<span class="cmt"># Status   Name               DisplayName</span>
+<span class="cmt"># ------   ----               -----------</span>
+<span class="cmt"># Running  Ollama             Ollama Service</span></code></pre>
+
+  <h3 id="windows-wsl2">WSL2 사용 (Linux 환경, 권장)</h3>
+
+  <p>
+    Windows에서 최상의 성능을 위해서는 <strong>WSL2 + Ubuntu</strong>를 사용하는 것을 권장합니다.
+    특히 NVIDIA GPU가 있는 경우 WSL2에서 CUDA를 사용할 수 있습니다.
+  </p>
+
+  <h4>1. WSL2 설치</h4>
+  <pre><code><span class="cmt"># PowerShell (관리자 권한)</span>
+wsl --install
+<span class="cmt"># 재부팅</span>
+
+<span class="cmt"># Ubuntu 설치 확인</span>
+wsl -l -v
+<span class="cmt">#   NAME            STATE           VERSION</span>
+<span class="cmt"># * Ubuntu-22.04    Running         2</span></code></pre>
+
+  <h4>2. WSL2 내에서 Ollama 설치</h4>
+  <pre><code><span class="cmt"># WSL2 (Ubuntu) 터미널 열기</span>
+wsl
+
+<span class="cmt"># Ollama 설치</span>
+curl -fsSL https://ollama.com/install.sh | sh
+
+<span class="cmt"># 확인</span>
+ollama --version</code></pre>
+
+  <h4>3. NVIDIA GPU 지원 (WSL2 + CUDA)</h4>
+  <pre><code><span class="cmt"># 1. Windows에 NVIDIA 드라이버 설치 (호스트)</span>
+<span class="cmt">#    https://www.nvidia.com/Download/index.aspx</span>
+
+<span class="cmt"># 2. WSL2에서 CUDA 사용 가능 확인</span>
+nvidia-smi
+<span class="cmt"># GPU 정보 표시되면 성공</span>
+
+<span class="cmt"># 3. Ollama에서 자동으로 GPU 사용</span>
+ollama run llama3.2</code></pre>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ Windows 네이티브 vs WSL2</div>
+    <table>
+      <thead>
+        <tr>
+          <th>항목</th>
+          <th>Windows 네이티브</th>
+          <th>WSL2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>설치 난이도</strong></td>
+          <td>쉬움 (GUI)</td>
+          <td>중간 (CLI)</td>
+        </tr>
+        <tr>
+          <td><strong>성능</strong></td>
+          <td>보통</td>
+          <td>빠름 (네이티브 Linux)</td>
+        </tr>
+        <tr>
+          <td><strong>GPU 지원</strong></td>
+          <td>실험적 (CUDA 설정 복잡)</td>
+          <td>완전 지원 (CUDA 자동)</td>
+        </tr>
+        <tr>
+          <td><strong>권장</strong></td>
+          <td>초보자, GPU 없음</td>
+          <td>개발자, GPU 있음</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="windows-path">환경 변수 설정</h3>
+
+  <p>명령 프롬프트 어디서나 <code>ollama</code> 명령어를 사용하려면:</p>
+
+  <ol>
+    <li><strong>시스템 속성</strong> → <strong>고급</strong> → <strong>환경 변수</strong></li>
+    <li><strong>시스템 변수</strong>에서 <code>Path</code> 선택 → <strong>편집</strong></li>
+    <li><strong>새로 만들기</strong> → <code>C:\Users\[사용자]\AppData\Local\Programs\Ollama\bin</code> 추가</li>
+    <li>확인 → CMD 재시작</li>
+  </ol>
+
+  <p>설치 프로그램이 자동으로 Path를 추가하므로 보통 수동 설정은 불필요합니다.</p>
+</section>
+
+<section class="content-section">
+  <h2 id="docker">Docker 설치 (선택사항)</h2>
+
+  <p>
+    Docker를 사용하면 격리된 환경에서 Ollama를 실행할 수 있습니다.
+    서버 배포, 테스트 환경에 적합합니다.
+  </p>
+
+  <h3 id="docker-cpu">CPU 전용</h3>
+
+  <pre><code><span class="cmt"># Ollama 컨테이너 실행</span>
+docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+
+<span class="cmt"># 모델 다운로드</span>
+docker exec -it ollama ollama pull llama3.2
+
+<span class="cmt"># 대화 시작</span>
+docker exec -it ollama ollama run llama3.2</code></pre>
+
+  <h3 id="docker-gpu">GPU 지원 (NVIDIA)</h3>
+
+  <pre><code><span class="cmt"># NVIDIA Container Toolkit 설치 (Linux)</span>
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+
+sudo apt update
+sudo apt install -y nvidia-container-toolkit
+sudo systemctl restart docker
+
+<span class="cmt"># GPU로 Ollama 실행</span>
+docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama</code></pre>
+
+  <h3 id="docker-compose">Docker Compose</h3>
+
+  <pre><code><span class="cmt"># docker-compose.yml</span>
+<span class="kw">version</span>: <span class="str">'3.8'</span>
+<span class="kw">services</span>:
+  <span class="kw">ollama</span>:
+    <span class="kw">image</span>: ollama/ollama:latest
+    <span class="kw">container_name</span>: ollama
+    <span class="kw">ports</span>:
+      - <span class="str">"11434:11434"</span>
+    <span class="kw">volumes</span>:
+      - ollama:/root/.ollama
+    <span class="kw">deploy</span>:
+      <span class="kw">resources</span>:
+        <span class="kw">reservations</span>:
+          <span class="kw">devices</span>:
+            - <span class="kw">driver</span>: nvidia
+              <span class="kw">count</span>: 1
+              <span class="kw">capabilities</span>: [gpu]
+
+<span class="kw">volumes</span>:
+  <span class="kw">ollama</span>:</code></pre>
+
+  <pre><code><span class="cmt"># 실행</span>
+docker-compose up -d
+
+<span class="cmt"># 모델 다운로드</span>
+docker-compose exec ollama ollama pull llama3.2</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="first-model">첫 번째 모델 실행</h2>
+
+  <p>설치가 완료되었으면 첫 번째 모델을 다운로드하고 실행해봅시다!</p>
+
+  <h3 id="pull-model">모델 다운로드</h3>
+
+  <pre><code><span class="cmt"># Llama 3.2 (3B, 가장 작고 빠름) 다운로드</span>
+ollama pull llama3.2
+
+<span class="cmt"># 다운로드 진행 상황</span>
+pulling manifest
+pulling 3b6e8c9b9a5d... 100% ▕████████████████▏ 2.0 GB
+pulling 87d7562b0aa3... 100% ▕████████████████▏ 1.4 KB
+pulling a47b0e3d78c0... 100% ▕████████████████▏  251 B
+pulling af9f6c30658f... 100% ▕████████████████▏  487 B
+verifying sha256 digest
+writing manifest
+removing any unused layers
+success</code></pre>
+
+  <p>다운로드 시간: 인터넷 속도에 따라 1-5분 소요 (2GB)</p>
+
+  <h3 id="run-model">모델 실행</h3>
+
+  <pre><code><span class="cmt"># 대화형 모드로 실행</span>
+ollama run llama3.2
+
+<span class="cmt"># 프롬프트 표시</span>
+<span class="str">&gt;&gt;&gt; </span></code></pre>
+
+  <p>이제 대화를 시작할 수 있습니다!</p>
+
+  <h3 id="first-conversation">첫 번째 대화 예제</h3>
+
+  <pre><code><span class="str">&gt;&gt;&gt; 안녕! Python으로 피보나치 수열을 생성하는 함수를 만들어줘</span>
+
+Here's a simple implementation of a Fibonacci sequence generator in Python:
+
+<span class="kw">def</span> <span class="fn">fibonacci</span>(n):
+    <span class="str">"""
+    Generate Fibonacci sequence up to n terms
+    """</span>
+    fib_sequence = []
+    a, b = <span class="num">0</span>, <span class="num">1</span>
+
+    <span class="kw">for</span> _ <span class="kw">in</span> range(n):
+        fib_sequence.append(a)
+        a, b = b, a + b
+
+    <span class="kw">return</span> fib_sequence
+
+<span class="cmt"># Example usage</span>
+<span class="kw">print</span>(fibonacci(<span class="num">10</span>))
+<span class="cmt"># Output: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]</span>
+
+<span class="str">&gt;&gt;&gt; 재귀 함수로도 만들어줘</span>
+
+Sure! Here's a recursive version:
+
+<span class="kw">def</span> <span class="fn">fibonacci_recursive</span>(n):
+    <span class="kw">if</span> n &lt;= <span class="num">1</span>:
+        <span class="kw">return</span> n
+    <span class="kw">return</span> fibonacci_recursive(n-<span class="num">1</span>) + fibonacci_recursive(n-<span class="num">2</span>)
+
+<span class="cmt"># Generate first 10 Fibonacci numbers</span>
+result = [fibonacci_recursive(i) <span class="kw">for</span> i <span class="kw">in</span> range(<span class="num">10</span>)]
+<span class="kw">print</span>(result)
+
+<span class="str">&gt;&gt;&gt; /bye</span></code></pre>
+
+  <h3 id="cli-commands">유용한 CLI 명령어</h3>
+
+  <pre><code><span class="cmt"># 설치된 모델 목록</span>
+ollama list
+<span class="cmt"># NAME              ID              SIZE      MODIFIED</span>
+<span class="cmt"># llama3.2:latest   3b6e8c9b9a5d    2.0 GB    2 minutes ago</span>
+
+<span class="cmt"># 단일 프롬프트 실행 (대화형 아님)</span>
+ollama run llama3.2 <span class="str">"Explain quantum computing in one sentence"</span>
+
+<span class="cmt"># 모델 삭제</span>
+ollama rm llama3.2
+
+<span class="cmt"># 실행 중인 모델 확인</span>
+ollama ps
+<span class="cmt"># NAME              ID              SIZE      PROCESSOR    UNTIL</span>
+<span class="cmt"># llama3.2:latest   3b6e8c9b9a5d    2.0 GB    100% GPU     4 minutes from now</span>
+
+<span class="cmt"># 모델 정보 확인</span>
+ollama show llama3.2</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="configuration">고급 설정</h2>
+
+  <h3 id="env-vars">환경 변수</h3>
+
+  <p>Ollama는 환경 변수로 동작을 제어할 수 있습니다:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>변수명</th>
+        <th>기본값</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>OLLAMA_HOST</code></td>
+        <td><code>127.0.0.1:11434</code></td>
+        <td>서버 주소 (원격 접속 시 0.0.0.0)</td>
+      </tr>
+      <tr>
+        <td><code>OLLAMA_MODELS</code></td>
+        <td><code>~/.ollama/models</code></td>
+        <td>모델 저장 경로</td>
+      </tr>
+      <tr>
+        <td><code>OLLAMA_NUM_PARALLEL</code></td>
+        <td><code>1</code></td>
+        <td>동시 처리할 요청 수</td>
+      </tr>
+      <tr>
+        <td><code>OLLAMA_MAX_LOADED_MODELS</code></td>
+        <td><code>1</code></td>
+        <td>메모리에 로드할 모델 수</td>
+      </tr>
+      <tr>
+        <td><code>OLLAMA_KEEP_ALIVE</code></td>
+        <td><code>5m</code></td>
+        <td>모델 언로드 대기 시간</td>
+      </tr>
+      <tr>
+        <td><code>OLLAMA_DEBUG</code></td>
+        <td><code>false</code></td>
+        <td>디버그 로그 활성화</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>Linux/macOS</h4>
+  <pre><code><span class="cmt"># ~/.bashrc 또는 ~/.zshrc에 추가</span>
+<span class="kw">export</span> OLLAMA_HOST=<span class="str">"0.0.0.0:11434"</span>
+<span class="kw">export</span> OLLAMA_MODELS=<span class="str">"/data/ollama/models"</span>
+<span class="kw">export</span> OLLAMA_NUM_PARALLEL=<span class="num">4</span>
+
+<span class="cmt"># systemd 서비스 환경 변수 (Linux)</span>
+sudo systemctl edit ollama
+<span class="cmt"># 다음 내용 추가:</span>
+[Service]
+Environment=<span class="str">"OLLAMA_HOST=0.0.0.0:11434"</span>
+
+sudo systemctl restart ollama</code></pre>
+
+  <h4>Windows</h4>
+  <pre><code><span class="cmt"># PowerShell (영구 설정)</span>
+[System.Environment]::SetEnvironmentVariable(<span class="str">'OLLAMA_HOST'</span>, <span class="str">'0.0.0.0:11434'</span>, <span class="str">'User'</span>)
+
+<span class="cmt"># CMD (현재 세션만)</span>
+<span class="kw">set</span> OLLAMA_HOST=0.0.0.0:11434</code></pre>
+
+  <h3 id="remote-access">원격 접속 설정</h3>
+
+  <p>다른 컴퓨터에서 Ollama API에 접근하려면:</p>
+
+  <pre><code><span class="cmt"># 1. OLLAMA_HOST를 0.0.0.0으로 설정 (모든 인터페이스)</span>
+<span class="kw">export</span> OLLAMA_HOST=<span class="str">"0.0.0.0:11434"</span>
+
+<span class="cmt"># 2. 방화벽 포트 열기 (Linux)</span>
+sudo ufw allow <span class="num">11434</span>/tcp
+
+<span class="cmt"># 3. 재시작</span>
+sudo systemctl restart ollama
+
+<span class="cmt"># 4. 다른 컴퓨터에서 접속</span>
+curl http://192.168.1.100:11434/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "Hello"
+}'</span></code></pre>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 보안 주의</div>
+    <p>
+      원격 접속을 활성화하면 네트워크에 있는 누구나 Ollama API에 접근할 수 있습니다.
+      프로덕션 환경에서는 인증, HTTPS, 방화벽 설정을 반드시 추가하세요.
+    </p>
+  </div>
+
+  <h3 id="storage-location">모델 저장 위치 변경</h3>
+
+  <p>디스크 공간이 부족하면 모델을 다른 드라이브에 저장:</p>
+
+  <pre><code><span class="cmt"># 1. 새 디렉토리 생성</span>
+sudo mkdir -p /mnt/storage/ollama
+
+<span class="cmt"># 2. 권한 설정</span>
+sudo chown -R ollama:ollama /mnt/storage/ollama
+
+<span class="cmt"># 3. 환경 변수 설정</span>
+sudo systemctl edit ollama
+<span class="cmt"># 추가:</span>
+[Service]
+Environment=<span class="str">"OLLAMA_MODELS=/mnt/storage/ollama"</span>
+
+<span class="cmt"># 4. 재시작</span>
+sudo systemctl restart ollama</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="troubleshooting">트러블슈팅</h2>
+
+  <h3 id="common-issues">일반적인 문제</h3>
+
+  <h4>1. "ollama: command not found"</h4>
+  <pre><code><span class="cmt"># 원인: PATH에 ollama가 없음</span>
+<span class="cmt"># 해결: 설치 확인</span>
+which ollama
+<span class="cmt"># /usr/local/bin/ollama (있어야 함)</span>
+
+<span class="cmt"># 없으면 재설치</span>
+curl -fsSL https://ollama.com/install.sh | sh</code></pre>
+
+  <h4>2. "connection refused" (포트 11434 접속 불가)</h4>
+  <pre><code><span class="cmt"># 원인: Ollama 서비스 미실행</span>
+<span class="cmt"># 해결: 서비스 시작</span>
+<span class="cmt"># Linux</span>
+sudo systemctl start ollama
+
+<span class="cmt"># macOS</span>
+ollama serve &amp;
+
+<span class="cmt"># 확인</span>
+curl http://localhost:11434/api/tags</code></pre>
+
+  <h4>3. GPU 미감지 (NVIDIA)</h4>
+  <pre><code><span class="cmt"># 확인: nvidia-smi 실행</span>
+nvidia-smi
+<span class="cmt"># 에러 발생 시 → 드라이버 재설치</span>
+
+<span class="cmt"># CUDA 버전 확인</span>
+nvcc --version
+<span class="cmt"># 11.8 이상 필요</span>
+
+<span class="cmt"># Ollama 재시작</span>
+sudo systemctl restart ollama</code></pre>
+
+  <h4>4. 메모리 부족 (OOM)</h4>
+  <pre><code><span class="cmt"># 원인: 모델이 RAM보다 큼</span>
+<span class="cmt"># 해결: 더 작은 모델 사용</span>
+ollama pull phi3:mini   <span class="cmt"># 3B, 8GB RAM</span>
+ollama pull llama3.2    <span class="cmt"># 3B, 8GB RAM</span>
+
+<span class="cmt"># 또는 양자화 버전</span>
+ollama pull llama3.2:7b-q4_0  <span class="cmt"># 4GB</span></code></pre>
+
+  <h3 id="logs">로그 확인</h3>
+
+  <pre><code><span class="cmt"># Linux (systemd)</span>
+sudo journalctl -u ollama -f
+
+<span class="cmt"># macOS</span>
+tail -f ~/.ollama/logs/server.log
+
+<span class="cmt"># Docker</span>
+docker logs -f ollama</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <p>Ollama 설치를 완료했습니다! 이제 다양한 모델을 탐색해봅시다.</p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📚 계속 학습하기</div>
+    <ol>
+      <li><a href="ollama-models.html">모델 가이드</a> - Llama, Mistral, CodeLlama 비교 및 선택</li>
+      <li><a href="ollama-usage.html">기본 사용법</a> - CLI 명령어, API 사용, 고급 옵션</li>
+      <li><a href="ollama-integration.html">도구 연동</a> - Continue, Aider와 통합하여 코딩 시작</li>
+    </ol>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

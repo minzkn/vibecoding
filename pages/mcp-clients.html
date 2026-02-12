@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP 클라이언트 - AI Vibe Coding 가이드 /with MINZKN</title>
+<meta name="description" content="Claude Desktop, Claude CLI 및 커스텀 MCP 클라이언트 설정 및 사용법">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">MCP 클라이언트</h1>
+<p class="lead">MCP 클라이언트는 MCP 서버와 통신하여 AI 모델에게 도구와 리소스를 제공합니다. Claude Desktop, Claude CLI, 그리고 커스텀 클라이언트를 설정하고 사용하는 방법을 학습합니다.</p>
+
+<div class="info-box tip">
+<strong>빠른 시작</strong>
+<ul>
+<li>Claude Desktop: 설정 파일에 서버 추가</li>
+<li>Claude CLI: <code>mcp</code> 명령으로 서버 관리</li>
+<li>커스텀 클라이언트: SDK로 직접 구현</li>
+</ul>
+</div>
+
+<section class="content-section">
+<h2 id="claude-desktop">Claude Desktop</h2>
+
+<h3 id="desktop-setup">설정</h3>
+
+<p>Claude Desktop은 MCP 서버를 설정 파일을 통해 관리합니다.</p>
+
+<h4>설정 파일 위치</h4>
+
+<table>
+<thead>
+<tr>
+<th>OS</th>
+<th>경로</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>macOS</strong></td>
+<td><code>~/Library/Application Support/Claude/claude_desktop_config.json</code></td>
+</tr>
+<tr>
+<td><strong>Windows</strong></td>
+<td><code>%APPDATA%\Claude\claude_desktop_config.json</code></td>
+</tr>
+<tr>
+<td><strong>Linux</strong></td>
+<td><code>~/.config/Claude/claude_desktop_config.json</code></td>
+</tr>
+</tbody>
+</table>
+
+<h4>설정 파일 구조</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">JSON</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>{
+  <span class="str">"mcpServers"</span>: {
+    <span class="str">"filesystem"</span>: {
+      <span class="str">"command"</span>: <span class="str">"python"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-m"</span>, <span class="str">"mcp_server_filesystem"</span>]
+    },
+    <span class="str">"postgres"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-postgres"</span>],
+      <span class="str">"env"</span>: {
+        <span class="str">"DATABASE_URL"</span>: <span class="str">"postgresql://user:password@localhost/mydb"</span>
+      }
+    },
+    <span class="str">"github"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-github"</span>],
+      <span class="str">"env"</span>: {
+        <span class="str">"GITHUB_TOKEN"</span>: <span class="str">"ghp_your_token_here"</span>
+      }
+    }
+  }
+}
+</code></pre>
+</div>
+
+<h3 id="desktop-examples">설정 예제</h3>
+
+<h4>1. 파일시스템 서버 (Python)</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">JSON</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>{
+  <span class="str">"mcpServers"</span>: {
+    <span class="str">"filesystem"</span>: {
+      <span class="str">"command"</span>: <span class="str">"uv"</span>,
+      <span class="str">"args"</span>: [
+        <span class="str">"--directory"</span>,
+        <span class="str">"/path/to/mcp-server-filesystem"</span>,
+        <span class="str">"run"</span>,
+        <span class="str">"mcp-server-filesystem"</span>
+      ]
+    }
+  }
+}
+</code></pre>
+</div>
+
+<h4>2. SQLite 서버</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">JSON</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>{
+  <span class="str">"mcpServers"</span>: {
+    <span class="str">"sqlite"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [
+        <span class="str">"-y"</span>,
+        <span class="str">"@modelcontextprotocol/server-sqlite"</span>,
+        <span class="str">"/path/to/database.db"</span>
+      ]
+    }
+  }
+}
+</code></pre>
+</div>
+
+<h4>3. 여러 서버 동시 사용</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">JSON</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>{
+  <span class="str">"mcpServers"</span>: {
+    <span class="str">"filesystem"</span>: {
+      <span class="str">"command"</span>: <span class="str">"python"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-m"</span>, <span class="str">"mcp_server_filesystem"</span>],
+      <span class="str">"env"</span>: {
+        <span class="str">"ALLOWED_DIRS"</span>: <span class="str">"/home/user/Documents,/home/user/Projects"</span>
+      }
+    },
+    <span class="str">"github"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-github"</span>],
+      <span class="str">"env"</span>: {
+        <span class="str">"GITHUB_TOKEN"</span>: <span class="str">"ghp_your_token"</span>
+      }
+    },
+    <span class="str">"postgres"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-postgres"</span>],
+      <span class="str">"env"</span>: {
+        <span class="str">"DATABASE_URL"</span>: <span class="str">"postgresql://localhost/myapp"</span>
+      }
+    },
+    <span class="str">"slack"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-slack"</span>],
+      <span class="str">"env"</span>: {
+        <span class="str">"SLACK_BOT_TOKEN"</span>: <span class="str">"xoxb-your-token"</span>,
+        <span class="str">"SLACK_TEAM_ID"</span>: <span class="str">"T1234567"</span>
+      }
+    }
+  }
+}
+</code></pre>
+</div>
+
+<h3 id="desktop-usage">사용 방법</h3>
+
+<div class="info-box note">
+<strong>Claude Desktop에서 MCP 서버 사용하기</strong>
+<ol>
+<li>설정 파일 편집 후 Claude Desktop 재시작</li>
+<li>새 대화 시작</li>
+<li>서버가 제공하는 도구를 자연어로 요청</li>
+<li>Claude가 자동으로 적절한 도구 선택 및 실행</li>
+</ol>
+</div>
+
+<h4>예제 대화</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">대화</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">사용자:</span> 내 프로젝트 디렉토리에 있는 모든 Python 파일을 찾아줘
+
+<span class="cmt">Claude:</span> [filesystem 서버의 search_files 도구 사용]
+다음 Python 파일을 찾았습니다:
+- /home/user/Projects/app.py
+- /home/user/Projects/utils.py
+- /home/user/Projects/tests/test_app.py
+
+<span class="cmt">사용자:</span> app.py 파일의 내용을 보여줘
+
+<span class="cmt">Claude:</span> [filesystem 서버의 read_file 도구 사용]
+app.py 파일의 내용입니다:
+[파일 내용 표시]
+
+<span class="cmt">사용자:</span> GitHub 저장소의 open 이슈를 확인해줘
+
+<span class="cmt">Claude:</span> [github 서버의 list_issues 도구 사용]
+현재 open 상태인 이슈 목록입니다:
+1. #42: 로그인 버그 수정
+2. #43: 성능 개선 필요
+...
+</code></pre>
+</div>
+
+<h3 id="desktop-troubleshooting">문제 해결</h3>
+
+<table>
+<thead>
+<tr>
+<th>문제</th>
+<th>원인</th>
+<th>해결</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>서버가 연결되지 않음</td>
+<td>잘못된 명령어/경로</td>
+<td>명령어와 경로 확인</td>
+</tr>
+<tr>
+<td>환경 변수 인식 안 됨</td>
+<td>env 설정 누락</td>
+<td>env 섹션 추가</td>
+</tr>
+<tr>
+<td>도구가 표시되지 않음</td>
+<td>서버 초기화 실패</td>
+<td>로그 확인 (개발자 도구)</td>
+</tr>
+<tr>
+<td>권한 오류</td>
+<td>파일/디렉토리 접근 권한</td>
+<td>서버 허용 목록 확인</td>
+</tr>
+</tbody>
+</table>
+
+<div class="info-box warning">
+<strong>보안 주의사항</strong>
+<ul>
+<li>설정 파일에 API 토큰/패스워드를 직접 저장하지 마세요</li>
+<li>환경 변수나 시크릿 관리 도구 사용 권장</li>
+<li>파일시스템 서버는 허용 디렉토리 제한 필수</li>
+</ul>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="claude-cli">Claude CLI</h2>
+
+<h3 id="cli-installation">설치</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># npm으로 설치</span>
+npm install -g @anthropic-ai/claude-cli
+
+<span class="cmt"># 또는 Homebrew (macOS)</span>
+brew install claude-cli
+</code></pre>
+</div>
+
+<h3 id="cli-config">설정</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># API 키 설정</span>
+claude auth login
+
+<span class="cmt"># 또는 환경 변수</span>
+export ANTHROPIC_API_KEY=sk-ant-your-key-here
+</code></pre>
+</div>
+
+<h3 id="cli-mcp-usage">MCP 서버 사용</h3>
+
+<h4>서버 추가</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># MCP 서버 추가</span>
+claude mcp add filesystem python -m mcp_server_filesystem
+
+<span class="cmt"># 환경 변수와 함께 추가</span>
+claude mcp add github npx -y @modelcontextprotocol/server-github \
+  --env GITHUB_TOKEN=ghp_your_token
+
+<span class="cmt"># 서버 목록 확인</span>
+claude mcp list
+
+<span class="cmt"># 서버 제거</span>
+claude mcp remove filesystem
+</code></pre>
+</div>
+
+<h4>대화 시작</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># MCP 서버와 함께 대화 시작</span>
+claude chat --mcp filesystem,github
+
+<span class="cmt"># 또는 모든 서버 사용</span>
+claude chat --mcp all
+
+<span class="cmt"># 일회성 질문</span>
+claude ask "프로젝트의 README.md 파일 내용을 보여줘" --mcp filesystem
+</code></pre>
+</div>
+
+<h3 id="cli-examples">CLI 사용 예제</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 파일 검색 및 분석</span>
+claude ask "src/ 디렉토리의 모든 TypeScript 파일을 분석하고 \
+주요 함수 목록을 만들어줘" --mcp filesystem
+
+<span class="cmt"># 데이터베이스 쿼리</span>
+claude ask "users 테이블에서 최근 7일간 가입한 사용자 수를 알려줘" \
+  --mcp postgres
+
+<span class="cmt"># GitHub 이슈 생성</span>
+claude ask "버그 리포트: 로그인 시 세션 만료 문제, \
+우선순위 높음으로 이슈 생성해줘" --mcp github
+
+<span class="cmt"># 여러 서버 조합</span>
+claude chat --mcp filesystem,github,slack
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="custom-client">커스텀 클라이언트 개발</h2>
+
+<h3 id="python-client">Python 클라이언트</h3>
+
+<h4>설치</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>pip install mcp
+<span class="cmt"># 또는</span>
+uv add mcp
+</code></pre>
+</div>
+
+<h4>기본 클라이언트</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> mcp.client <span class="kw">import</span> Client
+<span class="kw">from</span> mcp.client.stdio <span class="kw">import</span> StdioClientTransport
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="cmt"># 클라이언트 생성</span>
+    client = <span class="fn">Client</span>(
+        {<span class="str">"name"</span>: <span class="str">"my-client"</span>, <span class="str">"version"</span>: <span class="str">"1.0.0"</span>},
+        {<span class="str">"capabilities"</span>: {<span class="str">"tools"</span>: {}}}
+    )
+
+    <span class="cmt"># 서버 연결 (stdio)</span>
+    transport = <span class="fn">StdioClientTransport</span>({
+        <span class="str">"command"</span>: <span class="str">"python"</span>,
+        <span class="str">"args"</span>: [<span class="str">"-m"</span>, <span class="str">"mcp_server_filesystem"</span>]
+    })
+
+    <span class="kw">await</span> client.connect(transport)
+
+    <span class="kw">try</span>:
+        <span class="cmt"># 도구 목록 조회</span>
+        tools = <span class="kw">await</span> client.list_tools()
+        <span class="fn">print</span>(<span class="str">"Available tools:"</span>)
+        <span class="kw">for</span> tool <span class="kw">in</span> tools:
+            <span class="fn">print</span>(<span class="type">f</span><span class="str">"  - {tool['name']}: {tool['description']}"</span>)
+
+        <span class="cmt"># 도구 호출</span>
+        result = <span class="kw">await</span> client.call_tool(<span class="str">"read_file"</span>, {
+            <span class="str">"path"</span>: <span class="str">"/path/to/file.txt"</span>
+        })
+        <span class="fn">print</span>(<span class="str">"File content:"</span>, result)
+
+    <span class="kw">finally</span>:
+        <span class="kw">await</span> client.close()
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    <span class="kw">import</span> asyncio
+    asyncio.<span class="fn">run</span>(<span class="fn">main</span>())
+</code></pre>
+</div>
+
+<h4>리소스 읽기</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 리소스 목록</span>
+resources = <span class="kw">await</span> client.list_resources()
+<span class="kw">for</span> resource <span class="kw">in</span> resources:
+    <span class="fn">print</span>(<span class="type">f</span><span class="str">"Resource: {resource['uri']}"</span>)
+
+<span class="cmt"># 리소스 읽기</span>
+content = <span class="kw">await</span> client.read_resource(<span class="str">"file:///path/to/doc.txt"</span>)
+<span class="fn">print</span>(content)
+</code></pre>
+</div>
+
+<h4>프롬프트 사용</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 프롬프트 목록</span>
+prompts = <span class="kw">await</span> client.list_prompts()
+<span class="kw">for</span> prompt <span class="kw">in</span> prompts:
+    <span class="fn">print</span>(<span class="type">f</span><span class="str">"Prompt: {prompt['name']}"</span>)
+
+<span class="cmt"># 프롬프트 가져오기</span>
+messages = <span class="kw">await</span> client.get_prompt(<span class="str">"code-review"</span>, {
+    <span class="str">"language"</span>: <span class="str">"python"</span>,
+    <span class="str">"code"</span>: <span class="str">"def hello(): return 'world'"</span>
+})
+<span class="fn">print</span>(messages)
+</code></pre>
+</div>
+
+<h3 id="typescript-client">TypeScript 클라이언트</h3>
+
+<h4>설치</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>npm install @modelcontextprotocol/sdk
+</code></pre>
+</div>
+
+<h4>기본 클라이언트</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TypeScript</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> { Client } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/client/index.js"</span>;
+<span class="kw">import</span> { StdioClientTransport } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/client/stdio.js"</span>;
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">main</span>() {
+  <span class="cmt">// 클라이언트 생성</span>
+  <span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">Client</span>(
+    {
+      name: <span class="str">"my-client"</span>,
+      version: <span class="str">"1.0.0"</span>
+    },
+    {
+      capabilities: {
+        tools: {}
+      }
+    }
+  );
+
+  <span class="cmt">// 서버 연결</span>
+  <span class="kw">const</span> transport = <span class="kw">new</span> <span class="fn">StdioClientTransport</span>({
+    command: <span class="str">"node"</span>,
+    args: [<span class="str">"dist/server.js"</span>]
+  });
+
+  <span class="kw">await</span> client.<span class="fn">connect</span>(transport);
+
+  <span class="kw">try</span> {
+    <span class="cmt">// 도구 목록</span>
+    <span class="kw">const</span> { tools } = <span class="kw">await</span> client.<span class="fn">listTools</span>();
+    console.<span class="fn">log</span>(<span class="str">"Available tools:"</span>, tools);
+
+    <span class="cmt">// 도구 호출</span>
+    <span class="kw">const</span> result = <span class="kw">await</span> client.<span class="fn">callTool</span>(<span class="str">"read_file"</span>, {
+      path: <span class="str">"/path/to/file.txt"</span>
+    });
+    console.<span class="fn">log</span>(<span class="str">"Result:"</span>, result);
+
+  } <span class="kw">finally</span> {
+    <span class="kw">await</span> client.<span class="fn">close</span>();
+  }
+}
+
+<span class="fn">main</span>().<span class="fn">catch</span>(console.error);
+</code></pre>
+</div>
+
+<h3 id="anthropic-integration">Anthropic SDK와 통합</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> anthropic
+<span class="kw">from</span> mcp.client <span class="kw">import</span> Client
+<span class="kw">from</span> mcp.client.stdio <span class="kw">import</span> StdioClientTransport
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">chat_with_mcp</span>():
+    <span class="cmt"># MCP 클라이언트 설정</span>
+    mcp_client = <span class="fn">Client</span>(
+        {<span class="str">"name"</span>: <span class="str">"claude-client"</span>, <span class="str">"version"</span>: <span class="str">"1.0.0"</span>},
+        {<span class="str">"capabilities"</span>: {<span class="str">"tools"</span>: {}}}
+    )
+
+    transport = <span class="fn">StdioClientTransport</span>({
+        <span class="str">"command"</span>: <span class="str">"python"</span>,
+        <span class="str">"args"</span>: [<span class="str">"-m"</span>, <span class="str">"mcp_server_filesystem"</span>]
+    })
+
+    <span class="kw">await</span> mcp_client.connect(transport)
+
+    <span class="cmt"># MCP 도구를 Anthropic Tool 형식으로 변환</span>
+    mcp_tools = <span class="kw">await</span> mcp_client.list_tools()
+    anthropic_tools = []
+
+    <span class="kw">for</span> tool <span class="kw">in</span> mcp_tools:
+        anthropic_tools.append({
+            <span class="str">"name"</span>: tool[<span class="str">"name"</span>],
+            <span class="str">"description"</span>: tool[<span class="str">"description"</span>],
+            <span class="str">"input_schema"</span>: tool[<span class="str">"inputSchema"</span>]
+        })
+
+    <span class="cmt"># Anthropic 클라이언트</span>
+    client = anthropic.<span class="fn">Anthropic</span>()
+
+    <span class="cmt"># 대화 시작</span>
+    messages = [{
+        <span class="str">"role"</span>: <span class="str">"user"</span>,
+        <span class="str">"content"</span>: <span class="str">"README.md 파일을 읽어줘"</span>
+    }]
+
+    response = client.messages.<span class="fn">create</span>(
+        model=<span class="str">"claude-4-5"</span>,
+        max_tokens=<span class="num">4096</span>,
+        messages=messages,
+        tools=anthropic_tools
+    )
+
+    <span class="cmt"># Tool use 처리</span>
+    <span class="kw">while</span> response.stop_reason == <span class="str">"tool_use"</span>:
+        tool_use = response.content[<span class="num">-1</span>]
+
+        <span class="cmt"># MCP 서버에서 도구 실행</span>
+        tool_result = <span class="kw">await</span> mcp_client.call_tool(
+            tool_use.name,
+            tool_use.<span class="fn">input</span>
+        )
+
+        <span class="cmt"># 결과를 메시지에 추가</span>
+        messages.append({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: response.content})
+        messages.append({
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: [{
+                <span class="str">"type"</span>: <span class="str">"tool_result"</span>,
+                <span class="str">"tool_use_id"</span>: tool_use.<span class="fn">id</span>,
+                <span class="str">"content"</span>: tool_result
+            }]
+        })
+
+        <span class="cmt"># 다음 응답</span>
+        response = client.messages.<span class="fn">create</span>(
+            model=<span class="str">"claude-4-5"</span>,
+            max_tokens=<span class="num">4096</span>,
+            messages=messages,
+            tools=anthropic_tools
+        )
+
+    <span class="fn">print</span>(response.content)
+
+    <span class="kw">await</span> mcp_client.close()
+
+<span class="kw">import</span> asyncio
+asyncio.<span class="fn">run</span>(<span class="fn">chat_with_mcp</span>())
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="client-capabilities">클라이언트 Capabilities</h2>
+
+<h3 id="capability-declaration">Capability 선언</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>client = <span class="fn">Client</span>(
+    {<span class="str">"name"</span>: <span class="str">"my-client"</span>, <span class="str">"version"</span>: <span class="str">"1.0.0"</span>},
+    {
+        <span class="str">"capabilities"</span>: {
+            <span class="str">"tools"</span>: {},                    <span class="cmt"># 도구 호출 지원</span>
+            <span class="str">"resources"</span>: {
+                <span class="str">"subscribe"</span>: <span class="kw">True</span>          <span class="cmt"># 리소스 변경 구독</span>
+            },
+            <span class="str">"prompts"</span>: {},                  <span class="cmt"># 프롬프트 사용</span>
+            <span class="str">"sampling"</span>: {}                  <span class="cmt"># 샘플링 요청 수신</span>
+        }
+    }
+)
+</code></pre>
+</div>
+
+<h3 id="resource-subscription">리소스 구독</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 리소스 변경 구독</span>
+<span class="kw">await</span> client.subscribe_resource(<span class="str">"file:///path/to/watched.txt"</span>)
+
+<span class="cmt"># 리소스 변경 알림 수신</span>
+<span class="pp">@client.on_resource_updated</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">handle_update</span>(uri):
+    <span class="fn">print</span>(<span class="type">f</span><span class="str">"Resource updated: {uri}"</span>)
+    content = <span class="kw">await</span> client.read_resource(uri)
+    <span class="fn">print</span>(<span class="str">"New content:"</span>, content)
+
+<span class="cmt"># 구독 해제</span>
+<span class="kw">await</span> client.unsubscribe_resource(<span class="str">"file:///path/to/watched.txt"</span>)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="error-handling">에러 처리</h2>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> mcp.client <span class="kw">import</span> McpError
+
+<span class="kw">try</span>:
+    result = <span class="kw">await</span> client.call_tool(<span class="str">"read_file"</span>, {
+        <span class="str">"path"</span>: <span class="str">"/nonexistent.txt"</span>
+    })
+<span class="kw">except</span> McpError <span class="kw">as</span> e:
+    <span class="kw">if</span> e.code == <span class="num">-32001</span>:
+        <span class="fn">print</span>(<span class="str">"File not found"</span>)
+    <span class="kw">elif</span> e.code == <span class="num">-32002</span>:
+        <span class="fn">print</span>(<span class="str">"Permission denied"</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="type">f</span><span class="str">"Error: {e.message}"</span>)
+<span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="type">f</span><span class="str">"Unexpected error: {e}"</span>)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="best-practices">모범 사례</h2>
+
+<div class="info-box tip">
+<strong>클라이언트 개발 권장사항</strong>
+<ol>
+<li><strong>연결 관리:</strong> try-finally로 확실한 종료 보장</li>
+<li><strong>에러 처리:</strong> 모든 도구 호출에 에러 처리 구현</li>
+<li><strong>타임아웃:</strong> 장시간 실행 작업에 타임아웃 설정</li>
+<li><strong>재시도:</strong> 일시적 오류 시 재시도 로직</li>
+<li><strong>로깅:</strong> 디버깅을 위한 상세 로깅</li>
+</ol>
+</div>
+
+<h3 id="connection-pooling">연결 풀링</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">class</span> <span class="type">McpClientPool</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, server_config, pool_size=<span class="num">5</span>):
+        <span class="kw">self</span>.server_config = server_config
+        <span class="kw">self</span>.pool_size = pool_size
+        <span class="kw">self</span>.clients = []
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">initialize</span>(<span class="kw">self</span>):
+        <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="kw">self</span>.pool_size):
+            client = <span class="kw">await</span> <span class="kw">self</span>._create_client()
+            <span class="kw">self</span>.clients.append(client)
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">_create_client</span>(<span class="kw">self</span>):
+        client = <span class="fn">Client</span>(
+            {<span class="str">"name"</span>: <span class="str">"pooled-client"</span>, <span class="str">"version"</span>: <span class="str">"1.0.0"</span>},
+            {<span class="str">"capabilities"</span>: {<span class="str">"tools"</span>: {}}}
+        )
+        transport = <span class="fn">StdioClientTransport</span>(<span class="kw">self</span>.server_config)
+        <span class="kw">await</span> client.connect(transport)
+        <span class="kw">return</span> client
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">get_client</span>(<span class="kw">self</span>):
+        <span class="kw">if</span> <span class="kw">self</span>.clients:
+            <span class="kw">return</span> <span class="kw">self</span>.clients.pop()
+        <span class="kw">return</span> <span class="kw">await</span> <span class="kw">self</span>._create_client()
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">return_client</span>(<span class="kw">self</span>, client):
+        <span class="kw">if</span> <span class="fn">len</span>(<span class="kw">self</span>.clients) < <span class="kw">self</span>.pool_size:
+            <span class="kw">self</span>.clients.append(client)
+        <span class="kw">else</span>:
+            <span class="kw">await</span> client.close()
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="next-steps">다음 단계</h2>
+
+<ul>
+<li><a href="mcp-examples.html">MCP 실전 예제</a> - 파일시스템, 데이터베이스, API 통합</li>
+<li><a href="mcp-ecosystem.html">MCP 생태계</a> - 공개 서버 및 도구</li>
+<li><a href="mcp-advanced.html">MCP 고급 주제</a> - 보안, 성능, 프로덕션 배포</li>
+</ul>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

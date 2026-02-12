@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="LLM 개발 환경 구축 - 터미널, 에디터, Git 설정">
+<meta property="og:description" content="LLM 기반 Vibe Coding을 위한 완벽한 개발 환경 구축 가이드">
+<meta property="og:url" content="https://minzkn.com/claude/pages/dev-environment.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="LLM 개발 환경 구축 완전 가이드. 터미널, 에디터, Git, CLI 도구, dotfiles 관리까지.">
+<meta name="keywords" content="llm development environment 개발환경 터미널 에디터 vscode neovim git">
+<meta name="author" content="MINZKN">
+<title>LLM 개발 환경 구축 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">LLM 개발 환경 구축</h1>
+<p class="lead">AI 기반 Vibe Coding을 위한 터미널, 에디터, Git, CLI 도구 완벽 설정 가이드</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 빠른 시작 체크리스트</div>
+  <p><strong>필수 도구 (30분 설정):</strong></p>
+  <ol>
+    <li>터미널: Zsh + Oh My Zsh (macOS/Linux) 또는 PowerShell 7 (Windows)</li>
+    <li>에디터: VS Code + Continue/Cline 확장</li>
+    <li>Git: 설정 파일 + SSH 키 + GPG 서명</li>
+    <li>CLI 도구: Claude CLI 또는 Aider</li>
+    <li>Node.js (v18+), Python (3.10+)</li>
+  </ol>
+  <p><strong>선택 도구:</strong> Docker, Ollama, dotfiles 동기화</p>
+</div>
+
+<section class="content-section">
+  <h2 id="terminal-setup">터미널 환경 구축</h2>
+
+  <h3 id="terminal-macos-linux">macOS/Linux: Zsh + Oh My Zsh</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 왜 Zsh인가?</div>
+    <ul>
+      <li><strong>자동완성</strong>: 명령어, 파일, Git 브랜치 등 강력한 자동완성</li>
+      <li><strong>플러그인</strong>: git, docker, npm, python 등 수백 개 플러그인</li>
+      <li><strong>테마</strong>: Git 상태, 가상환경, 시간 등 정보를 프롬프트에 표시</li>
+      <li><strong>히스토리</strong>: 스마트 검색, 중복 제거, 명령어 공유</li>
+    </ul>
+  </div>
+
+  <h4>1. Zsh 설치 및 기본 쉘 설정</h4>
+
+<pre><code><span class="cmt"># macOS (이미 설치됨)</span>
+zsh --version
+
+<span class="cmt"># Ubuntu/Debian</span>
+sudo apt update && sudo apt install zsh
+
+<span class="cmt"># 기본 쉘로 설정</span>
+chsh -s $(which zsh)
+
+<span class="cmt"># 로그아웃 후 재로그인</span></code></pre>
+
+  <h4>2. Oh My Zsh 설치</h4>
+
+<pre><code><span class="cmt"># 설치 스크립트 실행</span>
+sh -c <span class="str">"$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"</span>
+
+<span class="cmt"># 설치 후 ~/.zshrc 자동 생성됨</span></code></pre>
+
+  <h4>3. Powerlevel10k 테마 설치 (권장)</h4>
+
+<pre><code><span class="cmt"># 테마 다운로드</span>
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+  ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+
+<span class="cmt"># ~/.zshrc 편집</span>
+<span class="kw">ZSH_THEME</span>=<span class="str">"powerlevel10k/powerlevel10k"</span>
+
+<span class="cmt"># 쉘 재시작 후 설정 마법사 실행</span>
+exec zsh
+<span class="cmt"># p10k configure 실행됨</span></code></pre>
+
+  <h4>4. 필수 플러그인 설정</h4>
+
+<pre><code><span class="cmt"># ~/.zshrc에서 plugins 섹션 수정</span>
+<span class="kw">plugins</span>=(
+  git                    <span class="cmt"># Git 단축키 및 자동완성</span>
+  docker                 <span class="cmt"># Docker 자동완성</span>
+  docker-compose         <span class="cmt"># Docker Compose 자동완성</span>
+  npm                    <span class="cmt"># npm 자동완성</span>
+  python                 <span class="cmt"># Python 가상환경</span>
+  zsh-autosuggestions    <span class="cmt"># 명령어 자동 제안 (별도 설치 필요)</span>
+  zsh-syntax-highlighting <span class="cmt"># 구문 강조 (별도 설치 필요)</span>
+)</code></pre>
+
+  <h4>5. 고급 플러그인 설치</h4>
+
+<pre><code><span class="cmt"># zsh-autosuggestions</span>
+git clone https://github.com/zsh-users/zsh-autosuggestions \
+  ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+
+<span class="cmt"># zsh-syntax-highlighting</span>
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
+  ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+<span class="cmt"># ~/.zshrc에서 활성화</span>
+<span class="kw">plugins</span>=(... zsh-autosuggestions zsh-syntax-highlighting)
+
+<span class="cmt"># 적용</span>
+source ~/.zshrc</code></pre>
+
+  <h4>6. 유용한 Alias 추가</h4>
+
+<pre><code><span class="cmt"># ~/.zshrc 하단에 추가</span>
+
+<span class="cmt"># LLM CLI 단축키</span>
+<span class="kw">alias</span> cc=<span class="str">"claude-code"</span>
+<span class="kw">alias</span> ccnew=<span class="str">"claude-code new"</span>
+<span class="kw">alias</span> aid=<span class="str">"aider"</span>
+<span class="kw">alias</span> ol=<span class="str">"ollama"</span>
+<span class="kw">alias</span> olrun=<span class="str">"ollama run"</span>
+
+<span class="cmt"># Git 단축키</span>
+<span class="kw">alias</span> gs=<span class="str">"git status"</span>
+<span class="kw">alias</span> ga=<span class="str">"git add"</span>
+<span class="kw">alias</span> gc=<span class="str">"git commit -m"</span>
+<span class="kw">alias</span> gp=<span class="str">"git push"</span>
+<span class="kw">alias</span> gl=<span class="str">"git log --oneline --graph"</span>
+<span class="kw">alias</span> gd=<span class="str">"git diff"</span>
+
+<span class="cmt"># Docker 단축키</span>
+<span class="kw">alias</span> dps=<span class="str">"docker ps"</span>
+<span class="kw">alias</span> dcu=<span class="str">"docker-compose up -d"</span>
+<span class="kw">alias</span> dcd=<span class="str">"docker-compose down"</span>
+
+<span class="cmt"># Python 가상환경</span>
+<span class="kw">alias</span> venv=<span class="str">"python3 -m venv venv"</span>
+<span class="kw">alias</span> activate=<span class="str">"source venv/bin/activate"</span></code></pre>
+
+  <h3 id="terminal-windows">Windows: PowerShell 7 + Oh My Posh</h3>
+
+  <h4>1. PowerShell 7 설치</h4>
+
+<pre><code><span class="cmt"># winget (Windows 11/10)</span>
+winget install Microsoft.PowerShell
+
+<span class="cmt"># 또는 https://github.com/PowerShell/PowerShell/releases 에서 다운로드</span></code></pre>
+
+  <h4>2. Oh My Posh 설치</h4>
+
+<pre><code><span class="cmt"># winget으로 설치</span>
+winget install JanDeDobbeleer.OhMyPosh
+
+<span class="cmt"># Nerd Font 설치 (테마 아이콘용)</span>
+oh-my-posh font install</code></pre>
+
+  <h4>3. 프로필 설정</h4>
+
+<pre><code><span class="cmt"># 프로필 파일 생성/편집</span>
+notepad $PROFILE
+
+<span class="cmt"># 다음 내용 추가:</span>
+oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH\paradox.omp.json" | Invoke-Expression
+
+<span class="cmt"># PowerShell 재시작</span></code></pre>
+
+  <h4>4. 유용한 모듈 설치</h4>
+
+<pre><code><span class="cmt"># PSReadLine (자동완성 강화)</span>
+Install-Module -Name PSReadLine -Force
+
+<span class="cmt"># Terminal-Icons (파일 아이콘)</span>
+Install-Module -Name Terminal-Icons -Force
+
+<span class="cmt"># posh-git (Git 통합)</span>
+Install-Module -Name posh-git -Force
+
+<span class="cmt"># $PROFILE에 추가</span>
+Import-Module PSReadLine
+Import-Module Terminal-Icons
+Import-Module posh-git</code></pre>
+
+  <h3 id="terminal-multiplexer">터미널 멀티플렉서: tmux (선택)</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 tmux를 사용하는 이유</div>
+    <ul>
+      <li>여러 창/패널을 한 터미널에서 관리</li>
+      <li>SSH 세션이 끊겨도 작업 유지</li>
+      <li>LLM과 대화하면서 동시에 코드 실행</li>
+    </ul>
+  </div>
+
+<pre><code><span class="cmt"># 설치</span>
+<span class="cmt"># macOS</span>
+brew install tmux
+
+<span class="cmt"># Ubuntu/Debian</span>
+sudo apt install tmux
+
+<span class="cmt"># 기본 사용법</span>
+tmux                      <span class="cmt"># 새 세션 시작</span>
+tmux ls                   <span class="cmt"># 세션 목록</span>
+tmux attach -t 0          <span class="cmt"># 세션 0에 연결</span>
+
+<span class="cmt"># 세션 내 단축키 (Ctrl+b 누른 후)</span>
+<span class="cmt"># %  - 수평 분할</span>
+<span class="cmt"># "  - 수직 분할</span>
+<span class="cmt"># 방향키 - 패널 이동</span>
+<span class="cmt"># c  - 새 창</span>
+<span class="cmt"># n  - 다음 창</span>
+<span class="cmt"># d  - 세션 분리 (백그라운드로)</span></code></pre>
+
+  <h4>tmux 설정 파일 (~/.tmux.conf)</h4>
+
+<pre><code><span class="cmt"># 마우스 지원</span>
+set -g mouse on
+
+<span class="cmt"># 색상 지원</span>
+set -g default-terminal "screen-256color"
+
+<span class="cmt"># Prefix를 Ctrl+a로 변경 (선택)</span>
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+
+<span class="cmt"># 창 번호를 1부터 시작</span>
+set -g base-index 1
+setw -g pane-base-index 1
+
+<span class="cmt"># Vi 키 바인딩</span>
+setw -g mode-keys vi</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="editor-setup">에디터 환경 구축</h2>
+
+  <h3 id="vscode">VS Code: 가장 인기 있는 선택</h3>
+
+  <h4>1. VS Code 설치</h4>
+
+<pre><code><span class="cmt"># macOS</span>
+brew install --cask visual-studio-code
+
+<span class="cmt"># Ubuntu/Debian</span>
+sudo snap install code --classic
+
+<span class="cmt"># Windows: https://code.visualstudio.com/download</span></code></pre>
+
+  <h4>2. 필수 확장 프로그램</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>확장</th>
+        <th>용도</th>
+        <th>설치 명령어</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Continue</strong></td>
+        <td>LLM 통합 (Claude, GPT, Ollama)</td>
+        <td><code>code --install-extension continue.continue</code></td>
+      </tr>
+      <tr>
+        <td><strong>Cline</strong></td>
+        <td>자율 AI 코딩 에이전트</td>
+        <td><code>code --install-extension saoudrizwan.claude-dev</code></td>
+      </tr>
+      <tr>
+        <td><strong>GitHub Copilot</strong></td>
+        <td>AI 코드 자동완성</td>
+        <td><code>code --install-extension GitHub.copilot</code></td>
+      </tr>
+      <tr>
+        <td><strong>GitLens</strong></td>
+        <td>Git 히스토리 강화</td>
+        <td><code>code --install-extension eamodio.gitlens</code></td>
+      </tr>
+      <tr>
+        <td><strong>Prettier</strong></td>
+        <td>코드 포맷팅</td>
+        <td><code>code --install-extension esbenp.prettier-vscode</code></td>
+      </tr>
+      <tr>
+        <td><strong>ESLint</strong></td>
+        <td>JavaScript 린팅</td>
+        <td><code>code --install-extension dbaeumer.vscode-eslint</code></td>
+      </tr>
+      <tr>
+        <td><strong>Python</strong></td>
+        <td>Python 개발 환경</td>
+        <td><code>code --install-extension ms-python.python</code></td>
+      </tr>
+      <tr>
+        <td><strong>Docker</strong></td>
+        <td>Docker 파일 편집</td>
+        <td><code>code --install-extension ms-azuretools.vscode-docker</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>3. VS Code 설정 (settings.json)</h4>
+
+<pre><code>{
+  <span class="cmt">// 에디터 기본 설정</span>
+  <span class="str">"editor.fontSize"</span>: 14,
+  <span class="str">"editor.fontFamily"</span>: <span class="str">"D2Coding, Consolas, monospace"</span>,
+  <span class="str">"editor.tabSize"</span>: 2,
+  <span class="str">"editor.insertSpaces"</span>: <span class="kw">true</span>,
+  <span class="str">"editor.formatOnSave"</span>: <span class="kw">true</span>,
+  <span class="str">"editor.minimap.enabled"</span>: <span class="kw">true</span>,
+  <span class="str">"editor.rulers"</span>: [80, 120],
+
+  <span class="cmt">// AI 자동완성</span>
+  <span class="str">"editor.inlineSuggest.enabled"</span>: <span class="kw">true</span>,
+  <span class="str">"github.copilot.enable"</span>: {
+    <span class="str">"*"</span>: <span class="kw">true</span>
+  },
+
+  <span class="cmt">// Continue 설정</span>
+  <span class="str">"continue.enableTabAutocomplete"</span>: <span class="kw">true</span>,
+
+  <span class="cmt">// Git</span>
+  <span class="str">"git.autofetch"</span>: <span class="kw">true</span>,
+  <span class="str">"git.confirmSync"</span>: <span class="kw">false</span>,
+  <span class="str">"gitlens.hovers.currentLine.over"</span>: <span class="str">"line"</span>,
+
+  <span class="cmt">// 파일 저장</span>
+  <span class="str">"files.autoSave"</span>: <span class="str">"onFocusChange"</span>,
+  <span class="str">"files.trimTrailingWhitespace"</span>: <span class="kw">true</span>,
+  <span class="str">"files.insertFinalNewline"</span>: <span class="kw">true</span>,
+
+  <span class="cmt">// Python</span>
+  <span class="str">"python.linting.enabled"</span>: <span class="kw">true</span>,
+  <span class="str">"python.linting.pylintEnabled"</span>: <span class="kw">true</span>,
+  <span class="str">"python.formatting.provider"</span>: <span class="str">"black"</span>,
+
+  <span class="cmt">// Prettier</span>
+  <span class="str">"[javascript]"</span>: {
+    <span class="str">"editor.defaultFormatter"</span>: <span class="str">"esbenp.prettier-vscode"</span>
+  },
+  <span class="str">"[typescript]"</span>: {
+    <span class="str">"editor.defaultFormatter"</span>: <span class="str">"esbenp.prettier-vscode"</span>
+  },
+  <span class="str">"[json]"</span>: {
+    <span class="str">"editor.defaultFormatter"</span>: <span class="str">"esbenp.prettier-vscode"</span>
+  }
+}</code></pre>
+
+  <h4>4. 유용한 단축키</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>기능</th>
+        <th>macOS</th>
+        <th>Windows/Linux</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>명령 팔레트</td>
+        <td><code>Cmd+Shift+P</code></td>
+        <td><code>Ctrl+Shift+P</code></td>
+      </tr>
+      <tr>
+        <td>파일 빠른 열기</td>
+        <td><code>Cmd+P</code></td>
+        <td><code>Ctrl+P</code></td>
+      </tr>
+      <tr>
+        <td>Continue 열기</td>
+        <td><code>Cmd+Shift+L</code></td>
+        <td><code>Ctrl+Shift+L</code></td>
+      </tr>
+      <tr>
+        <td>Copilot 제안 수락</td>
+        <td><code>Tab</code></td>
+        <td><code>Tab</code></td>
+      </tr>
+      <tr>
+        <td>다음 제안</td>
+        <td><code>Option+]</code></td>
+        <td><code>Alt+]</code></td>
+      </tr>
+      <tr>
+        <td>Git 소스 제어</td>
+        <td><code>Ctrl+Shift+G</code></td>
+        <td><code>Ctrl+Shift+G</code></td>
+      </tr>
+      <tr>
+        <td>터미널 열기</td>
+        <td><code>Ctrl+`</code></td>
+        <td><code>Ctrl+`</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="neovim">Neovim: 고급 사용자용</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 Neovim을 선택하는 이유</div>
+    <ul>
+      <li><strong>속도</strong>: 터미널 기반으로 매우 빠름</li>
+      <li><strong>Lua</strong>: 강력한 설정 및 플러그인 시스템</li>
+      <li><strong>LLM 통합</strong>: copilot.vim, ChatGPT.nvim 등</li>
+      <li><strong>SSH</strong>: 원격 서버에서도 동일한 환경</li>
+    </ul>
+  </div>
+
+  <h4>1. Neovim 설치</h4>
+
+<pre><code><span class="cmt"># macOS</span>
+brew install neovim
+
+<span class="cmt"># Ubuntu/Debian</span>
+sudo add-apt-repository ppa:neovim-ppa/unstable
+sudo apt update && sudo apt install neovim
+
+<span class="cmt"># 별칭 설정 (~/.zshrc)</span>
+<span class="kw">alias</span> vim=<span class="str">"nvim"</span>
+<span class="kw">alias</span> vi=<span class="str">"nvim"</span></code></pre>
+
+  <h4>2. LazyVim (권장 설정 번들)</h4>
+
+<pre><code><span class="cmt"># LazyVim 설치 (자동 플러그인 관리)</span>
+git clone https://github.com/LazyVim/starter ~/.config/nvim
+rm -rf ~/.config/nvim/.git
+
+<span class="cmt"># Neovim 실행하면 자동으로 플러그인 설치</span>
+nvim</code></pre>
+
+  <h4>3. Copilot 통합</h4>
+
+<pre><code><span class="cmt">-- ~/.config/nvim/lua/plugins/copilot.lua</span>
+<span class="kw">return</span> {
+  {
+    <span class="str">"zbirenbaum/copilot.lua"</span>,
+    cmd = <span class="str">"Copilot"</span>,
+    event = <span class="str">"InsertEnter"</span>,
+    config = <span class="kw">function</span>()
+      <span class="fn">require</span>(<span class="str">"copilot"</span>).setup({
+        suggestion = {
+          enabled = <span class="kw">true</span>,
+          auto_trigger = <span class="kw">true</span>,
+          keymap = {
+            accept = <span class="str">"&lt;Tab&gt;"</span>,
+            next = <span class="str">"&lt;M-]&gt;"</span>,
+            prev = <span class="str">"&lt;M-[&gt;"</span>,
+          },
+        },
+      })
+    <span class="kw">end</span>,
+  },
+}</code></pre>
+
+  <h3 id="jetbrains">JetBrains IDEs (IntelliJ, PyCharm 등)</h3>
+
+  <h4>AI Assistant 플러그인</h4>
+
+<pre><code><span class="cmt"># Settings → Plugins → Marketplace</span>
+1. <span class="str">"JetBrains AI Assistant"</span> 설치 (공식)
+2. <span class="str">"GitHub Copilot"</span> 설치
+3. <span class="str">"Tabnine"</span> 설치 (선택)
+
+<span class="cmt"># Tools → AI Assistant → Configure</span>
+<span class="cmt"># API 키 입력 또는 JetBrains 계정 연동</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="git-setup">Git 환경 구축</h2>
+
+  <h3 id="git-install">Git 설치 및 기본 설정</h3>
+
+<pre><code><span class="cmt"># 설치 확인</span>
+git --version
+
+<span class="cmt"># macOS (Homebrew로 최신 버전)</span>
+brew install git
+
+<span class="cmt"># Ubuntu/Debian</span>
+sudo apt install git
+
+<span class="cmt"># Windows: https://git-scm.com/download/win</span></code></pre>
+
+  <h4>기본 설정</h4>
+
+<pre><code><span class="cmt"># 사용자 정보 설정</span>
+git config --global user.name <span class="str">"Your Name"</span>
+git config --global user.email <span class="str">"your.email@example.com"</span>
+
+<span class="cmt"># 기본 에디터 설정</span>
+git config --global core.editor <span class="str">"code --wait"</span>   <span class="cmt"># VS Code</span>
+<span class="cmt"># git config --global core.editor "nvim"      # Neovim</span>
+
+<span class="cmt"># 기본 브랜치 이름</span>
+git config --global init.defaultBranch main
+
+<span class="cmt"># 색상 활성화</span>
+git config --global color.ui auto
+
+<span class="cmt"># 자동 줄바꿈 설정</span>
+git config --global core.autocrlf input   <span class="cmt"># macOS/Linux</span>
+<span class="cmt"># git config --global core.autocrlf true    # Windows</span>
+
+<span class="cmt"># pull 전략 설정 (merge vs rebase)</span>
+git config --global pull.rebase false</code></pre>
+
+  <h3 id="git-ssh">SSH 키 설정 (GitHub/GitLab)</h3>
+
+<pre><code><span class="cmt"># 1. SSH 키 생성</span>
+ssh-keygen -t ed25519 -C <span class="str">"your.email@example.com"</span>
+<span class="cmt"># 파일 위치: Enter (기본값 ~/.ssh/id_ed25519)</span>
+<span class="cmt"># 비밀번호: 선택사항</span>
+
+<span class="cmt"># 2. SSH 에이전트 시작 및 키 추가</span>
+eval <span class="str">"$(ssh-agent -s)"</span>
+ssh-add ~/.ssh/id_ed25519
+
+<span class="cmt"># 3. 공개키 복사</span>
+<span class="cmt"># macOS</span>
+pbcopy &lt; ~/.ssh/id_ed25519.pub
+<span class="cmt"># Linux</span>
+cat ~/.ssh/id_ed25519.pub | xclip -selection clipboard
+<span class="cmt"># Windows (Git Bash)</span>
+clip &lt; ~/.ssh/id_ed25519.pub
+
+<span class="cmt"># 4. GitHub/GitLab에 등록</span>
+<span class="cmt"># GitHub: Settings → SSH and GPG keys → New SSH key</span>
+<span class="cmt"># GitLab: Preferences → SSH Keys → Add new key</span>
+
+<span class="cmt"># 5. 연결 테스트</span>
+ssh -T git@github.com
+<span class="cmt"># "Hi username! You've successfully authenticated..."</span></code></pre>
+
+  <h3 id="git-gpg">GPG 서명 설정 (커밋 서명)</h3>
+
+<pre><code><span class="cmt"># 1. GPG 설치</span>
+<span class="cmt"># macOS</span>
+brew install gnupg
+<span class="cmt"># Ubuntu/Debian</span>
+sudo apt install gnupg
+
+<span class="cmt"># 2. GPG 키 생성</span>
+gpg --full-generate-key
+<span class="cmt"># 키 종류: (1) RSA and RSA</span>
+<span class="cmt"># 키 크기: 4096</span>
+<span class="cmt"># 유효 기간: 0 (만료 없음) 또는 1y (1년)</span>
+<span class="cmt"># 이름/이메일: Git 설정과 동일하게</span>
+
+<span class="cmt"># 3. 키 ID 확인</span>
+gpg --list-secret-keys --keyid-format=long
+<span class="cmt"># sec   rsa4096/3AA5C34371567BD2 2024-01-01 [SC]</span>
+<span class="cmt">#       ↑ 이 부분이 키 ID</span>
+
+<span class="cmt"># 4. Git에 GPG 키 설정</span>
+git config --global user.signingkey 3AA5C34371567BD2
+git config --global commit.gpgsign true
+git config --global tag.gpgsign true
+
+<span class="cmt"># 5. 공개키 내보내기</span>
+gpg --armor --export 3AA5C34371567BD2
+<span class="cmt"># GitHub: Settings → SSH and GPG keys → New GPG key</span>
+
+<span class="cmt"># 6. 테스트 커밋</span>
+git commit -S -m <span class="str">"test signed commit"</span>
+git log --show-signature</code></pre>
+
+  <h3 id="git-aliases">유용한 Git Aliases</h3>
+
+<pre><code><span class="cmt"># ~/.gitconfig 또는 명령어로 추가</span>
+
+<span class="cmt"># 상태 및 로그</span>
+git config --global alias.st status
+git config --global alias.lg <span class="str">"log --oneline --graph --all"</span>
+git config --global alias.last <span class="str">"log -1 HEAD"</span>
+
+<span class="cmt"># 브랜치 관리</span>
+git config --global alias.br branch
+git config --global alias.co checkout
+git config --global alias.cob <span class="str">"checkout -b"</span>
+
+<span class="cmt"># 커밋</span>
+git config --global alias.ci commit
+git config --global alias.amend <span class="str">"commit --amend --no-edit"</span>
+
+<span class="cmt"># 스테이징</span>
+git config --global alias.unstage <span class="str">"reset HEAD --"</span>
+git config --global alias.uncommit <span class="str">"reset --soft HEAD~1"</span>
+
+<span class="cmt"># 동기화</span>
+git config --global alias.sync <span class="str">"!git fetch --all && git pull --rebase"</span>
+
+<span class="cmt"># 정리</span>
+git config --global alias.clean-branches <span class="str">"!git branch --merged | grep -v '\\*\\|main\\|master' | xargs -n 1 git branch -d"</span>
+
+<span class="cmt"># 사용 예시</span>
+git st                  <span class="cmt"># git status</span>
+git lg                  <span class="cmt"># 그래프 로그</span>
+git cob feature-x       <span class="cmt"># 브랜치 생성 + 체크아웃</span>
+git amend               <span class="cmt"># 마지막 커밋 수정</span>
+git sync                <span class="cmt"># fetch + pull --rebase</span></code></pre>
+
+  <h3 id="git-hooks">Git Hooks (자동화)</h3>
+
+  <h4>pre-commit 훅 (커밋 전 검증)</h4>
+
+<pre><code><span class="cmt"># .git/hooks/pre-commit 파일 생성</span>
+<span class="pp">#!/bin/bash</span>
+
+<span class="cmt"># API 키 유출 방지</span>
+<span class="kw">if</span> git diff --cached | grep -E <span class="str">'(ANTHROPIC_API_KEY|OPENAI_API_KEY|sk-ant-|sk-proj-)'</span>; <span class="kw">then</span>
+  echo <span class="str">"⚠️  API 키가 포함된 것 같습니다!"</span>
+  exit 1
+<span class="kw">fi</span>
+
+<span class="cmt"># 코드 포맷팅 (Prettier)</span>
+<span class="kw">if</span> command -v prettier &gt;/dev/null; <span class="kw">then</span>
+  npx prettier --write $(git diff --cached --name-only --diff-filter=ACM | grep -E <span class="str">'\.(js|ts|json|md)$'</span>)
+  git add $(git diff --cached --name-only)
+<span class="kw">fi</span>
+
+<span class="cmt"># Python 린팅 (Black + Flake8)</span>
+<span class="kw">if</span> command -v black &gt;/dev/null; <span class="kw">then</span>
+  black $(git diff --cached --name-only --diff-filter=ACM | grep -E <span class="str">'\.py$'</span>)
+  git add $(git diff --cached --name-only)
+<span class="kw">fi</span>
+
+exit 0</code></pre>
+
+<pre><code><span class="cmt"># 실행 권한 부여</span>
+chmod +x .git/hooks/pre-commit</code></pre>
+
+  <h4>commit-msg 훅 (커밋 메시지 검증)</h4>
+
+<pre><code><span class="cmt"># .git/hooks/commit-msg</span>
+<span class="pp">#!/bin/bash</span>
+
+<span class="kw">commit_msg</span>=$(cat <span class="str">"$1"</span>)
+
+<span class="cmt"># Conventional Commits 형식 강제</span>
+<span class="kw">if</span> ! echo <span class="str">"$commit_msg"</span> | grep -qE <span class="str">'^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .{1,}'</span>; <span class="kw">then</span>
+  echo <span class="str">"⚠️  커밋 메시지는 Conventional Commits 형식이어야 합니다:"</span>
+  echo <span class="str">"  feat: 새 기능"</span>
+  echo <span class="str">"  fix: 버그 수정"</span>
+  echo <span class="str">"  docs: 문서 변경"</span>
+  exit 1
+<span class="kw">fi</span>
+
+exit 0</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="env-vars">환경 변수 관리</h2>
+
+  <h3 id="env-basic">기본 환경 변수 설정</h3>
+
+<pre><code><span class="cmt"># ~/.zshrc (macOS/Linux) 또는 $PROFILE (PowerShell)</span>
+
+<span class="cmt"># API 키 (절대 Git에 커밋하지 마세요!)</span>
+<span class="kw">export</span> ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxx"</span>
+<span class="kw">export</span> OPENAI_API_KEY=<span class="str">"sk-proj-xxx"</span>
+<span class="kw">export</span> GOOGLE_API_KEY=<span class="str">"AIzaSy-xxx"</span>
+
+<span class="cmt"># Ollama 설정</span>
+<span class="kw">export</span> OLLAMA_HOST=<span class="str">"http://localhost:11434"</span>
+<span class="kw">export</span> OLLAMA_MODELS=<span class="str">"$HOME/.ollama/models"</span>
+
+<span class="cmt"># Claude CLI 설정</span>
+<span class="kw">export</span> CLAUDE_PROFILE=<span class="str">"default"</span>
+
+<span class="cmt"># Node.js/Python 경로</span>
+<span class="kw">export</span> PATH=<span class="str">"$HOME/.local/bin:$PATH"</span>
+<span class="kw">export</span> PATH=<span class="str">"/usr/local/bin:$PATH"</span></code></pre>
+
+  <h3 id="env-dotenv">.env 파일 사용 (프로젝트별)</h3>
+
+<pre><code><span class="cmt"># 프로젝트 루트에 .env 파일 생성</span>
+ANTHROPIC_API_KEY=sk-ant-api03-xxx
+OPENAI_API_KEY=sk-proj-xxx
+DATABASE_URL=postgresql://localhost/mydb
+
+<span class="cmt"># .gitignore에 추가</span>
+echo <span class="str">".env"</span> &gt;&gt; .gitignore
+echo <span class="str">".env.local"</span> &gt;&gt; .gitignore
+
+<span class="cmt"># Python에서 사용</span>
+<span class="kw">pip install</span> python-dotenv
+
+<span class="cmt"># Python 코드</span>
+<span class="kw">from</span> dotenv <span class="kw">import</span> load_dotenv
+<span class="kw">import</span> os
+
+load_dotenv()
+api_key = os.getenv(<span class="str">'ANTHROPIC_API_KEY'</span>)
+
+<span class="cmt"># Node.js에서 사용</span>
+<span class="kw">npm install</span> dotenv
+
+<span class="cmt">// JavaScript 코드</span>
+<span class="kw">require</span>(<span class="str">'dotenv'</span>).config();
+<span class="kw">const</span> apiKey = process.env.ANTHROPIC_API_KEY;</code></pre>
+
+  <h3 id="env-direnv">direnv (자동 환경 변수 로드)</h3>
+
+<pre><code><span class="cmt"># 설치</span>
+<span class="cmt"># macOS</span>
+brew install direnv
+
+<span class="cmt"># Ubuntu/Debian</span>
+sudo apt install direnv
+
+<span class="cmt"># ~/.zshrc에 추가</span>
+eval <span class="str">"$(direnv hook zsh)"</span>
+
+<span class="cmt"># 프로젝트 디렉토리에서</span>
+cd ~/my-project
+echo <span class="str">'export ANTHROPIC_API_KEY="sk-ant-..."'</span> &gt; .envrc
+direnv allow .
+
+<span class="cmt"># 이제 디렉토리 진입 시 자동으로 환경 변수 로드됨</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="cli-tools">LLM CLI 도구 설치</h2>
+
+  <h3 id="claude-cli-install">Claude CLI</h3>
+
+<pre><code><span class="cmt"># npx로 직접 실행 (설치 불필요)</span>
+npx @anthropic-ai/claude-code
+
+<span class="cmt"># 전역 설치 (권장)</span>
+npm install -g @anthropic-ai/claude-code
+
+<span class="cmt"># 초기 설정</span>
+claude-code init
+<span class="cmt"># API 키 입력 프롬프트 표시됨</span>
+
+<span class="cmt"># 사용</span>
+claude-code new <span class="str">"Build a todo app"</span></code></pre>
+
+  <h3 id="aider-install">Aider</h3>
+
+<pre><code><span class="cmt"># pipx로 설치 (권장)</span>
+pipx install aider-chat
+
+<span class="cmt"># 또는 pip</span>
+pip install aider-chat
+
+<span class="cmt"># API 키 설정</span>
+<span class="kw">export</span> ANTHROPIC_API_KEY=<span class="str">"sk-ant-..."</span>
+
+<span class="cmt"># 사용</span>
+cd my-project
+aider</code></pre>
+
+  <h3 id="ollama-install">Ollama</h3>
+
+<pre><code><span class="cmt"># macOS/Linux</span>
+curl -fsSL https://ollama.com/install.sh | sh
+
+<span class="cmt"># Windows: https://ollama.com/download/windows</span>
+
+<span class="cmt"># 모델 다운로드</span>
+ollama pull llama3.2:3b
+ollama pull codellama:7b
+
+<span class="cmt"># 서비스 시작 (자동 시작됨)</span>
+ollama serve</code></pre>
+
+  <h3 id="node-python">Node.js 및 Python 설정</h3>
+
+  <h4>Node.js (nvm 권장)</h4>
+
+<pre><code><span class="cmt"># nvm 설치</span>
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+<span class="cmt"># ~/.zshrc 재로드</span>
+source ~/.zshrc
+
+<span class="cmt"># Node.js LTS 설치</span>
+nvm install --lts
+nvm use --lts
+
+<span class="cmt"># 기본 버전 설정</span>
+nvm alias default node
+
+<span class="cmt"># 확인</span>
+node --version
+npm --version</code></pre>
+
+  <h4>Python (pyenv 권장)</h4>
+
+<pre><code><span class="cmt"># pyenv 설치</span>
+<span class="cmt"># macOS</span>
+brew install pyenv
+
+<span class="cmt"># Ubuntu/Debian</span>
+curl https://pyenv.run | bash
+
+<span class="cmt"># ~/.zshrc에 추가</span>
+<span class="kw">export</span> PYENV_ROOT=<span class="str">"$HOME/.pyenv"</span>
+<span class="kw">export</span> PATH=<span class="str">"$PYENV_ROOT/bin:$PATH"</span>
+eval <span class="str">"$(pyenv init --path)"</span>
+eval <span class="str">"$(pyenv init -)"</span>
+
+<span class="cmt"># Python 3.12 설치</span>
+pyenv install 3.12
+pyenv global 3.12
+
+<span class="cmt"># 확인</span>
+python --version
+pip --version</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="dotfiles">Dotfiles 관리</h2>
+
+  <h3 id="dotfiles-git">Git으로 Dotfiles 관리</h3>
+
+<pre><code><span class="cmt"># 1. Dotfiles 저장소 생성</span>
+mkdir ~/dotfiles
+cd ~/dotfiles
+git init
+
+<span class="cmt"># 2. 설정 파일 복사</span>
+cp ~/.zshrc .
+cp ~/.gitconfig .
+cp ~/.tmux.conf .
+cp ~/.config/nvim/init.lua nvim-init.lua
+
+<span class="cmt"># 3. README 작성</span>
+cat &gt; README.md &lt;&lt; <span class="str">'EOF'</span>
+<span class="str"># My Dotfiles</span>
+
+<span class="str">## Installation</span>
+
+<span class="str">```bash</span>
+<span class="str">git clone https://github.com/yourusername/dotfiles.git ~/dotfiles</span>
+<span class="str">cd ~/dotfiles</span>
+<span class="str">./install.sh</span>
+<span class="str">```</span>
+<span class="str">EOF</span>
+
+<span class="cmt"># 4. 설치 스크립트 작성</span>
+cat &gt; install.sh &lt;&lt; <span class="str">'EOF'</span>
+<span class="pp">#!/bin/bash</span>
+
+<span class="cmt"># Symlink dotfiles</span>
+ln -sf ~/dotfiles/.zshrc ~/.zshrc
+ln -sf ~/dotfiles/.gitconfig ~/.gitconfig
+ln -sf ~/dotfiles/.tmux.conf ~/.tmux.conf
+ln -sf ~/dotfiles/nvim-init.lua ~/.config/nvim/init.lua
+
+echo <span class="str">"✅ Dotfiles installed!"</span>
+<span class="str">EOF</span>
+
+chmod +x install.sh
+
+<span class="cmt"># 5. GitHub에 푸시</span>
+git add .
+git commit -m <span class="str">"Initial dotfiles"</span>
+git remote add origin git@github.com:yourusername/dotfiles.git
+git push -u origin main</code></pre>
+
+  <h3 id="dotfiles-tools">Dotfiles 관리 도구</h3>
+
+  <h4>GNU Stow (심볼릭 링크 관리)</h4>
+
+<pre><code><span class="cmt"># 설치</span>
+<span class="cmt"># macOS</span>
+brew install stow
+
+<span class="cmt"># Ubuntu/Debian</span>
+sudo apt install stow
+
+<span class="cmt"># 디렉토리 구조</span>
+~/dotfiles/
+  zsh/
+    .zshrc
+  git/
+    .gitconfig
+  nvim/
+    .config/nvim/init.lua
+
+<span class="cmt"># 사용법</span>
+cd ~/dotfiles
+stow zsh      <span class="cmt"># ~/.zshrc 심볼릭 링크 생성</span>
+stow git      <span class="cmt"># ~/.gitconfig 심볼릭 링크 생성</span>
+stow nvim     <span class="cmt"># ~/.config/nvim/init.lua 심볼릭 링크 생성</span>
+
+<span class="cmt"># 제거</span>
+stow -D zsh</code></pre>
+
+  <h4>Chezmoi (고급 dotfiles 관리)</h4>
+
+<pre><code><span class="cmt"># 설치</span>
+<span class="cmt"># macOS</span>
+brew install chezmoi
+
+<span class="cmt"># Ubuntu/Debian</span>
+sh -c <span class="str">"$(curl -fsLS get.chezmoi.io)"</span>
+
+<span class="cmt"># 초기화</span>
+chezmoi init
+
+<span class="cmt"># 파일 추가</span>
+chezmoi add ~/.zshrc
+chezmoi add ~/.gitconfig
+
+<span class="cmt"># 변경사항 확인</span>
+chezmoi diff
+
+<span class="cmt"># 적용</span>
+chezmoi apply
+
+<span class="cmt"># GitHub와 동기화</span>
+chezmoi cd
+git remote add origin git@github.com:yourusername/dotfiles.git
+git push -u origin main
+chezmoi git pull -- --rebase</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="tips">팁 & 트릭</h2>
+
+  <h3 id="tips-aliases">자주 쓰는 커맨드 Alias</h3>
+
+<pre><code><span class="cmt"># ~/.zshrc</span>
+
+<span class="cmt"># 프로젝트 빠른 이동</span>
+<span class="kw">alias</span> proj=<span class="str">"cd ~/projects"</span>
+<span class="kw">alias</span> work=<span class="str">"cd ~/work"</span>
+
+<span class="cmt"># LLM 작업 시작</span>
+<span class="kw">alias</span> aicode=<span class="str">"cd ~/projects && claude-code new"</span>
+<span class="kw">alias</span> aichat=<span class="str">"ollama run llama3.2"</span>
+
+<span class="cmt"># 환경 정리</span>
+<span class="kw">alias</span> cleanup=<span class="str">"docker system prune -af && npm cache clean --force"</span>
+
+<span class="cmt"># 포트 사용 확인</span>
+<span class="kw">alias</span> ports=<span class="str">"lsof -i -P -n | grep LISTEN"</span>
+
+<span class="cmt"># IP 주소 확인</span>
+<span class="kw">alias</span> myip=<span class="str">"curl -s ifconfig.me"</span></code></pre>
+
+  <h3 id="tips-functions">유용한 쉘 함수</h3>
+
+<pre><code><span class="cmt"># ~/.zshrc</span>
+
+<span class="cmt"># 디렉토리 생성 후 바로 이동</span>
+<span class="fn">mkcd</span>() {
+  mkdir -p <span class="str">"$1"</span> && cd <span class="str">"$1"</span>
+}
+
+<span class="cmt"># Git 브랜치 생성 + 체크아웃 + 푸시</span>
+<span class="fn">gcob</span>() {
+  git checkout -b <span class="str">"$1"</span> && git push -u origin <span class="str">"$1"</span>
+}
+
+<span class="cmt"># 파일 찾기 + 에디터 열기</span>
+<span class="fn">fcode</span>() {
+  code $(find . -name <span class="str">"*$1*"</span> | head -1)
+}
+
+<span class="cmt"># Claude CLI로 현재 디렉토리 설명 요청</span>
+<span class="fn">explain</span>() {
+  claude-code new <span class="str">"Explain this codebase: $(pwd)"</span>
+}
+
+<span class="cmt"># Docker 컨테이너 빠른 접속</span>
+<span class="fn">dsh</span>() {
+  docker exec -it <span class="str">"$1"</span> /bin/bash
+}</code></pre>
+
+  <h3 id="tips-vscode-snippets">VS Code 스니펫</h3>
+
+<pre><code><span class="cmt">// settings.json → Configure User Snippets → python.json</span>
+{
+  <span class="str">"Claude API Call"</span>: {
+    <span class="str">"prefix"</span>: <span class="str">"claude"</span>,
+    <span class="str">"body"</span>: [
+      <span class="str">"import anthropic"</span>,
+      <span class="str">""</span>,
+      <span class="str">"client = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))"</span>,
+      <span class="str">"message = client.messages.create("</span>,
+      <span class="str">"    model='claude-sonnet-4',  # 또는 claude-opus-4"</span>,
+      <span class="str">"    max_tokens=4096,"</span>,
+      <span class="str">"    messages=[{'role': 'user', 'content': '${1:prompt}'}]"</span>,
+      <span class="str">")\"</span>,
+      <span class="str">"print(message.content[0].text)"</span>
+    ]
+  },
+  <span class="str">"Ollama API Call"</span>: {
+    <span class="str">"prefix"</span>: <span class="str">"ollama"</span>,
+    <span class="str">"body"</span>: [
+      <span class="str">"import requests"</span>,
+      <span class="str">""</span>,
+      <span class="str">"response = requests.post('http://localhost:11434/api/generate', json={"</span>,
+      <span class="str">"    'model': '${1:llama3.2}',"</span>,
+      <span class="str">"    'prompt': '${2:prompt}',"</span>,
+      <span class="str">"    'stream': False"</span>,
+      <span class="str">"})"</span>,
+      <span class="str">"print(response.json()['response'])"</span>
+    ]
+  }
+}</code></pre>
+
+  <h3 id="tips-productivity">생산성 극대화</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>용도</th>
+        <th>설정</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>fzf</strong></td>
+        <td>퍼지 파인더 (파일, 히스토리 검색)</td>
+        <td><code>brew install fzf && $(brew --prefix)/opt/fzf/install</code></td>
+      </tr>
+      <tr>
+        <td><strong>bat</strong></td>
+        <td>cat 대체 (구문 강조)</td>
+        <td><code>brew install bat && alias cat=bat</code></td>
+      </tr>
+      <tr>
+        <td><strong>exa</strong></td>
+        <td>ls 대체 (색상, 아이콘)</td>
+        <td><code>brew install exa && alias ls=exa</code></td>
+      </tr>
+      <tr>
+        <td><strong>ripgrep</strong></td>
+        <td>grep 대체 (빠른 검색)</td>
+        <td><code>brew install ripgrep</code></td>
+      </tr>
+      <tr>
+        <td><strong>tldr</strong></td>
+        <td>man 대체 (간결한 예제)</td>
+        <td><code>brew install tldr</code></td>
+      </tr>
+      <tr>
+        <td><strong>htop</strong></td>
+        <td>top 대체 (시스템 모니터)</td>
+        <td><code>brew install htop</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+<pre><code><span class="cmt"># fzf 사용 예시</span>
+<span class="cmt"># Ctrl+R: 히스토리 검색</span>
+<span class="cmt"># Ctrl+T: 파일 검색</span>
+<span class="cmt"># Alt+C: 디렉토리 이동</span>
+
+<span class="cmt"># bat 사용</span>
+bat filename.py         <span class="cmt"># 구문 강조 표시</span>
+bat -A filename.sh      <span class="cmt"># 모든 문자 표시 (공백, 탭 등)</span>
+
+<span class="cmt"># exa 사용</span>
+exa -la --icons --git   <span class="cmt"># 아이콘 + Git 상태 표시</span>
+exa -T --level=2        <span class="cmt"># 트리 구조 (2단계)</span>
+
+<span class="cmt"># ripgrep 사용</span>
+rg <span class="str">"TODO"</span> --type py      <span class="cmt"># Python 파일에서만 검색</span>
+rg <span class="str">"API_KEY"</span> -i          <span class="cmt"># 대소문자 무시</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="troubleshooting">문제 해결</h2>
+
+  <h3 id="trouble-zsh">Zsh 플러그인이 작동하지 않음</h3>
+
+<pre><code><span class="cmt"># 1. 플러그인 디렉토리 확인</span>
+ls -la ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/
+
+<span class="cmt"># 2. .zshrc 문법 확인</span>
+zsh -n ~/.zshrc
+
+<span class="cmt"># 3. 캐시 삭제 후 재시작</span>
+rm -f ~/.zcompdump*
+exec zsh</code></pre>
+
+  <h3 id="trouble-git">Git SSH 인증 실패</h3>
+
+<pre><code><span class="cmt"># 1. SSH 에이전트 재시작</span>
+eval <span class="str">"$(ssh-agent -s)"</span>
+ssh-add ~/.ssh/id_ed25519
+
+<span class="cmt"># 2. 권한 확인</span>
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/id_ed25519
+
+<span class="cmt"># 3. GitHub 연결 테스트</span>
+ssh -vT git@github.com</code></pre>
+
+  <h3 id="trouble-env">환경 변수가 로드되지 않음</h3>
+
+<pre><code><span class="cmt"># 1. 쉘 확인</span>
+echo $SHELL
+<span class="cmt"># /bin/zsh이어야 함</span>
+
+<span class="cmt"># 2. .zshrc 재로드</span>
+source ~/.zshrc
+
+<span class="cmt"># 3. 환경 변수 확인</span>
+env | grep ANTHROPIC
+printenv ANTHROPIC_API_KEY
+
+<span class="cmt"># 4. .env 파일 로드 확인 (Python)</span>
+python -c <span class="str">"from dotenv import load_dotenv; import os; load_dotenv(); print(os.getenv('ANTHROPIC_API_KEY'))"</span></code></pre>
+
+  <h3 id="trouble-vscode">VS Code 확장이 느림</h3>
+
+<pre><code><span class="cmt"># 1. 확장 성능 확인</span>
+<span class="cmt"># Cmd+Shift+P → "Developer: Show Running Extensions"</span>
+
+<span class="cmt"># 2. 불필요한 확장 비활성화</span>
+<span class="cmt"># 특히 Prettier, ESLint는 필요한 프로젝트에서만 활성화</span>
+
+<span class="cmt"># 3. 캐시 삭제</span>
+rm -rf ~/Library/Application\ Support/Code/Cache
+rm -rf ~/Library/Application\ Support/Code/CachedData
+
+<span class="cmt"># 4. 설정 최적화</span>
+<span class="cmt"># settings.json</span>
+{
+  <span class="str">"files.watcherExclude"</span>: {
+    <span class="str">"**/.git/objects/**"</span>: <span class="kw">true</span>,
+    <span class="str">"**/node_modules/**"</span>: <span class="kw">true</span>,
+    <span class="str">"**/.venv/**"</span>: <span class="kw">true</span>
+  }
+}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="checklist">최종 체크리스트</h2>
+
+  <div class="info-box success">
+    <div class="info-box-title">✅ 완벽한 LLM 개발 환경</div>
+
+    <h4>터미널 (필수)</h4>
+    <ul>
+      <li>Zsh + Oh My Zsh (또는 PowerShell 7 + Oh My Posh)</li>
+      <li>Powerlevel10k 테마</li>
+      <li>zsh-autosuggestions, zsh-syntax-highlighting 플러그인</li>
+      <li>유용한 alias 및 함수 추가</li>
+    </ul>
+
+    <h4>에디터 (필수)</h4>
+    <ul>
+      <li>VS Code + Continue/Cline 확장</li>
+      <li>또는 Neovim + Copilot.lua</li>
+      <li>Prettier, ESLint, GitLens 설정</li>
+    </ul>
+
+    <h4>Git (필수)</h4>
+    <ul>
+      <li>user.name, user.email 설정</li>
+      <li>SSH 키 등록 (GitHub/GitLab)</li>
+      <li>GPG 서명 설정 (선택)</li>
+      <li>유용한 alias 추가</li>
+    </ul>
+
+    <h4>환경 변수 (필수)</h4>
+    <ul>
+      <li>ANTHROPIC_API_KEY, OPENAI_API_KEY 설정</li>
+      <li>.env 파일 사용 (프로젝트별)</li>
+      <li>.gitignore에 .env 추가</li>
+    </ul>
+
+    <h4>CLI 도구 (필수 중 하나)</h4>
+    <ul>
+      <li>Claude CLI 또는 Aider 설치</li>
+      <li>Ollama 설치 (로컬 LLM용)</li>
+      <li>Node.js (v18+), Python (3.10+)</li>
+    </ul>
+
+    <h4>선택 도구</h4>
+    <ul>
+      <li>tmux (터미널 멀티플렉서)</li>
+      <li>Docker + Docker Compose</li>
+      <li>fzf, bat, exa, ripgrep (생산성 도구)</li>
+      <li>dotfiles Git 저장소</li>
+    </ul>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🚀 다음 단계</div>
+    <ul>
+      <li><a href="api-key-management.html">API 키 관리</a> - 보안을 위한 시크릿 관리</li>
+      <li><a href="docker-llm.html">Docker LLM 환경</a> - 컨테이너로 일관된 환경 구축</li>
+      <li><a href="ci-cd-llm.html">CI/CD & LLM</a> - 자동화 파이프라인 구축</li>
+      <li><a href="../pages/claude-cli.html">Claude CLI 완전 가이드</a> - 실전 사용법</li>
+    </ul>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Claude CLI 완전 가이드 - 모든 기능과 활용법">
+<meta property="og:description" content="Claude CLI의 설치부터 고급 기능까지, 모든 것을 다루는 종합 레퍼런스 가이드입니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/claude-cli.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude CLI 완전 가이드. 설치, 기본 사용법, 고급 기능, 워크플로우, 모범 사례를 모두 다룹니다.">
+<meta name="keywords" content="claude cli, claude code, anthropic, 가이드, 튜토리얼, vibe coding">
+<meta name="author" content="MINZKN">
+<title>Claude CLI 완전 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Claude CLI 완전 가이드</h1>
+<p class="lead">Anthropic 공식 Claude CLI의 모든 기능과 활용법을 마스터하세요.</p>
+
+<!-- Quick Reference -->
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 빠른 참조</div>
+  <pre><code><span class="cmt"># 설치 없이 실행</span>
+npx claude
+
+<span class="cmt"># 전역 설치</span>
+npm install -g @anthropic-ai/claude-cli
+
+<span class="cmt"># API 키 설정</span>
+export ANTHROPIC_API_KEY=sk-ant-api03-xxx
+
+<span class="cmt"># 도움말</span>
+claude --help</code></pre>
+</div>
+
+<!-- Section 1: 소개 및 설치 -->
+<section class="content-section">
+  <h2 id="introduction">소개</h2>
+
+  <p>
+    <strong>Claude CLI (Claude Code)</strong>는 Anthropic이 공식 제공하는 커맨드라인 인터페이스로,
+    터미널에서 직접 Claude와 대화하며 코드를 생성하고 프로젝트를 관리할 수 있습니다.
+  </p>
+
+  <h3 id="why-claude-cli">왜 Claude CLI인가?</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>공식 도구</strong></td>
+        <td>Anthropic이 직접 개발 및 유지보수</td>
+      </tr>
+      <tr>
+        <td><strong>최신 모델</strong></td>
+        <td>Claude 4.6 Opus, 4.5 Sonnet 즉시 지원</td>
+      </tr>
+      <tr>
+        <td><strong>최고 품질</strong></td>
+        <td>코드 생성 품질이 다른 도구보다 우수</td>
+      </tr>
+      <tr>
+        <td><strong>프로젝트 컨텍스트</strong></td>
+        <td><code>.claude/</code> 디렉토리로 설정 관리</td>
+      </tr>
+      <tr>
+        <td><strong>MCP 통합</strong></td>
+        <td>Model Context Protocol 네이티브 지원</td>
+      </tr>
+      <tr>
+        <td><strong>스트리밍</strong></td>
+        <td>실시간 응답 확인 가능</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="installation">설치</h3>
+
+  <h4>방법 1: npx (권장 - 설치 불필요)</h4>
+  <pre><code><span class="cmt"># 설치 없이 바로 실행</span>
+npx claude
+
+<span class="cmt"># 처음 실행 시 패키지 다운로드</span>
+<span class="str">Need to install the following packages:
+  @anthropic-ai/claude-cli
+Ok to proceed? (y)</span></code></pre>
+
+  <h4>방법 2: 전역 설치</h4>
+  <pre><code><span class="cmt"># npm으로 전역 설치</span>
+npm install -g @anthropic-ai/claude-cli
+
+<span class="cmt"># 설치 확인</span>
+claude --version
+
+<span class="cmt"># 이제 짧은 명령어로 실행</span>
+claude</code></pre>
+
+  <h3 id="api-key-setup">API 키 설정</h3>
+
+  <p>
+    Claude CLI는 Anthropic API를 사용하므로 API 키가 필요합니다.
+    <a href="quickstart-claude-cli.html#api-key">빠른 시작 가이드</a>를 참고하여 키를 발급받으세요.
+  </p>
+
+  <pre><code><span class="cmt"># macOS/Linux</span>
+export ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxxxxxx"</span>
+
+<span class="cmt"># Windows PowerShell</span>
+$env:ANTHROPIC_API_KEY = <span class="str">"sk-ant-api03-xxxxxxx"</span>
+
+<span class="cmt"># 영구 설정 (~/.bashrc 또는 ~/.zshrc에 추가)</span>
+echo <span class="str">'export ANTHROPIC_API_KEY="sk-ant-api03-xxxxxxx"'</span> >> ~/.zshrc
+source ~/.zshrc</code></pre>
+
+  <div class="info-box warning">
+    <div class="info-box-title">🔐 보안 주의</div>
+    <p>API 키는 절대 Git에 커밋하지 마세요! <code>.gitignore</code>에 환경 변수 파일을 추가하세요.</p>
+    <p><a href="api-key-management.html">API 키 안전 관리 가이드 →</a></p>
+  </div>
+</section>
+
+<!-- Section 2: 기본 사용법 -->
+<section class="content-section">
+  <h2 id="basic-usage">기본 사용법</h2>
+
+  <h3 id="starting-cli">CLI 시작</h3>
+
+  <pre><code><span class="cmt"># Claude CLI 시작</span>
+npx claude
+
+<span class="cmt"># 또는 전역 설치 후</span>
+claude
+
+<span class="cmt"># 특정 디렉토리에서 시작</span>
+cd my-project
+claude</code></pre>
+
+  <p>CLI가 시작되면 대화형 인터페이스가 표시됩니다:</p>
+
+  <pre><code><span class="fn">╭────────────────────────────────────────╮</span>
+<span class="fn">│  Welcome to Claude Code CLI            │</span>
+<span class="fn">│  Model: claude-sonnet-4-5-20250929     │</span>
+<span class="fn">│  Type 'help' for commands              │</span>
+<span class="fn">╰────────────────────────────────────────╯</span>
+
+<span class="str">💬 You:</span> _</code></pre>
+
+  <h3 id="basic-commands">기본 명령어</h3>
+
+  <h4>파일 생성 요청</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"Python으로 간단한 웹 서버 만들어줘. Flask 사용해서."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"Flask 웹 서버를 생성하겠습니다."</span>
+
+<span class="cmt"># 파일 생성</span>
+<span class="fn">Created:</span> app.py
+<span class="fn">Created:</span> requirements.txt
+<span class="fn">Created:</span> templates/index.html
+
+<span class="fn">🤖 Claude:</span> <span class="str">"3개 파일을 생성했습니다.
+app.py - Flask 애플리케이션
+requirements.txt - 의존성 목록
+templates/index.html - 메인 페이지
+
+설치 및 실행:
+```
+pip install -r requirements.txt
+python app.py
+```
+http://localhost:5000 에서 확인하세요!"</span></code></pre>
+
+  <h4>파일 수정 요청</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"app.py에 /api/hello 엔드포인트 추가해줘. JSON으로 인사말 반환."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"app.py를 수정하겠습니다."</span>
+
+<span class="cmt"># 파일 수정</span>
+<span class="fn">Modified:</span> app.py
+
+<span class="fn">🤖 Claude:</span> <span class="str">"/api/hello 엔드포인트를 추가했습니다:
+
+@app.route('/api/hello')
+def hello_api():
+    return jsonify({'message': 'Hello from Claude!'})
+
+curl로 테스트:
+curl http://localhost:5000/api/hello"</span></code></pre>
+
+  <h4>여러 파일 동시 편집</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"데이터베이스 연동 추가해줘. SQLite 사용하고,
+User 모델 만들고, app.py에서 사용하게."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"데이터베이스 기능을 추가하겠습니다."</span>
+
+<span class="cmt"># 여러 파일 생성/수정</span>
+<span class="fn">Created:</span> models.py
+<span class="fn">Created:</span> database.py
+<span class="fn">Modified:</span> app.py
+<span class="fn">Modified:</span> requirements.txt
+
+<span class="fn">🤖 Claude:</span> <span class="str">"SQLite 연동을 완료했습니다:
+- models.py: User 모델 정의
+- database.py: DB 초기화 및 연결
+- app.py: User CRUD 엔드포인트 추가
+- requirements.txt: SQLAlchemy 추가"</span></code></pre>
+
+  <h3 id="cli-commands">CLI 내장 명령어</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>명령어</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>/help</code></td>
+        <td>도움말 표시</td>
+      </tr>
+      <tr>
+        <td><code>/clear</code></td>
+        <td>대화 히스토리 초기화</td>
+      </tr>
+      <tr>
+        <td><code>/exit</code> 또는 <code>/quit</code></td>
+        <td>CLI 종료</td>
+      </tr>
+      <tr>
+        <td><code>/model</code></td>
+        <td>현재 사용 중인 모델 표시</td>
+      </tr>
+      <tr>
+        <td><code>/context</code></td>
+        <td>현재 컨텍스트 정보</td>
+      </tr>
+      <tr>
+        <td><code>/files</code></td>
+        <td>프로젝트 파일 목록</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="conversation-history">대화 히스토리</h3>
+
+  <p>
+    Claude CLI는 현재 세션의 대화 히스토리를 유지합니다. 이전 대화를 참조하여 연속적인 작업이 가능합니다.
+  </p>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"React 컴포넌트 만들어줘. Button 컴포넌트."</span>
+<span class="fn">🤖 Claude:</span> <span class="str">"Button.jsx를 생성했습니다."</span>
+
+<span class="str">💬 You:</span> <span class="str">"이 버튼에 hover 효과 추가해줘."</span>
+<span class="fn">🤖 Claude:</span> <span class="str">"Button.jsx에 CSS-in-JS로 hover 효과를 추가했습니다."</span>
+<span class="cmt"># "이 버튼"이 Button.jsx를 가리킨다는 것을 컨텍스트로 이해</span>
+
+<span class="str">💬 You:</span> <span class="str">"테스트 코드도 작성해줘."</span>
+<span class="fn">🤖 Claude:</span> <span class="str">"Button.test.jsx를 생성했습니다."</span>
+<span class="cmt"># Button 컴포넌트에 대한 테스트라는 것을 컨텍스트로 이해</span></code></pre>
+</section>
+
+<!-- Section 3: 고급 기능 -->
+<section class="content-section">
+  <h2 id="advanced-features">고급 기능</h2>
+
+  <h3 id="project-context">프로젝트 컨텍스트 (.claude/)</h3>
+
+  <p>
+    <code>.claude/</code> 디렉토리를 사용하여 프로젝트별 설정을 관리할 수 있습니다.
+  </p>
+
+  <h4>.claude/instructions.md</h4>
+  <p>
+    프로젝트 전체에 적용될 지시사항을 작성합니다. Claude는 매 요청마다 이 내용을 참조합니다.
+  </p>
+
+  <pre><code><span class="cmt"># .claude/instructions.md 생성</span>
+mkdir .claude
+cat > .claude/instructions.md << 'EOF'
+# 프로젝트 지시사항
+
+## 코드 스타일
+- TypeScript 사용
+- ESLint + Prettier 준수
+- 함수형 컴포넌트 (React Hooks)
+- 모든 함수에 JSDoc 주석
+
+## 네이밍 규칙
+- 컴포넌트: PascalCase (예: UserProfile)
+- 함수: camelCase (예: getUserData)
+- 상수: UPPER_SNAKE_CASE (예: API_BASE_URL)
+
+## 테스트
+- 모든 컴포넌트에 테스트 코드 작성
+- Jest + React Testing Library 사용
+- 최소 80% 커버리지 유지
+
+## 파일 구조
+```
+src/
+  components/
+    Button/
+      Button.tsx
+      Button.test.tsx
+      Button.stories.tsx
+  hooks/
+  utils/
+```
+EOF</code></pre>
+
+  <p>이제 Claude는 모든 코드를 TypeScript로 생성하고, 지정된 네이밍 규칙을 따릅니다.</p>
+
+  <h4>.claudeignore</h4>
+  <p>
+    특정 파일/디렉토리를 Claude의 컨텍스트에서 제외합니다 (.gitignore와 유사).
+  </p>
+
+  <pre><code><span class="cmt"># .claudeignore</span>
+node_modules/
+.git/
+dist/
+build/
+*.log
+.env
+package-lock.json
+yarn.lock</code></pre>
+
+  <h3 id="multifile-editing">멀티파일 편집</h3>
+
+  <p>
+    Claude CLI는 한 번의 요청으로 여러 파일을 동시에 생성하거나 수정할 수 있습니다.
+  </p>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"사용자 인증 시스템 만들어줘.
+- 회원가입, 로그인, 로그아웃 API
+- JWT 토큰 사용
+- bcrypt로 비밀번호 해싱
+- Express + MongoDB
+
+필요한 모든 파일 생성해줘."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"인증 시스템을 생성하겠습니다."</span>
+
+<span class="cmt"># 여러 파일 동시 생성</span>
+<span class="fn">Created:</span> src/models/User.js
+<span class="fn">Created:</span> src/routes/auth.js
+<span class="fn">Created:</span> src/middleware/auth.js
+<span class="fn">Created:</span> src/utils/jwt.js
+<span class="fn">Created:</span> src/config/database.js
+<span class="fn">Modified:</span> src/app.js
+<span class="fn">Modified:</span> package.json
+
+<span class="fn">🤖 Claude:</span> <span class="str">"인증 시스템을 완성했습니다:
+- User 모델 (MongoDB 스키마)
+- 인증 라우트 (회원가입/로그인/로그아웃)
+- JWT 미들웨어 (토큰 검증)
+- 비밀번호 해싱 (bcrypt)
+- 데이터베이스 연결 설정
+
+환경 변수 설정 (.env):
+```
+MONGO_URI=mongodb://localhost:27017/myapp
+JWT_SECRET=your-secret-key
+```
+
+테스트:
+```
+npm install
+npm run dev
+```"</span></code></pre>
+
+  <h3 id="streaming">스트리밍 응답</h3>
+
+  <p>
+    Claude CLI는 기본적으로 스트리밍 모드로 작동하여, 응답이 생성되는 즉시 표시됩니다.
+    긴 응답도 기다리지 않고 실시간으로 확인할 수 있습니다.
+  </p>
+
+  <h3 id="mcp-integration">MCP 통합</h3>
+
+  <p>
+    Model Context Protocol (MCP) 서버를 연동하여 Claude에게 외부 도구 접근 권한을 부여할 수 있습니다.
+  </p>
+
+  <pre><code><span class="cmt"># .claude/mcp.json</span>
+{
+  <span class="str">"servers"</span>: {
+    <span class="str">"filesystem"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-filesystem"</span>, <span class="str">"/path/to/project"</span>]
+    },
+    <span class="str">"github"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-github"</span>],
+      <span class="str">"env"</span>: {
+        <span class="str">"GITHUB_TOKEN"</span>: <span class="str">"${GITHUB_TOKEN}"</span>
+      }
+    }
+  }
+}</code></pre>
+
+  <p>이제 Claude가 파일 시스템 접근, GitHub 조작 등을 할 수 있습니다.</p>
+  <p><a href="mcp-intro.html">MCP 완전 가이드 →</a></p>
+</section>
+
+<!-- Section 4: 워크플로우 -->
+<section class="content-section">
+  <h2 id="workflows">실전 워크플로우</h2>
+
+  <h3 id="new-project">새 프로젝트 시작</h3>
+
+  <pre><code><span class="cmt"># 1. 디렉토리 생성</span>
+mkdir my-new-project
+cd my-new-project
+
+<span class="cmt"># 2. Git 초기화</span>
+git init
+
+<span class="cmt"># 3. 프로젝트 지시사항 작성</span>
+mkdir .claude
+cat > .claude/instructions.md << 'EOF'
+# Next.js 프로젝트
+
+- TypeScript 사용
+- Tailwind CSS 스타일링
+- App Router (Next.js 13+)
+- ESLint + Prettier
+EOF
+
+<span class="cmt"># 4. Claude CLI 시작</span>
+npx claude
+
+<span class="cmt"># 5. 초기 구조 요청</span>
+<span class="str">💬 You:</span> <span class="str">"Next.js 13 프로젝트 초기 구조 만들어줘.
+TypeScript, Tailwind, App Router 사용.
+홈페이지에 Hero 섹션과 Feature 섹션 포함."</span></code></pre>
+
+  <h3 id="refactoring">기존 프로젝트 리팩토링</h3>
+
+  <pre><code><span class="cmt"># 프로젝트 디렉토리로 이동</span>
+cd existing-project
+
+<span class="cmt"># Claude CLI 시작</span>
+claude
+
+<span class="str">💬 You:</span> <span class="str">"src/utils/helpers.js를 읽어봐.
+이 코드를 TypeScript로 변환하고,
+함수들을 더 작은 단위로 분리해줘.
+테스트 코드도 작성해줘."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"helpers.js를 분석했습니다."</span>
+
+<span class="cmt"># 파일 읽기 → 분석 → 리팩토링</span>
+<span class="fn">Created:</span> src/utils/helpers.ts
+<span class="fn">Created:</span> src/utils/helpers.test.ts
+<span class="fn">Deleted:</span> src/utils/helpers.js
+
+<span class="fn">🤖 Claude:</span> <span class="str">"TypeScript로 변환하고 다음과 같이 리팩토링했습니다:
+- formatDate → dateUtils.ts
+- validateEmail → validators.ts
+- debounce → performanceUtils.ts
+각 유틸리티별 테스트 코드도 작성했습니다."</span></code></pre>
+
+  <h3 id="debugging">버그 디버깅</h3>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"npm test 실행했는데 에러 나. 로그 첨부할게:
+
+TypeError: Cannot read property 'map' of undefined
+  at UserList.render (UserList.jsx:15:18)
+
+UserList.jsx 파일 확인하고 수정해줘."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"UserList.jsx를 확인했습니다. 문제를 발견했습니다."</span>
+
+<span class="fn">Modified:</span> src/components/UserList.jsx
+
+<span class="fn">🤖 Claude:</span> <span class="str">"버그를 수정했습니다.
+문제: users prop이 undefined일 때 map()을 호출
+해결: Optional chaining과 기본값 추가
+
+수정 전:
+```jsx
+{users.map(user => ...)}
+```
+
+수정 후:
+```jsx
+{(users || []).map(user => ...)}
+```
+
+또는:
+```jsx
+{users?.map(user => ...) || <p>No users</p>}
+```"</span></code></pre>
+
+  <h3 id="tdd">테스트 주도 개발 (TDD)</h3>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"calculateDiscount 함수 만들려고 해.
+먼저 테스트 코드부터 작성해줘.
+
+요구사항:
+- 10% 기본 할인
+- 100달러 이상이면 15% 할인
+- VIP 회원이면 추가 5% 할인"</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"테스트 코드를 먼저 작성하겠습니다."</span>
+
+<span class="fn">Created:</span> src/utils/discount.test.ts
+
+<span class="fn">🤖 Claude:</span> <span class="str">"테스트 케이스를 작성했습니다. 지금 실행하면 모두 실패할 것입니다."</span>
+
+<span class="str">💬 You:</span> <span class="str">"좋아. 이제 함수 구현해줘."</span>
+
+<span class="fn">Created:</span> src/utils/discount.ts
+
+<span class="fn">🤖 Claude:</span> <span class="str">"calculateDiscount 함수를 구현했습니다.
+`npm test`로 테스트를 실행하면 모두 통과할 것입니다."</span></code></pre>
+</section>
+
+<!-- Section 5: 모범 사례 -->
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+
+  <h3 id="effective-prompts">효과적인 프롬프트</h3>
+
+  <h4>❌ 나쁜 예</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"앱 만들어줘."</span></code></pre>
+  <p><strong>문제:</strong> 너무 모호함. 어떤 앱인지, 어떤 기능인지 불명확.</p>
+
+  <h4>✅ 좋은 예</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"React로 날씨 앱 만들어줘.
+
+기능:
+- 현재 위치 기반 날씨 표시
+- 도시 검색 기능
+- 5일 예보
+- 날씨 아이콘
+
+기술:
+- React 18 + TypeScript
+- OpenWeather API
+- Tailwind CSS
+- React Query for data fetching
+
+파일 구조:
+- src/components/ (컴포넌트)
+- src/hooks/ (커스텀 훅)
+- src/services/ (API 호출)"</span></code></pre>
+  <p><strong>장점:</strong> 명확한 요구사항, 기술 스택, 구조까지 지정.</p>
+
+  <h3 id="context-management">컨텍스트 관리</h3>
+
+  <h4>1. .claude/instructions.md 활용</h4>
+  <p>프로젝트 전체에 적용될 규칙을 작성하여 매번 반복하지 않기</p>
+
+  <h4>2. .claudeignore 설정</h4>
+  <p>불필요한 파일 제외로 토큰 절약 및 응답 속도 향상</p>
+
+  <h4>3. 대화 초기화</h4>
+  <p>주제가 바뀌면 <code>/clear</code>로 히스토리 초기화</p>
+
+  <h3 id="git-integration">Git 통합</h3>
+
+  <pre><code><span class="cmt"># Claude가 파일 변경 후</span>
+git status
+git diff
+
+<span class="cmt"># 변경사항 확인 후 커밋</span>
+git add .
+git commit -m <span class="str">"feat: Add user authentication system
+
+- JWT token-based auth
+- bcrypt password hashing
+- Login/signup endpoints
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"</span></code></pre>
+
+  <h3 id="cost-optimization">비용 최적화</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>전략</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>.claudeignore</strong></td>
+        <td>불필요한 파일 제외 (node_modules, dist 등)</td>
+      </tr>
+      <tr>
+        <td><strong>모델 전환</strong></td>
+        <td>간단한 작업: Haiku, 복잡한 작업: Sonnet/Opus</td>
+      </tr>
+      <tr>
+        <td><strong>명확한 요청</strong></td>
+        <td>모호한 요청은 재요청으로 이어져 비용 증가</td>
+      </tr>
+      <tr>
+        <td><strong>Prompt Caching</strong></td>
+        <td>반복되는 컨텍스트 자동 캐싱 (90% 비용 절감)</td>
+      </tr>
+      <tr>
+        <td><strong>배치 작업</strong></td>
+        <td>여러 작업을 한 번에 요청</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><a href="monitoring-costs.html">비용 모니터링 및 최적화 →</a></p>
+</section>
+
+<!-- Section 6: 트러블슈팅 -->
+<section class="content-section">
+  <h2 id="troubleshooting">트러블슈팅</h2>
+
+  <h3 id="common-issues">일반적인 문제</h3>
+
+  <h4>❌ "API key not found"</h4>
+  <p><strong>원인:</strong> 환경 변수 미설정</p>
+  <p><strong>해결:</strong></p>
+  <pre><code>echo $ANTHROPIC_API_KEY  <span class="cmt"># 확인</span>
+export ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxx"</span>  <span class="cmt"># 설정</span></code></pre>
+
+  <h4>❌ "Rate limit exceeded"</h4>
+  <p><strong>원인:</strong> 너무 많은 요청</p>
+  <p><strong>해결:</strong> 1분 대기 후 재시도. 또는 요청 간격 늘리기</p>
+
+  <h4>❌ 파일이 생성되지 않음</h4>
+  <p><strong>원인:</strong> 디렉토리 권한 또는 모호한 요청</p>
+  <p><strong>해결:</strong></p>
+  <ul>
+    <li>현재 디렉토리 쓰기 권한 확인</li>
+    <li>더 구체적인 요청으로 재시도</li>
+    <li>파일 경로를 명시적으로 지정</li>
+  </ul>
+
+  <h4>❌ 응답이 중간에 끊김</h4>
+  <p><strong>원인:</strong> 네트워크 문제 또는 토큰 제한</p>
+  <p><strong>해결:</strong></p>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"계속해줘"</span> 또는 <span class="str">"이어서 작성해줘"</span></code></pre>
+
+  <h3 id="debugging-tips">디버깅 팁</h3>
+
+  <pre><code><span class="cmt"># 상세 로그 보기 (디버그 모드)</span>
+export DEBUG=claude:*
+claude
+
+<span class="cmt"># 현재 컨텍스트 확인</span>
+<span class="str">💬 You:</span> <span class="str">"/context"</span>
+
+<span class="cmt"># 파일 목록 확인</span>
+<span class="str">💬 You:</span> <span class="str">"/files"</span></code></pre>
+
+  <h3 id="performance">성능 최적화</h3>
+
+  <ul>
+    <li><strong>.claudeignore</strong> 철저히 설정 (node_modules, .git 등)</li>
+    <li><strong>대화 주기적 초기화</strong> (<code>/clear</code>로 메모리 정리)</li>
+    <li><strong>큰 파일 제외</strong> (이미지, 비디오, 빌드 결과물)</li>
+    <li><strong>Haiku 모델 사용</strong> (간단한 작업에 충분)</li>
+  </ul>
+</section>
+
+<!-- Summary & Next Steps -->
+<section class="content-section">
+  <h2 id="summary">요약</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">📝 핵심 요약</div>
+    <ul>
+      <li><strong>설치</strong>: <code>npx claude</code> (설치 불필요) 또는 전역 설치</li>
+      <li><strong>API 키</strong>: 환경 변수로 <code>ANTHROPIC_API_KEY</code> 설정</li>
+      <li><strong>기본 사용</strong>: 대화형 인터페이스로 파일 생성/수정</li>
+      <li><strong>프로젝트 설정</strong>: <code>.claude/instructions.md</code>, <code>.claudeignore</code></li>
+      <li><strong>고급 기능</strong>: 멀티파일 편집, 스트리밍, MCP 통합</li>
+      <li><strong>워크플로우</strong>: 새 프로젝트, 리팩토링, 디버깅, TDD</li>
+      <li><strong>모범 사례</strong>: 명확한 프롬프트, Git 통합, 비용 최적화</li>
+    </ul>
+  </div>
+
+  <h3 id="next-learning">다음 학습</h3>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>✍️ 프롬프트 엔지니어링</h3>
+      <p>효과적인 프롬프트 작성 기법</p>
+      <a href="prompt-for-coding.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔌 MCP 통합</h3>
+      <p>외부 도구 연동으로 Claude 확장</p>
+      <a href="mcp-intro.html" class="card-link">MCP 가이드 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>💰 비용 최적화</h3>
+      <p>API 비용 절감 전략</p>
+      <a href="monitoring-costs.html" class="card-link">절감하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔧 다른 도구</h3>
+      <p>Aider, Continue 등 비교</p>
+      <a href="cli-comparison.html" class="card-link">비교하기 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== Inline TOC (Aside) ===== -->
+<aside class="inline-toc">
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

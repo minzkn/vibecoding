@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Docker로 LLM 환경 구축 - 컨테이너 기반 개발 환경">
+<meta property="og:description" content="Docker와 Docker Compose로 일관된 LLM 개발 환경을 구축하는 완전 가이드">
+<meta property="og:url" content="https://minzkn.com/claude/pages/docker-llm.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Docker로 LLM 환경 구축 완전 가이드. Ollama, GPU 지원, 볼륨 관리, 프로덕션 배포까지.">
+<meta name="keywords" content="docker llm container ollama gpu nvidia 컨테이너 도커">
+<meta name="author" content="MINZKN">
+<title>Docker LLM 환경 구축 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Docker로 LLM 환경 구축</h1>
+<p class="lead">컨테이너 기반으로 일관되고 이식 가능한 LLM 개발 환경을 구축하는 완벽한 가이드</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ Docker를 사용하는 이유</div>
+  <ul>
+    <li><strong>일관성</strong>: 모든 팀원이 동일한 환경에서 작업</li>
+    <li><strong>이식성</strong>: 로컬, 클라우드, CI/CD 어디서나 동일하게 실행</li>
+    <li><strong>격리</strong>: 시스템 의존성 충돌 방지</li>
+    <li><strong>재현성</strong>: Dockerfile로 환경을 코드로 관리</li>
+    <li><strong>확장성</strong>: Docker Compose로 멀티 서비스 오케스트레이션</li>
+  </ul>
+</div>
+
+<section class="content-section">
+  <h2 id="docker-basics">Docker 기본 설정</h2>
+
+  <h3 id="install-docker">Docker 설치</h3>
+
+  <h4>macOS</h4>
+
+<pre><code><span class="cmt"># Docker Desktop 설치</span>
+brew install --cask docker
+
+<span class="cmt"># 또는 https://www.docker.com/products/docker-desktop/ 에서 다운로드</span>
+
+<span class="cmt"># Docker Desktop 실행 후 확인</span>
+docker --version
+docker compose version</code></pre>
+
+  <h4>Ubuntu/Debian</h4>
+
+<pre><code><span class="cmt"># 1. 이전 버전 제거</span>
+sudo apt remove docker docker-engine docker.io containerd runc
+
+<span class="cmt"># 2. 저장소 설정</span>
+sudo apt update
+sudo apt install ca-certificates curl gnupg
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo \
+  <span class="str">"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo $VERSION_CODENAME) stable"</span> | \
+  sudo tee /etc/apt/sources.list.d/docker.list &gt; /dev/null
+
+<span class="cmt"># 3. Docker 설치</span>
+sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+<span class="cmt"># 4. 사용자를 docker 그룹에 추가 (sudo 없이 사용)</span>
+sudo usermod -aG docker $USER
+newgrp docker
+
+<span class="cmt"># 5. 확인</span>
+docker run hello-world</code></pre>
+
+  <h4>Windows</h4>
+
+<pre><code><span class="cmt"># Docker Desktop 다운로드 및 설치</span>
+<span class="cmt"># https://www.docker.com/products/docker-desktop/</span>
+
+<span class="cmt"># WSL 2 백엔드 사용 (권장)</span>
+<span class="cmt"># Settings → General → Use WSL 2 based engine</span>
+
+<span class="cmt"># PowerShell에서 확인</span>
+docker --version
+docker compose version</code></pre>
+
+  <h3 id="docker-config">Docker 설정 최적화</h3>
+
+  <h4>macOS Docker Desktop 리소스 설정</h4>
+
+<pre><code><span class="cmt"># Docker Desktop → Settings → Resources</span>
+
+<span class="cmt"># 권장 설정 (LLM 워크로드용)</span>
+CPUs: 4-8 (시스템 코어의 50-75%)
+Memory: 8-16 GB (LLM 모델 크기에 따라)
+Swap: 2 GB
+Disk image size: 100 GB+</code></pre>
+
+  <h4>Linux 데몬 설정 (/etc/docker/daemon.json)</h4>
+
+<pre><code>{
+  <span class="str">"log-driver"</span>: <span class="str">"json-file"</span>,
+  <span class="str">"log-opts"</span>: {
+    <span class="str">"max-size"</span>: <span class="str">"10m"</span>,
+    <span class="str">"max-file"</span>: <span class="str">"3"</span>
+  },
+  <span class="str">"storage-driver"</span>: <span class="str">"overlay2"</span>,
+  <span class="str">"default-runtime"</span>: <span class="str">"runc"</span>
+}
+
+<span class="cmt"># 적용</span>
+sudo systemctl restart docker</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="ollama-docker">Docker로 Ollama 실행</h2>
+
+  <h3 id="ollama-basic">기본 실행</h3>
+
+<pre><code><span class="cmt"># 1. Ollama 이미지 다운로드 및 실행 (CPU 전용)</span>
+docker run -d \
+  --name ollama \
+  -p 11434:11434 \
+  -v ollama-data:/root/.ollama \
+  ollama/ollama
+
+<span class="cmt"># 2. 컨테이너 상태 확인</span>
+docker ps
+
+<span class="cmt"># 3. 로그 확인</span>
+docker logs ollama
+
+<span class="cmt"># 4. 모델 다운로드</span>
+docker exec -it ollama ollama pull llama3.2:3b
+
+<span class="cmt"># 5. 대화형 실행</span>
+docker exec -it ollama ollama run llama3.2:3b
+
+<span class="cmt"># 6. API 테스트</span>
+curl http://localhost:11434/api/generate -d <span class="str">'{
+  "model": "llama3.2:3b",
+  "prompt": "Why is the sky blue?",
+  "stream": false
+}'</span></code></pre>
+
+  <h3 id="ollama-compose">Docker Compose로 관리</h3>
+
+  <h4>docker-compose.yml</h4>
+
+<pre><code><span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="kw">ollama</span>:
+    <span class="kw">image</span>: ollama/ollama:latest
+    <span class="kw">container_name</span>: ollama
+    <span class="kw">ports</span>:
+      - <span class="str">"11434:11434"</span>
+    <span class="kw">volumes</span>:
+      - ollama-data:/root/.ollama
+    <span class="kw">restart</span>: unless-stopped
+    <span class="kw">environment</span>:
+      - OLLAMA_HOST=0.0.0.0:11434
+    <span class="kw">healthcheck</span>:
+      <span class="kw">test</span>: [<span class="str">"CMD"</span>, <span class="str">"curl"</span>, <span class="str">"-f"</span>, <span class="str">"http://localhost:11434/api/tags"</span>]
+      <span class="kw">interval</span>: 30s
+      <span class="kw">timeout</span>: 10s
+      <span class="kw">retries</span>: 3
+
+<span class="kw">volumes</span>:
+  <span class="kw">ollama-data</span>:
+    <span class="kw">driver</span>: local</code></pre>
+
+  <h4>사용법</h4>
+
+<pre><code><span class="cmt"># 시작</span>
+docker compose up -d
+
+<span class="cmt"># 로그 확인</span>
+docker compose logs -f ollama
+
+<span class="cmt"># 중지</span>
+docker compose down
+
+<span class="cmt"># 데이터 포함 완전 삭제</span>
+docker compose down -v
+
+<span class="cmt"># 모델 다운로드</span>
+docker compose exec ollama ollama pull llama3.2:3b
+docker compose exec ollama ollama pull codellama:7b
+docker compose exec ollama ollama pull mistral:7b
+
+<span class="cmt"># 설치된 모델 확인</span>
+docker compose exec ollama ollama list</code></pre>
+
+  <h3 id="ollama-gpu">GPU 가속 (NVIDIA)</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 GPU 사용 시 주의사항</div>
+    <ul>
+      <li>NVIDIA GPU 필요 (CUDA 11.8+)</li>
+      <li>Linux 또는 WSL 2 (Windows)</li>
+      <li>NVIDIA Docker Runtime 설치 필요</li>
+      <li>macOS는 Apple Silicon (Metal)을 자동으로 사용</li>
+    </ul>
+  </div>
+
+  <h4>1. NVIDIA Docker Runtime 설치 (Linux)</h4>
+
+<pre><code><span class="cmt"># NVIDIA Container Toolkit 설치</span>
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/libnvidia-container/gpgkey | \
+  sudo apt-key add -
+curl -s -L https://nvidia.github.io/libnvidia-container/$distribution/libnvidia-container.list | \
+  sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
+sudo apt update
+sudo apt install -y nvidia-container-toolkit
+
+<span class="cmt"># Docker 데몬 설정</span>
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl restart docker
+
+<span class="cmt"># 테스트</span>
+docker run --rm --gpus all nvidia/cuda:12.3.0-base-ubuntu22.04 nvidia-smi</code></pre>
+
+  <h4>2. GPU 지원 docker-compose.yml</h4>
+
+<pre><code><span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="kw">ollama</span>:
+    <span class="kw">image</span>: ollama/ollama:latest
+    <span class="kw">container_name</span>: ollama-gpu
+    <span class="kw">ports</span>:
+      - <span class="str">"11434:11434"</span>
+    <span class="kw">volumes</span>:
+      - ollama-data:/root/.ollama
+    <span class="kw">restart</span>: unless-stopped
+    <span class="kw">deploy</span>:
+      <span class="kw">resources</span>:
+        <span class="kw">reservations</span>:
+          <span class="kw">devices</span>:
+            - <span class="kw">driver</span>: nvidia
+              <span class="kw">count</span>: all  <span class="cmt"># 또는 1 (GPU 1개만)</span>
+              <span class="kw">capabilities</span>: [gpu]
+    <span class="kw">environment</span>:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - OLLAMA_GPU_LAYERS=999  <span class="cmt"># 모든 레이어를 GPU에</span>
+
+<span class="kw">volumes</span>:
+  <span class="kw">ollama-data</span>:</code></pre>
+
+  <h4>3. GPU 사용 확인</h4>
+
+<pre><code><span class="cmt"># 컨테이너 내부에서 nvidia-smi 실행</span>
+docker compose exec ollama nvidia-smi
+
+<span class="cmt"># Ollama 로그에서 GPU 사용 확인</span>
+docker compose logs ollama | grep -i gpu
+<span class="cmt"># 출력 예시: "GPU detected: NVIDIA GeForce RTX 4090"</span>
+
+<span class="cmt"># 모델 실행 시 GPU 사용률 모니터링</span>
+watch -n 1 nvidia-smi</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="dev-container">개발 환경 컨테이너화</h2>
+
+  <h3 id="python-llm">Python LLM 개발 환경</h3>
+
+  <h4>Dockerfile</h4>
+
+<pre><code><span class="cmt"># Dockerfile</span>
+<span class="kw">FROM</span> python:3.12-slim
+
+<span class="cmt"># 작업 디렉토리 설정</span>
+<span class="kw">WORKDIR</span> /app
+
+<span class="cmt"># 시스템 패키지 설치</span>
+<span class="kw">RUN</span> apt-get update && apt-get install -y \
+    curl \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+<span class="cmt"># Python 의존성 설치</span>
+<span class="kw">COPY</span> requirements.txt .
+<span class="kw">RUN</span> pip install --no-cache-dir -r requirements.txt
+
+<span class="cmt"># 애플리케이션 코드 복사</span>
+<span class="kw">COPY</span> . .
+
+<span class="cmt"># 비root 사용자 생성</span>
+<span class="kw">RUN</span> useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
+<span class="kw">USER</span> appuser
+
+<span class="cmt"># 포트 노출</span>
+<span class="kw">EXPOSE</span> 8000
+
+<span class="cmt"># 시작 명령어</span>
+<span class="kw">CMD</span> [<span class="str">"python"</span>, <span class="str">"app.py"</span>]</code></pre>
+
+  <h4>requirements.txt</h4>
+
+<pre><code><span class="cmt"># LLM 클라이언트</span>
+anthropic==0.18.1
+openai==1.12.0
+google-generativeai==0.3.2
+
+<span class="cmt"># 로컬 LLM</span>
+ollama==0.1.6
+
+<span class="cmt"># 웹 프레임워크</span>
+fastapi==0.109.2
+uvicorn[standard]==0.27.1
+
+<span class="cmt"># 유틸리티</span>
+python-dotenv==1.0.1
+httpx==0.26.0
+pydantic==2.6.1</code></pre>
+
+  <h4>docker-compose.yml (개발 환경)</h4>
+
+<pre><code><span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="kw">app</span>:
+    <span class="kw">build</span>: .
+    <span class="kw">container_name</span>: llm-dev
+    <span class="kw">ports</span>:
+      - <span class="str">"8000:8000"</span>
+    <span class="kw">volumes</span>:
+      - .:/app                    <span class="cmt"># 코드 hot reload</span>
+      - /app/__pycache__          <span class="cmt"># 캐시 제외</span>
+      - /app/.venv                <span class="cmt"># venv 제외</span>
+    <span class="kw">environment</span>:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OLLAMA_HOST=http://ollama:11434
+      - PYTHONUNBUFFERED=1
+    <span class="kw">depends_on</span>:
+      - ollama
+    <span class="kw">command</span>: uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+
+  <span class="kw">ollama</span>:
+    <span class="kw">image</span>: ollama/ollama:latest
+    <span class="kw">container_name</span>: ollama
+    <span class="kw">ports</span>:
+      - <span class="str">"11434:11434"</span>
+    <span class="kw">volumes</span>:
+      - ollama-data:/root/.ollama
+
+<span class="kw">volumes</span>:
+  <span class="kw">ollama-data</span>:</code></pre>
+
+  <h4>app.py (예제)</h4>
+
+<pre><code><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+<span class="kw">import</span> anthropic
+<span class="kw">import</span> os
+
+app = FastAPI()
+
+<span class="kw">class</span> <span class="type">ChatRequest</span>(BaseModel):
+    message: str
+    model: str = <span class="str">"claude-sonnet-4"</span>
+
+<span class="pp">@app.post</span>(<span class="str">"/chat"</span>)
+<span class="kw">async def</span> <span class="fn">chat</span>(request: ChatRequest):
+    client = anthropic.Anthropic(api_key=os.getenv(<span class="str">"ANTHROPIC_API_KEY"</span>))
+
+    message = client.messages.create(
+        model=request.model,
+        max_tokens=1024,
+        messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: request.message}]
+    )
+
+    <span class="kw">return</span> {<span class="str">"response"</span>: message.content[0].text}
+
+<span class="pp">@app.get</span>(<span class="str">"/health"</span>)
+<span class="kw">async def</span> <span class="fn">health</span>():
+    <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"healthy"</span>}</code></pre>
+
+  <h4>사용법</h4>
+
+<pre><code><span class="cmt"># .env 파일 생성</span>
+cat &gt; .env &lt;&lt; <span class="str">EOF</span>
+<span class="str">ANTHROPIC_API_KEY=sk-ant-api03-...</span>
+<span class="str">OPENAI_API_KEY=sk-proj-...</span>
+<span class="str">EOF</span>
+
+<span class="cmt"># 빌드 및 시작</span>
+docker compose up --build
+
+<span class="cmt"># API 테스트</span>
+curl -X POST http://localhost:8000/chat \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"message": "Hello, Claude!"}'</span>
+
+<span class="cmt"># 로그 확인</span>
+docker compose logs -f app</code></pre>
+
+  <h3 id="nodejs-llm">Node.js LLM 개발 환경</h3>
+
+  <h4>Dockerfile</h4>
+
+<pre><code><span class="cmt"># Dockerfile</span>
+<span class="kw">FROM</span> node:20-slim
+
+<span class="kw">WORKDIR</span> /app
+
+<span class="cmt"># 의존성 설치</span>
+<span class="kw">COPY</span> package*.json ./
+<span class="kw">RUN</span> npm ci --only=production
+
+<span class="cmt"># 애플리케이션 코드</span>
+<span class="kw">COPY</span> . .
+
+<span class="cmt"># TypeScript 빌드 (필요 시)</span>
+<span class="cmt"># RUN npm run build</span>
+
+<span class="kw">EXPOSE</span> 3000
+
+<span class="kw">CMD</span> [<span class="str">"node"</span>, <span class="str">"server.js"</span>]</code></pre>
+
+  <h4>docker-compose.yml</h4>
+
+<pre><code><span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="kw">app</span>:
+    <span class="kw">build</span>: .
+    <span class="kw">ports</span>:
+      - <span class="str">"3000:3000"</span>
+    <span class="kw">volumes</span>:
+      - .:/app
+      - /app/node_modules
+    <span class="kw">environment</span>:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OLLAMA_HOST=http://ollama:11434
+    <span class="kw">depends_on</span>:
+      - ollama
+    <span class="kw">command</span>: npm run dev
+
+  <span class="kw">ollama</span>:
+    <span class="kw">image</span>: ollama/ollama:latest
+    <span class="kw">ports</span>:
+      - <span class="str">"11434:11434"</span>
+    <span class="kw">volumes</span>:
+      - ollama-data:/root/.ollama
+
+<span class="kw">volumes</span>:
+  <span class="kw">ollama-data</span>:</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="volumes">볼륨 관리</h2>
+
+  <h3 id="volume-types">볼륨 유형</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>유형</th>
+        <th>사용 예</th>
+        <th>성능</th>
+        <th>이식성</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Named Volume</strong></td>
+        <td>모델, 데이터베이스</td>
+        <td>⭐⭐⭐</td>
+        <td>높음</td>
+      </tr>
+      <tr>
+        <td><strong>Bind Mount</strong></td>
+        <td>소스 코드, 설정</td>
+        <td>⭐⭐⭐</td>
+        <td>중간</td>
+      </tr>
+      <tr>
+        <td><strong>tmpfs</strong></td>
+        <td>임시 캐시</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>낮음</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="volume-examples">볼륨 사용 예제</h3>
+
+<pre><code><span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="kw">ollama</span>:
+    <span class="kw">image</span>: ollama/ollama:latest
+    <span class="kw">volumes</span>:
+      <span class="cmt"># Named volume (모델 영구 저장)</span>
+      - ollama-models:/root/.ollama/models
+
+      <span class="cmt"># Bind mount (커스텀 Modelfile)</span>
+      - ./modelfiles:/modelfiles:ro
+
+      <span class="cmt"># tmpfs (임시 캐시)</span>
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 1G
+
+<span class="kw">volumes</span>:
+  <span class="kw">ollama-models</span>:
+    <span class="kw">driver</span>: local
+    <span class="kw">driver_opts</span>:
+      <span class="kw">type</span>: none
+      <span class="kw">o</span>: bind
+      <span class="kw">device</span>: /mnt/ssd/ollama  <span class="cmt"># SSD 경로</span></code></pre>
+
+  <h3 id="volume-management">볼륨 관리 명령어</h3>
+
+<pre><code><span class="cmt"># 볼륨 목록</span>
+docker volume ls
+
+<span class="cmt"># 볼륨 상세 정보</span>
+docker volume inspect ollama-data
+
+<span class="cmt"># 볼륨 백업</span>
+docker run --rm \
+  -v ollama-data:/source \
+  -v $(pwd):/backup \
+  alpine tar czf /backup/ollama-backup.tar.gz -C /source .
+
+<span class="cmt"># 볼륨 복원</span>
+docker run --rm \
+  -v ollama-data:/target \
+  -v $(pwd):/backup \
+  alpine tar xzf /backup/ollama-backup.tar.gz -C /target
+
+<span class="cmt"># 볼륨 삭제 (주의!)</span>
+docker volume rm ollama-data
+
+<span class="cmt"># 사용하지 않는 볼륨 정리</span>
+docker volume prune</code></pre>
+
+  <h3 id="volume-backup">자동 백업 스크립트</h3>
+
+<pre><code><span class="pp">#!/bin/bash</span>
+<span class="cmt"># backup-ollama.sh</span>
+
+<span class="kw">BACKUP_DIR</span>=<span class="str">"$HOME/backups/ollama"</span>
+<span class="kw">DATE</span>=$(date +%Y%m%d_%H%M%S)
+<span class="kw">BACKUP_FILE</span>=<span class="str">"$BACKUP_DIR/ollama-$DATE.tar.gz"</span>
+
+mkdir -p <span class="str">"$BACKUP_DIR"</span>
+
+docker run --rm \
+  -v ollama-data:/source \
+  -v <span class="str">"$BACKUP_DIR"</span>:/backup \
+  alpine tar czf /backup/<span class="str">"ollama-$DATE.tar.gz"</span> -C /source .
+
+echo <span class="str">"✅ Backup completed: $BACKUP_FILE"</span>
+
+<span class="cmt"># 30일 이상 된 백업 삭제</span>
+find <span class="str">"$BACKUP_DIR"</span> -name <span class="str">"ollama-*.tar.gz"</span> -mtime +30 -delete</code></pre>
+
+<pre><code><span class="cmt"># cron에 등록 (매일 새벽 2시)</span>
+crontab -e
+<span class="cmt"># 추가:</span>
+0 2 * * * /path/to/backup-ollama.sh</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="networking">네트워킹</h2>
+
+  <h3 id="network-types">네트워크 유형</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>유형</th>
+        <th>용도</th>
+        <th>컨테이너 간 통신</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>bridge</strong></td>
+        <td>기본 네트워크</td>
+        <td>같은 네트워크 내 가능</td>
+      </tr>
+      <tr>
+        <td><strong>host</strong></td>
+        <td>호스트 네트워크 사용</td>
+        <td>호스트와 동일</td>
+      </tr>
+      <tr>
+        <td><strong>none</strong></td>
+        <td>네트워크 없음</td>
+        <td>불가</td>
+      </tr>
+      <tr>
+        <td><strong>custom</strong></td>
+        <td>사용자 정의 네트워크</td>
+        <td>DNS 자동 해석</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="network-custom">커스텀 네트워크 예제</h3>
+
+<pre><code><span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="kw">frontend</span>:
+    <span class="kw">build</span>: ./frontend
+    <span class="kw">networks</span>:
+      - public
+      - internal
+    <span class="kw">ports</span>:
+      - <span class="str">"3000:3000"</span>
+
+  <span class="kw">backend</span>:
+    <span class="kw">build</span>: ./backend
+    <span class="kw">networks</span>:
+      - internal
+    <span class="kw">environment</span>:
+      - OLLAMA_HOST=http://ollama:11434
+
+  <span class="kw">ollama</span>:
+    <span class="kw">image</span>: ollama/ollama:latest
+    <span class="kw">networks</span>:
+      - internal
+    <span class="kw">volumes</span>:
+      - ollama-data:/root/.ollama
+
+<span class="kw">networks</span>:
+  <span class="kw">public</span>:
+    <span class="kw">driver</span>: bridge
+  <span class="kw">internal</span>:
+    <span class="kw">driver</span>: bridge
+    <span class="kw">internal</span>: <span class="kw">true</span>  <span class="cmt"># 외부 접근 차단</span>
+
+<span class="kw">volumes</span>:
+  <span class="kw">ollama-data</span>:</code></pre>
+
+  <h3 id="network-commands">네트워크 관리 명령어</h3>
+
+<pre><code><span class="cmt"># 네트워크 목록</span>
+docker network ls
+
+<span class="cmt"># 네트워크 생성</span>
+docker network create llm-network
+
+<span class="cmt"># 컨테이너를 네트워크에 연결</span>
+docker network connect llm-network ollama
+
+<span class="cmt"># 네트워크 상세 정보</span>
+docker network inspect llm-network
+
+<span class="cmt"># 네트워크에서 분리</span>
+docker network disconnect llm-network ollama
+
+<span class="cmt"># 네트워크 삭제</span>
+docker network rm llm-network</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="multi-service">멀티 서비스 구성</h2>
+
+  <h3 id="full-stack">풀스택 LLM 애플리케이션</h3>
+
+  <h4>docker-compose.yml (프로덕션)</h4>
+
+<pre><code><span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="cmt"># Nginx 리버스 프록시</span>
+  <span class="kw">nginx</span>:
+    <span class="kw">image</span>: nginx:alpine
+    <span class="kw">ports</span>:
+      - <span class="str">"80:80"</span>
+      - <span class="str">"443:443"</span>
+    <span class="kw">volumes</span>:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    <span class="kw">depends_on</span>:
+      - frontend
+      - backend
+    <span class="kw">networks</span>:
+      - public
+
+  <span class="cmt"># React 프론트엔드</span>
+  <span class="kw">frontend</span>:
+    <span class="kw">build</span>: ./frontend
+    <span class="kw">expose</span>:
+      - <span class="str">"3000"</span>
+    <span class="kw">networks</span>:
+      - public
+
+  <span class="cmt"># FastAPI 백엔드</span>
+  <span class="kw">backend</span>:
+    <span class="kw">build</span>: ./backend
+    <span class="kw">expose</span>:
+      - <span class="str">"8000"</span>
+    <span class="kw">environment</span>:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - OLLAMA_HOST=http://ollama:11434
+      - DATABASE_URL=postgresql://user:pass@postgres:5432/llmdb
+      - REDIS_URL=redis://redis:6379
+    <span class="kw">depends_on</span>:
+      - postgres
+      - redis
+      - ollama
+    <span class="kw">networks</span>:
+      - public
+      - backend
+
+  <span class="cmt"># Ollama LLM 서버</span>
+  <span class="kw">ollama</span>:
+    <span class="kw">image</span>: ollama/ollama:latest
+    <span class="kw">expose</span>:
+      - <span class="str">"11434"</span>
+    <span class="kw">volumes</span>:
+      - ollama-data:/root/.ollama
+    <span class="kw">deploy</span>:
+      <span class="kw">resources</span>:
+        <span class="kw">reservations</span>:
+          <span class="kw">devices</span>:
+            - <span class="kw">driver</span>: nvidia
+              <span class="kw">count</span>: 1
+              <span class="kw">capabilities</span>: [gpu]
+    <span class="kw">networks</span>:
+      - backend
+
+  <span class="cmt"># PostgreSQL 데이터베이스</span>
+  <span class="kw">postgres</span>:
+    <span class="kw">image</span>: postgres:16-alpine
+    <span class="kw">environment</span>:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=llmdb
+    <span class="kw">volumes</span>:
+      - postgres-data:/var/lib/postgresql/data
+    <span class="kw">networks</span>:
+      - backend
+
+  <span class="cmt"># Redis 캐시</span>
+  <span class="kw">redis</span>:
+    <span class="kw">image</span>: redis:7-alpine
+    <span class="kw">command</span>: redis-server --appendonly yes
+    <span class="kw">volumes</span>:
+      - redis-data:/data
+    <span class="kw">networks</span>:
+      - backend
+
+<span class="kw">networks</span>:
+  <span class="kw">public</span>:
+    <span class="kw">driver</span>: bridge
+  <span class="kw">backend</span>:
+    <span class="kw">driver</span>: bridge
+    <span class="kw">internal</span>: <span class="kw">true</span>
+
+<span class="kw">volumes</span>:
+  <span class="kw">ollama-data</span>:
+  <span class="kw">postgres-data</span>:
+  <span class="kw">redis-data</span>:</code></pre>
+
+  <h4>nginx.conf</h4>
+
+<pre><code><span class="kw">upstream</span> frontend {
+    server frontend:3000;
+}
+
+<span class="kw">upstream</span> backend {
+    server backend:8000;
+}
+
+<span class="kw">server</span> {
+    <span class="kw">listen</span> 80;
+    <span class="kw">server_name</span> example.com;
+
+    <span class="cmt"># 프론트엔드</span>
+    <span class="kw">location</span> / {
+        <span class="kw">proxy_pass</span> http://frontend;
+        <span class="kw">proxy_set_header</span> Host $host;
+        <span class="kw">proxy_set_header</span> X-Real-IP $remote_addr;
+    }
+
+    <span class="cmt"># 백엔드 API</span>
+    <span class="kw">location</span> /api/ {
+        <span class="kw">proxy_pass</span> http://backend;
+        <span class="kw">proxy_set_header</span> Host $host;
+        <span class="kw">proxy_set_header</span> X-Real-IP $remote_addr;
+
+        <span class="cmt"># 스트리밍 지원</span>
+        <span class="kw">proxy_buffering</span> off;
+        <span class="kw">proxy_read_timeout</span> 300s;
+    }
+}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="production">프로덕션 배포</h2>
+
+  <h3 id="prod-dockerfile">프로덕션 Dockerfile 최적화</h3>
+
+  <h4>멀티 스테이지 빌드</h4>
+
+<pre><code><span class="cmt"># ========== Stage 1: Build ==========</span>
+<span class="kw">FROM</span> node:20-alpine <span class="kw">AS</span> builder
+
+<span class="kw">WORKDIR</span> /app
+
+<span class="cmt"># 의존성 설치</span>
+<span class="kw">COPY</span> package*.json ./
+<span class="kw">RUN</span> npm ci
+
+<span class="cmt"># 빌드</span>
+<span class="kw">COPY</span> . .
+<span class="kw">RUN</span> npm run build
+
+<span class="cmt"># ========== Stage 2: Production ==========</span>
+<span class="kw">FROM</span> node:20-alpine
+
+<span class="kw">WORKDIR</span> /app
+
+<span class="cmt"># 프로덕션 의존성만 설치</span>
+<span class="kw">COPY</span> package*.json ./
+<span class="kw">RUN</span> npm ci --only=production
+
+<span class="cmt"># 빌드 결과물만 복사</span>
+<span class="kw">COPY</span> --from=builder /app/dist ./dist
+
+<span class="cmt"># 보안: 비root 사용자</span>
+<span class="kw">RUN</span> addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+<span class="kw">USER</span> nodejs
+
+<span class="cmt"># 헬스체크</span>
+<span class="kw">HEALTHCHECK</span> --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node healthcheck.js
+
+<span class="kw">EXPOSE</span> 3000
+
+<span class="kw">CMD</span> [<span class="str">"node"</span>, <span class="str">"dist/server.js"</span>]</code></pre>
+
+  <h3 id="prod-compose">프로덕션 Compose 설정</h3>
+
+<pre><code><span class="cmt"># docker-compose.prod.yml</span>
+<span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="kw">app</span>:
+    <span class="kw">build</span>:
+      <span class="kw">context</span>: .
+      <span class="kw">dockerfile</span>: Dockerfile
+      <span class="kw">target</span>: production
+    <span class="kw">restart</span>: always
+    <span class="kw">deploy</span>:
+      <span class="kw">replicas</span>: 3
+      <span class="kw">update_config</span>:
+        <span class="kw">parallelism</span>: 1
+        <span class="kw">delay</span>: 10s
+      <span class="kw">restart_policy</span>:
+        <span class="kw">condition</span>: on-failure
+        <span class="kw">max_attempts</span>: 3
+    <span class="kw">environment</span>:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+    <span class="kw">logging</span>:
+      <span class="kw">driver</span>: <span class="str">"json-file"</span>
+      <span class="kw">options</span>:
+        <span class="kw">max-size</span>: <span class="str">"10m"</span>
+        <span class="kw">max-file</span>: <span class="str">"3"</span></code></pre>
+
+  <h3 id="prod-security">보안 강화</h3>
+
+  <h4>1. 시크릿 관리 (Docker Swarm)</h4>
+
+<pre><code><span class="cmt"># 시크릿 생성</span>
+echo <span class="str">"sk-ant-api03-..."</span> | docker secret create anthropic_key -
+
+<span class="cmt"># docker-compose.yml</span>
+<span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="kw">app</span>:
+    <span class="kw">image</span>: myapp:latest
+    <span class="kw">secrets</span>:
+      - anthropic_key
+    <span class="kw">environment</span>:
+      - ANTHROPIC_API_KEY_FILE=/run/secrets/anthropic_key
+
+<span class="kw">secrets</span>:
+  <span class="kw">anthropic_key</span>:
+    <span class="kw">external</span>: <span class="kw">true</span></code></pre>
+
+  <h4>2. 읽기 전용 파일 시스템</h4>
+
+<pre><code><span class="kw">services</span>:
+  <span class="kw">app</span>:
+    <span class="kw">read_only</span>: <span class="kw">true</span>
+    <span class="kw">tmpfs</span>:
+      - /tmp
+      - /var/run</code></pre>
+
+  <h4>3. 리소스 제한</h4>
+
+<pre><code><span class="kw">services</span>:
+  <span class="kw">app</span>:
+    <span class="kw">deploy</span>:
+      <span class="kw">resources</span>:
+        <span class="kw">limits</span>:
+          <span class="kw">cpus</span>: <span class="str">'2.0'</span>
+          <span class="kw">memory</span>: 4G
+        <span class="kw">reservations</span>:
+          <span class="kw">cpus</span>: <span class="str">'1.0'</span>
+          <span class="kw">memory</span>: 2G</code></pre>
+
+  <h3 id="prod-monitoring">모니터링</h3>
+
+<pre><code><span class="cmt"># docker-compose.monitoring.yml</span>
+<span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="kw">prometheus</span>:
+    <span class="kw">image</span>: prom/prometheus:latest
+    <span class="kw">volumes</span>:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    <span class="kw">ports</span>:
+      - <span class="str">"9090:9090"</span>
+
+  <span class="kw">grafana</span>:
+    <span class="kw">image</span>: grafana/grafana:latest
+    <span class="kw">ports</span>:
+      - <span class="str">"3001:3000"</span>
+    <span class="kw">environment</span>:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    <span class="kw">volumes</span>:
+      - grafana-data:/var/lib/grafana
+
+  <span class="kw">cadvisor</span>:
+    <span class="kw">image</span>: gcr.io/cadvisor/cadvisor:latest
+    <span class="kw">volumes</span>:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    <span class="kw">ports</span>:
+      - <span class="str">"8080:8080"</span>
+
+<span class="kw">volumes</span>:
+  <span class="kw">prometheus-data</span>:
+  <span class="kw">grafana-data</span>:</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="troubleshooting">문제 해결</h2>
+
+  <h3 id="trouble-common">일반적인 문제</h3>
+
+  <h4>1. 컨테이너가 시작되지 않음</h4>
+
+<pre><code><span class="cmt"># 로그 확인</span>
+docker compose logs app
+
+<span class="cmt"># 컨테이너 상태 확인</span>
+docker ps -a
+
+<span class="cmt"># 이미지 재빌드</span>
+docker compose build --no-cache app
+docker compose up app</code></pre>
+
+  <h4>2. 볼륨 권한 문제</h4>
+
+<pre><code><span class="cmt"># 볼륨 소유권 변경</span>
+docker run --rm \
+  -v ollama-data:/data \
+  alpine chown -R 1000:1000 /data
+
+<span class="cmt"># Dockerfile에서 USER 지정</span>
+<span class="kw">RUN</span> chown -R appuser:appuser /app
+<span class="kw">USER</span> appuser</code></pre>
+
+  <h4>3. GPU가 인식되지 않음</h4>
+
+<pre><code><span class="cmt"># NVIDIA Docker Runtime 확인</span>
+docker run --rm --gpus all nvidia/cuda:12.3.0-base-ubuntu22.04 nvidia-smi
+
+<span class="cmt"># 데몬 설정 확인</span>
+cat /etc/docker/daemon.json
+
+<span class="cmt"># Docker 재시작</span>
+sudo systemctl restart docker</code></pre>
+
+  <h4>4. 네트워크 연결 문제</h4>
+
+<pre><code><span class="cmt"># 컨테이너 간 핑 테스트</span>
+docker compose exec app ping ollama
+
+<span class="cmt"># DNS 확인</span>
+docker compose exec app nslookup ollama
+
+<span class="cmt"># 네트워크 재생성</span>
+docker compose down
+docker network prune
+docker compose up -d</code></pre>
+
+  <h3 id="trouble-performance">성능 최적화</h3>
+
+<pre><code><span class="cmt"># 1. 빌드 캐시 활용</span>
+<span class="cmt"># Dockerfile에서 자주 변경되지 않는 것을 먼저 COPY</span>
+<span class="kw">COPY</span> package*.json ./
+<span class="kw">RUN</span> npm install
+<span class="kw">COPY</span> . .
+
+<span class="cmt"># 2. .dockerignore 사용</span>
+<span class="cmt"># .dockerignore</span>
+node_modules
+.git
+.env
+*.log
+
+<span class="cmt"># 3. 멀티 스테이지 빌드로 이미지 크기 축소</span>
+<span class="cmt"># 최종 이미지에 필요한 파일만 포함</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">베스트 프랙티스</h2>
+
+  <ul>
+    <li><strong>작은 베이스 이미지</strong>: alpine 또는 slim 사용</li>
+    <li><strong>멀티 스테이지 빌드</strong>: 빌드 의존성 제외</li>
+    <li><strong>.dockerignore</strong>: 불필요한 파일 제외</li>
+    <li><strong>레이어 최적화</strong>: RUN 명령어 결합</li>
+    <li><strong>캐시 활용</strong>: 자주 변경되는 것을 마지막에 COPY</li>
+    <li><strong>비root 사용자</strong>: 보안 강화</li>
+    <li><strong>헬스체크</strong>: 컨테이너 상태 모니터링</li>
+    <li><strong>로깅</strong>: 로그 로테이션 설정</li>
+    <li><strong>리소스 제한</strong>: CPU/메모리 제한</li>
+    <li><strong>시크릿 관리</strong>: 환경 변수 또는 Secrets 사용</li>
+  </ul>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🚀 다음 단계</div>
+    <ul>
+      <li><a href="ci-cd-llm.html">CI/CD & LLM</a> - Docker 이미지 자동 빌드 및 배포</li>
+      <li><a href="monitoring-costs.html">비용 모니터링</a> - 컨테이너 리소스 사용량 추적</li>
+      <li><a href="dev-environment.html">LLM 개발 환경</a> - 로컬 개발 환경 설정</li>
+    </ul>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Ollama 도구 연동 - Continue, Aider, LangChain, Open WebUI">
+<meta property="og:description" content="Ollama를 VS Code, LangChain, LlamaIndex, API와 통합하여 강력한 AI 개발 환경 구축">
+<meta property="og:url" content="https://minzkn.com/claude/pages/ollama-integration.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Ollama 통합 가이드. Continue.dev, Aider, LangChain, LlamaIndex, Open WebUI 연동 방법.">
+<meta name="keywords" content="ollama 연동, continue dev, aider, langchain, llamaindex, open webui, api integration">
+<meta name="author" content="MINZKN">
+<title>Ollama 도구 연동 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Ollama 도구 연동</h1>
+<p class="lead">로컬 LLM을 개발 도구와 통합하여 완전한 AI 코딩 환경 구축하기</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">🚀 빠른 시작</div>
+  <p><strong>가장 인기 있는 통합 3가지:</strong></p>
+  <ol>
+    <li><strong>Continue.dev</strong> - VS Code에서 GitHub Copilot처럼 사용 (무료)</li>
+    <li><strong>Aider</strong> - CLI 기반 AI 페어 프로그래밍</li>
+    <li><strong>Open WebUI</strong> - ChatGPT 스타일 웹 인터페이스</li>
+  </ol>
+  <p>이 3가지만 설정해도 90% 작업을 로컬에서 무료로 처리!</p>
+</div>
+
+<section class="content-section">
+  <h2 id="continue-dev">Continue.dev + Ollama (VS Code)</h2>
+
+  <p>
+    <strong>Continue</strong>는 VS Code/JetBrains에서 GitHub Copilot처럼 동작하는 오픈소스 AI 코딩 어시스턴트입니다.
+    Ollama와 완벽하게 통합되어 무료로 무제한 사용할 수 있습니다.
+  </p>
+
+  <h3 id="continue-install">설치</h3>
+
+  <pre><code><span class="cmt"># 1. VS Code 확장 마켓플레이스에서 설치</span>
+<span class="str">1. VS Code 열기</span>
+<span class="str">2. Extensions (Ctrl+Shift+X)</span>
+<span class="str">3. "Continue" 검색</span>
+<span class="str">4. Install 클릭</span>
+
+<span class="cmt"># 또는 CLI로 설치</span>
+code --install-extension continue.continue</code></pre>
+
+  <h3 id="continue-config">설정</h3>
+
+  <p>Continue 사이드바에서 설정 파일을 열거나 <code>~/.continue/config.json</code> 직접 편집:</p>
+
+  <pre><code><span class="cmt">// ~/.continue/config.json</span>
+{
+  <span class="str">"models"</span>: [
+    {
+      <span class="str">"title"</span>: <span class="str">"CodeLlama 13B"</span>,
+      <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+      <span class="str">"model"</span>: <span class="str">"codellama:13b"</span>,
+      <span class="str">"apiBase"</span>: <span class="str">"http://localhost:11434"</span>
+    },
+    {
+      <span class="str">"title"</span>: <span class="str">"Llama 3.2"</span>,
+      <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+      <span class="str">"model"</span>: <span class="str">"llama3.2"</span>
+    }
+  ],
+  <span class="str">"tabAutocompleteModel"</span>: {
+    <span class="str">"title"</span>: <span class="str">"Starcoder2 3B"</span>,
+    <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+    <span class="str">"model"</span>: <span class="str">"starcoder2:3b"</span>
+  },
+  <span class="str">"embeddingsProvider"</span>: {
+    <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+    <span class="str">"model"</span>: <span class="str">"nomic-embed-text"</span>
+  }
+}</code></pre>
+
+  <h3 id="continue-usage">사용법</h3>
+
+  <h4>1. 인라인 코드 생성 (Ctrl+I)</h4>
+
+  <pre><code><span class="cmt"># 코드 편집기에서 Ctrl+I 누르고 요청</span>
+<span class="str">"피보나치 수열 생성 함수를 재귀로 작성해줘"</span>
+
+<span class="cmt"># Continue가 자동으로 코드 생성 및 삽입</span>
+<span class="kw">def</span> <span class="fn">fibonacci</span>(n):
+    <span class="kw">if</span> n &lt;= <span class="num">1</span>:
+        <span class="kw">return</span> n
+    <span class="kw">return</span> fibonacci(n-<span class="num">1</span>) + fibonacci(n-<span class="num">2</span>)</code></pre>
+
+  <h4>2. 코드 설명 (Ctrl+L)</h4>
+
+  <pre><code><span class="cmt"># 코드 블록 선택 후 Ctrl+L</span>
+<span class="str">"이 코드가 무엇을 하는지 설명해줘"</span>
+
+<span class="cmt"># 사이드바에 설명 표시</span></code></pre>
+
+  <h4>3. 리팩토링</h4>
+
+  <pre><code><span class="cmt"># 코드 선택 후 Ctrl+I</span>
+<span class="str">"이 함수를 타입 힌트를 추가하고 docstring 작성해줘"</span>
+
+<span class="kw">def</span> <span class="fn">fibonacci</span>(n: <span class="type">int</span>) -&gt; <span class="type">int</span>:
+    <span class="str">"""
+    Calculate the nth Fibonacci number recursively.
+
+    Args:
+        n: The position in the Fibonacci sequence (0-indexed)
+
+    Returns:
+        The nth Fibonacci number
+    """</span>
+    <span class="kw">if</span> n &lt;= <span class="num">1</span>:
+        <span class="kw">return</span> n
+    <span class="kw">return</span> fibonacci(n-<span class="num">1</span>) + fibonacci(n-<span class="num">2</span>)</code></pre>
+
+  <h4>4. 탭 자동완성 (실험적)</h4>
+
+  <pre><code><span class="cmt"># 코드 작성 중 탭 눌러 자동완성</span>
+<span class="kw">def</span> <span class="fn">sort_list</span>(items):
+    <span class="cmt"># Tab 누르면 자동으로 제안</span>
+    <span class="kw">return</span> sorted(items)  <span class="cmt"># ← Continue가 생성</span></code></pre>
+
+  <h3 id="continue-tips">팁 & 트릭</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 Continue 최적화</div>
+    <ul>
+      <li><strong>코드 생성</strong>: CodeLlama 13B 또는 Qwen2.5-Coder 14B</li>
+      <li><strong>대화/설명</strong>: Llama 3.2 7B 또는 Mistral 7B</li>
+      <li><strong>자동완성</strong>: Starcoder2 3B (빠름, 가벼움)</li>
+      <li><strong>임베딩</strong>: nomic-embed-text (코드베이스 검색용)</li>
+    </ul>
+  </div>
+
+  <pre><code><span class="cmt"># 모델 미리 다운로드</span>
+ollama pull codellama:13b
+ollama pull llama3.2
+ollama pull starcoder2:3b
+ollama pull nomic-embed-text</code></pre>
+
+  <h3 id="continue-keyboard">키보드 단축키</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>단축키</th>
+        <th>기능</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>Ctrl+I</code></td>
+        <td>인라인 편집</td>
+        <td>선택 영역에 코드 생성/수정</td>
+      </tr>
+      <tr>
+        <td><code>Ctrl+L</code></td>
+        <td>채팅 열기</td>
+        <td>사이드바에서 대화 시작</td>
+      </tr>
+      <tr>
+        <td><code>Tab</code></td>
+        <td>자동완성</td>
+        <td>제안 수락 (설정 필요)</td>
+      </tr>
+      <tr>
+        <td><code>Ctrl+Shift+R</code></td>
+        <td>컨텍스트 추가</td>
+        <td>현재 파일을 컨텍스트에 추가</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="aider">Aider + Ollama (CLI)</h2>
+
+  <p>
+    <strong>Aider</strong>는 터미널에서 동작하는 AI 페어 프로그래밍 도구로, Git과 완벽하게 통합됩니다.
+    코드 변경사항을 자동으로 커밋하고, 여러 파일을 동시에 수정할 수 있습니다.
+  </p>
+
+  <h3 id="aider-install">설치</h3>
+
+  <pre><code><span class="cmt"># Python 3.8+ 필요</span>
+pip install aider-chat
+
+<span class="cmt"># 또는 pipx로 격리 설치</span>
+pipx install aider-chat
+
+<span class="cmt"># 설치 확인</span>
+aider --version
+<span class="cmt"># aider version 0.x.x</span></code></pre>
+
+  <h3 id="aider-config">Ollama 연동 설정</h3>
+
+  <pre><code><span class="cmt"># 기본 사용 (모델 지정)</span>
+aider --model ollama/codellama:13b
+
+<span class="cmt"># 환경 변수로 기본 모델 설정</span>
+<span class="kw">export</span> AIDER_MODEL=ollama/llama3.2
+<span class="kw">export</span> OLLAMA_API_BASE=http://localhost:11434
+
+<span class="cmt"># ~/.aider.conf.yml 생성 (영구 설정)</span>
+cat &gt; ~/.aider.conf.yml &lt;&lt;EOF
+model: ollama/codellama:13b
+edit-format: whole
+auto-commits: true
+dirty-commits: false
+EOF</code></pre>
+
+  <h3 id="aider-usage">사용법</h3>
+
+  <h4>1. 프로젝트에서 Aider 시작</h4>
+
+  <pre><code><span class="cmt"># Git 저장소 루트에서 실행</span>
+cd ~/my-project
+aider --model ollama/codellama:13b
+
+<span class="cmt"># 특정 파일 지정</span>
+aider src/main.py tests/test_main.py --model ollama/llama3.2
+
+<span class="cmt"># 모든 Python 파일</span>
+aider src/*.py</code></pre>
+
+  <h4>2. 코드 생성</h4>
+
+  <pre><code><span class="cmt"># Aider 프롬프트</span>
+<span class="str">&gt; main.py에 FastAPI 앱을 생성하고, /health 엔드포인트를 추가해줘</span>
+
+<span class="cmt"># Aider가 자동으로 코드 생성 및 파일 작성</span>
+<span class="cmt"># main.py</span>
+<span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+
+app = FastAPI()
+
+<span class="pp">@app.get</span>(<span class="str">"/health"</span>)
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">health_check</span>():
+    <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"healthy"</span>}
+
+<span class="cmt"># Aider가 자동으로 Git 커밋</span>
+Applied edit to main.py
+Commit 3a8f7e1 Add FastAPI health endpoint</code></pre>
+
+  <h4>3. 버그 수정</h4>
+
+  <pre><code><span class="str">&gt; user.py의 validate_email 함수에 버그가 있어. 잘못된 이메일을 허용하고 있어.</span>
+
+<span class="cmt"># Aider가 코드 분석 후 수정</span>
+I found the issue. The regex pattern is missing the @ symbol check.
+
+<span class="cmt"># 수정된 코드</span>
+<span class="kw">import</span> re
+
+<span class="kw">def</span> <span class="fn">validate_email</span>(email: <span class="type">str</span>) -&gt; <span class="type">bool</span>:
+    pattern = <span class="str">r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'</span>
+    <span class="kw">return</span> bool(re.match(pattern, email))
+
+Applied edit to user.py
+Commit b4c2d9f Fix email validation regex</code></pre>
+
+  <h4>4. 리팩토링</h4>
+
+  <pre><code><span class="str">&gt; database.py의 모든 함수에 타입 힌트와 docstring을 추가하고, 에러 핸들링을 개선해줘</span>
+
+<span class="cmt"># 여러 함수 동시 리팩토링</span>
+Applied edit to database.py
+- Added type hints to 5 functions
+- Added docstrings following Google style
+- Added proper exception handling
+Commit 7e1a5c3 Refactor database.py with type hints and docs</code></pre>
+
+  <h3 id="aider-commands">Aider 명령어</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>명령어</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>/add &lt;file&gt;</code></td>
+        <td>파일을 채팅에 추가</td>
+      </tr>
+      <tr>
+        <td><code>/drop &lt;file&gt;</code></td>
+        <td>파일을 채팅에서 제거</td>
+      </tr>
+      <tr>
+        <td><code>/ls</code></td>
+        <td>현재 채팅에 포함된 파일 목록</td>
+      </tr>
+      <tr>
+        <td><code>/run &lt;cmd&gt;</code></td>
+        <td>쉘 명령어 실행</td>
+      </tr>
+      <tr>
+        <td><code>/undo</code></td>
+        <td>마지막 변경 취소</td>
+      </tr>
+      <tr>
+        <td><code>/commit</code></td>
+        <td>수동 커밋</td>
+      </tr>
+      <tr>
+        <td><code>/diff</code></td>
+        <td>변경사항 확인</td>
+      </tr>
+      <tr>
+        <td><code>/help</code></td>
+        <td>도움말</td>
+      </tr>
+      <tr>
+        <td><code>/exit</code></td>
+        <td>종료</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="aider-advanced">고급 사용</h3>
+
+  <h4>전체 코드베이스 검색</h4>
+
+  <pre><code><span class="cmt"># 저장소 맵 활성화 (--map-tokens 옵션)</span>
+aider --model ollama/llama3.2 --map-tokens 2048
+
+<span class="str">&gt; 인증 관련 모든 함수를 찾아서 JWT 토큰 검증 로직을 추가해줘</span>
+
+<span class="cmt"># Aider가 전체 코드베이스 검색 후 관련 파일 자동 수정</span></code></pre>
+
+  <h4>테스트 자동 생성</h4>
+
+  <pre><code>aider src/calculator.py
+
+<span class="str">&gt; calculator.py의 모든 함수에 대한 pytest 테스트를 tests/test_calculator.py에 생성해줘</span>
+
+Applied edit to tests/test_calculator.py
+Created 8 test functions
+Commit a3d8e4f Add comprehensive tests for calculator</code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 Aider 사용 팁</div>
+    <ul>
+      <li><strong>--watch-files</strong>: 파일 변경 감지 자동 적용</li>
+      <li><strong>--auto-commits false</strong>: 수동 커밋 제어</li>
+      <li><strong>--edit-format whole</strong>: 전체 파일 편집 모드 (작은 파일)</li>
+      <li><strong>--edit-format diff</strong>: diff 패치 모드 (큰 파일, 기본값)</li>
+      <li><strong>--message "..."</strong>: 대화 없이 단일 명령 실행</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="open-webui">Open WebUI (ChatGPT 스타일 인터페이스)</h2>
+
+  <p>
+    <strong>Open WebUI</strong>는 Ollama를 위한 ChatGPT 스타일 웹 인터페이스입니다.
+    브라우저에서 대화, 문서 업로드, 이미지 생성 등 모든 기능을 제공합니다.
+  </p>
+
+  <h3 id="webui-install">설치</h3>
+
+  <h4>Docker 사용 (권장)</h4>
+
+  <pre><code><span class="cmt"># Ollama와 함께 실행 (CPU)</span>
+docker run -d -p 3000:8080 \
+  -v open-webui:/app/backend/data \
+  -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+  --name open-webui \
+  ghcr.io/open-webui/open-webui:main
+
+<span class="cmt"># GPU 지원 (NVIDIA)</span>
+docker run -d -p 3000:8080 \
+  --gpus all \
+  -v open-webui:/app/backend/data \
+  -v ollama:/root/.ollama \
+  -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+  --name open-webui \
+  ghcr.io/open-webui/open-webui:cuda
+
+<span class="cmt"># 브라우저에서 접속</span>
+<span class="str">http://localhost:3000</span></code></pre>
+
+  <h4>Docker Compose (추천)</h4>
+
+  <pre><code><span class="cmt"># docker-compose.yml</span>
+<span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="kw">ollama</span>:
+    <span class="kw">image</span>: ollama/ollama:latest
+    <span class="kw">container_name</span>: ollama
+    <span class="kw">ports</span>:
+      - <span class="str">"11434:11434"</span>
+    <span class="kw">volumes</span>:
+      - ollama:/root/.ollama
+    <span class="kw">deploy</span>:
+      <span class="kw">resources</span>:
+        <span class="kw">reservations</span>:
+          <span class="kw">devices</span>:
+            - <span class="kw">driver</span>: nvidia
+              <span class="kw">count</span>: 1
+              <span class="kw">capabilities</span>: [gpu]
+
+  <span class="kw">open-webui</span>:
+    <span class="kw">image</span>: ghcr.io/open-webui/open-webui:main
+    <span class="kw">container_name</span>: open-webui
+    <span class="kw">ports</span>:
+      - <span class="str">"3000:8080"</span>
+    <span class="kw">volumes</span>:
+      - open-webui:/app/backend/data
+    <span class="kw">environment</span>:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    <span class="kw">depends_on</span>:
+      - ollama
+
+<span class="kw">volumes</span>:
+  <span class="kw">ollama</span>:
+  <span class="kw">open-webui</span>:</code></pre>
+
+  <pre><code><span class="cmt"># 실행</span>
+docker-compose up -d
+
+<span class="cmt"># 로그 확인</span>
+docker-compose logs -f open-webui</code></pre>
+
+  <h3 id="webui-features">주요 기능</h3>
+
+  <h4>1. 대화 관리</h4>
+  <ul>
+    <li>여러 채팅 세션 동시 관리</li>
+    <li>대화 히스토리 저장 및 검색</li>
+    <li>대화 내보내기 (Markdown, JSON)</li>
+    <li>폴더로 채팅 구조화</li>
+  </ul>
+
+  <h4>2. 문서 업로드 & RAG</h4>
+
+  <pre><code><span class="cmt"># 문서 업로드하여 질문</span>
+<span class="str">1. 채팅에서 파일 아이콘 클릭</span>
+<span class="str">2. PDF, TXT, DOCX, Markdown 업로드</span>
+<span class="str">3. "이 문서의 주요 내용을 요약해줘" 질문</span>
+
+<span class="cmt"># 지원 형식</span>
+- PDF (.pdf)
+- Word (.docx)
+- Text (.txt, .md)
+- 코드 (.py, .js, .java, etc.)</code></pre>
+
+  <h4>3. 이미지 생성</h4>
+
+  <pre><code><span class="cmt"># Stable Diffusion 통합 (선택사항)</span>
+<span class="str">1. Settings → Images → Enable Image Generation</span>
+<span class="str">2. AUTOMATIC1111 또는 ComfyUI API 연결</span>
+<span class="str">3. 채팅에서 "고양이 그림 생성해줘" 요청</span></code></pre>
+
+  <h4>4. 프롬프트 템플릿</h4>
+
+  <pre><code><span class="cmt"># 자주 사용하는 프롬프트 저장</span>
+<span class="str">Settings → Prompts → New Prompt</span>
+
+<span class="cmt"># 예시 템플릿</span>
+<span class="kw">Name</span>: Code Review
+<span class="kw">Prompt</span>: <span class="str">"""
+당신은 시니어 개발자입니다. 다음 코드를 리뷰하고 개선점을 제안해주세요:
+- 버그 가능성
+- 성능 최적화
+- 코드 가독성
+- 보안 이슈
+
+코드:
+{{CODE}}
+"""</span></code></pre>
+
+  <h3 id="webui-admin">관리 기능</h3>
+
+  <h4>사용자 관리</h4>
+
+  <pre><code><span class="cmt"># 첫 번째 사용자 = 관리자</span>
+<span class="str">1. http://localhost:3000 접속</span>
+<span class="str">2. 계정 생성 (첫 사용자는 자동 admin)</span>
+<span class="str">3. Settings → Admin Panel → Users</span>
+
+<span class="cmt"># 새 사용자 추가</span>
+- 이메일, 비밀번호 설정
+- 권한 부여 (Admin/User)
+- 모델 접근 제한</code></pre>
+
+  <h4>모델 관리</h4>
+
+  <pre><code><span class="cmt"># 웹 UI에서 모델 다운로드</span>
+<span class="str">Settings → Models → Pull a model from Ollama.com</span>
+llama3.2
+codellama:13b
+mistral
+
+<span class="cmt"># 모델 삭제</span>
+<span class="str">Settings → Models → Delete icon</span></code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 Open WebUI 추천 플러그인</div>
+    <ul>
+      <li><strong>Web Search</strong>: SearxNG 통합 (실시간 검색)</li>
+      <li><strong>Wolfram Alpha</strong>: 수학 계산</li>
+      <li><strong>Python Interpreter</strong>: 코드 실행</li>
+      <li><strong>Wikipedia</strong>: 백과사전 검색</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="langchain">LangChain + Ollama (Python)</h2>
+
+  <p>
+    <strong>LangChain</strong>은 LLM 기반 애플리케이션 개발 프레임워크입니다.
+    Ollama와 통합하여 체인, 에이전트, RAG 파이프라인을 구축할 수 있습니다.
+  </p>
+
+  <h3 id="langchain-install">설치</h3>
+
+  <pre><code><span class="cmt"># LangChain 및 Ollama 통합 설치</span>
+pip install langchain langchain-community
+
+<span class="cmt"># 또는 전체 패키지</span>
+pip install langchain langchain-community langchain-ollama</code></pre>
+
+  <h3 id="langchain-basic">기본 사용</h3>
+
+  <h4>1. 간단한 LLM 호출</h4>
+
+  <pre><code><span class="kw">from</span> langchain_community.llms <span class="kw">import</span> Ollama
+
+<span class="cmt"># Ollama LLM 초기화</span>
+llm = Ollama(model=<span class="str">"llama3.2"</span>)
+
+<span class="cmt"># 텍스트 생성</span>
+response = llm.invoke(<span class="str">"파이썬으로 퀵소트 알고리즘을 작성해줘"</span>)
+<span class="kw">print</span>(response)</code></pre>
+
+  <h4>2. 스트리밍 응답</h4>
+
+  <pre><code><span class="kw">from</span> langchain_community.llms <span class="kw">import</span> Ollama
+
+llm = Ollama(model=<span class="str">"llama3.2"</span>)
+
+<span class="cmt"># 스트리밍으로 응답 받기</span>
+<span class="kw">for</span> chunk <span class="kw">in</span> llm.stream(<span class="str">"긴 이야기를 들려줘"</span>):
+    <span class="kw">print</span>(chunk, end=<span class="str">""</span>, flush=<span class="kw">True</span>)</code></pre>
+
+  <h4>3. 채팅 모델</h4>
+
+  <pre><code><span class="kw">from</span> langchain_community.chat_models <span class="kw">import</span> ChatOllama
+<span class="kw">from</span> langchain.schema <span class="kw">import</span> HumanMessage, SystemMessage
+
+chat = ChatOllama(model=<span class="str">"llama3.2"</span>)
+
+messages = [
+    SystemMessage(content=<span class="str">"당신은 파이썬 전문가입니다."</span>),
+    HumanMessage(content=<span class="str">"FastAPI로 REST API를 만드는 방법을 알려줘"</span>)
+]
+
+response = chat.invoke(messages)
+<span class="kw">print</span>(response.content)</code></pre>
+
+  <h3 id="langchain-chains">체인 (Chains)</h3>
+
+  <h4>프롬프트 템플릿</h4>
+
+  <pre><code><span class="kw">from</span> langchain_community.llms <span class="kw">import</span> Ollama
+<span class="kw">from</span> langchain.prompts <span class="kw">import</span> PromptTemplate
+<span class="kw">from</span> langchain.chains <span class="kw">import</span> LLMChain
+
+llm = Ollama(model=<span class="str">"codellama:13b"</span>)
+
+<span class="cmt"># 프롬프트 템플릿 정의</span>
+template = <span class="str">"""당신은 {language} 전문가입니다.
+다음 작업을 수행하는 코드를 작성해주세요:
+
+작업: {task}
+
+코드:"""</span>
+
+prompt = PromptTemplate(
+    input_variables=[<span class="str">"language"</span>, <span class="str">"task"</span>],
+    template=template
+)
+
+<span class="cmt"># 체인 생성</span>
+chain = LLMChain(llm=llm, prompt=prompt)
+
+<span class="cmt"># 실행</span>
+result = chain.run(
+    language=<span class="str">"Python"</span>,
+    task=<span class="str">"CSV 파일을 읽고 Pandas DataFrame으로 변환"</span>
+)
+<span class="kw">print</span>(result)</code></pre>
+
+  <h4>순차 체인</h4>
+
+  <pre><code><span class="kw">from</span> langchain.chains <span class="kw">import</span> SimpleSequentialChain, LLMChain
+<span class="kw">from</span> langchain.prompts <span class="kw">import</span> PromptTemplate
+<span class="kw">from</span> langchain_community.llms <span class="kw">import</span> Ollama
+
+llm = Ollama(model=<span class="str">"llama3.2"</span>)
+
+<span class="cmt"># 체인 1: 아이디어 생성</span>
+template1 = <span class="str">"웹 애플리케이션 아이디어를 한 문장으로 제안해줘: {topic}"</span>
+prompt1 = PromptTemplate(input_variables=[<span class="str">"topic"</span>], template=template1)
+chain1 = LLMChain(llm=llm, prompt=prompt1)
+
+<span class="cmt"># 체인 2: 기술 스택 제안</span>
+template2 = <span class="str">"이 아이디어에 적합한 기술 스택을 추천해줘: {idea}"</span>
+prompt2 = PromptTemplate(input_variables=[<span class="str">"idea"</span>], template=template2)
+chain2 = LLMChain(llm=llm, prompt=prompt2)
+
+<span class="cmt"># 순차 실행</span>
+overall_chain = SimpleSequentialChain(chains=[chain1, chain2])
+result = overall_chain.run(<span class="str">"AI 기반 학습 플랫폼"</span>)
+<span class="kw">print</span>(result)</code></pre>
+
+  <h3 id="langchain-rag">RAG (Retrieval-Augmented Generation)</h3>
+
+  <pre><code><span class="kw">from</span> langchain_community.llms <span class="kw">import</span> Ollama
+<span class="kw">from</span> langchain_community.embeddings <span class="kw">import</span> OllamaEmbeddings
+<span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> Chroma
+<span class="kw">from</span> langchain.text_splitter <span class="kw">import</span> RecursiveCharacterTextSplitter
+<span class="kw">from</span> langchain.chains <span class="kw">import</span> RetrievalQA
+<span class="kw">from</span> langchain_community.document_loaders <span class="kw">import</span> TextLoader
+
+<span class="cmt"># 1. 문서 로드</span>
+loader = TextLoader(<span class="str">"company_docs.txt"</span>)
+documents = loader.load()
+
+<span class="cmt"># 2. 텍스트 분할</span>
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=<span class="num">1000</span>,
+    chunk_overlap=<span class="num">200</span>
+)
+texts = text_splitter.split_documents(documents)
+
+<span class="cmt"># 3. 임베딩 생성 (Ollama)</span>
+embeddings = OllamaEmbeddings(model=<span class="str">"nomic-embed-text"</span>)
+
+<span class="cmt"># 4. 벡터 DB 생성</span>
+vectorstore = Chroma.from_documents(
+    documents=texts,
+    embedding=embeddings,
+    persist_directory=<span class="str">"./chroma_db"</span>
+)
+
+<span class="cmt"># 5. RAG 체인 생성</span>
+llm = Ollama(model=<span class="str">"llama3.2"</span>)
+qa_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    chain_type=<span class="str">"stuff"</span>,
+    retriever=vectorstore.as_retriever(search_kwargs={<span class="str">"k"</span>: <span class="num">3</span>})
+)
+
+<span class="cmt"># 6. 질문</span>
+query = <span class="str">"회사의 휴가 정책은 무엇인가요?"</span>
+result = qa_chain.invoke({<span class="str">"query"</span>: query})
+<span class="kw">print</span>(result[<span class="str">"result"</span>])</code></pre>
+
+  <h3 id="langchain-agents">에이전트</h3>
+
+  <pre><code><span class="kw">from</span> langchain.agents <span class="kw">import</span> initialize_agent, Tool
+<span class="kw">from</span> langchain.agents <span class="kw">import</span> AgentType
+<span class="kw">from</span> langchain_community.llms <span class="kw">import</span> Ollama
+<span class="kw">import</span> requests
+
+<span class="cmt"># 도구 정의</span>
+<span class="kw">def</span> <span class="fn">search_wikipedia</span>(query: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    url = <span class="str">f"https://en.wikipedia.org/api/rest_v1/page/summary/{query}"</span>
+    response = requests.get(url)
+    <span class="kw">if</span> response.status_code == <span class="num">200</span>:
+        <span class="kw">return</span> response.json().get(<span class="str">"extract"</span>, <span class="str">"No results"</span>)
+    <span class="kw">return</span> <span class="str">"Error"</span>
+
+<span class="kw">def</span> <span class="fn">calculate</span>(expression: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    <span class="kw">try</span>:
+        <span class="kw">return</span> str(eval(expression))
+    <span class="kw">except</span>:
+        <span class="kw">return</span> <span class="str">"Invalid expression"</span>
+
+tools = [
+    Tool(
+        name=<span class="str">"Wikipedia"</span>,
+        func=search_wikipedia,
+        description=<span class="str">"위키피디아에서 정보 검색"</span>
+    ),
+    Tool(
+        name=<span class="str">"Calculator"</span>,
+        func=calculate,
+        description=<span class="str">"수학 계산 수행"</span>
+    )
+]
+
+<span class="cmt"># 에이전트 초기화</span>
+llm = Ollama(model=<span class="str">"llama3.2"</span>, temperature=<span class="num">0</span>)
+agent = initialize_agent(
+    tools,
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=<span class="kw">True</span>
+)
+
+<span class="cmt"># 실행</span>
+result = agent.run(<span class="str">"파이썬이 언제 만들어졌는지 찾고, 현재 연도에서 빼서 나이를 계산해줘"</span>)
+<span class="kw">print</span>(result)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="llamaindex">LlamaIndex + Ollama (RAG)</h2>
+
+  <p>
+    <strong>LlamaIndex</strong>는 RAG(검색 증강 생성) 전문 프레임워크입니다.
+    대용량 문서, 데이터베이스, API와 LLM을 연결하여 지능형 질의응답 시스템을 구축합니다.
+  </p>
+
+  <h3 id="llamaindex-install">설치</h3>
+
+  <pre><code><span class="cmt"># LlamaIndex 및 Ollama 통합</span>
+pip install llama-index llama-index-llms-ollama llama-index-embeddings-ollama</code></pre>
+
+  <h3 id="llamaindex-basic">기본 RAG 파이프라인</h3>
+
+  <pre><code><span class="kw">from</span> llama_index.core <span class="kw">import</span> VectorStoreIndex, SimpleDirectoryReader, Settings
+<span class="kw">from</span> llama_index.llms.ollama <span class="kw">import</span> Ollama
+<span class="kw">from</span> llama_index.embeddings.ollama <span class="kw">import</span> OllamaEmbedding
+
+<span class="cmt"># 1. LLM 및 임베딩 설정</span>
+Settings.llm = Ollama(model=<span class="str">"llama3.2"</span>, request_timeout=<span class="num">120.0</span>)
+Settings.embed_model = OllamaEmbedding(model_name=<span class="str">"nomic-embed-text"</span>)
+
+<span class="cmt"># 2. 문서 로드 (디렉토리 내 모든 파일)</span>
+documents = SimpleDirectoryReader(<span class="str">"./docs"</span>).load_data()
+
+<span class="cmt"># 3. 인덱스 생성</span>
+index = VectorStoreIndex.from_documents(documents)
+
+<span class="cmt"># 4. 쿼리 엔진 생성</span>
+query_engine = index.as_query_engine()
+
+<span class="cmt"># 5. 질문</span>
+response = query_engine.query(<span class="str">"프로젝트의 주요 기능은 무엇인가요?"</span>)
+<span class="kw">print</span>(response)</code></pre>
+
+  <h3 id="llamaindex-advanced">고급 기능</h3>
+
+  <h4>1. 커스텀 프롬프트</h4>
+
+  <pre><code><span class="kw">from</span> llama_index.core <span class="kw">import</span> PromptTemplate
+
+<span class="cmt"># 커스텀 QA 프롬프트</span>
+qa_template = PromptTemplate(
+    <span class="str">"""당신은 기술 문서 전문가입니다.
+
+Context information:
+---------------------
+{context_str}
+---------------------
+
+Question: {query_str}
+
+위 컨텍스트를 바탕으로 정확하고 상세하게 답변해주세요.
+답변을 찾을 수 없다면 "정보 없음"이라고 답하세요."""</span>
+)
+
+query_engine = index.as_query_engine(
+    text_qa_template=qa_template
+)
+
+response = query_engine.query(<span class="str">"API 인증 방법은?"</span>)
+<span class="kw">print</span>(response)</code></pre>
+
+  <h4>2. 채팅 엔진</h4>
+
+  <pre><code><span class="cmt"># 대화 히스토리를 유지하는 채팅 엔진</span>
+chat_engine = index.as_chat_engine()
+
+<span class="cmt"># 대화</span>
+response1 = chat_engine.chat(<span class="str">"FastAPI가 뭐야?"</span>)
+<span class="kw">print</span>(response1)
+
+<span class="cmt"># 이전 대화를 기억</span>
+response2 = chat_engine.chat(<span class="str">"그럼 Flask와 비교하면?"</span>)
+<span class="kw">print</span>(response2)</code></pre>
+
+  <h4>3. 다중 문서 소스</h4>
+
+  <pre><code><span class="kw">from</span> llama_index.core <span class="kw">import</span> SimpleDirectoryReader
+<span class="kw">from</span> llama_index.readers.web <span class="kw">import</span> SimpleWebPageReader
+
+<span class="cmt"># 로컬 파일</span>
+local_docs = SimpleDirectoryReader(<span class="str">"./docs"</span>).load_data()
+
+<span class="cmt"># 웹 페이지</span>
+web_docs = SimpleWebPageReader().load_data([
+    <span class="str">"https://docs.python.org/3/tutorial/"</span>
+])
+
+<span class="cmt"># 합쳐서 인덱스 생성</span>
+all_docs = local_docs + web_docs
+index = VectorStoreIndex.from_documents(all_docs)</code></pre>
+
+  <h4>4. 지속적 저장</h4>
+
+  <pre><code><span class="kw">from</span> llama_index.core <span class="kw">import</span> StorageContext, load_index_from_storage
+
+<span class="cmt"># 인덱스 저장</span>
+index.storage_context.persist(persist_dir=<span class="str">"./storage"</span>)
+
+<span class="cmt"># 나중에 로드</span>
+storage_context = StorageContext.from_defaults(persist_dir=<span class="str">"./storage"</span>)
+loaded_index = load_index_from_storage(storage_context)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="api-integration">API 통합 (Python, JavaScript)</h2>
+
+  <h3 id="python-api">Python API 클라이언트</h3>
+
+  <h4>requests 라이브러리</h4>
+
+  <pre><code><span class="kw">import</span> requests
+<span class="kw">import</span> json
+
+<span class="cmt"># 기본 생성 요청</span>
+<span class="kw">def</span> <span class="fn">generate</span>(prompt: <span class="type">str</span>, model: <span class="type">str</span> = <span class="str">"llama3.2"</span>) -&gt; <span class="type">str</span>:
+    url = <span class="str">"http://localhost:11434/api/generate"</span>
+    payload = {
+        <span class="str">"model"</span>: model,
+        <span class="str">"prompt"</span>: prompt,
+        <span class="str">"stream"</span>: <span class="kw">False</span>
+    }
+
+    response = requests.post(url, json=payload)
+    <span class="kw">return</span> response.json()[<span class="str">"response"</span>]
+
+<span class="cmt"># 사용</span>
+result = generate(<span class="str">"Python으로 Hello World 작성"</span>)
+<span class="kw">print</span>(result)</code></pre>
+
+  <h4>스트리밍</h4>
+
+  <pre><code><span class="kw">import</span> requests
+
+<span class="kw">def</span> <span class="fn">generate_stream</span>(prompt: <span class="type">str</span>):
+    url = <span class="str">"http://localhost:11434/api/generate"</span>
+    payload = {
+        <span class="str">"model"</span>: <span class="str">"llama3.2"</span>,
+        <span class="str">"prompt"</span>: prompt,
+        <span class="str">"stream"</span>: <span class="kw">True</span>
+    }
+
+    <span class="kw">with</span> requests.post(url, json=payload, stream=<span class="kw">True</span>) <span class="kw">as</span> response:
+        <span class="kw">for</span> line <span class="kw">in</span> response.iter_lines():
+            <span class="kw">if</span> line:
+                data = json.loads(line)
+                <span class="kw">if</span> <span class="str">"response"</span> <span class="kw">in</span> data:
+                    <span class="kw">print</span>(data[<span class="str">"response"</span>], end=<span class="str">""</span>, flush=<span class="kw">True</span>)
+
+generate_stream(<span class="str">"긴 이야기를 들려줘"</span>)</code></pre>
+
+  <h4>채팅 API</h4>
+
+  <pre><code><span class="kw">import</span> requests
+
+<span class="kw">def</span> <span class="fn">chat</span>(messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+    url = <span class="str">"http://localhost:11434/api/chat"</span>
+    payload = {
+        <span class="str">"model"</span>: <span class="str">"llama3.2"</span>,
+        <span class="str">"messages"</span>: messages,
+        <span class="str">"stream"</span>: <span class="kw">False</span>
+    }
+
+    response = requests.post(url, json=payload)
+    <span class="kw">return</span> response.json()[<span class="str">"message"</span>][<span class="str">"content"</span>]
+
+<span class="cmt"># 대화</span>
+messages = [
+    {<span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: <span class="str">"당신은 파이썬 전문가입니다."</span>},
+    {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"FastAPI로 REST API 만드는 방법은?"</span>}
+]
+
+response = chat(messages)
+<span class="kw">print</span>(response)</code></pre>
+
+  <h3 id="javascript-api">JavaScript/Node.js API 클라이언트</h3>
+
+  <h4>Fetch API (브라우저)</h4>
+
+  <pre><code><span class="cmt">// 기본 생성</span>
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">generate</span>(prompt) {
+  <span class="kw">const</span> response = <span class="kw">await</span> fetch(<span class="str">'http://localhost:11434/api/generate'</span>, {
+    method: <span class="str">'POST'</span>,
+    headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+    body: JSON.stringify({
+      model: <span class="str">'llama3.2'</span>,
+      prompt: prompt,
+      stream: <span class="kw">false</span>
+    })
+  });
+
+  <span class="kw">const</span> data = <span class="kw">await</span> response.json();
+  <span class="kw">return</span> data.response;
+}
+
+<span class="cmt">// 사용</span>
+generate(<span class="str">'JavaScript로 Hello World'</span>).then(<span class="fn">console.log</span>);</code></pre>
+
+  <h4>스트리밍 (Node.js)</h4>
+
+  <pre><code><span class="kw">const</span> https = require(<span class="str">'https'</span>);
+
+<span class="kw">function</span> <span class="fn">generateStream</span>(prompt) {
+  <span class="kw">const</span> data = JSON.stringify({
+    model: <span class="str">'llama3.2'</span>,
+    prompt: prompt,
+    stream: <span class="kw">true</span>
+  });
+
+  <span class="kw">const</span> options = {
+    hostname: <span class="str">'localhost'</span>,
+    port: <span class="num">11434</span>,
+    path: <span class="str">'/api/generate'</span>,
+    method: <span class="str">'POST'</span>,
+    headers: {
+      <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+      <span class="str">'Content-Length'</span>: data.length
+    }
+  };
+
+  <span class="kw">const</span> req = http.request(options, (res) =&gt; {
+    res.on(<span class="str">'data'</span>, (chunk) =&gt; {
+      <span class="kw">const</span> line = chunk.toString();
+      <span class="kw">const</span> parsed = JSON.parse(line);
+      process.stdout.write(parsed.response);
+    });
+  });
+
+  req.write(data);
+  req.end();
+}
+
+generateStream(<span class="str">'긴 이야기를 들려줘'</span>);</code></pre>
+
+  <h4>ollama-js 라이브러리</h4>
+
+  <pre><code><span class="cmt">// 설치</span>
+<span class="cmt">// npm install ollama</span>
+
+<span class="kw">import</span> { Ollama } <span class="kw">from</span> <span class="str">'ollama'</span>;
+
+<span class="kw">const</span> ollama = <span class="kw">new</span> Ollama({ host: <span class="str">'http://localhost:11434'</span> });
+
+<span class="cmt">// 생성</span>
+<span class="kw">const</span> response = <span class="kw">await</span> ollama.generate({
+  model: <span class="str">'llama3.2'</span>,
+  prompt: <span class="str">'TypeScript로 타입 정의하는 방법'</span>
+});
+
+console.log(response.response);
+
+<span class="cmt">// 채팅</span>
+<span class="kw">const</span> chatResponse = <span class="kw">await</span> ollama.chat({
+  model: <span class="str">'llama3.2'</span>,
+  messages: [
+    { role: <span class="str">'user'</span>, content: <span class="str">'React Hook 설명해줘'</span> }
+  ]
+});
+
+console.log(chatResponse.message.content);</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="other-tools">기타 유용한 도구</h2>
+
+  <h3 id="twinny">Twinny (VS Code 확장)</h3>
+
+  <pre><code><span class="cmt"># Continue의 대안, 더 가벼움</span>
+<span class="str">1. VS Code Extensions에서 "Twinny" 설치</span>
+<span class="str">2. Settings → Ollama API URL: http://localhost:11434</span>
+<span class="str">3. 모델 선택: codellama:7b</span>
+
+<span class="cmt"># 특징</span>
+- 빠른 자동완성
+- 낮은 리소스 사용
+- 간단한 UI</code></pre>
+
+  <h3 id="shell-gpt">ShellGPT (터미널 AI)</h3>
+
+  <pre><code><span class="cmt"># 설치</span>
+pip install shell-gpt
+
+<span class="cmt"># Ollama 연동</span>
+<span class="kw">export</span> OPENAI_API_BASE=<span class="str">"http://localhost:11434/v1"</span>
+<span class="kw">export</span> OPENAI_API_KEY=<span class="str">"ollama"</span>
+<span class="kw">export</span> DEFAULT_MODEL=<span class="str">"llama3.2"</span>
+
+<span class="cmt"># 사용</span>
+sgpt <span class="str">"현재 디렉토리의 큰 파일 찾는 명령어"</span>
+<span class="cmt"># find . -type f -exec du -h {} + | sort -rh | head -n 10</span>
+
+<span class="cmt"># 코드 생성</span>
+sgpt --code <span class="str">"Python으로 JSON 파일 읽기"</span></code></pre>
+
+  <h3 id="fabric">Fabric (패턴 기반 프롬프트)</h3>
+
+  <pre><code><span class="cmt"># 설치</span>
+pip install fabric-ai
+
+<span class="cmt"># Ollama 설정</span>
+fabric --setup
+<span class="str">API Base: http://localhost:11434</span>
+<span class="str">Model: llama3.2</span>
+
+<span class="cmt"># 사용 (다양한 패턴)</span>
+cat article.txt | fabric --pattern summarize
+cat code.py | fabric --pattern explain_code
+cat email.txt | fabric --pattern extract_insights</code></pre>
+
+  <h3 id="anythingllm">AnythingLLM (문서 관리)</h3>
+
+  <pre><code><span class="cmt"># Docker로 설치</span>
+docker run -d -p 3001:3001 \
+  -v anythingllm:/app/server/storage \
+  -e OLLAMA_BASE_PATH=<span class="str">"http://host.docker.internal:11434"</span> \
+  mintplexlabs/anythingllm
+
+<span class="cmt"># 접속</span>
+<span class="str">http://localhost:3001</span>
+
+<span class="cmt"># 기능</span>
+- 문서 업로드 (PDF, DOCX, TXT)
+- 워크스페이스별 RAG
+- 채팅 히스토리
+- 에이전트 모드</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="comparison">도구 비교</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>용도</th>
+        <th>난이도</th>
+        <th>추천 대상</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Continue</strong></td>
+        <td>VS Code 코딩</td>
+        <td>⭐ 쉬움</td>
+        <td>모든 개발자</td>
+      </tr>
+      <tr>
+        <td><strong>Aider</strong></td>
+        <td>CLI 코딩</td>
+        <td>⭐⭐ 보통</td>
+        <td>터미널 선호자</td>
+      </tr>
+      <tr>
+        <td><strong>Open WebUI</strong></td>
+        <td>채팅 인터페이스</td>
+        <td>⭐ 쉬움</td>
+        <td>비개발자 포함</td>
+      </tr>
+      <tr>
+        <td><strong>LangChain</strong></td>
+        <td>Python 앱 개발</td>
+        <td>⭐⭐⭐ 어려움</td>
+        <td>Python 개발자</td>
+      </tr>
+      <tr>
+        <td><strong>LlamaIndex</strong></td>
+        <td>RAG 전문</td>
+        <td>⭐⭐⭐ 어려움</td>
+        <td>데이터 과학자</td>
+      </tr>
+      <tr>
+        <td><strong>API</strong></td>
+        <td>커스텀 통합</td>
+        <td>⭐⭐ 보통</td>
+        <td>고급 개발자</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 추천 조합</div>
+    <ul>
+      <li><strong>일반 개발자</strong>: Continue + Aider</li>
+      <li><strong>데이터 과학자</strong>: LlamaIndex + Jupyter</li>
+      <li><strong>팀 협업</strong>: Open WebUI + API 통합</li>
+      <li><strong>프로덕션 앱</strong>: LangChain + FastAPI</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <p>도구 연동을 완료했다면, 이제 고급 활용법을 배워봅시다!</p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📚 계속 학습하기</div>
+    <ol>
+      <li><a href="ollama-advanced.html">고급 활용</a> - Modelfile, 커스텀 모델, 프로덕션 배포</li>
+      <li><a href="ollama-troubleshooting.html">트러블슈팅</a> - 일반적인 문제 해결</li>
+      <li><a href="ollama-models.html">모델 선택</a> - 용도별 최적 모델 찾기</li>
+    </ol>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">⚡ 실전 프로젝트 아이디어</div>
+    <ul>
+      <li><strong>개인 코딩 어시스턴트</strong>: Continue + CodeLlama로 무료 Copilot</li>
+      <li><strong>문서 Q&A 봇</strong>: LlamaIndex + 회사 문서 (프라이버시 보장)</li>
+      <li><strong>자동 코드 리뷰</strong>: Aider + Git Hooks로 커밋 전 검토</li>
+      <li><strong>사내 ChatGPT</strong>: Open WebUI + 팀 배포</li>
+    </ul>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

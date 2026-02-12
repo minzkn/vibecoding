@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Ollama 지원 모델 전체 가이드 - Llama, Mistral, Phi, Gemma 등 모델별 특징과 선택 방법">
+<meta name="keywords" content="Ollama, 모델, Llama, Mistral, Phi, Gemma, CodeLlama, Qwen, DeepSeek">
+<title>Ollama 모델 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Ollama 모델 가이드</h1>
+<p class="lead">Ollama가 지원하는 다양한 오픈소스 LLM 모델들의 특징과 선택 방법을 알아봅니다.</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 빠른 시작</div>
+  <ol>
+    <li><code>ollama list</code> 명령으로 설치된 모델 확인</li>
+    <li><code>ollama pull llama3.2</code>로 원하는 모델 다운로드</li>
+    <li><code>ollama run llama3.2</code>로 모델 실행</li>
+    <li><code>ollama show llama3.2</code>로 모델 정보 확인</li>
+    <li>용도에 맞는 모델을 선택해 프로젝트에 통합</li>
+  </ol>
+</div>
+
+<section class="content-section">
+  <h2 id="overview">Ollama 모델 개요</h2>
+
+  <p>Ollama는 다양한 오픈소스 LLM 모델을 로컬에서 실행할 수 있도록 지원합니다. 각 모델은 특정 용도와 하드웨어 환경에 최적화되어 있으며, 크기와 성능 사이의 트레이드오프를 고려해 선택해야 합니다.</p>
+
+  <h3 id="model-families">주요 모델 패밀리</h3>
+
+  <p>Ollama가 지원하는 주요 모델 패밀리는 다음과 같습니다:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>패밀리</th>
+        <th>개발사</th>
+        <th>특징</th>
+        <th>주요 용도</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Llama</strong></td>
+        <td>Meta</td>
+        <td>범용 성능, 다양한 크기</td>
+        <td>일반 대화, 질의응답, 요약</td>
+      </tr>
+      <tr>
+        <td><strong>CodeLlama</strong></td>
+        <td>Meta</td>
+        <td>코딩 특화, Python 강점</td>
+        <td>코드 생성, 디버깅, 리팩토링</td>
+      </tr>
+      <tr>
+        <td><strong>Mistral</strong></td>
+        <td>Mistral AI</td>
+        <td>효율적, 고품질</td>
+        <td>빠른 추론, 프로덕션 배포</td>
+      </tr>
+      <tr>
+        <td><strong>Mixtral</strong></td>
+        <td>Mistral AI</td>
+        <td>MoE 아키텍처, 큰 모델 성능</td>
+        <td>복잡한 작업, 멀티태스킹</td>
+      </tr>
+      <tr>
+        <td><strong>Phi</strong></td>
+        <td>Microsoft</td>
+        <td>소형 고성능</td>
+        <td>리소스 제한 환경, 엣지</td>
+      </tr>
+      <tr>
+        <td><strong>Gemma</strong></td>
+        <td>Google</td>
+        <td>경량, 빠른 속도</td>
+        <td>실시간 응답, 모바일</td>
+      </tr>
+      <tr>
+        <td><strong>Qwen</strong></td>
+        <td>Alibaba</td>
+        <td>다국어 지원, 중국어 강점</td>
+        <td>다국어 처리, 번역</td>
+      </tr>
+      <tr>
+        <td><strong>DeepSeek</strong></td>
+        <td>DeepSeek</td>
+        <td>코딩 + 수학 특화</td>
+        <td>기술 문서, 알고리즘</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="architecture-diagram">모델 선택 프로세스</h3>
+
+  <svg viewBox="0 0 800 500" style="max-width: 100%; height: auto; background: var(--code-bg); border-radius: 8px; padding: 20px;">
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--accent-primary)" />
+      </marker>
+    </defs>
+
+    <!-- Start -->
+    <rect x="300" y="20" width="200" height="50" rx="25" fill="var(--accent-primary)" stroke="none"/>
+    <text x="400" y="50" text-anchor="middle" fill="var(--bg-primary)" font-weight="bold">모델 선택 시작</text>
+
+    <!-- Decision 1: Purpose -->
+    <path d="M 400 70 L 400 100" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M 400 120 L 500 170 L 400 220 L 300 170 Z" fill="var(--bg-tertiary)" stroke="var(--accent-primary)" stroke-width="2"/>
+    <text x="400" y="175" text-anchor="middle" fill="var(--text-primary)" font-size="14">주요 용도?</text>
+
+    <!-- Branch: Coding -->
+    <path d="M 500 170 L 600 170" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <rect x="600" y="150" width="150" height="40" rx="5" fill="var(--accent-secondary)" stroke="none"/>
+    <text x="675" y="175" text-anchor="middle" fill="var(--text-primary)" font-size="13">CodeLlama</text>
+    <text x="675" y="190" text-anchor="middle" fill="var(--text-secondary)" font-size="11">DeepSeek-Coder</text>
+
+    <!-- Branch: General -->
+    <path d="M 300 170 L 200 170" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <rect x="50" y="150" width="150" height="40" rx="5" fill="var(--accent-secondary)" stroke="none"/>
+    <text x="125" y="175" text-anchor="middle" fill="var(--text-primary)" font-size="13">Llama / Mistral</text>
+    <text x="125" y="190" text-anchor="middle" fill="var(--text-secondary)" font-size="11">Qwen</text>
+
+    <!-- Decision 2: Resources -->
+    <path d="M 400 220 L 400 250" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M 400 270 L 500 320 L 400 370 L 300 320 Z" fill="var(--bg-tertiary)" stroke="var(--accent-primary)" stroke-width="2"/>
+    <text x="400" y="315" text-anchor="middle" fill="var(--text-primary)" font-size="14">RAM 크기?</text>
+    <text x="400" y="330" text-anchor="middle" fill="var(--text-secondary)" font-size="11">(VRAM 포함)</text>
+
+    <!-- Branch: Low RAM -->
+    <path d="M 300 320 L 200 320" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <rect x="50" y="300" width="150" height="40" rx="5" fill="var(--warning-bg)" stroke="none"/>
+    <text x="125" y="320" text-anchor="middle" fill="var(--text-primary)" font-size="13">&lt; 8GB</text>
+    <text x="125" y="335" text-anchor="middle" fill="var(--text-secondary)" font-size="11">Phi-3 / Gemma</text>
+
+    <!-- Branch: Medium RAM -->
+    <rect x="325" y="380" width="150" height="40" rx="5" fill="var(--info-bg)" stroke="none"/>
+    <text x="400" y="400" text-anchor="middle" fill="var(--text-primary)" font-size="13">8-16GB</text>
+    <text x="400" y="415" text-anchor="middle" fill="var(--text-secondary)" font-size="11">Llama 3.2 7B</text>
+
+    <!-- Branch: High RAM -->
+    <path d="M 500 320 L 600 320" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <rect x="600" y="300" width="150" height="40" rx="5" fill="var(--success-bg)" stroke="none"/>
+    <text x="675" y="320" text-anchor="middle" fill="var(--text-primary)" font-size="13">&gt; 32GB</text>
+    <text x="675" y="335" text-anchor="middle" fill="var(--text-secondary)" font-size="11">Llama 3.1 70B</text>
+
+    <!-- Final recommendation -->
+    <path d="M 400 370 L 400 380" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <rect x="275" y="440" width="250" height="40" rx="5" fill="var(--accent-primary)" stroke="none"/>
+    <text x="400" y="465" text-anchor="middle" fill="var(--bg-primary)" font-weight="bold">양자화 레벨 선택</text>
+  </svg>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 모델 명명 규칙</div>
+    <p>Ollama 모델 이름은 일반적으로 다음 형식을 따릅니다:</p>
+    <pre><code><span class="str">모델명</span>:<span class="str">크기</span>-<span class="str">양자화</span>
+
+<span class="cmt"># 예시</span>
+llama3.2:7b-instruct-q4_0
+<span class="cmt">│       │   │         └─ 양자화 레벨 (4-bit)</span>
+<span class="cmt">│       │   └─────────── 튜닝 타입 (instruction)</span>
+<span class="cmt">│       └─────────────── 파라미터 크기 (7 billion)</span>
+<span class="cmt">└─────────────────────── 모델 패밀리 (Llama 3.2)</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="llama">Llama 시리즈</h2>
+
+  <p>Meta의 Llama (Large Language Model Meta AI)는 가장 인기 있는 오픈소스 LLM 패밀리입니다. Ollama에서 지원하는 Llama 모델은 다음과 같습니다.</p>
+
+  <h3 id="llama32">Llama 3.2 (최신)</h3>
+
+  <p>2024년 9월 출시된 Llama 3.2는 경량화와 멀티모달 기능에 초점을 맞춘 버전입니다.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델명</th>
+        <th>크기</th>
+        <th>컨텍스트</th>
+        <th>RAM 요구</th>
+        <th>특징</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>llama3.2:1b</code></td>
+        <td>1B</td>
+        <td>128K</td>
+        <td>1.3 GB</td>
+        <td>초경량, 엣지 디바이스</td>
+      </tr>
+      <tr>
+        <td><code>llama3.2:3b</code></td>
+        <td>3B</td>
+        <td>128K</td>
+        <td>2.0 GB</td>
+        <td>모바일 최적화</td>
+      </tr>
+      <tr>
+        <td><code>llama3.2</code></td>
+        <td>7B</td>
+        <td>128K</td>
+        <td>4.7 GB</td>
+        <td>일반 용도 추천</td>
+      </tr>
+      <tr>
+        <td><code>llama3.2:11b-vision</code></td>
+        <td>11B</td>
+        <td>128K</td>
+        <td>7.9 GB</td>
+        <td>이미지 이해 가능</td>
+      </tr>
+      <tr>
+        <td><code>llama3.2:90b-vision</code></td>
+        <td>90B</td>
+        <td>128K</td>
+        <td>55 GB</td>
+        <td>고성능 멀티모달</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>설치 및 실행</h4>
+
+  <pre><code><span class="cmt"># 기본 모델 다운로드 (7B)</span>
+ollama pull llama3.2
+
+<span class="cmt"># 경량 모델 (1B)</span>
+ollama pull llama3.2:1b
+
+<span class="cmt"># 비전 모델 (이미지 처리)</span>
+ollama pull llama3.2:11b-vision
+
+<span class="cmt"># 실행</span>
+ollama run llama3.2
+<span class="str">&gt;&gt;&gt; 안녕하세요. 한국어로 답변해주세요.</span>
+안녕하세요! 네, 한국어로 답변드리겠습니다. 무엇을 도와드릴까요?</code></pre>
+
+  <h3 id="llama31">Llama 3.1</h3>
+
+  <p>2024년 7월 출시된 Llama 3.1은 대규모 컨텍스트 윈도우(128K 토큰)를 지원하며, 최대 405B 파라미터 모델까지 제공합니다.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델명</th>
+        <th>크기</th>
+        <th>RAM 요구</th>
+        <th>특징</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>llama3.1:8b</code></td>
+        <td>8B</td>
+        <td>4.7 GB</td>
+        <td>일반 용도</td>
+      </tr>
+      <tr>
+        <td><code>llama3.1:70b</code></td>
+        <td>70B</td>
+        <td>40 GB</td>
+        <td>고성능, 워크스테이션</td>
+      </tr>
+      <tr>
+        <td><code>llama3.1:405b</code></td>
+        <td>405B</td>
+        <td>231 GB</td>
+        <td>최고 성능, 서버용</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <pre><code><span class="cmt"># Llama 3.1 8B 설치</span>
+ollama pull llama3.1:8b
+
+<span class="cmt"># 특정 양자화 버전 선택</span>
+ollama pull llama3.1:8b-instruct-q4_0  <span class="cmt"># 4-bit 양자화</span>
+ollama pull llama3.1:8b-instruct-q8_0  <span class="cmt"># 8-bit 양자화 (고품질)</span>
+
+<span class="cmt"># 70B 모델 (강력한 GPU 필요)</span>
+ollama pull llama3.1:70b</code></pre>
+
+  <h3 id="llama3">Llama 3</h3>
+
+  <p>2024년 4월 출시된 Llama 3는 뛰어난 성능과 안정성으로 여전히 많이 사용됩니다.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델명</th>
+        <th>크기</th>
+        <th>컨텍스트</th>
+        <th>RAM 요구</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>llama3:8b</code></td>
+        <td>8B</td>
+        <td>8K</td>
+        <td>4.7 GB</td>
+      </tr>
+      <tr>
+        <td><code>llama3:70b</code></td>
+        <td>70B</td>
+        <td>8K</td>
+        <td>40 GB</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 Llama 모델 선택 가이드</div>
+    <ul>
+      <li><strong>제한된 리소스 (8GB 미만)</strong>: <code>llama3.2:1b</code> 또는 <code>llama3.2:3b</code></li>
+      <li><strong>일반 개발 환경 (16GB)</strong>: <code>llama3.2</code> (7B) 또는 <code>llama3.1:8b</code></li>
+      <li><strong>고성능 워크스테이션 (32GB+)</strong>: <code>llama3.1:70b</code></li>
+      <li><strong>이미지 처리 필요</strong>: <code>llama3.2:11b-vision</code></li>
+      <li><strong>긴 컨텍스트 필요</strong>: Llama 3.1 시리즈 (128K 토큰)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="codellama">CodeLlama - 코딩 특화 모델</h2>
+
+  <p>CodeLlama는 Llama 2를 코드 생성에 특화시킨 모델입니다. Python, JavaScript, C++, Java 등 다양한 언어를 지원하며, 특히 Python에서 뛰어난 성능을 보입니다.</p>
+
+  <h3 id="codellama-variants">CodeLlama 변형</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델명</th>
+        <th>크기</th>
+        <th>특징</th>
+        <th>주요 용도</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>codellama:7b</code></td>
+        <td>7B</td>
+        <td>기본 코드 모델</td>
+        <td>코드 완성, 생성</td>
+      </tr>
+      <tr>
+        <td><code>codellama:13b</code></td>
+        <td>13B</td>
+        <td>향상된 성능</td>
+        <td>복잡한 코드 생성</td>
+      </tr>
+      <tr>
+        <td><code>codellama:34b</code></td>
+        <td>34B</td>
+        <td>최고 성능</td>
+        <td>아키텍처 설계</td>
+      </tr>
+      <tr>
+        <td><code>codellama:7b-instruct</code></td>
+        <td>7B</td>
+        <td>대화형 코딩</td>
+        <td>페어 프로그래밍</td>
+      </tr>
+      <tr>
+        <td><code>codellama:7b-python</code></td>
+        <td>7B</td>
+        <td>Python 전문</td>
+        <td>Python 개발</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="codellama-usage">실전 활용 예제</h3>
+
+  <pre><code><span class="cmt"># CodeLlama 설치</span>
+ollama pull codellama:7b-instruct
+
+<span class="cmt"># 코드 생성 예제</span>
+ollama run codellama:7b-instruct
+
+<span class="str">&gt;&gt;&gt; Write a Python function to calculate Fibonacci numbers with memoization</span>
+
+<span class="kw">def</span> <span class="fn">fibonacci</span>(n, memo={}):
+    <span class="str">"""
+    Calculate the nth Fibonacci number using memoization.
+
+    Args:
+        n: The position in the Fibonacci sequence
+        memo: Dictionary to store previously calculated values
+
+    Returns:
+        The nth Fibonacci number
+    """</span>
+    <span class="kw">if</span> n <span class="kw">in</span> memo:
+        <span class="kw">return</span> memo[n]
+
+    <span class="kw">if</span> n &lt;= <span class="num">1</span>:
+        <span class="kw">return</span> n
+
+    memo[n] = fibonacci(n - <span class="num">1</span>, memo) + fibonacci(n - <span class="num">2</span>, memo)
+    <span class="kw">return</span> memo[n]
+
+<span class="cmt"># 사용 예시</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">10</span>):
+    <span class="fn">print</span>(<span class="str">f"F(<span class="num">{i}</span>) = <span class="num">{fibonacci(i)}</span>"</span>)</code></pre>
+
+  <h3 id="codellama-comparison">CodeLlama vs 일반 Llama</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>기준</th>
+        <th>CodeLlama</th>
+        <th>Llama 3.2</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>코드 생성</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>일반 대화</td>
+        <td>⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>코드 설명</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>디버깅</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>다국어 지원</td>
+        <td>⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ CodeLlama 한계점</div>
+    <ul>
+      <li>일반 대화 능력은 범용 모델보다 제한적</li>
+      <li>최신 라이브러리/프레임워크 정보 부족 (학습 데이터 기준 2023년 초)</li>
+      <li>보안 취약점 검증 필요 (생성된 코드 검토 필수)</li>
+      <li>한국어 코드 주석 생성 품질이 Llama 3.x보다 낮음</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="mistral">Mistral & Mixtral</h2>
+
+  <p>Mistral AI의 모델들은 효율성과 성능의 균형이 뛰어나며, 프로덕션 환경에서 많이 사용됩니다.</p>
+
+  <h3 id="mistral-models">Mistral 7B</h3>
+
+  <p>Mistral 7B는 7B 파라미터임에도 불구하고 13B 모델과 비슷한 성능을 보이는 것으로 유명합니다.</p>
+
+  <pre><code><span class="cmt"># Mistral 7B 설치</span>
+ollama pull mistral
+
+<span class="cmt"># Mistral 7B Instruct (대화 최적화)</span>
+ollama pull mistral:7b-instruct
+
+<span class="cmt"># 실행</span>
+ollama run mistral:7b-instruct</code></pre>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>내용</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>파라미터</td>
+        <td>7.3B</td>
+      </tr>
+      <tr>
+        <td>컨텍스트</td>
+        <td>32K 토큰</td>
+      </tr>
+      <tr>
+        <td>RAM 요구</td>
+        <td>4.1 GB</td>
+      </tr>
+      <tr>
+        <td>아키텍처</td>
+        <td>Grouped-Query Attention</td>
+      </tr>
+      <tr>
+        <td>강점</td>
+        <td>빠른 추론, 효율적 메모리 사용</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="mixtral">Mixtral - Mixture of Experts</h3>
+
+  <p>Mixtral은 MoE (Mixture of Experts) 아키텍처를 사용하여 큰 모델의 성능을 작은 메모리 풋프린트로 구현합니다.</p>
+
+  <pre><code><span class="cmt"># Mixtral 8x7B 설치</span>
+ollama pull mixtral
+
+<span class="cmt"># Mixtral 8x22B (더 큰 모델)</span>
+ollama pull mixtral:8x22b</code></pre>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>구조</th>
+        <th>RAM 요구</th>
+        <th>특징</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>mixtral:8x7b</code></td>
+        <td>8개 전문가, 각 7B</td>
+        <td>26 GB</td>
+        <td>70B급 성능, 13B급 속도</td>
+      </tr>
+      <tr>
+        <td><code>mixtral:8x22b</code></td>
+        <td>8개 전문가, 각 22B</td>
+        <td>80 GB</td>
+        <td>최고 성능</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="moe-architecture">MoE 아키텍처 원리</h3>
+
+  <svg viewBox="0 0 700 400" style="max-width: 100%; height: auto; background: var(--code-bg); border-radius: 8px; padding: 20px;">
+    <!-- Input -->
+    <rect x="300" y="20" width="100" height="40" rx="5" fill="var(--accent-primary)" stroke="none"/>
+    <text x="350" y="45" text-anchor="middle" fill="var(--bg-primary)" font-weight="bold">입력 토큰</text>
+
+    <!-- Router -->
+    <path d="M 350 60 L 350 100" stroke="var(--accent-primary)" stroke-width="2"/>
+    <rect x="275" y="100" width="150" height="50" rx="5" fill="var(--accent-secondary)" stroke="var(--border-primary)" stroke-width="2"/>
+    <text x="350" y="125" text-anchor="middle" fill="var(--text-primary)" font-weight="bold">라우터</text>
+    <text x="350" y="140" text-anchor="middle" fill="var(--text-secondary)" font-size="12">전문가 선택</text>
+
+    <!-- Experts -->
+    <text x="350" y="180" text-anchor="middle" fill="var(--text-secondary)" font-size="12">8개 전문가 중 2개 활성화</text>
+
+    <!-- Expert 1 -->
+    <path d="M 320 150 L 100 220" stroke="var(--accent-primary)" stroke-width="2"/>
+    <rect x="50" y="220" width="100" height="60" rx="5" fill="var(--info-bg)" stroke="var(--border-primary)" stroke-width="2"/>
+    <text x="100" y="245" text-anchor="middle" fill="var(--text-primary)">Expert 1</text>
+    <text x="100" y="260" text-anchor="middle" fill="var(--text-secondary)" font-size="11">수학</text>
+    <text x="100" y="273" text-anchor="middle" fill="var(--accent-primary)" font-size="10" font-weight="bold">✓ 활성</text>
+
+    <!-- Expert 2 -->
+    <path d="M 330 150 L 220 220" stroke="var(--text-tertiary)" stroke-width="1" stroke-dasharray="5,5"/>
+    <rect x="170" y="220" width="100" height="60" rx="5" fill="var(--bg-tertiary)" stroke="var(--border-primary)" stroke-width="1"/>
+    <text x="220" y="245" text-anchor="middle" fill="var(--text-secondary)">Expert 2</text>
+    <text x="220" y="260" text-anchor="middle" fill="var(--text-tertiary)" font-size="11">코딩</text>
+
+    <!-- Expert 3 -->
+    <rect x="290" y="220" width="100" height="60" rx="5" fill="var(--bg-tertiary)" stroke="var(--border-primary)" stroke-width="1"/>
+    <text x="340" y="245" text-anchor="middle" fill="var(--text-secondary)">Expert 3</text>
+    <text x="340" y="260" text-anchor="middle" fill="var(--text-tertiary)" font-size="11">언어</text>
+
+    <!-- Expert 4 -->
+    <path d="M 370 150 L 460 220" stroke="var(--accent-primary)" stroke-width="2"/>
+    <rect x="410" y="220" width="100" height="60" rx="5" fill="var(--info-bg)" stroke="var(--border-primary)" stroke-width="2"/>
+    <text x="460" y="245" text-anchor="middle" fill="var(--text-primary)">Expert 4</text>
+    <text x="460" y="260" text-anchor="middle" fill="var(--text-secondary)" font-size="11">추론</text>
+    <text x="460" y="273" text-anchor="middle" fill="var(--accent-primary)" font-size="10" font-weight="bold">✓ 활성</text>
+
+    <!-- More experts indicator -->
+    <text x="600" y="250" text-anchor="middle" fill="var(--text-tertiary)" font-size="14">...</text>
+    <text x="600" y="265" text-anchor="middle" fill="var(--text-tertiary)" font-size="10">나머지 4개</text>
+
+    <!-- Merge -->
+    <path d="M 100 280 L 350 330" stroke="var(--accent-primary)" stroke-width="2"/>
+    <path d="M 460 280 L 350 330" stroke="var(--accent-primary)" stroke-width="2"/>
+    <rect x="275" y="330" width="150" height="40" rx="5" fill="var(--accent-secondary)" stroke="none"/>
+    <text x="350" y="355" text-anchor="middle" fill="var(--text-primary)" font-weight="bold">출력 병합</text>
+
+    <!-- Output -->
+    <path d="M 350 370 L 350 380" stroke="var(--accent-primary)" stroke-width="2"/>
+    <rect x="300" y="380" width="100" height="15" rx="3" fill="var(--accent-primary)" stroke="none"/>
+  </svg>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 MoE의 장점</div>
+    <ul>
+      <li><strong>효율성</strong>: 전체 파라미터 중 일부만 사용하여 추론 속도 향상</li>
+      <li><strong>전문화</strong>: 각 전문가가 특정 도메인에 특화</li>
+      <li><strong>확장성</strong>: 전문가 추가로 성능 향상 가능</li>
+      <li><strong>메모리</strong>: 큰 모델의 성능을 작은 활성 메모리로 구현</li>
+    </ul>
+  </div>
+
+  <h3 id="mistral-comparison">Mistral vs Llama 비교</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>항목</th>
+        <th>Mistral 7B</th>
+        <th>Llama 3.2 7B</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>추론 속도</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>메모리 효율</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>일반 성능</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>컨텍스트 길이</td>
+        <td>32K</td>
+        <td>128K</td>
+      </tr>
+      <tr>
+        <td>다국어 지원</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="phi">Phi - 소형 고성능 모델</h2>
+
+  <p>Microsoft의 Phi 시리즈는 작은 크기로 큰 모델에 준하는 성능을 제공하는 것이 특징입니다.</p>
+
+  <h3 id="phi-models">Phi 모델 라인업</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>크기</th>
+        <th>RAM 요구</th>
+        <th>특징</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>phi3:mini</code></td>
+        <td>3.8B</td>
+        <td>2.3 GB</td>
+        <td>초경량, 모바일 가능</td>
+      </tr>
+      <tr>
+        <td><code>phi3:medium</code></td>
+        <td>14B</td>
+        <td>7.9 GB</td>
+        <td>균형잡힌 성능</td>
+      </tr>
+      <tr>
+        <td><code>phi3.5</code></td>
+        <td>3.8B</td>
+        <td>2.3 GB</td>
+        <td>최신 버전, 성능 개선</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="phi-usage">Phi 사용 예제</h3>
+
+  <pre><code><span class="cmt"># Phi-3 mini 설치 (가장 작은 모델)</span>
+ollama pull phi3:mini
+
+<span class="cmt"># Phi-3.5 설치 (최신 버전)</span>
+ollama pull phi3.5
+
+<span class="cmt"># 실행</span>
+ollama run phi3:mini
+
+<span class="str">&gt;&gt;&gt; Explain quantum entanglement in simple terms</span>
+
+Quantum entanglement is like having two magic coins that are mysteriously
+connected. When you flip one coin and it lands on heads, the other coin
+instantly lands on tails, no matter how far apart they are. This connection
+happens faster than light could travel between them, which puzzled Einstein
+and led him to call it "spooky action at a distance."</code></pre>
+
+  <h3 id="phi-benchmark">Phi vs 다른 소형 모델 벤치마크</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>크기</th>
+        <th>MMLU</th>
+        <th>HumanEval</th>
+        <th>추론 속도</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Phi-3 mini</td>
+        <td>3.8B</td>
+        <td>69.0%</td>
+        <td>58.5%</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>Gemma 2B</td>
+        <td>2.0B</td>
+        <td>42.3%</td>
+        <td>22.0%</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>Llama 3.2 3B</td>
+        <td>3.0B</td>
+        <td>63.4%</td>
+        <td>54.2%</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>Mistral 7B</td>
+        <td>7.0B</td>
+        <td>62.5%</td>
+        <td>40.2%</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 Phi 추천 사용 사례</div>
+    <ul>
+      <li><strong>엣지 컴퓨팅</strong>: Raspberry Pi, 임베디드 시스템</li>
+      <li><strong>모바일 앱</strong>: 온디바이스 AI 기능</li>
+      <li><strong>실시간 처리</strong>: 빠른 응답 필요한 챗봇</li>
+      <li><strong>배치 처리</strong>: 대량 문서 분석</li>
+      <li><strong>프로토타이핑</strong>: 빠른 실험과 반복</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="gemma">Gemma - Google의 경량 모델</h2>
+
+  <p>Google의 Gemma는 Gemini 모델의 기술을 기반으로 개발된 오픈소스 모델입니다.</p>
+
+  <h3 id="gemma-models">Gemma 모델</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>크기</th>
+        <th>RAM 요구</th>
+        <th>특징</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>gemma:2b</code></td>
+        <td>2B</td>
+        <td>1.4 GB</td>
+        <td>초경량</td>
+      </tr>
+      <tr>
+        <td><code>gemma:7b</code></td>
+        <td>7B</td>
+        <td>4.8 GB</td>
+        <td>일반 용도</td>
+      </tr>
+      <tr>
+        <td><code>gemma2:9b</code></td>
+        <td>9B</td>
+        <td>5.4 GB</td>
+        <td>최신 버전</td>
+      </tr>
+      <tr>
+        <td><code>gemma2:27b</code></td>
+        <td>27B</td>
+        <td>16 GB</td>
+        <td>고성능</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <pre><code><span class="cmt"># Gemma 2B 설치 (가장 작음)</span>
+ollama pull gemma:2b
+
+<span class="cmt"># Gemma 2 9B 설치 (권장)</span>
+ollama pull gemma2:9b
+
+<span class="cmt"># 실행</span>
+ollama run gemma2:9b</code></pre>
+
+  <h3 id="gemma-features">Gemma의 주요 특징</h3>
+
+  <ul>
+    <li><strong>안전성 강화</strong>: 유해 콘텐츠 필터링 내장</li>
+    <li><strong>상업적 사용 가능</strong>: 제한 없는 라이선스</li>
+    <li><strong>다국어 지원</strong>: 한국어 포함 다양한 언어</li>
+    <li><strong>빠른 추론</strong>: 최적화된 추론 속도</li>
+  </ul>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 Gemma vs Gemma 2</div>
+    <p>Gemma 2 시리즈는 다음과 같은 개선사항이 있습니다:</p>
+    <ul>
+      <li>Sliding window attention으로 긴 컨텍스트 효율적 처리</li>
+      <li>개선된 수학 및 코딩 능력</li>
+      <li>더 나은 다국어 성능</li>
+      <li>Knowledge distillation으로 작은 모델 성능 향상</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="qwen">Qwen - 다국어 강자</h2>
+
+  <p>Alibaba의 Qwen (通义千问)은 특히 중국어와 다국어 처리에 강점을 보이는 모델입니다.</p>
+
+  <h3 id="qwen-models">Qwen 모델 라인업</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>크기</th>
+        <th>RAM 요구</th>
+        <th>특징</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>qwen2:0.5b</code></td>
+        <td>0.5B</td>
+        <td>0.5 GB</td>
+        <td>극소형</td>
+      </tr>
+      <tr>
+        <td><code>qwen2:1.5b</code></td>
+        <td>1.5B</td>
+        <td>1.0 GB</td>
+        <td>경량</td>
+      </tr>
+      <tr>
+        <td><code>qwen2:7b</code></td>
+        <td>7B</td>
+        <td>4.4 GB</td>
+        <td>일반 용도</td>
+      </tr>
+      <tr>
+        <td><code>qwen2:72b</code></td>
+        <td>72B</td>
+        <td>41 GB</td>
+        <td>최고 성능</td>
+      </tr>
+      <tr>
+        <td><code>qwen2.5-coder</code></td>
+        <td>7B</td>
+        <td>4.4 GB</td>
+        <td>코딩 특화</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="qwen-usage">Qwen 실전 예제</h3>
+
+  <pre><code><span class="cmt"># Qwen 2 7B 설치</span>
+ollama pull qwen2:7b
+
+<span class="cmt"># 코딩 특화 버전</span>
+ollama pull qwen2.5-coder
+
+<span class="cmt"># 다국어 테스트</span>
+ollama run qwen2:7b
+
+<span class="str">&gt;&gt;&gt; 请用中文和韩语解释机器学习</span>
+
+<span class="cmt"># 중국어 응답:</span>
+机器学习是人工智能的一个分支，它使计算机能够从数据中学习
+并改进性能，而无需明确编程。
+
+<span class="cmt"># 한국어 응답:</span>
+머신러닝은 인공지능의 한 분야로, 컴퓨터가 명시적인 프로그래밍
+없이도 데이터로부터 학습하고 성능을 개선할 수 있게 합니다.</code></pre>
+
+  <h3 id="qwen-strengths">Qwen의 강점</h3>
+
+  <ul>
+    <li><strong>다국어</strong>: 영어, 중국어, 한국어, 일본어 등 29개 언어 지원</li>
+    <li><strong>긴 컨텍스트</strong>: 최대 32K 토큰 (Qwen2.5는 128K)</li>
+    <li><strong>수학/코딩</strong>: GSM8K, HumanEval에서 높은 점수</li>
+    <li><strong>효율성</strong>: 작은 모델도 우수한 성능</li>
+  </ul>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🌏 Qwen 추천 사용 사례</div>
+    <ul>
+      <li>다국어 챗봇 개발</li>
+      <li>한중일 번역 서비스</li>
+      <li>아시아 시장 타겟 앱</li>
+      <li>크로스링구얼 검색</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deepseek">DeepSeek - 코딩 + 수학 전문가</h2>
+
+  <p>DeepSeek은 특히 코딩과 수학 문제에 강한 성능을 보이는 중국 기반 모델입니다.</p>
+
+  <h3 id="deepseek-models">DeepSeek 모델</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>크기</th>
+        <th>RAM 요구</th>
+        <th>특징</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>deepseek-coder:6.7b</code></td>
+        <td>6.7B</td>
+        <td>3.8 GB</td>
+        <td>코딩 특화</td>
+      </tr>
+      <tr>
+        <td><code>deepseek-coder:33b</code></td>
+        <td>33B</td>
+        <td>19 GB</td>
+        <td>고성능 코딩</td>
+      </tr>
+      <tr>
+        <td><code>deepseek-coder-v2</code></td>
+        <td>16B</td>
+        <td>9.0 GB</td>
+        <td>최신 버전</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="deepseek-usage">DeepSeek 코딩 예제</h3>
+
+  <pre><code><span class="cmt"># DeepSeek Coder 설치</span>
+ollama pull deepseek-coder:6.7b
+
+<span class="cmt"># 복잡한 알고리즘 구현</span>
+ollama run deepseek-coder:6.7b
+
+<span class="str">&gt;&gt;&gt; Implement a B-tree insertion algorithm in Python</span>
+
+<span class="kw">class</span> <span class="type">BTreeNode</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, leaf=<span class="kw">True</span>):
+        <span class="kw">self</span>.keys = []
+        <span class="kw">self</span>.children = []
+        <span class="kw">self</span>.leaf = leaf
+
+<span class="kw">class</span> <span class="type">BTree</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, t):
+        <span class="kw">self</span>.root = BTreeNode()
+        <span class="kw">self</span>.t = t  <span class="cmt"># Minimum degree</span>
+
+    <span class="kw">def</span> <span class="fn">insert</span>(<span class="kw">self</span>, key):
+        root = <span class="kw">self</span>.root
+        <span class="kw">if</span> <span class="fn">len</span>(root.keys) == (<span class="num">2</span> * <span class="kw">self</span>.t) - <span class="num">1</span>:
+            <span class="cmt"># Root is full, split it</span>
+            new_root = BTreeNode(leaf=<span class="kw">False</span>)
+            new_root.children.append(<span class="kw">self</span>.root)
+            <span class="kw">self</span>._split_child(new_root, <span class="num">0</span>)
+            <span class="kw">self</span>.root = new_root
+        <span class="kw">self</span>._insert_non_full(<span class="kw">self</span>.root, key)
+
+    <span class="kw">def</span> <span class="fn">_split_child</span>(<span class="kw">self</span>, parent, index):
+        t = <span class="kw">self</span>.t
+        full_child = parent.children[index]
+        new_child = BTreeNode(leaf=full_child.leaf)
+
+        <span class="cmt"># Split keys</span>
+        mid_key = full_child.keys[t - <span class="num">1</span>]
+        new_child.keys = full_child.keys[t:(<span class="num">2</span> * t) - <span class="num">1</span>]
+        full_child.keys = full_child.keys[<span class="num">0</span>:t - <span class="num">1</span>]
+
+        <span class="cmt"># Split children if not leaf</span>
+        <span class="kw">if</span> <span class="kw">not</span> full_child.leaf:
+            new_child.children = full_child.children[t:<span class="num">2</span> * t]
+            full_child.children = full_child.children[<span class="num">0</span>:t]
+
+        <span class="cmt"># Insert mid_key into parent</span>
+        parent.keys.insert(index, mid_key)
+        parent.children.insert(index + <span class="num">1</span>, new_child)
+
+    <span class="kw">def</span> <span class="fn">_insert_non_full</span>(<span class="kw">self</span>, node, key):
+        i = <span class="fn">len</span>(node.keys) - <span class="num">1</span>
+
+        <span class="kw">if</span> node.leaf:
+            <span class="cmt"># Insert into leaf</span>
+            node.keys.append(<span class="kw">None</span>)
+            <span class="kw">while</span> i &gt;= <span class="num">0</span> <span class="kw">and</span> key &lt; node.keys[i]:
+                node.keys[i + <span class="num">1</span>] = node.keys[i]
+                i -= <span class="num">1</span>
+            node.keys[i + <span class="num">1</span>] = key
+        <span class="kw">else</span>:
+            <span class="cmt"># Find child to insert into</span>
+            <span class="kw">while</span> i &gt;= <span class="num">0</span> <span class="kw">and</span> key &lt; node.keys[i]:
+                i -= <span class="num">1</span>
+            i += <span class="num">1</span>
+
+            <span class="kw">if</span> <span class="fn">len</span>(node.children[i].keys) == (<span class="num">2</span> * <span class="kw">self</span>.t) - <span class="num">1</span>:
+                <span class="kw">self</span>._split_child(node, i)
+                <span class="kw">if</span> key &gt; node.keys[i]:
+                    i += <span class="num">1</span>
+
+            <span class="kw">self</span>._insert_non_full(node.children[i], key)</code></pre>
+
+  <h3 id="deepseek-benchmark">DeepSeek 벤치마크</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>벤치마크</th>
+        <th>DeepSeek-Coder 6.7B</th>
+        <th>CodeLlama 7B</th>
+        <th>Llama 3.2 7B</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>HumanEval</td>
+        <td><strong>78.6%</strong></td>
+        <td>53.7%</td>
+        <td>62.4%</td>
+      </tr>
+      <tr>
+        <td>MBPP</td>
+        <td><strong>70.2%</strong></td>
+        <td>56.2%</td>
+        <td>64.1%</td>
+      </tr>
+      <tr>
+        <td>GSM8K (수학)</td>
+        <td><strong>65.4%</strong></td>
+        <td>28.7%</td>
+        <td>72.8%</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="specialized">특수 목적 모델</h2>
+
+  <p>Ollama는 특정 작업에 특화된 다양한 모델도 지원합니다.</p>
+
+  <h3 id="vision-models">멀티모달 (비전) 모델</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>특징</th>
+        <th>사용 예</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>llava</code></td>
+        <td>7B, 이미지 + 텍스트</td>
+        <td>이미지 설명, OCR</td>
+      </tr>
+      <tr>
+        <td><code>llava:13b</code></td>
+        <td>13B, 고품질 비전</td>
+        <td>상세 이미지 분석</td>
+      </tr>
+      <tr>
+        <td><code>bakllava</code></td>
+        <td>7B, LLaVA 개선</td>
+        <td>일반 이미지 이해</td>
+      </tr>
+      <tr>
+        <td><code>llama3.2:11b-vision</code></td>
+        <td>최신, Llama 3.2 기반</td>
+        <td>프로덕션 비전 앱</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>비전 모델 사용 예제</h4>
+
+  <pre><code><span class="cmt"># LLaVA 설치</span>
+ollama pull llava
+
+<span class="cmt"># 이미지와 함께 프롬프트 전송</span>
+ollama run llava <span class="str">"What's in this image?"</span> /path/to/image.jpg
+
+<span class="cmt"># API를 통한 이미지 분석</span>
+curl http://localhost:<span class="num">11434</span>/api/generate -d <span class="str">'{
+  "model": "llava",
+  "prompt": "Describe this image in detail",
+  "images": ["'</span>$(base64 &lt; image.jpg)<span class="str">'"]
+}'</span></code></pre>
+
+  <h3 id="embedding-models">임베딩 모델</h3>
+
+  <p>벡터 검색, RAG (Retrieval-Augmented Generation)에 사용되는 임베딩 모델들입니다.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>차원</th>
+        <th>특징</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>nomic-embed-text</code></td>
+        <td>768</td>
+        <td>영어 특화, 빠름</td>
+      </tr>
+      <tr>
+        <td><code>mxbai-embed-large</code></td>
+        <td>1024</td>
+        <td>고품질 임베딩</td>
+      </tr>
+      <tr>
+        <td><code>all-minilm</code></td>
+        <td>384</td>
+        <td>경량, 빠른 속도</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>임베딩 생성 예제</h4>
+
+  <pre><code><span class="cmt"># 임베딩 모델 설치</span>
+ollama pull nomic-embed-text
+
+<span class="cmt"># Python으로 임베딩 생성</span>
+<span class="kw">import</span> requests
+
+<span class="kw">def</span> <span class="fn">get_embedding</span>(text):
+    response = requests.post(
+        <span class="str">'http://localhost:11434/api/embeddings'</span>,
+        json={
+            <span class="str">'model'</span>: <span class="str">'nomic-embed-text'</span>,
+            <span class="str">'prompt'</span>: text
+        }
+    )
+    <span class="kw">return</span> response.json()[<span class="str">'embedding'</span>]
+
+<span class="cmt"># 사용 예시</span>
+text = <span class="str">"Ollama is a tool for running LLMs locally"</span>
+embedding = get_embedding(text)
+<span class="fn">print</span>(<span class="str">f"Embedding dimension: <span class="num">{len(embedding)}</span>"</span>)  <span class="cmt"># 768</span></code></pre>
+
+  <h3 id="other-models">기타 특화 모델</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>특화 분야</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>neural-chat</code></td>
+        <td>대화</td>
+        <td>Intel 최적화 챗봇</td>
+      </tr>
+      <tr>
+        <td><code>starling-lm</code></td>
+        <td>대화</td>
+        <td>RLHF 튜닝</td>
+      </tr>
+      <tr>
+        <td><code>orca-mini</code></td>
+        <td>추론</td>
+        <td>작은 크기, 강한 추론</td>
+      </tr>
+      <tr>
+        <td><code>vicuna</code></td>
+        <td>일반</td>
+        <td>GPT-4 데이터 학습</td>
+      </tr>
+      <tr>
+        <td><code>wizard-vicuna</code></td>
+        <td>코딩</td>
+        <td>Vicuna + 코딩 튜닝</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="quantization">양자화 레벨 이해</h2>
+
+  <p>양자화는 모델의 가중치를 낮은 정밀도로 변환하여 메모리 사용량과 추론 속도를 개선하는 기술입니다.</p>
+
+  <h3 id="quantization-types">양자화 타입</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>타입</th>
+        <th>비트</th>
+        <th>품질</th>
+        <th>메모리</th>
+        <th>속도</th>
+        <th>사용 시기</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>fp16</code></td>
+        <td>16-bit</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>100%</td>
+        <td>⭐⭐⭐</td>
+        <td>최고 품질 필요</td>
+      </tr>
+      <tr>
+        <td><code>q8_0</code></td>
+        <td>8-bit</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>50%</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>품질 중시</td>
+      </tr>
+      <tr>
+        <td><code>q6_K</code></td>
+        <td>6-bit</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>38%</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>균형잡힌 선택</td>
+      </tr>
+      <tr>
+        <td><code>q5_K_M</code></td>
+        <td>5-bit</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>31%</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>일반 권장</td>
+      </tr>
+      <tr>
+        <td><code>q4_K_M</code></td>
+        <td>4-bit</td>
+        <td>⭐⭐⭐</td>
+        <td>25%</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>제한된 RAM</td>
+      </tr>
+      <tr>
+        <td><code>q4_0</code></td>
+        <td>4-bit</td>
+        <td>⭐⭐⭐</td>
+        <td>25%</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>속도 우선</td>
+      </tr>
+      <tr>
+        <td><code>q3_K_M</code></td>
+        <td>3-bit</td>
+        <td>⭐⭐</td>
+        <td>19%</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>극한 환경</td>
+      </tr>
+      <tr>
+        <td><code>q2_K</code></td>
+        <td>2-bit</td>
+        <td>⭐</td>
+        <td>12%</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>실험적</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="quantization-comparison">양자화 비교 예제</h3>
+
+  <pre><code><span class="cmt"># 다양한 양자화 버전 비교</span>
+<span class="cmt"># Llama 3.2 7B 기준</span>
+
+ollama pull llama3.2:7b-instruct-fp16    <span class="cmt"># ~14 GB</span>
+ollama pull llama3.2:7b-instruct-q8_0    <span class="cmt"># ~7.7 GB</span>
+ollama pull llama3.2:7b-instruct-q6_K    <span class="cmt"># ~5.9 GB</span>
+ollama pull llama3.2:7b-instruct-q5_K_M  <span class="cmt"># ~5.1 GB (권장)</span>
+ollama pull llama3.2:7b-instruct-q4_K_M  <span class="cmt"># ~4.4 GB</span>
+ollama pull llama3.2:7b-instruct-q4_0    <span class="cmt"># ~4.1 GB</span>
+ollama pull llama3.2:7b-instruct-q3_K_M  <span class="cmt"># ~3.2 GB</span>
+ollama pull llama3.2:7b-instruct-q2_K    <span class="cmt"># ~2.6 GB</span></code></pre>
+
+  <svg viewBox="0 0 800 400" style="max-width: 100%; height: auto; background: var(--code-bg); border-radius: 8px; padding: 20px;">
+    <!-- Title -->
+    <text x="400" y="30" text-anchor="middle" fill="var(--text-primary)" font-size="18" font-weight="bold">양자화 레벨별 품질 vs 성능</text>
+
+    <!-- Axes -->
+    <line x1="100" y1="350" x2="700" y2="350" stroke="var(--border-primary)" stroke-width="2"/>
+    <line x1="100" y1="350" x2="100" y2="80" stroke="var(--border-primary)" stroke-width="2"/>
+
+    <!-- X-axis label -->
+    <text x="400" y="385" text-anchor="middle" fill="var(--text-secondary)">메모리 사용량 (GB)</text>
+
+    <!-- Y-axis label -->
+    <text x="50" y="200" text-anchor="middle" fill="var(--text-secondary)" transform="rotate(-90 50 200)">품질/성능</text>
+
+    <!-- Quality line (decreasing) -->
+    <polyline points="120,100 200,120 280,150 360,200 440,260 520,310 600,330"
+              fill="none" stroke="var(--accent-primary)" stroke-width="3"/>
+    <text x="620" y="335" fill="var(--accent-primary)" font-size="14">품질</text>
+
+    <!-- Speed line (increasing) -->
+    <polyline points="120,330 200,310 280,270 360,220 440,160 520,110 600,90"
+              fill="none" stroke="var(--accent-secondary)" stroke-width="3"/>
+    <text x="620" y="95" fill="var(--accent-secondary)" font-size="14">속도</text>
+
+    <!-- Data points -->
+    <circle cx="120" cy="100" r="6" fill="var(--accent-primary)"/>
+    <text x="120" y="70" text-anchor="middle" fill="var(--text-secondary)" font-size="11">fp16</text>
+    <text x="120" y="365" text-anchor="middle" fill="var(--text-tertiary)" font-size="10">14GB</text>
+
+    <circle cx="200" cy="120" r="6" fill="var(--accent-primary)"/>
+    <text x="200" y="70" text-anchor="middle" fill="var(--text-secondary)" font-size="11">q8_0</text>
+    <text x="200" y="365" text-anchor="middle" fill="var(--text-tertiary)" font-size="10">7.7GB</text>
+
+    <circle cx="360" cy="200" r="8" fill="var(--warning-bg)" stroke="var(--accent-primary)" stroke-width="2"/>
+    <text x="360" y="70" text-anchor="middle" fill="var(--accent-primary)" font-size="12" font-weight="bold">q5_K_M</text>
+    <text x="360" y="85" text-anchor="middle" fill="var(--text-secondary)" font-size="10">(권장)</text>
+    <text x="360" y="365" text-anchor="middle" fill="var(--text-tertiary)" font-size="10">5.1GB</text>
+
+    <circle cx="440" cy="260" r="6" fill="var(--accent-primary)"/>
+    <text x="440" y="70" text-anchor="middle" fill="var(--text-secondary)" font-size="11">q4_K_M</text>
+    <text x="440" y="365" text-anchor="middle" fill="var(--text-tertiary)" font-size="10">4.4GB</text>
+
+    <circle cx="600" cy="330" r="6" fill="var(--accent-primary)"/>
+    <text x="600" y="70" text-anchor="middle" fill="var(--text-secondary)" font-size="11">q2_K</text>
+    <text x="600" y="365" text-anchor="middle" fill="var(--text-tertiary)" font-size="10">2.6GB</text>
+  </svg>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 양자화 선택 가이드</div>
+    <ul>
+      <li><strong>RAM 32GB+</strong>: <code>q8_0</code> 또는 <code>fp16</code> (최고 품질)</li>
+      <li><strong>RAM 16GB</strong>: <code>q5_K_M</code> 또는 <code>q6_K</code> (권장)</li>
+      <li><strong>RAM 8GB</strong>: <code>q4_K_M</code> 또는 <code>q4_0</code></li>
+      <li><strong>RAM 4GB 이하</strong>: <code>q3_K_M</code> 또는 더 작은 모델 선택</li>
+    </ul>
+    <p><strong>참고</strong>: <code>K</code> 접미사는 K-quant 방식을 의미하며, 일반적으로 같은 비트 수에서 더 나은 품질을 제공합니다.</p>
+  </div>
+
+  <h3 id="quantization-naming">양자화 명명 규칙 상세</h3>
+
+  <pre><code><span class="cmt"># 양자화 타입 해석</span>
+q4_K_M
+│ │ └─ M = Medium (중간 품질)
+│ └─── K = K-quant 방식
+└───── 4 = 4-bit 양자화
+
+<span class="cmt"># 변형</span>
+q4_K_S  <span class="cmt"># S = Small (가장 빠름, 낮은 품질)</span>
+q4_K_M  <span class="cmt"># M = Medium (균형)</span>
+q4_K_L  <span class="cmt"># L = Large (높은 품질, 느림)</span>
+
+<span class="cmt"># 레거시 형식</span>
+q4_0    <span class="cmt"># 구식 4-bit 양자화</span>
+q4_1    <span class="cmt"># 개선된 4-bit (bias 추가)</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="selection-guide">용도별 모델 선택 가이드</h2>
+
+  <h3 id="by-use-case">작업 유형별 추천</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>작업 유형</th>
+        <th>1순위</th>
+        <th>2순위</th>
+        <th>3순위</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>일반 대화</strong></td>
+        <td>llama3.2:7b</td>
+        <td>mistral:7b</td>
+        <td>qwen2:7b</td>
+      </tr>
+      <tr>
+        <td><strong>코드 생성</strong></td>
+        <td>deepseek-coder:6.7b</td>
+        <td>codellama:7b</td>
+        <td>qwen2.5-coder</td>
+      </tr>
+      <tr>
+        <td><strong>코드 리뷰</strong></td>
+        <td>llama3.1:70b</td>
+        <td>codellama:13b</td>
+        <td>deepseek-coder:33b</td>
+      </tr>
+      <tr>
+        <td><strong>번역</strong></td>
+        <td>qwen2:7b</td>
+        <td>llama3.2:7b</td>
+        <td>gemma2:9b</td>
+      </tr>
+      <tr>
+        <td><strong>요약</strong></td>
+        <td>llama3.1:8b</td>
+        <td>mistral:7b</td>
+        <td>phi3:medium</td>
+      </tr>
+      <tr>
+        <td><strong>수학 문제</strong></td>
+        <td>deepseek-coder:6.7b</td>
+        <td>llama3.2:7b</td>
+        <td>qwen2:7b</td>
+      </tr>
+      <tr>
+        <td><strong>이미지 분석</strong></td>
+        <td>llama3.2:11b-vision</td>
+        <td>llava:13b</td>
+        <td>bakllava</td>
+      </tr>
+      <tr>
+        <td><strong>임베딩</strong></td>
+        <td>nomic-embed-text</td>
+        <td>mxbai-embed-large</td>
+        <td>all-minilm</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="by-resource">하드웨어별 추천</h3>
+
+  <h4>8GB RAM (통합 그래픽)</h4>
+  <ul>
+    <li><code>phi3:mini</code> - 2.3 GB</li>
+    <li><code>gemma:2b</code> - 1.4 GB</li>
+    <li><code>qwen2:1.5b</code> - 1.0 GB</li>
+    <li><code>llama3.2:3b</code> - 2.0 GB</li>
+  </ul>
+
+  <h4>16GB RAM (일반 개발자 노트북)</h4>
+  <ul>
+    <li><code>llama3.2:7b</code> - 4.7 GB</li>
+    <li><code>mistral:7b-instruct-q5_K_M</code> - 4.1 GB</li>
+    <li><code>codellama:7b</code> - 3.8 GB</li>
+    <li><code>qwen2:7b</code> - 4.4 GB</li>
+  </ul>
+
+  <h4>32GB RAM (고성능 워크스테이션)</h4>
+  <ul>
+    <li><code>llama3.1:70b-q4_0</code> - 23 GB</li>
+    <li><code>mixtral:8x7b</code> - 26 GB</li>
+    <li><code>codellama:34b</code> - 19 GB</li>
+    <li><code>qwen2:72b-q4_0</code> - 28 GB</li>
+  </ul>
+
+  <h4>64GB+ RAM + 고성능 GPU</h4>
+  <ul>
+    <li><code>llama3.1:70b</code> - 40 GB</li>
+    <li><code>mixtral:8x22b</code> - 80 GB</li>
+    <li><code>llama3.1:405b-q4_0</code> - 150 GB</li>
+  </ul>
+
+  <h3 id="by-language">언어별 추천</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>언어</th>
+        <th>최적 모델</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>한국어</strong></td>
+        <td>llama3.2, qwen2</td>
+        <td>자연스러운 한국어 생성</td>
+      </tr>
+      <tr>
+        <td><strong>중국어</strong></td>
+        <td>qwen2, deepseek</td>
+        <td>중국어 특화 학습</td>
+      </tr>
+      <tr>
+        <td><strong>일본어</strong></td>
+        <td>qwen2, llama3.2</td>
+        <td>다국어 지원 우수</td>
+      </tr>
+      <tr>
+        <td><strong>영어</strong></td>
+        <td>모든 모델</td>
+        <td>기본 언어</td>
+      </tr>
+      <tr>
+        <td><strong>유럽어</strong></td>
+        <td>mistral, llama</td>
+        <td>다국어 균형</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="tags">모델 태그 시스템</h2>
+
+  <p>Ollama는 Docker와 유사한 태그 시스템을 사용합니다.</p>
+
+  <h3 id="tag-examples">태그 예제</h3>
+
+  <pre><code><span class="cmt"># 기본 형식</span>
+모델명:태그
+
+<span class="cmt"># 태그 생략 시 :latest 자동 적용</span>
+ollama pull llama3.2
+<span class="cmt"># = ollama pull llama3.2:latest</span>
+
+<span class="cmt"># 크기 지정</span>
+ollama pull llama3.2:7b
+ollama pull llama3.2:3b
+ollama pull llama3.2:1b
+
+<span class="cmt"># 크기 + 튜닝 타입</span>
+ollama pull llama3.2:7b-instruct
+ollama pull llama3.2:7b-text
+
+<span class="cmt"># 크기 + 튜닝 + 양자화</span>
+ollama pull llama3.2:7b-instruct-q4_K_M
+ollama pull llama3.2:7b-instruct-q8_0
+
+<span class="cmt"># 특수 변형</span>
+ollama pull llama3.2:11b-vision
+ollama pull codellama:7b-python</code></pre>
+
+  <h3 id="tag-components">태그 구성 요소</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>요소</th>
+        <th>예시</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>크기</td>
+        <td><code>7b</code>, <code>13b</code>, <code>70b</code></td>
+        <td>파라미터 수 (billion)</td>
+      </tr>
+      <tr>
+        <td>튜닝</td>
+        <td><code>instruct</code>, <code>chat</code>, <code>text</code></td>
+        <td>파인튜닝 타입</td>
+      </tr>
+      <tr>
+        <td>양자화</td>
+        <td><code>q4_0</code>, <code>q5_K_M</code>, <code>fp16</code></td>
+        <td>압축 레벨</td>
+      </tr>
+      <tr>
+        <td>특수</td>
+        <td><code>vision</code>, <code>python</code>, <code>coder</code></td>
+        <td>특화 기능</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="tag-management">태그 관리</h3>
+
+  <pre><code><span class="cmt"># 설치된 모델 확인 (태그 포함)</span>
+ollama list
+
+NAME                           ID              SIZE      MODIFIED
+llama3.2:latest                abc123          4.7 GB    2 days ago
+llama3.2:7b-instruct-q4_0      def456          4.1 GB    1 week ago
+mistral:7b-instruct-v0.2       ghi789          4.1 GB    3 days ago
+
+<span class="cmt"># 특정 태그 삭제</span>
+ollama rm llama3.2:7b-instruct-q4_0
+
+<span class="cmt"># 모델 정보 확인</span>
+ollama show llama3.2:7b-instruct-q4_0
+
+<span class="cmt"># 모든 버전 확인 (원격 레지스트리)</span>
+ollama search llama3.2</code></pre>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 태그 주의사항</div>
+    <ul>
+      <li><code>:latest</code> 태그는 시간에 따라 변경될 수 있음 (재현성 주의)</li>
+      <li>프로덕션에서는 명확한 태그 사용 권장 (<code>llama3.2:7b-instruct-q5_K_M</code>)</li>
+      <li>같은 모델의 다른 양자화 버전은 별도 다운로드 필요</li>
+      <li>태그는 대소문자 구분 (<code>7B</code> ≠ <code>7b</code>)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="comparison">모델 비교 매트릭스</h2>
+
+  <h3 id="overall-comparison">종합 비교</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>크기</th>
+        <th>RAM</th>
+        <th>속도</th>
+        <th>품질</th>
+        <th>코딩</th>
+        <th>다국어</th>
+        <th>추천도</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Llama 3.2 7B</td>
+        <td>7B</td>
+        <td>4.7 GB</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>Mistral 7B</td>
+        <td>7B</td>
+        <td>4.1 GB</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>Mixtral 8x7B</td>
+        <td>47B</td>
+        <td>26 GB</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>CodeLlama 7B</td>
+        <td>7B</td>
+        <td>3.8 GB</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>DeepSeek 6.7B</td>
+        <td>6.7B</td>
+        <td>3.8 GB</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>Phi-3 mini</td>
+        <td>3.8B</td>
+        <td>2.3 GB</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>Gemma 2 9B</td>
+        <td>9B</td>
+        <td>5.4 GB</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td>Qwen 2 7B</td>
+        <td>7B</td>
+        <td>4.4 GB</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="benchmark-scores">객관적 벤치마크 점수</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>MMLU</th>
+        <th>HumanEval</th>
+        <th>GSM8K</th>
+        <th>TruthfulQA</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Llama 3.2 7B</td>
+        <td>69.4</td>
+        <td>62.4</td>
+        <td>72.8</td>
+        <td>49.3</td>
+      </tr>
+      <tr>
+        <td>Llama 3.1 70B</td>
+        <td>82.0</td>
+        <td>80.5</td>
+        <td>93.0</td>
+        <td>58.1</td>
+      </tr>
+      <tr>
+        <td>Mistral 7B v0.2</td>
+        <td>62.5</td>
+        <td>40.2</td>
+        <td>52.2</td>
+        <td>42.2</td>
+      </tr>
+      <tr>
+        <td>Mixtral 8x7B</td>
+        <td>70.6</td>
+        <td>40.2</td>
+        <td>74.4</td>
+        <td>46.8</td>
+      </tr>
+      <tr>
+        <td>CodeLlama 7B</td>
+        <td>45.8</td>
+        <td>53.7</td>
+        <td>28.7</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>DeepSeek-Coder 6.7B</td>
+        <td>-</td>
+        <td>78.6</td>
+        <td>65.4</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Phi-3 mini</td>
+        <td>69.0</td>
+        <td>58.5</td>
+        <td>82.5</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Gemma 2 9B</td>
+        <td>71.3</td>
+        <td>61.4</td>
+        <td>76.6</td>
+        <td>-</td>
+      </tr>
+      <tr>
+        <td>Qwen 2 7B</td>
+        <td>70.3</td>
+        <td>67.9</td>
+        <td>79.5</td>
+        <td>-</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box info">
+    <div class="info-box-title">📊 벤치마크 설명</div>
+    <ul>
+      <li><strong>MMLU</strong>: 다양한 학술 주제에 대한 이해도 (0-100)</li>
+      <li><strong>HumanEval</strong>: Python 코드 생성 능력 (0-100)</li>
+      <li><strong>GSM8K</strong>: 초등 수학 문제 해결 능력 (0-100)</li>
+      <li><strong>TruthfulQA</strong>: 사실 기반 답변 정확도 (0-100)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모델 선택 모범 사례</h2>
+
+  <h3 id="evaluation-process">평가 프로세스</h3>
+
+  <ol>
+    <li>
+      <strong>요구사항 정의</strong>
+      <ul>
+        <li>주요 작업 유형 (대화, 코딩, 번역 등)</li>
+        <li>응답 품질 vs 속도 우선순위</li>
+        <li>다국어 지원 필요성</li>
+      </ul>
+    </li>
+    <li>
+      <strong>하드웨어 확인</strong>
+      <ul>
+        <li>사용 가능한 RAM/VRAM 크기</li>
+        <li>GPU 유무 및 성능</li>
+        <li>저장 공간 (모델당 수 GB)</li>
+      </ul>
+    </li>
+    <li>
+      <strong>후보 모델 선정</strong>
+      <ul>
+        <li>3-5개 후보 모델 리스트업</li>
+        <li>다양한 양자화 레벨 포함</li>
+      </ul>
+    </li>
+    <li>
+      <strong>실전 테스트</strong>
+      <ul>
+        <li>실제 사용 케이스로 테스트</li>
+        <li>응답 품질, 속도, 메모리 사용량 측정</li>
+      </ul>
+    </li>
+    <li>
+      <strong>최종 선택</strong>
+      <ul>
+        <li>정량적 + 정성적 평가 결합</li>
+        <li>프로덕션 환경 고려</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h3 id="testing-script">간단한 테스트 스크립트</h3>
+
+  <pre><code><span class="pp">#!/bin/bash</span>
+
+<span class="cmt"># 여러 모델 성능 비교 스크립트</span>
+
+<span class="type">MODELS</span>=(<span class="str">"llama3.2:7b"</span> <span class="str">"mistral:7b"</span> <span class="str">"deepseek-coder:6.7b"</span>)
+<span class="type">PROMPT</span>=<span class="str">"Write a Python function to find prime numbers"</span>
+
+<span class="kw">for</span> model <span class="kw">in</span> <span class="str">"${MODELS[@]}"</span>; <span class="kw">do</span>
+    <span class="fn">echo</span> <span class="str">"Testing $model..."</span>
+
+    <span class="cmt"># 시간 측정</span>
+    <span class="type">start</span>=$(<span class="fn">date</span> +%s)
+
+    <span class="cmt"># 응답 생성</span>
+    ollama run <span class="str">"$model"</span> <span class="str">"$PROMPT"</span> &gt; <span class="str">"result_${model//:/_}.txt"</span>
+
+    <span class="type">end</span>=$(<span class="fn">date</span> +%s)
+    <span class="type">duration</span>=$((<span class="type">end</span> - <span class="type">start</span>))
+
+    <span class="fn">echo</span> <span class="str">"$model: ${duration}s"</span> &gt;&gt; benchmark.txt
+
+    <span class="cmt"># 메모리 사용량 확인</span>
+    ollama ps | <span class="fn">grep</span> <span class="str">"$model"</span> &gt;&gt; benchmark.txt
+
+    <span class="fn">echo</span> <span class="str">"---"</span> &gt;&gt; benchmark.txt
+<span class="kw">done</span>
+
+<span class="fn">echo</span> <span class="str">"Benchmark complete. Check benchmark.txt for results."</span></code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 최종 권장사항</div>
+    <p><strong>일반 개발자에게 가장 추천하는 조합:</strong></p>
+    <ul>
+      <li><strong>범용</strong>: <code>llama3.2:7b-instruct-q5_K_M</code></li>
+      <li><strong>코딩</strong>: <code>deepseek-coder:6.7b-instruct</code></li>
+      <li><strong>경량</strong>: <code>phi3:mini</code></li>
+      <li><strong>임베딩</strong>: <code>nomic-embed-text</code></li>
+    </ul>
+    <p>이 조합으로 16GB RAM 환경에서 대부분의 작업을 커버할 수 있습니다.</p>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

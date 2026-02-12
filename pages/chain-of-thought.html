@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="Chain-of-Thought - Claude 문서">
+<meta property="og:description" content="단계별 사고 과정을 통한 복잡한 추론 향상 기법">
+<meta property="og:url" content="https://minzkn.com/claude/pages/chain-of-thought.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="단계별 사고 과정을 통한 복잡한 추론 향상 기법">
+<meta name="keywords" content="chain-of-thought, CoT, 추론, reasoning, 프롬프트 엔지니어링">
+<meta name="author" content="MINZKN">
+<title>Chain-of-Thought - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">Chain-of-Thought (CoT)</h1>
+  <p class="lead">
+    Chain-of-Thought는 AI가 최종 답변에 도달하기 전에 사고 과정을 단계별로 표시하도록 하는 프롬프팅 기법입니다.
+    복잡한 추론, 수학 문제, 다단계 분석에서 정확도를 크게 향상시킵니다.
+  </p>
+</section>
+
+<div class="info-box tip" style="margin-top: 2rem;">
+  <div class="info-box-title">🎓 처음 Chain-of-Thought를 사용하시나요?</div>
+  <p><strong>"단계별 사고 과정 표시"</strong> - AI가 답을 내기 전에 중간 추론 단계를 명시하도록 유도하는 기법입니다.</p>
+
+  <p style="margin-top: 1em;"><strong>3가지 핵심 개념:</strong></p>
+  <ol style="margin-top: 0.5em;">
+    <li><strong>Zero-shot CoT</strong>: "단계별로 생각해봅시다" 한 문장 추가</li>
+    <li><strong>Few-shot CoT</strong>: 예제에 추론 과정 포함</li>
+    <li><strong>Self-Consistency</strong>: 여러 추론 경로 생성 → 가장 일관된 답 선택</li>
+  </ol>
+
+  <p style="margin-top: 1em;"><strong>언제 사용?</strong> "복잡한 문제를 단계별로 풀어야 할 때" - 수학 문제, 다단계 분석, 코드 디버깅, 의사결정 등</p>
+
+  <p style="margin-top: 1em;"><strong>마법의 문구:</strong> <code style="background: var(--bg-tertiary); padding: 0.2em 0.5em; border-radius: 4px;">단계별로 생각해봅시다</code> (Let's think step by step)</p>
+</div>
+
+<section class="content-section">
+  <h2 id="what-is-cot">CoT란?</h2>
+  <p>
+    Chain-of-Thought는 2022년 Google Research가 발표한 기법으로, LLM이 중간 추론 단계를 명시적으로
+    출력하도록 유도합니다. 이는 인간이 복잡한 문제를 풀 때 단계별로 생각하는 것과 유사합니다.
+  </p>
+
+  <h3 id="with-without">CoT 유무 비교</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">❌ CoT 없음 (Zero-shot)</span>
+    </div>
+    <pre><code>질문: 사과 15개를 3명이 똑같이 나눈 후, 각자 2개씩 더 받았습니다. 한 명당 몇 개인가요?
+
+답변: 7개입니다.
+
+<span class="cmt"># 추론 과정 없음 → 오답 가능성 높음</span></code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">✅ CoT 적용</span>
+    </div>
+    <pre><code>질문: 사과 15개를 3명이 똑같이 나눈 후, 각자 2개씩 더 받았습니다. 한 명당 몇 개인가요?
+
+단계별 풀이:
+1. 처음 15개를 3명이 나눔: 15 ÷ 3 = 5개씩
+2. 각자 2개씩 더 받음: 5 + 2 = 7개
+3. 최종 답: 한 명당 7개
+
+답변: 7개입니다.
+
+<span class="cmt"># 추론 과정 명시 → 정확도 향상</span></code></pre>
+  </div>
+
+  <!-- Chain-of-Thought Comparison Diagram -->
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 380"
+         style="width:100%;max-width:750px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="cot-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+        <marker id="cot-cross" viewBox="0 0 10 10" refX="5" refY="5"
+                markerWidth="10" markerHeight="10">
+          <line x1="2" y1="2" x2="8" y2="8" stroke="var(--accent-danger)" stroke-width="2"/>
+          <line x1="8" y1="2" x2="2" y2="8" stroke="var(--accent-danger)" stroke-width="2"/>
+        </marker>
+      </defs>
+
+      <!-- ===== WITHOUT CoT (Top) ===== -->
+      <text x="375" y="25" text-anchor="middle" fill="var(--accent-danger)" font-size="13" font-weight="bold">
+        ❌ CoT 없음: 블랙박스 추론 (오답 위험)
+      </text>
+
+      <!-- Question -->
+      <rect x="50" y="45" width="140" height="60" rx="8"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="120" y="70" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        질문
+      </text>
+      <text x="120" y="88" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        "복잡한 수학 문제"
+      </text>
+
+      <!-- Black Box -->
+      <line x1="190" y1="75" x2="340" y2="75"
+            stroke="var(--accent-danger)" stroke-width="3" stroke-dasharray="8,4"/>
+      <rect x="230" y="50" width="110" height="50" rx="8"
+            fill="var(--bg-tertiary)" stroke="var(--accent-danger)" stroke-width="2" opacity="0.5"/>
+      <text x="285" y="72" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">
+        ???
+      </text>
+      <text x="285" y="88" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        (추론 과정 숨김)
+      </text>
+
+      <!-- Wrong Answer -->
+      <rect x="340" y="45" width="140" height="60" rx="8"
+            fill="var(--info-bg-danger)" stroke="var(--accent-danger)" stroke-width="2"/>
+      <text x="410" y="70" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        답변 ❌
+      </text>
+      <text x="410" y="88" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        잘못된 답 가능성
+      </text>
+
+      <!-- Problem Note -->
+      <rect x="510" y="50" width="220" height="50" rx="6"
+            fill="var(--info-bg-danger)" stroke="var(--accent-danger)" stroke-width="1.5"/>
+      <text x="620" y="70" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">
+        문제점
+      </text>
+      <text x="620" y="87" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        추론 과정 없음 → 검증 불가 → 정확도 낮음
+      </text>
+
+      <!-- Divider -->
+      <line x1="30" y1="135" x2="720" y2="135" stroke="var(--border-primary)" stroke-width="2"/>
+
+      <!-- ===== WITH CoT (Bottom) ===== -->
+      <text x="375" y="165" text-anchor="middle" fill="var(--accent-primary)" font-size="13" font-weight="bold">
+        ✅ CoT 적용: 단계별 추론 (정확도 향상)
+      </text>
+
+      <!-- Question -->
+      <rect x="50" y="185" width="140" height="60" rx="8"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="120" y="210" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        질문
+      </text>
+      <text x="120" y="228" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        "복잡한 수학 문제"
+      </text>
+
+      <!-- Step 1 -->
+      <line x1="190" y1="215" x2="225" y2="215"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cot-arrow)"/>
+      <rect x="225" y="185" width="90" height="60" rx="6"
+            fill="var(--accent-glow)" stroke="var(--accent-primary)" stroke-width="1.5"/>
+      <text x="270" y="203" text-anchor="middle" fill="var(--accent-primary)" font-size="12" font-weight="bold">
+        Step 1
+      </text>
+      <text x="270" y="219" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        데이터 파악
+      </text>
+      <text x="270" y="233" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        15개, 3명
+      </text>
+
+      <!-- Step 2 -->
+      <line x1="315" y1="215" x2="345" y2="215"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cot-arrow)"/>
+      <rect x="345" y="185" width="90" height="60" rx="6"
+            fill="var(--accent-glow)" stroke="var(--accent-primary)" stroke-width="1.5"/>
+      <text x="390" y="203" text-anchor="middle" fill="var(--accent-primary)" font-size="12" font-weight="bold">
+        Step 2
+      </text>
+      <text x="390" y="219" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        계산
+      </text>
+      <text x="390" y="233" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        15÷3=5
+      </text>
+
+      <!-- Step 3 -->
+      <line x1="435" y1="215" x2="465" y2="215"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cot-arrow)"/>
+      <rect x="465" y="185" width="90" height="60" rx="6"
+            fill="var(--accent-glow)" stroke="var(--accent-primary)" stroke-width="1.5"/>
+      <text x="510" y="203" text-anchor="middle" fill="var(--accent-primary)" font-size="12" font-weight="bold">
+        Step 3
+      </text>
+      <text x="510" y="219" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        추가 계산
+      </text>
+      <text x="510" y="233" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        5+2=7
+      </text>
+
+      <!-- Final Answer -->
+      <line x1="555" y1="215" x2="590" y2="215"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cot-arrow)"/>
+      <rect x="590" y="185" width="120" height="60" rx="8"
+            fill="var(--accent-primary)" fill-opacity="0.2"
+            stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="650" y="210" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        답변 ✅
+      </text>
+      <text x="650" y="228" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        7개 (검증 가능)
+      </text>
+
+      <!-- Benefits -->
+      <rect x="50" y="270" width="660" height="90" rx="8"
+            fill="var(--info-bg-info)" stroke="var(--accent-info)" stroke-width="1.5"/>
+      <text x="380" y="295" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        💡 CoT 적용 효과
+      </text>
+
+      <!-- Benefit 1 -->
+      <rect x="70" y="310" width="200" height="35" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1"/>
+      <text x="170" y="332" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        ✓ 정확도 향상 (수학: ~50% 개선)
+      </text>
+
+      <!-- Benefit 2 -->
+      <rect x="285" y="310" width="200" height="35" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1"/>
+      <text x="385" y="332" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        ✓ 추론 과정 검증 가능
+      </text>
+
+      <!-- Benefit 3 -->
+      <rect x="500" y="310" width="200" height="35" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1"/>
+      <text x="600" y="332" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        ✓ 오류 디버깅 용이
+      </text>
+    </svg>
+    <p class="diagram-caption">그림 1: Chain-of-Thought 적용 전후 비교 - 단계별 추론으로 정확도 향상</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="techniques">CoT 기법 종류</h2>
+
+  <h3 id="zero-shot-cot">1. Zero-shot CoT</h3>
+  <p>
+    예제 없이 간단한 프롬프트만으로 CoT를 유도합니다.
+    마법의 문구: <code>"단계별로 생각해봅시다"</code> (Let's think step by step)
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Zero-shot CoT 예시</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>문제: 한 달에 30일이 있고, 매일 3페이지씩 책을 읽으면 450페이지 책을 다 읽는 데 며칠 걸리나요?
+
+단계별로 생각해봅시다:
+
+<span class="cmt"># Claude가 자동으로 단계를 생성</span>
+1. 총 페이지 수: 450페이지
+2. 하루에 읽는 페이지: 3페이지
+3. 필요한 일수: 450 ÷ 3 = 150일
+4. 따라서 150일이 걸립니다.</code></pre>
+  </div>
+
+  <h3 id="few-shot-cot">2. Few-shot CoT</h3>
+  <p>
+    예제에 추론 과정을 포함시켜 Claude가 패턴을 학습하게 합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Few-shot CoT 예시</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>다음 문제를 단계별로 풀어주세요:
+
+예시 1:
+문제: 연필 12자루를 4명이 나눕니다. 한 명당 몇 자루인가요?
+
+풀이:
+1. 총 연필 수: 12자루
+2. 나눌 사람 수: 4명
+3. 계산: 12 ÷ 4 = 3자루
+답: 한 명당 3자루
+
+예시 2:
+문제: 사탕 20개를 5명이 나누고, 각자 3개씩 더 받습니다. 한 명당 몇 개인가요?
+
+풀이:
+1. 처음 나눔: 20 ÷ 5 = 4개씩
+2. 추가로 받음: 4 + 3 = 7개
+3. 최종 답: 한 명당 7개
+답: 한 명당 7개
+
+이제 다음 문제를 풀어주세요:
+문제: 초콜릿 36개를 6명이 나누고, 각자 2개씩 덜 줍니다. 한 명당 몇 개인가요?
+
+풀이:</code></pre>
+  </div>
+
+  <h3 id="self-consistency">3. Self-Consistency CoT</h3>
+  <p>
+    여러 추론 경로를 생성하고 가장 일관된 답을 선택합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 구현</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">from</span> anthropic <span class="kw">import</span> Anthropic
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+
+client <span class="kw">=</span> <span class="fn">Anthropic</span>()
+problem <span class="kw">=</span> <span class="str">"사과 18개를 3명이 나누고, 각자 3개씩 더 받습니다. 한 명당 몇 개?"</span>
+
+prompt <span class="kw">=</span> <span class="fn">f</span><span class="str">"{problem}\n\n단계별로 생각해봅시다:"</span>
+
+<span class="cmt"># 여러 번 실행하여 다양한 추론 경로 생성</span>
+answers <span class="kw">=</span> []
+<span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
+    message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+        max_tokens<span class="kw">=</span><span class="num">512</span>,
+        temperature<span class="kw">=</span><span class="num">0.7</span>,  <span class="cmt"># 다양성 확보</span>
+        messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+    )
+
+    response <span class="kw">=</span> message.content[<span class="num">0</span>].text
+    <span class="cmt"># 최종 답만 추출 (예: "9개")</span>
+    answer <span class="kw">=</span> <span class="fn">extract_final_answer</span>(response)
+    answers.<span class="fn">append</span>(answer)
+
+<span class="cmt"># 가장 많이 나온 답 선택</span>
+most_common <span class="kw">=</span> <span class="fn">Counter</span>(answers).<span class="fn">most_common</span>(<span class="num">1</span>)[<span class="num">0</span>][<span class="num">0</span>]
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"최종 답: {most_common}"</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"모든 답: {answers}"</span>)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="when-to-use">언제 CoT를 사용하나요?</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>작업 유형</th>
+        <th>CoT 필요성</th>
+        <th>예시</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>수학/논리 문제</td>
+        <td>✅ 필수</td>
+        <td>계산, 추론, 증명</td>
+      </tr>
+      <tr>
+        <td>다단계 분석</td>
+        <td>✅ 강력 권장</td>
+        <td>데이터 분석, 의사결정</td>
+      </tr>
+      <tr>
+        <td>디버깅</td>
+        <td>✅ 유용</td>
+        <td>코드 오류 분석</td>
+      </tr>
+      <tr>
+        <td>복잡한 질문</td>
+        <td>✅ 유용</td>
+        <td>"왜?", "어떻게?" 질문</td>
+      </tr>
+      <tr>
+        <td>간단한 사실 질문</td>
+        <td>❌ 불필요</td>
+        <td>"수도는?" "색깔은?"</td>
+      </tr>
+      <tr>
+        <td>분류 작업</td>
+        <td>⚠️ 선택적</td>
+        <td>감정 분석, 태깅</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="real-world-examples">실전 예시</h2>
+
+  <h3 id="math-problem">예시 1: 수학 문제</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">복잡한 수학 문제 + CoT</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>문제:
+한 상점에서 티셔츠를 개당 15,000원에 팔고 있습니다.
+오늘은 20% 할인 행사를 하고, 3개 이상 구매 시 추가로 10% 할인을 해줍니다.
+5개를 구매하면 총 얼마를 지불해야 하나요?
+
+단계별로 계산해주세요:
+
+1단계: 원가 계산
+- 개당 가격: 15,000원
+- 5개 가격: 15,000 × 5 = 75,000원
+
+2단계: 첫 번째 할인 (20%)
+- 할인액: 75,000 × 0.2 = 15,000원
+- 할인 후: 75,000 - 15,000 = 60,000원
+
+3단계: 추가 할인 (3개 이상 구매 시 10%)
+- 조건 충족: 5개 > 3개 ✓
+- 추가 할인액: 60,000 × 0.1 = 6,000원
+- 최종 가격: 60,000 - 6,000 = 54,000원
+
+답: 54,000원</code></pre>
+  </div>
+
+  <h3 id="code-debugging">예시 2: 코드 디버깅</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 버그 분석 + CoT</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>다음 코드의 버그를 단계별로 분석하세요:
+
+```python
+def calculate_average(numbers):
+    total = 0
+    for num in numbers:
+        total += num
+    return total / len(numbers)
+
+data = [10, 20, 30, 40, 50]
+result = calculate_average(data)
+print(result)  # 예상: 30, 실제: 오류
+```
+
+단계별 분석:
+
+1단계: 함수 로직 검토
+- total 초기화: 0 ✓
+- 루프로 합산: ✓
+- 평균 계산: total / len(numbers) ✓
+→ 로직 자체는 정상
+
+2단계: 예외 상황 확인
+- numbers가 빈 리스트일 때?
+- len([]) = 0
+- total / 0 → ZeroDivisionError 발생 ❌
+
+3단계: 테스트 케이스 분석
+- data = [10, 20, 30, 40, 50]
+- len(data) = 5 (≠ 0)
+- 이 경우는 오류 없음
+→ 하지만 빈 리스트 입력 시 문제 발생
+
+4단계: 버그 정리
+- **버그:** 빈 리스트 처리 부재
+- **심각도:** MEDIUM
+- **발생 조건:** len(numbers) == 0
+
+5단계: 수정 방안
+```python
+def calculate_average(numbers):
+    if not numbers:  # 빈 리스트 체크
+        return 0  # 또는 None, 또는 예외 발생
+    total = 0
+    for num in numbers:
+        total += num
+    return total / len(numbers)
+```
+
+최종 결론:
+- 원래 코드는 주어진 데이터에서 작동하지만, 빈 리스트 입력 시 예외 발생
+- 방어 코드 추가로 안정성 확보</code></pre>
+  </div>
+
+  <h3 id="decision-making">예시 3: 의사결정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">기술 스택 선택 + CoT</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>상황:
+- 스타트업 초기 단계 (팀 3명)
+- MVP 웹 애플리케이션 개발
+- 개발 기간: 2개월
+- 팀 기술 스택: JavaScript 능숙, Python 기본
+
+선택지: React vs Vue vs Angular
+
+단계별 분석:
+
+1단계: 각 프레임워크 특징 정리
+
+React:
+- 장점: 생태계 풍부, 구인 용이, 유연성 높음
+- 단점: 학습 곡선 중간, 추가 라이브러리 필요
+
+Vue:
+- 장점: 학습 곡선 낮음, 문서 훌륭, 빠른 개발
+- 단점: 생태계 작음, 대기업 지원 약함
+
+Angular:
+- 장점: 완전한 프레임워크, TypeScript 기본
+- 단점: 학습 곡선 높음, 무거움
+
+2단계: 요구사항 우선순위
+
+1) 빠른 개발 속도 (2개월 마감) - 최우선
+2) 팀 학습 시간 최소화 (이미 JS 숙련) - 중요
+3) 향후 확장성 및 유지보수 - 중요
+
+3단계: 각 선택지 평가
+
+React:
+- 개발 속도: ⭐⭐⭐ (생태계 덕분에 빠름)
+- 학습: ⭐⭐⭐ (JS 숙련자에게 적합)
+- 확장성: ⭐⭐⭐⭐⭐ (매우 우수)
+총점: 11/15
+
+Vue:
+- 개발 속도: ⭐⭐⭐⭐⭐ (가장 빠름)
+- 학습: ⭐⭐⭐⭐⭐ (가장 쉬움)
+- 확장성: ⭐⭐⭐ (괜찮음)
+총점: 13/15
+
+Angular:
+- 개발 속도: ⭐⭐ (설정 복잡)
+- 학습: ⭐⭐ (어려움)
+- 확장성: ⭐⭐⭐⭐ (우수)
+총점: 8/15
+
+4단계: 리스크 평가
+
+Vue 선택 시:
+- 리스크: 나중에 대규모 팀 확장 시 구인 어려움
+- 완화 방안: MVP 성공 후 React 마이그레이션 고려 가능
+
+React 선택 시:
+- 리스크: 초기 설정과 라이브러리 선택에 시간 소요
+- 완화 방안: Create React App, Next.js 같은 보일러플레이트 사용
+
+5단계: 최종 결정
+
+**추천: Vue**
+
+근거:
+1. 2개월 마감이 최우선 → Vue가 가장 빠름
+2. 팀이 작고 JS 숙련 → Vue의 간결함이 효율적
+3. MVP 단계 → 대규모 생태계는 현재 불필요
+4. 학습 곡선 최소 → 즉시 생산성 확보
+5. 향후 마이그레이션 가능 → 리스크 관리 가능
+
+단, 향후 팀 규모 확장 시 React 전환 검토 권장</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="advanced-patterns">고급 패턴</h2>
+
+  <h3 id="least-to-most">1. Least-to-Most Prompting</h3>
+  <p>
+    복잡한 문제를 작은 하위 문제로 분해한 후 순차적으로 해결합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Least-to-Most 예시</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>문제: 웹 애플리케이션 성능을 50% 향상시키세요.
+
+먼저 이 문제를 작은 하위 문제들로 나누겠습니다:
+
+하위 문제 1: 현재 성능 병목 지점 식별
+→ 해결: 프로파일링 도구 사용, 네트워크 탭 분석, Lighthouse 실행
+
+하위 문제 2: 프론트엔드 최적화
+→ 해결: 코드 스플리팅, 이미지 최적화, lazy loading
+
+하위 문제 3: 백엔드 최적화
+→ 해결: 데이터베이스 인덱스, 캐싱, 쿼리 최적화
+
+하위 문제 4: 네트워크 최적화
+→ 해결: CDN 사용, HTTP/2, Gzip 압축
+
+하위 문제 5: 측정 및 검증
+→ 해결: A/B 테스트, 성능 지표 모니터링
+
+각 하위 문제를 순차적으로 해결하면 전체 50% 향상 목표 달성 가능</code></pre>
+  </div>
+
+  <h3 id="tree-of-thoughts">2. Tree of Thoughts</h3>
+  <p>
+    여러 추론 경로를 트리 구조로 탐색하고 최적 경로를 선택합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Tree of Thoughts 예시</span>
+    </div>
+    <pre><code>문제: "GAME"이라는 단어에서 한 글자씩 바꿔서 "PLAY"로 만드세요. 각 단계는 유효한 영단어여야 합니다.
+
+추론 트리 탐색:
+
+경로 1:
+GAME → GALE (✓ 유효) → PALE (✓ 유효) → PALY (✗ 유효하지 않음) → 막힘
+
+경로 2:
+GAME → CAME (✓ 유효) → CALE (✗ 유효하지 않음) → 막힘
+
+경로 3:
+GAME → GAPE (✓ 유효) → PAPE (✗ 유효하지 않음) → 막힘
+
+경로 4:
+GAME → GATE (✓ 유효) → PATE (✓ 유효) → LATE (✓ 유효) → LATY (✗ 유효하지 않음) → 막힘
+
+경로 5:
+GAME → TAME (✓ 유효) → TALE (✓ 유효) → PALE (✓ 유효) → PALY (✗ 유효하지 않음) → 막힘
+
+...
+
+최적 경로:
+GAME → NAME → LAME → LAMB → PLAN (불가능)
+
+<span class="cmt"># 여러 경로를 탐색하여 실현 가능성 평가</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">베스트 프랙티스</h2>
+
+  <h3 id="explicit-instruction">1. 명시적 지시</h3>
+  <p>
+    "단계별로", "차근차근", "먼저...그 다음..." 같은 명확한 지시를 사용하세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">명시적 지시 예시</span>
+    </div>
+    <pre><code><span class="cmt">✅ 좋은 예시</span>
+"다음 문제를 단계별로 풀어주세요. 각 단계를 명확히 표시하세요."
+
+"먼저 A를 분석하고, 그 다음 B를 평가한 후, 마지막으로 결론을 도출하세요."
+
+<span class="cmt">❌ 나쁜 예시</span>
+"문제를 풀어주세요."  <span class="cmt"># 너무 모호</span></code></pre>
+  </div>
+
+  <h3 id="structure">2. 구조화된 출력</h3>
+  <p>
+    단계 번호, 제목, 구분선을 사용하여 추론 과정을 명확히 하세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">구조화된 CoT</span>
+    </div>
+    <pre><code>다음 형식으로 답변하세요:
+
+## 단계 1: [단계명]
+[내용]
+
+## 단계 2: [단계명]
+[내용]
+
+## 단계 3: [단계명]
+[내용]
+
+## 최종 답변
+[요약 및 결론]</code></pre>
+  </div>
+
+  <h3 id="verification">3. 자가 검증 추가</h3>
+  <p>
+    Claude가 자신의 추론을 검증하도록 요청하세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">자가 검증 CoT</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>문제: [수학 문제]
+
+단계별로 풀이한 후, 다음을 수행하세요:
+
+1. 풀이 과정 작성
+2. 답 도출
+3. 답을 문제에 대입하여 검증
+4. 검증 결과 명시
+
+예시:
+## 풀이
+...
+
+## 답
+x = 5
+
+## 검증
+문제에 x = 5를 대입:
+2x + 3 = 13
+2(5) + 3 = 10 + 3 = 13 ✓
+검증 성공</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="performance">CoT 성능 개선 팁</h2>
+
+  <h3 id="tip-1">1. temperature 조정</h3>
+  <p>
+    복잡한 추론에는 낮은 temperature(0.2~0.5)를 사용하여 일관성을 높이세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+    </div>
+    <pre><code>message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    max_tokens<span class="kw">=</span><span class="num">2048</span>,
+    temperature<span class="kw">=</span><span class="num">0.3</span>,  <span class="cmt"># 낮은 온도 → 일관된 추론</span>
+    messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: cot_prompt}]
+)</code></pre>
+  </div>
+
+  <h3 id="tip-2">2. 충분한 max_tokens</h3>
+  <p>
+    CoT는 출력이 길므로 max_tokens를 충분히 설정하세요 (최소 1024, 권장 2048+).
+  </p>
+
+  <h3 id="tip-3">3. Few-shot + CoT 조합</h3>
+  <p>
+    예제에 추론 과정을 포함시켜 패턴을 학습시키면 더욱 효과적입니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="limitations">한계와 주의사항</h2>
+
+  <h3 id="limit-1">1. 비용 증가</h3>
+  <p>
+    CoT는 출력 토큰이 많아 비용이 증가합니다. 필요한 경우에만 사용하세요.
+  </p>
+
+  <h3 id="limit-2">2. 지연 시간</h3>
+  <p>
+    단계별 추론으로 응답 시간이 길어집니다. 실시간 대화에는 부적합할 수 있습니다.
+  </p>
+
+  <h3 id="limit-3">3. 환각 위험</h3>
+  <p>
+    CoT가 항상 정확한 것은 아닙니다. 그럴듯하지만 잘못된 추론을 할 수 있으므로 중요한 결정에는 검증이 필요합니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>CoT를 마스터했다면 실전에 적용해보세요:</p>
+
+  <ul>
+    <li><a href="tool-use.html">Tool Use</a> - CoT + 외부 도구 조합</li>
+    <li><a href="code-generation.html">코드 생성</a> - CoT로 단계별 코드 작성</li>
+    <li><a href="data-extraction.html">데이터 추출</a> - CoT로 복잡한 데이터 파싱</li>
+    <li><a href="document-analysis.html">문서 분석</a> - CoT로 심층 분석</li>
+  </ul>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

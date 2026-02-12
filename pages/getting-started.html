@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Vibe Coding이란? - AI 기반 새로운 개발 패러다임">
+<meta property="og:description" content="의도만 전달하면 AI가 코드를 작성하는 Vibe Coding의 개념, 장점, 워크플로우를 배웁니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/getting-started.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI 기반 Vibe Coding의 개념, 전통적 개발과의 차이, 장점, 워크플로우를 5분 안에 이해합니다.">
+<meta name="keywords" content="vibe coding, ai coding, claude, 바이브코딩, ai 개발, 프로그래밍">
+<meta name="author" content="MINZKN">
+<title>Vibe Coding이란? - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Vibe Coding이란?</h1>
+<p class="lead">의도만 전달하면 AI가 코드를 작성합니다. 전통적인 프로그래밍을 넘어선 새로운 개발 패러다임을 탐험하세요.</p>
+
+<!-- Quick Start Info-box -->
+<div class="info-box tip">
+  <div class="info-box-title">🎓 처음 시작하시나요?</div>
+  <p><strong>3단계로 Vibe Coding 시작:</strong></p>
+  <ol>
+    <li>이 페이지에서 개념 이해 (5분)</li>
+    <li><a href="quickstart-claude-cli.html">Claude CLI 5분 시작</a> 또는 <a href="quickstart-local.html">Ollama 로컬 시작</a>에서 실습 (10분)</li>
+    <li><a href="prompt-basics.html">프롬프트 기본</a>에서 효과적인 의도 전달 방법 배우기 (15분)</li>
+  </ol>
+</div>
+
+<!-- Section 1: Vibe Coding 정의 -->
+<section class="content-section">
+  <h2 id="definition">Vibe Coding 정의</h2>
+
+  <p>
+    <strong>Vibe Coding</strong>(바이브 코딩)은 AI CLI 도구를 사용하여 자연어로 개발 의도를 전달하면
+    AI가 실제 코드를 작성하는 새로운 소프트웨어 개발 방식입니다. "바이브(vibe, 분위기/느낌)"라는
+    이름처럼, 개발자는 구현 세부사항보다는 <strong>원하는 결과의 분위기와 방향</strong>을 전달하는 데
+    집중합니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 핵심 개념</div>
+    <ul>
+      <li><strong>의도 중심</strong>: "어떻게(How)" 대신 "무엇을(What)" 원하는지 설명</li>
+      <li><strong>자연어 인터페이스</strong>: 코드가 아닌 일상 언어로 소통</li>
+      <li><strong>대화형 개발</strong>: AI와 대화하며 점진적으로 개선</li>
+      <li><strong>컨텍스트 인식</strong>: AI가 프로젝트 전체를 이해하고 작업</li>
+    </ul>
+  </div>
+
+  <h3 id="traditional-vs-vibe">전통적 개발 vs Vibe Coding</h3>
+
+  <!-- Comparison Diagram -->
+  <div class="diagram-container">
+    <svg viewBox="0 0 760 380" width="760" height="380" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="gs-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Title -->
+      <text x="380" y="25" text-anchor="middle" font-size="15" font-weight="bold" fill="var(--diagram-text)">전통적 개발 vs Vibe Coding</text>
+
+      <!-- Traditional Development (Left) -->
+      <text x="190" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--accent-primary)">전통적 개발</text>
+
+      <rect x="80" y="75" width="220" height="60" rx="6" class="box"/>
+      <text x="190" y="95" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">1. 요구사항 분석</text>
+      <text x="190" y="110" text-anchor="middle" font-size="9" fill="var(--diagram-text)">문서 작성, 기술 스택 결정</text>
+      <text x="190" y="125" text-anchor="middle" font-size="9" fill="var(--diagram-text)">아키텍처 설계, DB 스키마</text>
+
+      <line x1="190" y1="135" x2="190" y2="155" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#gs-arrow)"/>
+
+      <rect x="80" y="155" width="220" height="60" rx="6" class="box"/>
+      <text x="190" y="175" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">2. 코드 작성</text>
+      <text x="190" y="190" text-anchor="middle" font-size="9" fill="var(--diagram-text)">함수, 클래스, 모듈 작성</text>
+      <text x="190" y="205" text-anchor="middle" font-size="9" fill="var(--diagram-text)">문법 오류, 버그 수정</text>
+
+      <line x1="190" y1="215" x2="190" y2="235" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#gs-arrow)"/>
+
+      <rect x="80" y="235" width="220" height="60" rx="6" class="box"/>
+      <text x="190" y="255" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">3. 테스트 & 디버깅</text>
+      <text x="190" y="270" text-anchor="middle" font-size="9" fill="var(--diagram-text)">단위 테스트, 통합 테스트</text>
+      <text x="190" y="285" text-anchor="middle" font-size="9" fill="var(--diagram-text)">버그 추적 및 수정</text>
+
+      <line x1="190" y1="295" x2="190" y2="315" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#gs-arrow)"/>
+
+      <rect x="80" y="315" width="220" height="50" rx="6" class="box-accent" opacity="0.7"/>
+      <text x="190" y="335" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">4. 배포</text>
+      <text x="190" y="350" text-anchor="middle" font-size="9" fill="var(--diagram-text)">시간: 수일~수주</text>
+
+      <!-- Vibe Coding (Right) -->
+      <text x="570" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--accent-secondary)">Vibe Coding</text>
+
+      <rect x="460" y="75" width="220" height="60" rx="6" class="box"/>
+      <text x="570" y="95" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">1. 의도 전달</text>
+      <text x="570" y="110" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"TODO 앱 만들어줘"</text>
+      <text x="570" y="125" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"React + Firebase로"</text>
+
+      <line x1="570" y1="135" x2="570" y2="155" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#gs-arrow)"/>
+
+      <rect x="460" y="155" width="220" height="60" rx="6" class="box"/>
+      <text x="570" y="175" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">2. AI 코드 생성</text>
+      <text x="570" y="190" text-anchor="middle" font-size="9" fill="var(--diagram-text)">즉시 실행 가능한 코드</text>
+      <text x="570" y="205" text-anchor="middle" font-size="9" fill="var(--diagram-text)">자동 디버깅</text>
+
+      <line x1="570" y1="215" x2="570" y2="235" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#gs-arrow)"/>
+
+      <rect x="460" y="235" width="220" height="60" rx="6" class="box"/>
+      <text x="570" y="255" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">3. 대화로 개선</text>
+      <text x="570" y="270" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"다크모드 추가해줘"</text>
+      <text x="570" y="285" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"버튼 색상 파란색으로"</text>
+
+      <line x1="570" y1="295" x2="570" y2="315" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#gs-arrow)"/>
+
+      <rect x="460" y="315" width="220" height="50" rx="6" class="box-accent" opacity="0.7"/>
+      <text x="570" y="335" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">4. 배포</text>
+      <text x="570" y="350" text-anchor="middle" font-size="9" fill="var(--diagram-text)">시간: 수분~수시간</text>
+    </svg>
+    <p class="diagram-caption">그림 1: 개발 프로세스 비교 - 전통적 방식은 각 단계가 명시적이지만, Vibe Coding은 AI가 대부분을 자동화</p>
+  </div>
+
+  <h3 id="key-difference">핵심 차이점</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>측면</th>
+        <th>전통적 개발</th>
+        <th>Vibe Coding</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>인터페이스</strong></td>
+        <td>프로그래밍 언어 (Python, Java 등)</td>
+        <td>자연어 (한국어, 영어 등)</td>
+      </tr>
+      <tr>
+        <td><strong>초점</strong></td>
+        <td>구현 세부사항 (How)</td>
+        <td>원하는 결과 (What)</td>
+      </tr>
+      <tr>
+        <td><strong>개발 속도</strong></td>
+        <td>느림 (수일~수주)</td>
+        <td>빠름 (수분~수시간)</td>
+      </tr>
+      <tr>
+        <td><strong>진입장벽</strong></td>
+        <td>높음 (언어, 프레임워크 학습 필요)</td>
+        <td>낮음 (의도 전달만 가능하면 OK)</td>
+      </tr>
+      <tr>
+        <td><strong>오류 처리</strong></td>
+        <td>수동 디버깅</td>
+        <td>AI 자동 수정</td>
+      </tr>
+      <tr>
+        <td><strong>반복 작업</strong></td>
+        <td>매번 직접 작성</td>
+        <td>AI가 자동 생성</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Section 2: 왜 Vibe Coding인가? -->
+<section class="content-section">
+  <h2 id="why-vibe-coding">왜 Vibe Coding인가?</h2>
+
+  <p>
+    Vibe Coding은 소프트웨어 개발의 민주화를 실현합니다. 프로그래밍 경험이 없는 사람도,
+    숙련된 개발자도 모두 혜택을 받을 수 있습니다.
+  </p>
+
+  <h3 id="benefits">주요 장점</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">✨ 1. 낮은 진입장벽</div>
+    <p>
+      프로그래밍 초보자도 복잡한 애플리케이션을 만들 수 있습니다.
+      문법, 라이브러리, 프레임워크를 모두 외울 필요 없이,
+      <strong>"무엇을 만들고 싶은지"</strong>만 설명하면 됩니다.
+    </p>
+    <p><strong>예시:</strong></p>
+    <ul>
+      <li>"날씨 정보를 보여주는 웹 페이지 만들어줘" → AI가 HTML/CSS/JS 생성</li>
+      <li>"사용자 인증 추가해줘" → AI가 인증 로직 구현</li>
+      <li>"모바일에서도 잘 보이게 만들어줘" → AI가 반응형 디자인 적용</li>
+    </ul>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">⚡ 2. 빠른 프로토타이핑</div>
+    <p>
+      아이디어를 몇 분 안에 실행 가능한 프로토타입으로 변환할 수 있습니다.
+      스타트업, 개인 프로젝트, 해커톤에서 특히 강력합니다.
+    </p>
+    <p><strong>실제 사례:</strong></p>
+    <ul>
+      <li><strong>5분</strong>: 간단한 TODO 앱</li>
+      <li><strong>30분</strong>: 실시간 채팅 애플리케이션</li>
+      <li><strong>2시간</strong>: CRUD 기능이 있는 블로그 플랫폼</li>
+      <li><strong>1일</strong>: 결제 통합된 전자상거래 사이트</li>
+    </ul>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🌍 3. 다양한 언어/프레임워크 지원</div>
+    <p>
+      AI는 수십 개의 프로그래밍 언어와 프레임워크를 알고 있습니다.
+      한 프로젝트를 Python으로 시작했다가 나중에 TypeScript로 전환하는 것도 쉽습니다.
+    </p>
+    <p><strong>지원 기술:</strong></p>
+    <ul>
+      <li><strong>언어</strong>: Python, JavaScript, TypeScript, Go, Rust, Java, C++, ...</li>
+      <li><strong>웹 프레임워크</strong>: React, Vue, Next.js, Django, Flask, Express, ...</li>
+      <li><strong>모바일</strong>: React Native, Flutter, SwiftUI, ...</li>
+      <li><strong>데이터베이스</strong>: PostgreSQL, MySQL, MongoDB, Firebase, ...</li>
+    </ul>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">📚 4. 학습 도구로 활용</div>
+    <p>
+      AI가 생성한 코드를 읽고 이해하면서 프로그래밍을 배울 수 있습니다.
+      왜 그렇게 작성했는지 AI에게 질문할 수도 있습니다.
+    </p>
+    <p><strong>학습 패턴:</strong></p>
+    <ul>
+      <li>"이 코드에서 useState는 왜 사용했어?" → AI가 설명</li>
+      <li>"이 함수를 더 효율적으로 만들려면?" → AI가 최적화 제안</li>
+      <li>"테스트 코드도 작성해줘" → AI가 테스트와 함께 모범 사례 제시</li>
+    </ul>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🚀 5. 생산성 향상 (숙련 개발자)</div>
+    <p>
+      숙련된 개발자도 반복 작업을 자동화하고 창의적인 부분에 집중할 수 있습니다.
+      보일러플레이트 코드, CRUD 로직, 테스트 코드 작성 등을 AI에게 맡기세요.
+    </p>
+    <p><strong>시간 절약 예시:</strong></p>
+    <ul>
+      <li>API 엔드포인트 20개 생성: <s>2시간</s> → <strong>10분</strong></li>
+      <li>데이터베이스 마이그레이션: <s>1시간</s> → <strong>5분</strong></li>
+      <li>단위 테스트 작성: <s>3시간</s> → <strong>15분</strong></li>
+      <li>문서 작성: <s>4시간</s> → <strong>20분</strong></li>
+    </ul>
+  </div>
+
+  <h3 id="real-productivity">실제 생산성 데이터</h3>
+
+  <p>
+    GitHub Copilot 및 Claude Code 사용자 연구 결과:
+  </p>
+
+  <ul>
+    <li><strong>55%</strong> 더 빠른 코드 작성 속도</li>
+    <li><strong>60%</strong> 개발 시간 단축</li>
+    <li><strong>88%</strong> 개발자가 생산성 향상 체감</li>
+    <li><strong>74%</strong> 반복 작업 감소</li>
+  </ul>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 주의사항</div>
+    <p>
+      Vibe Coding은 만능이 아닙니다. 다음 경우에는 전통적 개발이 더 적합할 수 있습니다:
+    </p>
+    <ul>
+      <li><strong>고도로 최적화된 알고리즘</strong>이 필요한 경우</li>
+      <li><strong>하드웨어 레벨 제어</strong>가 필요한 임베디드 시스템</li>
+      <li><strong>보안이 극도로 중요한</strong> 금융/의료 시스템 (검증 필수)</li>
+      <li><strong>레거시 코드베이스</strong> 유지보수 (컨텍스트 이해 한계)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Section 3: Vibe Coding 워크플로우 -->
+<section class="content-section">
+  <h2 id="workflow">Vibe Coding 워크플로우</h2>
+
+  <p>
+    Vibe Coding은 4단계 순환 프로세스로 진행됩니다:
+  </p>
+
+  <!-- Workflow Diagram -->
+  <div class="diagram-container">
+    <svg viewBox="0 0 700 450" width="700" height="450" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="wf-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Title -->
+      <text x="350" y="25" text-anchor="middle" font-size="15" font-weight="bold" fill="var(--diagram-text)">Vibe Coding 순환 워크플로우</text>
+
+      <!-- Step 1: 문제 정의 -->
+      <rect x="250" y="60" width="200" height="70" rx="8" class="box-accent" opacity="0.8"/>
+      <text x="350" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">1. 문제 정의</text>
+      <text x="350" y="102" text-anchor="middle" font-size="10" fill="var(--diagram-text)">"무엇을 만들고 싶은가?"</text>
+      <text x="350" y="117" text-anchor="middle" font-size="9" fill="var(--diagram-text)">예: "Markdown 에디터 만들기"</text>
+
+      <line x1="350" y1="130" x2="350" y2="165" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#wf-arrow)"/>
+
+      <!-- Step 2: 의도 전달 -->
+      <rect x="250" y="165" width="200" height="70" rx="8" class="box"/>
+      <text x="350" y="190" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">2. 의도 전달</text>
+      <text x="350" y="207" text-anchor="middle" font-size="10" fill="var(--diagram-text)">AI CLI 도구로 요청</text>
+      <text x="350" y="222" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"React로 만들어줘, 미리보기 포함"</text>
+
+      <line x1="350" y1="235" x2="350" y2="270" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#wf-arrow)"/>
+
+      <!-- Step 3: 코드 생성 -->
+      <rect x="250" y="270" width="200" height="70" rx="8" class="box"/>
+      <text x="350" y="295" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">3. 코드 생성</text>
+      <text x="350" y="312" text-anchor="middle" font-size="10" fill="var(--diagram-text)">AI가 코드 작성 및 설명</text>
+      <text x="350" y="327" text-anchor="middle" font-size="9" fill="var(--diagram-text)">App.js, Editor.js, Preview.js 생성</text>
+
+      <line x1="350" y1="340" x2="350" y2="375" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#wf-arrow)"/>
+
+      <!-- Step 4: 대화로 개선 -->
+      <rect x="250" y="375" width="200" height="70" rx="8" class="box-accent" opacity="0.8"/>
+      <text x="350" y="400" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">4. 대화로 개선</text>
+      <text x="350" y="417" text-anchor="middle" font-size="10" fill="var(--diagram-text)">피드백 반영 및 반복</text>
+      <text x="350" y="432" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"문법 하이라이팅 추가해줘"</text>
+
+      <!-- Loop back -->
+      <path d="M 470 410 Q 560 410 560 305 L 560 200 Q 560 165 530 165"
+            stroke="var(--diagram-arrow)" stroke-width="2" fill="none" marker-end="url(#wf-arrow)" stroke-dasharray="5,5"/>
+      <text x="570" y="290" font-size="9" fill="var(--diagram-text)">계속 개선</text>
+
+      <!-- Side notes -->
+      <text x="50" y="100" font-size="10" fill="var(--text-secondary)">✓ 명확한 목표 설정</text>
+      <text x="50" y="205" font-size="10" fill="var(--text-secondary)">✓ 구체적인 요구사항</text>
+      <text x="50" y="310" font-size="10" fill="var(--text-secondary)">✓ 검토 및 테스트</text>
+      <text x="50" y="415" font-size="10" fill="var(--text-secondary)">✓ 점진적 개선</text>
+    </svg>
+    <p class="diagram-caption">그림 2: Vibe Coding 워크플로우 - 순환적이며 대화형 프로세스</p>
+  </div>
+
+  <h3 id="workflow-details">각 단계 상세 설명</h3>
+
+  <h4>1단계: 문제 정의 (Problem Definition)</h4>
+  <p>
+    무엇을 만들고 싶은지 명확히 정의합니다. 너무 복잡하면 작은 단위로 나누세요.
+  </p>
+  <ul>
+    <li><strong>좋은 예</strong>: "사용자가 할 일을 추가/삭제/완료 표시할 수 있는 TODO 앱"</li>
+    <li><strong>나쁜 예</strong>: "앱 만들어줘" (너무 모호)</li>
+  </ul>
+
+  <h4>2단계: 의도 전달 (Intent Communication)</h4>
+  <p>
+    AI CLI 도구에 자연어로 요청합니다. 기술 스택, 제약사항 등을 함께 전달하세요.
+  </p>
+  <pre><code><span class="cmt"># Claude CLI 예시</span>
+$ npx claude
+<span class="str">"React와 TypeScript로 TODO 앱 만들어줘.
+localStorage에 데이터 저장하고,
+다크모드 지원해줘."</span></code></pre>
+
+  <h4>3단계: 코드 생성 (Code Generation)</h4>
+  <p>
+    AI가 코드를 생성하고 설명합니다. 파일 구조, 주요 로직, 사용한 라이브러리 등을 확인하세요.
+  </p>
+  <pre><code><span class="cmt"># AI 응답 예시</span>
+<span class="str">"TODO 앱을 생성했습니다. 다음 파일들을 만들었습니다:
+
+1. src/App.tsx - 메인 컴포넌트
+2. src/components/TodoList.tsx - 할 일 목록
+3. src/components/TodoItem.tsx - 개별 할 일
+4. src/hooks/useTodos.ts - 상태 관리 hook
+5. src/styles/dark-mode.css - 다크모드 스타일
+
+localStorage를 사용하여 데이터를 영구 저장하며,
+CSS 변수로 다크모드를 구현했습니다."</span></code></pre>
+
+  <h4>4단계: 대화로 개선 (Iterative Improvement)</h4>
+  <p>
+    생성된 코드를 테스트하고, 피드백을 주어 개선합니다. 여러 번 반복할 수 있습니다.
+  </p>
+  <pre><code><span class="cmt"># 개선 요청 예시</span>
+<span class="str">"좋아! 이제 다음 기능들 추가해줘:
+1. 할 일에 마감일 추가
+2. 중요도별로 필터링
+3. 완료된 항목은 회색으로 표시"</span></code></pre>
+
+  <h3 id="workflow-examples">실제 터미널 세션 예제</h3>
+
+  <h4>예제 1: 간단한 계산기 앱</h4>
+  <pre><code><span class="cmt"># 터미널에서 Claude CLI 시작</span>
+$ npx claude
+
+<span class="str">💬 You: "HTML/CSS/JS로 계산기 만들어줘. 사칙연산 지원하고, 키보드 입력도 가능하게."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"계산기 앱을 생성했습니다!"</span>
+
+<span class="cmt"># 생성된 파일</span>
+calculator/
+  ├── index.html
+  ├── style.css
+  └── script.js
+
+<span class="str">💬 You: "디자인을 iOS 계산기처럼 만들어줘."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"style.css를 업데이트했습니다. 어두운 배경에 둥근 버튼, 주황색 연산자 버튼을 추가했습니다."</span>
+
+<span class="str">💬 You: "완벽해! 이제 이전 계산 결과도 보여줘."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"히스토리 기능을 추가했습니다. 상단에 최근 5개 계산 결과가 표시됩니다."</span></code></pre>
+
+  <h4>예제 2: REST API 서버</h4>
+  <pre><code><span class="cmt"># Aider CLI 사용</span>
+$ aider
+
+<span class="str">💬 You: "Express.js로 블로그 API 만들어줘. 게시글 CRUD 기능 필요해."</span>
+
+<span class="fn">🤖 Aider:</span> <span class="str">"다음 파일들을 생성했습니다:
+- server.js: Express 서버 설정
+- routes/posts.js: 게시글 라우트
+- models/Post.js: 게시글 모델
+- package.json: 의존성 설정"</span>
+
+<span class="str">💬 You: "MongoDB 대신 PostgreSQL 사용하고, TypeScript로 바꿔줘."</span>
+
+<span class="fn">🤖 Aider:</span> <span class="str">"변환 완료! PostgreSQL과 TypeScript로 마이그레이션했습니다.
+- tsconfig.json 추가
+- Prisma 스키마 설정
+- 타입 안전성 확보"</span></code></pre>
+
+  <h4>예제 3: 데이터 분석 스크립트</h4>
+  <pre><code><span class="cmt"># Continue.dev (VS Code 내부)</span>
+<span class="str">💬 You: "이 CSV 파일을 읽어서 pandas로 분석하고, 시각화 그래프 3개 만들어줘."</span>
+
+<span class="fn">🤖 Continue:</span> <span class="str">"analysis.py를 생성했습니다:
+1. 데이터 로드 및 전처리
+2. 기술 통계 계산
+3. 상관관계 히트맵
+4. 시계열 그래프
+5. 분포 히스토그램"</span>
+
+<span class="str">💬 You: "그래프를 Plotly로 바꾸고, interactive하게 만들어줘."</span>
+
+<span class="fn">🤖 Continue:</span> <span class="str">"matplotlib를 Plotly로 교체했습니다.
+이제 줌, 팬, 호버 정보가 지원됩니다."</span></code></pre>
+
+  <h4>예제 4: 모바일 앱 (React Native)</h4>
+  <pre><code><span class="cmt"># Claude CLI</span>
+$ npx claude
+
+<span class="str">💬 You: "React Native로 날씨 앱 만들어줘. OpenWeather API 사용하고, 현재 위치 기반으로 날씨 보여줘."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"날씨 앱을 생성했습니다!
+- App.tsx: 메인 컴포넌트
+- api/weather.ts: OpenWeather API 연동
+- components/WeatherCard.tsx: 날씨 정보 표시
+- hooks/useLocation.ts: 위치 정보 hook
+- .env.example: API 키 설정 템플릿"</span>
+
+<span class="str">💬 You: "5일 예보도 추가하고, 아이콘을 애니메이션으로 만들어줘."</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"5일 예보 컴포넌트를 추가하고, Lottie 애니메이션을 적용했습니다.
+날씨 아이콘이 부드럽게 애니메이션됩니다."</span></code></pre>
+
+  <h4>예제 5: Chrome 확장 프로그램</h4>
+  <pre><code><span class="cmt"># Cursor IDE 사용</span>
+<span class="str">💬 You: "웹 페이지의 색상 팔레트를 추출하는 Chrome 확장 프로그램 만들어줘."</span>
+
+<span class="fn">🤖 Cursor:</span> <span class="str">"Chrome 확장 프로그램을 생성했습니다:
+- manifest.json: 확장 프로그램 설정
+- popup.html/popup.js: 팝업 UI
+- content.js: 페이지 분석 스크립트
+- background.js: 백그라운드 서비스"</span>
+
+<span class="str">💬 You: "추출한 색상을 클립보드로 복사하는 버튼 추가해줘."</span>
+
+<span class="fn">🤖 Cursor:</span> <span class="str">"복사 버튼을 추가했습니다. 각 색상 카드에 클릭 이벤트가 연결되어 있습니다."</span></code></pre>
+</section>
+
+<!-- Section 4: 필요한 것들 -->
+<section class="content-section">
+  <h2 id="requirements">필요한 것들</h2>
+
+  <p>
+    Vibe Coding을 시작하기 위해 필요한 것은 생각보다 간단합니다:
+  </p>
+
+  <h3 id="req-cli-tool">1. AI CLI 도구</h3>
+  <p>
+    다양한 AI CLI 도구 중 하나를 선택하세요:
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>설치</th>
+        <th>특징</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a href="claude-cli.html">Claude CLI</a></td>
+        <td><code>npx claude</code></td>
+        <td>공식 도구, 최고 품질, API 키 필요</td>
+      </tr>
+      <tr>
+        <td><a href="aider.html">Aider</a></td>
+        <td><code>pip install aider-chat</code></td>
+        <td>Git 통합, 오픈소스, 다중 LLM</td>
+      </tr>
+      <tr>
+        <td><a href="continue.html">Continue.dev</a></td>
+        <td>VS Code 확장</td>
+        <td>에디터 통합, 자동완성</td>
+      </tr>
+      <tr>
+        <td><a href="cursor.html">Cursor</a></td>
+        <td>앱 다운로드</td>
+        <td>전용 IDE, 통합 경험</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 추천 시작 도구</div>
+    <ul>
+      <li><strong>Claude API 있음</strong> → <a href="quickstart-claude-cli.html">Claude CLI</a></li>
+      <li><strong>무료로 시작</strong> → <a href="quickstart-local.html">Ollama</a> + Aider</li>
+      <li><strong>VS Code 사용자</strong> → Continue.dev</li>
+      <li><strong>올인원 선호</strong> → Cursor IDE</li>
+    </ul>
+  </div>
+
+  <h3 id="req-llm">2. LLM (Large Language Model)</h3>
+  <p>
+    AI CLI 도구를 구동할 LLM이 필요합니다:
+  </p>
+
+  <h4>클라우드 LLM (API 키 필요)</h4>
+  <ul>
+    <li><strong>Claude (Anthropic)</strong>: 최고 품질의 코드 생성 ($20/월부터)</li>
+    <li><strong>GPT-4 (OpenAI)</strong>: 범용 성능 우수 ($20/월 ChatGPT Plus)</li>
+    <li><strong>Gemini (Google)</strong>: 무료 티어 제공</li>
+  </ul>
+
+  <h4>로컬 LLM (완전 무료)</h4>
+  <ul>
+    <li><strong><a href="ollama-intro.html">Ollama</a></strong>: 가장 쉬운 로컬 LLM 실행 (권장)</li>
+    <li><strong>LM Studio</strong>: GUI 기반 로컬 LLM</li>
+    <li><strong>LocalAI</strong>: API 호환 로컬 서버</li>
+  </ul>
+
+  <div class="info-box info">
+    <div class="info-box-title">📊 비용 비교</div>
+    <ul>
+      <li><strong>Claude API</strong>: 입력 $3/1M 토큰, 출력 $15/1M 토큰</li>
+      <li><strong>GPT-4</strong>: 입력 $5/1M 토큰, 출력 $15/1M 토큰</li>
+      <li><strong>Gemini Pro</strong>: 무료 티어 (하루 15 요청)</li>
+      <li><strong>Ollama (로컬)</strong>: 완전 무료 (하드웨어 필요)</li>
+    </ul>
+  </div>
+
+  <h3 id="req-knowledge">3. 기본 터미널 지식</h3>
+  <p>
+    명령줄(터미널) 기본 사용법만 알면 됩니다:
+  </p>
+  <ul>
+    <li><code>cd</code>: 디렉토리 이동</li>
+    <li><code>ls</code>: 파일 목록 보기</li>
+    <li><code>npm</code> 또는 <code>pip</code>: 패키지 설치</li>
+  </ul>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 프로그래밍 경험이 없어도 됩니다!</div>
+    <p>
+      Python, JavaScript를 몰라도 괜찮습니다. AI가 코드를 작성하고 설명해줍니다.
+      다만 생성된 코드를 읽고 이해하려는 의지는 있어야 합니다.
+    </p>
+  </div>
+
+  <h3 id="req-environment">4. 개발 환경</h3>
+  <p>
+    최소한의 개발 환경만 준비하세요:
+  </p>
+
+  <ul>
+    <li><strong>터미널</strong>: macOS Terminal, Windows PowerShell, Linux Shell</li>
+    <li><strong>코드 에디터</strong>: VS Code, Sublime Text, Vim (선택사항)</li>
+    <li><strong>Git</strong>: 버전 관리 (선택사항, 권장)</li>
+    <li><strong>Node.js</strong>: JavaScript 도구 사용 시 필요</li>
+  </ul>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🛠️ 권장 설정</div>
+    <p>
+      <strong>VS Code</strong> + <strong>Claude CLI</strong> + <strong>Git</strong> 조합이 가장 대중적입니다.
+      <a href="dev-environment.html">LLM 개발 환경</a> 페이지에서 상세 설정 가이드를 확인하세요.
+    </p>
+  </div>
+</section>
+
+<!-- Section 5: 첫 번째 Vibe Coding -->
+<section class="content-section">
+  <h2 id="first-vibe-coding">첫 번째 Vibe Coding 실습</h2>
+
+  <p>
+    이제 실제로 Vibe Coding을 경험해봅시다. <strong>간단한 TODO 웹 앱</strong>을 5분 안에 만들어보겠습니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 실습 목표</div>
+    <ul>
+      <li>HTML/CSS/JavaScript로 구성된 TODO 앱</li>
+      <li>할 일 추가/삭제/완료 표시 기능</li>
+      <li>localStorage에 데이터 저장</li>
+      <li>반응형 디자인</li>
+    </ul>
+  </div>
+
+  <h3 id="step-by-step">단계별 실습</h3>
+
+  <h4>Step 1: 작업 디렉토리 생성</h4>
+  <pre><code><span class="cmt"># 터미널에서 실행</span>
+mkdir my-first-vibe-coding
+cd my-first-vibe-coding</code></pre>
+
+  <h4>Step 2: Claude CLI 시작</h4>
+  <pre><code><span class="cmt"># npx로 Claude CLI 실행 (설치 불필요)</span>
+npx claude
+
+<span class="cmt"># 또는 이미 설치했다면</span>
+claude</code></pre>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ API 키 필요</div>
+    <p>
+      Claude CLI는 Anthropic API 키가 필요합니다. 아직 없다면:
+    </p>
+    <ol>
+      <li><a href="https://console.anthropic.com" target="_blank" rel="noopener">Anthropic Console</a> 접속</li>
+      <li>API 키 발급 (무료 크레딧 제공)</li>
+      <li><code>export ANTHROPIC_API_KEY=your-key-here</code> 설정</li>
+    </ol>
+    <p>또는 <a href="quickstart-local.html">Ollama로 무료 시작</a>을 선택하세요.</p>
+  </div>
+
+  <h4>Step 3: 첫 번째 요청</h4>
+  <pre><code><span class="str">💬 You:</span>
+<span class="str">"HTML, CSS, JavaScript로 TODO 앱을 만들어줘.
+
+요구사항:
+1. 할 일을 입력하고 Enter로 추가
+2. 각 항목에 완료 체크박스와 삭제 버튼
+3. localStorage에 데이터 저장 (새로고침해도 유지)
+4. 깔끔한 UI (파스텔 톤 색상)
+5. 모바일에서도 잘 보이게
+
+파일 3개로 나눠줘: index.html, style.css, script.js"</span></code></pre>
+
+  <h4>Step 4: AI 응답 확인</h4>
+  <pre><code><span class="fn">🤖 Claude:</span>
+<span class="str">"TODO 앱을 생성했습니다! 다음 파일들을 만들었습니다:
+
+📄 index.html
+- 시맨틱 HTML5 구조
+- 입력 필드와 할 일 목록 컨테이너
+
+🎨 style.css
+- 파스텔 톤 색상 팔레트
+- Flexbox 레이아웃
+- 반응형 디자인 (모바일 최적화)
+- 부드러운 애니메이션
+
+⚙️ script.js
+- 할 일 추가/삭제/완료 기능
+- localStorage 영구 저장
+- 이벤트 리스너 설정
+
+브라우저에서 index.html을 열어 테스트해보세요!"</span></code></pre>
+
+  <h4>Step 5: 테스트</h4>
+  <pre><code><span class="cmt"># 간단한 HTTP 서버 실행 (Python)</span>
+python3 -m http.server 8000
+
+<span class="cmt"># 또는 Node.js</span>
+npx serve
+
+<span class="cmt"># 브라우저에서 열기</span>
+open http://localhost:8000</code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">✅ 작동 확인</div>
+    <p>브라우저에서 다음을 테스트하세요:</p>
+    <ul>
+      <li>할 일 추가 → 목록에 표시됨</li>
+      <li>체크박스 클릭 → 취소선 표시</li>
+      <li>삭제 버튼 → 항목 제거</li>
+      <li>새로고침 → 데이터 유지됨</li>
+      <li>모바일 크기로 창 축소 → 레이아웃 적응</li>
+    </ul>
+  </div>
+
+  <h4>Step 6: 개선 요청</h4>
+  <p>
+    마음에 들지 않는 부분이 있다면 AI에게 수정을 요청하세요:
+  </p>
+
+  <pre><code><span class="str">💬 You: "좋아! 이제 다음 기능들 추가해줘:
+1. 완료된 항목을 아래로 이동
+2. 전체 삭제 버튼
+3. 남은 할 일 개수 표시
+4. 다크모드 토글"</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"모든 기능을 추가했습니다!
+
+✅ 완료된 항목은 자동으로 하단으로 이동합니다
+🗑️ '모두 삭제' 버튼이 우측 상단에 추가되었습니다
+📊 '남은 할 일: X개' 카운터가 헤더에 표시됩니다
+🌙 다크모드 토글이 우측 상단에 추가되었습니다 (사용자 설정 저장)
+
+script.js와 style.css를 업데이트했습니다."</span></code></pre>
+
+  <h3 id="what-happened">무슨 일이 일어났나요?</h3>
+
+  <p>
+    방금 여러분은:
+  </p>
+
+  <ol>
+    <li><strong>프로그래밍 없이</strong> 완전한 웹 앱을 만들었습니다</li>
+    <li><strong>5분 안에</strong> 모든 기능을 구현했습니다</li>
+    <li><strong>대화만으로</strong> 기능을 추가하고 개선했습니다</li>
+    <li><strong>localStorage, 반응형 디자인</strong> 같은 고급 기능도 적용했습니다</li>
+  </ol>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎉 축하합니다!</div>
+    <p>
+      첫 번째 Vibe Coding을 성공적으로 완료했습니다!
+      이제 같은 방식으로 복잡한 앱도 만들 수 있습니다.
+    </p>
+  </div>
+
+  <h3 id="generated-code">생성된 코드 살펴보기</h3>
+
+  <p>
+    AI가 생성한 코드를 열어서 읽어보세요. 이해 안 되는 부분이 있다면 AI에게 물어보세요:
+  </p>
+
+  <pre><code><span class="str">💬 You: "script.js에서 addEventListener는 무슨 역할이야?"</span>
+
+<span class="fn">🤖 Claude:</span> <span class="str">"addEventListener는 사용자의 동작(클릭, 키 입력 등)을 감지하는 함수입니다.
+
+예를 들어:
+```javascript
+button.addEventListener('click', () => {
+  // 버튼이 클릭되면 이 코드가 실행됩니다
+});
+```
+
+우리 앱에서는 다음 이벤트를 감지합니다:
+- 'Enter' 키 → 할 일 추가
+- 체크박스 클릭 → 완료 표시
+- 삭제 버튼 클릭 → 항목 제거
+
+더 자세한 설명이 필요하면 말씀해주세요!"</span></code></pre>
+</section>
+
+<!-- Section 6: 다음 단계 -->
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <p>
+    Vibe Coding 개념을 이해했으니, 이제 더 깊이 파고들 차례입니다:
+  </p>
+
+  <h3 id="learning-roadmap">추천 학습 경로</h3>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>1️⃣ 초급 (1-2주)</h3>
+      <ul>
+        <li><a href="cli-tools-overview.html">AI CLI 도구 생태계</a> - 다양한 도구 비교</li>
+        <li><a href="quickstart-claude-cli.html">Claude CLI 5분 시작</a> - 클라우드 LLM 사용</li>
+        <li><a href="quickstart-local.html">Ollama 로컬 시작</a> - 무료 로컬 LLM</li>
+        <li><a href="prompt-basics.html">프롬프트 기본</a> - 효과적인 의도 전달</li>
+      </ul>
+    </div>
+
+    <div class="doc-card">
+      <h3>2️⃣ 중급 (2-4주)</h3>
+      <ul>
+        <li><a href="cli-comparison.html">CLI 도구 비교</a> - 내게 맞는 도구 선택</li>
+        <li><a href="ollama-models.html">Ollama 모델 가이드</a> - 로컬 모델 활용</li>
+        <li><a href="prompt-for-coding.html">코딩용 프롬프트</a> - 실전 기법</li>
+        <li><a href="api-key-management.html">API 키 관리</a> - 보안 설정</li>
+      </ul>
+    </div>
+
+    <div class="doc-card">
+      <h3>3️⃣ 고급 (4주+)</h3>
+      <ul>
+        <li><a href="mcp-intro.html">MCP (Model Context Protocol)</a> - 외부 도구 통합</li>
+        <li><a href="api-switching.html">다중 LLM 전환</a> - 비용 최적화</li>
+        <li><a href="vibe-coding-patterns.html">Vibe Coding 패턴</a> - 디자인 패턴</li>
+        <li><a href="ci-cd-llm.html">CI/CD & LLM</a> - 자동화 통합</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 id="practice-projects">연습 프로젝트</h3>
+
+  <p>
+    다음 프로젝트들로 Vibe Coding 실력을 키우세요:
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>난이도</th>
+        <th>프로젝트</th>
+        <th>학습 목표</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>⭐ 초급</td>
+        <td>계산기 웹 앱</td>
+        <td>기본 UI, 이벤트 처리</td>
+      </tr>
+      <tr>
+        <td>⭐ 초급</td>
+        <td>날씨 정보 앱</td>
+        <td>API 연동, 비동기 처리</td>
+      </tr>
+      <tr>
+        <td>⭐⭐ 중급</td>
+        <td>Markdown 에디터</td>
+        <td>실시간 미리보기, 상태 관리</td>
+      </tr>
+      <tr>
+        <td>⭐⭐ 중급</td>
+        <td>영화 검색 앱</td>
+        <td>외부 API, 라우팅</td>
+      </tr>
+      <tr>
+        <td>⭐⭐⭐ 고급</td>
+        <td>실시간 채팅 앱</td>
+        <td>WebSocket, 데이터베이스</td>
+      </tr>
+      <tr>
+        <td>⭐⭐⭐ 고급</td>
+        <td>전자상거래 플랫폼</td>
+        <td>인증, 결제, 관리자 대시보드</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="join-community">커뮤니티 참여</h3>
+
+  <p>
+    다른 Vibe Coder들과 소통하세요:
+  </p>
+
+  <ul>
+    <li><strong>Reddit</strong>: <a href="https://reddit.com/r/ClaudeAI" target="_blank" rel="noopener">/r/ClaudeAI</a></li>
+    <li><strong>Discord</strong>: <a href="https://discord.gg/anthropic" target="_blank" rel="noopener">Anthropic Discord</a></li>
+    <li><strong>GitHub</strong>: 오픈소스 프로젝트에 기여</li>
+    <li><strong>블로그</strong>: 여러분의 Vibe Coding 경험을 공유</li>
+  </ul>
+
+  <h3 id="tips-for-success">성공을 위한 팁</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 효과적인 Vibe Coding을 위한 10가지 팁</div>
+    <ol>
+      <li><strong>명확한 요구사항</strong>: 모호한 요청보다 구체적인 요구사항</li>
+      <li><strong>작은 단위로 시작</strong>: 한 번에 모든 기능보다 점진적 개발</li>
+      <li><strong>코드 이해하기</strong>: 생성된 코드를 읽고 이해하려는 노력</li>
+      <li><strong>질문하기</strong>: 이해 안 되면 AI에게 설명 요청</li>
+      <li><strong>테스트 습관</strong>: 매번 변경 후 테스트</li>
+      <li><strong>버전 관리</strong>: Git으로 변경 사항 추적</li>
+      <li><strong>비용 의식</strong>: API 사용량 모니터링 (클라우드 LLM)</li>
+      <li><strong>보안 검토</strong>: 민감한 정보 처리 시 검증</li>
+      <li><strong>다양한 도구 시도</strong>: 여러 CLI 도구를 경험</li>
+      <li><strong>커뮤니티 활용</strong>: 막힐 때 다른 사람에게 물어보기</li>
+    </ol>
+  </div>
+
+  <h3 id="further-reading">추가 학습 자료</h3>
+
+  <ul>
+    <li><a href="learning-path.html">학습 경로 가이드</a> - 체계적인 학습 로드맵</li>
+    <li><a href="cli-best-practices.html">CLI 모범 사례</a> - 실전 노하우</li>
+    <li><a href="prompt-optimization.html">프롬프트 최적화</a> - 토큰 절약 기법</li>
+    <li><a href="faq.html">FAQ</a> - 자주 묻는 질문</li>
+    <li><a href="glossary.html">용어집</a> - LLM, CLI 용어 정리</li>
+  </ul>
+</section>
+
+<!-- Summary -->
+<section class="content-section">
+  <h2 id="summary">요약</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">📝 핵심 요약</div>
+    <ul>
+      <li><strong>Vibe Coding</strong>은 자연어로 의도를 전달하면 AI가 코드를 작성하는 새로운 개발 패러다임</li>
+      <li><strong>낮은 진입장벽</strong>: 프로그래밍 초보자도 복잡한 앱 제작 가능</li>
+      <li><strong>빠른 개발</strong>: 프로토타입을 몇 분 안에 구현</li>
+      <li><strong>4단계 워크플로우</strong>: 문제 정의 → 의도 전달 → 코드 생성 → 대화로 개선</li>
+      <li><strong>필요한 것</strong>: AI CLI 도구 + LLM + 기본 터미널 지식</li>
+      <li><strong>다음 단계</strong>: CLI 도구 선택 → 프롬프트 배우기 → 실습 프로젝트</li>
+    </ul>
+  </div>
+
+  <p>
+    이제 여러분은 Vibe Coding이 무엇인지, 왜 중요한지, 어떻게 시작하는지 알게 되었습니다.
+    아래 링크로 이동하여 실제로 시작해보세요!
+  </p>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>🚀 바로 시작하기</h3>
+      <p><a href="quickstart-claude-cli.html">Claude CLI 5분 시작</a> 또는 <a href="quickstart-local.html">Ollama 로컬 시작</a></p>
+    </div>
+    <div class="doc-card">
+      <h3>📚 더 배우기</h3>
+      <p><a href="cli-tools-overview.html">AI CLI 도구 생태계</a>에서 모든 도구를 비교해보세요</p>
+    </div>
+  </div>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== Inline TOC (Aside) ===== -->
+<aside class="inline-toc">
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

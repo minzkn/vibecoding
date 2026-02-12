@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="프롬프트 최적화 - Claude 문서">
+<meta property="og:description" content="Claude 프롬프트 최적화 기법: 토큰 절약, 정확도 향상, 응답 품질 개선">
+<meta property="og:url" content="https://minzkn.com/claude/pages/prompt-optimization.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude 프롬프트 최적화 기법: 토큰 절약, 정확도 향상, 응답 품질 개선">
+<meta name="keywords" content="Claude, prompt optimization, token efficiency, 프롬프트 최적화, 토큰">
+<meta name="author" content="MINZKN">
+<title>프롬프트 최적화 - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">프롬프트 최적화</h1>
+  <p class="lead">
+    효율적이고 효과적인 프롬프트를 작성하기 위한 최적화 기법을 다룹니다.
+    토큰 절약, 정확도 향상, 응답 품질 개선, 구조화된 출력까지 실전에서 바로 적용할 수 있는 전략을 제공합니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="token-efficiency">토큰 절약 기법</h2>
+
+  <div class="info-box tip">
+    <div class="info-box-title">토큰이란?</div>
+    <p>
+      토큰은 AI 모델이 텍스트를 처리하는 기본 단위입니다.
+      영어는 약 4자당 1토큰, 한글은 약 1.5자당 1토큰으로 계산됩니다.
+      토큰 수는 비용과 처리 속도에 직접적인 영향을 미칩니다.
+    </p>
+    <p><strong>예시:</strong></p>
+    <ul>
+      <li>"Hello, world!" → 약 4 토큰</li>
+      <li>"안녕하세요, 세상!" → 약 7 토큰</li>
+      <li>"Claude는 대화형 AI입니다" → 약 12 토큰</li>
+    </ul>
+  </div>
+
+  <h3 id="token-reduction">불필요한 단어 제거</h3>
+
+  <p>핵심 정보만 남기고 수식어를 줄이세요.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:50%">❌ 장황한 표현 (높은 토큰)</th>
+        <th style="width:50%">✅ 간결한 표현 (낮은 토큰)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          "제가 부탁드리고 싶은 것은 Python 프로그래밍 언어를 사용하여 사용자 인증 기능을 구현하는 코드를 작성해주시면 좋겠습니다."<br>
+          <span style="color:var(--accent-danger)">→ 약 60 토큰</span>
+        </td>
+        <td>
+          "Python으로 사용자 인증 코드를 작성해주세요."<br>
+          <span style="color:var(--accent-success)">→ 약 15 토큰 (75% 절약)</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          "다음의 데이터를 분석해서 그 결과를 바탕으로 인사이트를 도출하고, 그것을 보기 좋은 형태로 정리해주세요."<br>
+          <span style="color:var(--accent-danger)">→ 약 45 토큰</span>
+        </td>
+        <td>
+          "다음 데이터를 분석하고 인사이트를 정리해주세요."<br>
+          <span style="color:var(--accent-success)">→ 약 18 토큰 (60% 절약)</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          "혹시 가능하시다면, 시간이 되실 때, 이 코드의 성능을 조금 더 개선할 수 있는 방법이 있을지 살펴봐주시겠어요?"<br>
+          <span style="color:var(--accent-danger)">→ 약 50 토큰</span>
+        </td>
+        <td>
+          "이 코드를 최적화해주세요."<br>
+          <span style="color:var(--accent-success)">→ 약 8 토큰 (84% 절약)</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="token-abbreviation">약어와 기호 활용</h3>
+
+  <p>기술 용어는 표준 약어를 사용하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">토큰 절약 예시</span>
+    </div>
+    <pre><code><span class="cmt"># 장황한 표현 (많은 토큰)</span>
+Application Programming Interface 설계
+Structured Query Language 쿼리 작성
+Hypertext Markup Language 문서 생성
+
+<span class="cmt"># 간결한 표현 (적은 토큰)</span>
+API 설계
+SQL 쿼리 작성
+HTML 문서 생성
+
+<span class="cmt"># 기호 활용</span>
+"A 그리고 B 그리고 C" → "A, B, C"
+"1번부터 10번까지" → "1-10"
+"보다 큰" → ">"
+"이하" → "<="</code></pre>
+  </div>
+
+  <h3 id="token-structure">구조화로 중복 제거</h3>
+
+  <p>반복되는 패턴은 구조화하여 토큰을 절약하세요.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:50%">❌ 반복적 표현</th>
+        <th style="width:50%">✅ 구조화된 표현</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <pre style="margin:0;padding:0.5rem;background:var(--code-bg);font-size:0.85em;">다음을 검증해주세요:
+이메일이 유효한지 검증
+비밀번호가 8자 이상인지 검증
+전화번호 형식이 맞는지 검증
+나이가 18세 이상인지 검증</pre>
+        </td>
+        <td>
+          <pre style="margin:0;padding:0.5rem;background:var(--code-bg);font-size:0.85em;">다음을 검증:
+- 이메일: 유효성
+- 비밀번호: 8자+
+- 전화번호: 형식
+- 나이: 18세+</pre>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <pre style="margin:0;padding:0.5rem;background:var(--code-bg);font-size:0.85em;">첫 번째 함수는 사용자 생성
+두 번째 함수는 사용자 조회
+세 번째 함수는 사용자 수정
+네 번째 함수는 사용자 삭제</pre>
+        </td>
+        <td>
+          <pre style="margin:0;padding:0.5rem;background:var(--code-bg);font-size:0.85em;">함수 구현:
+1. 생성
+2. 조회
+3. 수정
+4. 삭제</pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="token-context">컨텍스트 최소화</h3>
+
+  <p>필요한 정보만 제공하고, 이전 대화를 참조할 때는 요약하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">나쁜 예 - 불필요한 컨텍스트</span>
+    </div>
+    <pre><code>아까 우리가 얘기했던 그 React 컴포넌트 있잖아요.
+그게 지금 useState를 사용하고 있는데,
+이전에 말씀하신 것처럼 useReducer로 바꾸려고 하는데,
+근데 제가 생각해보니까 Context API도 필요할 것 같아서요.
+그래서 이 세 가지를 어떻게 조합하면 좋을지 궁금합니다.</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">좋은 예 - 핵심만 요약</span>
+    </div>
+    <pre><code>이전 React 컴포넌트를 다음과 같이 개선하려 합니다:
+- useState → useReducer 전환
+- Context API 추가
+
+구현 방법을 제시해주세요.</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="accuracy">정확도 향상</h2>
+
+  <h3 id="accuracy-fewshot">Few-shot Learning</h3>
+
+  <p>예제를 제공하면 원하는 출력 형식을 정확히 따릅니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Few-shot 프롬프트 예시</span>
+    </div>
+    <pre><code>사용자 피드백을 감성 분석하여 긍정/부정/중립으로 분류해주세요.
+
+<span class="cmt"># 예제</span>
+입력: "제품이 정말 마음에 들어요. 배송도 빨랐습니다."
+출력: 긍정 (이유: "마음에 들어요", "빨랐습니다" 등 긍정 표현)
+
+입력: "가격 대비 품질이 별로입니다. 실망했어요."
+출력: 부정 (이유: "별로", "실망" 등 부정 표현)
+
+입력: "그냥 평범한 제품이에요."
+출력: 중립 (이유: 특별한 감정 표현 없음)
+
+<span class="cmt"># 분류할 피드백</span>
+"배송은 빨랐는데 포장이 좀 아쉬웠어요."</code></pre>
+  </div>
+
+  <h3 id="accuracy-cot">Chain-of-Thought (CoT)</h3>
+
+  <p>단계별 추론을 요청하면 복잡한 문제의 정확도가 향상됩니다.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:50%">일반 프롬프트</th>
+        <th style="width:50%">CoT 프롬프트</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <pre style="margin:0;padding:0.5rem;background:var(--code-bg);font-size:0.85em;">"이 SQL 쿼리를 최적화해주세요."</pre>
+        </td>
+        <td>
+          <pre style="margin:0;padding:0.5rem;background:var(--code-bg);font-size:0.85em;">"이 SQL 쿼리를 최적화해주세요.
+
+단계별로 분석:
+1. 현재 성능 병목 지점 파악
+2. 인덱스 사용 여부 확인
+3. 조인 순서 최적화 검토
+4. 서브쿼리 개선 가능성
+5. 최종 최적화된 쿼리 제시"</pre>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <pre style="margin:0;padding:0.5rem;background:var(--code-bg);font-size:0.85em;">"이 알고리즘의 시간 복잡도를 계산해주세요."</pre>
+        </td>
+        <td>
+          <pre style="margin:0;padding:0.5rem;background:var(--code-bg);font-size:0.85em;">"이 알고리즘의 시간 복잡도를 단계별로 분석:
+
+1. 각 루프의 반복 횟수 파악
+2. 중첩 루프의 곱셈 관계 계산
+3. 재귀 호출의 깊이와 분기
+4. 최종 Big-O 표기법
+5. 최선/평균/최악 케이스 구분"</pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="accuracy-constraints">제약사항 명시</h3>
+
+  <p>제약사항을 구체적으로 명시하면 잘못된 솔루션을 방지할 수 있습니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">제약사항 명시 예시</span>
+    </div>
+    <pre><code>Python으로 이진 검색 트리를 구현해주세요.
+
+<span class="cmt"># 제약사항 (MUST)</span>
+- 재귀 함수 사용 금지 (스택 오버플로 방지)
+- 표준 라이브러리만 사용 (외부 패키지 X)
+- 타입 힌트 필수
+- 중복 값 허용 안 함
+
+<span class="cmt"># 제약사항 (SHOULD)</span>
+- 평균 시간 복잡도 O(log n)
+- 메모리 사용 최소화
+
+<span class="cmt"># 제약사항 (MUST NOT)</span>
+- 전역 변수 사용 금지
+- mutable default arguments 금지
+- 예외를 무시하는 bare except 금지</code></pre>
+  </div>
+
+  <h3 id="accuracy-validation">검증 기준 제시</h3>
+
+  <p>결과를 어떻게 검증할지 미리 명시하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">검증 기준 예시</span>
+    </div>
+    <pre><code>이메일 유효성 검증 함수를 작성해주세요.
+
+<span class="cmt"># 검증 통과 케이스</span>
+✅ user@example.com
+✅ user.name@example.co.kr
+✅ user+tag@example.com
+✅ user123@subdomain.example.com
+
+<span class="cmt"># 검증 실패 케이스</span>
+❌ @example.com (로컬 파트 없음)
+❌ user@.com (도메인 시작이 점)
+❌ user@example (TLD 없음)
+❌ user name@example.com (공백 포함)
+❌ user@exam ple.com (도메인 공백)
+
+<span class="cmt"># 성능 검증</span>
+- 10만 개 이메일 검증 < 1초
+- 정규식 ReDoS 공격에 안전할 것</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="quality">응답 품질 개선</h2>
+
+  <h3 id="quality-persona">페르소나 설정</h3>
+
+  <p>역할을 부여하면 더 전문적인 답변을 얻을 수 있습니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">페르소나 프롬프트</span>
+    </div>
+    <pre><code><span class="cmt"># 일반 프롬프트</span>
+"React 성능 최적화 방법을 알려주세요."
+
+<span class="cmt"># 페르소나 설정 프롬프트</span>
+"당신은 10년 경력의 시니어 React 개발자입니다.
+대규모 트래픽 서비스(일 방문자 100만+)를 운영한 경험이 있습니다.
+
+다음 React 애플리케이션의 성능 문제를 진단하고 해결책을 제시해주세요:
+- 초기 로딩 시간: 5초 (목표: 2초 이하)
+- FCP: 3초, LCP: 4.5초
+- 번들 크기: 2.5MB
+
+실전 경험에 기반한 우선순위별 최적화 전략을 제안해주세요."</code></pre>
+  </div>
+
+  <h3 id="quality-format">출력 형식 지정</h3>
+
+  <p>원하는 출력 형식을 명확히 지정하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">형식 지정 예시</span>
+    </div>
+    <pre><code>다음 API 설계를 리뷰해주세요.
+
+<span class="cmt"># 출력 형식</span>
+## 1. 장점 (Strengths)
+- [구체적인 장점]
+
+## 2. 개선 사항 (Improvements)
+### 2.1 Critical (즉시 수정 필요)
+- [문제점]: [개선 방법]
+  - 영향도: [High/Medium/Low]
+  - 예상 작업 시간: [시간]
+
+### 2.2 Recommended (권장)
+- [문제점]: [개선 방법]
+
+### 2.3 Optional (선택)
+- [문제점]: [개선 방법]
+
+## 3. 코드 예시
+[개선된 코드]
+
+## 4. 참고 자료
+- [관련 문서 링크]</code></pre>
+  </div>
+
+  <h3 id="quality-specificity">구체성 향상</h3>
+
+  <p>추상적인 요청보다 구체적인 요청이 더 나은 결과를 냅니다.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:50%">❌ 추상적 요청</th>
+        <th style="width:50%">✅ 구체적 요청</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"성능을 개선해주세요"</td>
+        <td>"메모리 사용량을 현재 500MB에서 200MB 이하로 줄여주세요"</td>
+      </tr>
+      <tr>
+        <td>"보안을 강화해주세요"</td>
+        <td>"OWASP Top 10 취약점 중 SQL Injection과 XSS를 방어하는 코드를 추가해주세요"</td>
+      </tr>
+      <tr>
+        <td>"코드를 깔끔하게 만들어주세요"</td>
+        <td>"함수 길이를 30줄 이하로, 순환 복잡도를 10 이하로 리팩토링해주세요"</td>
+      </tr>
+      <tr>
+        <td>"테스트를 작성해주세요"</td>
+        <td>"pytest로 유닛 테스트를 작성하되, 브랜치 커버리지 90% 이상 달성해주세요"</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="quality-iteration">반복 개선</h3>
+
+  <p>첫 응답이 완벽하지 않다면 구체적인 피드백으로 개선하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">반복 개선 예시</span>
+    </div>
+    <pre><code><span class="cmt"># 1차 프롬프트</span>
+"Python으로 CSV 파일을 읽는 함수를 작성해주세요."
+
+<span class="cmt"># 1차 응답 (가정)</span>
+<span class="kw">def</span> <span class="fn">read_csv</span>(file_path):
+    <span class="kw">with</span> <span class="fn">open</span>(file_path) <span class="kw">as</span> f:
+        <span class="kw">return</span> f.<span class="fn">read</span>()
+
+<span class="cmt"># 2차 프롬프트 (구체적 피드백)</span>
+"좋은 시작입니다. 다음을 추가해주세요:
+1. pandas 사용하여 DataFrame 반환
+2. 인코딩 에러 처리 (utf-8, cp949 자동 감지)
+3. 파일이 없을 때 명확한 에러 메시지
+4. 타입 힌트 추가"
+
+<span class="cmt"># 3차 프롬프트 (추가 개선)</span>
+"거의 완벽합니다. 마지막으로:
+1. 대용량 파일 처리를 위한 청크 읽기 옵션 추가
+2. 로깅 추가 (파일 크기, 행 수 출력)
+3. docstring을 Google 스타일로 작성"</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="structured-output">구조화된 출력</h2>
+
+  <h3 id="output-json">JSON 출력</h3>
+
+  <p>기계가 처리하기 쉬운 JSON 형식으로 요청하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">JSON 출력 프롬프트</span>
+    </div>
+    <pre><code>다음 제품 리뷰를 분석하여 JSON 형식으로 출력해주세요.
+
+<span class="cmt"># 출력 스키마</span>
+{
+  <span class="str">"sentiment"</span>: <span class="str">"positive|negative|neutral"</span>,
+  <span class="str">"score"</span>: <span class="num">0.0</span> <span class="kw">to</span> <span class="num">1.0</span>,
+  <span class="str">"aspects"</span>: [
+    {
+      <span class="str">"category"</span>: <span class="str">"quality|price|delivery|service"</span>,
+      <span class="str">"sentiment"</span>: <span class="str">"positive|negative|neutral"</span>,
+      <span class="str">"keywords"</span>: [<span class="str">"keyword1"</span>, <span class="str">"keyword2"</span>]
+    }
+  ],
+  <span class="str">"summary"</span>: <span class="str">"한 줄 요약"</span>
+}
+
+<span class="cmt"># 분석할 리뷰</span>
+"제품 품질은 좋은데 배송이 너무 느렸어요. 가격은 적당합니다."</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예상 출력</span>
+    </div>
+    <pre><code>{
+  <span class="str">"sentiment"</span>: <span class="str">"neutral"</span>,
+  <span class="str">"score"</span>: <span class="num">0.6</span>,
+  <span class="str">"aspects"</span>: [
+    {
+      <span class="str">"category"</span>: <span class="str">"quality"</span>,
+      <span class="str">"sentiment"</span>: <span class="str">"positive"</span>,
+      <span class="str">"keywords"</span>: [<span class="str">"품질"</span>, <span class="str">"좋은"</span>]
+    },
+    {
+      <span class="str">"category"</span>: <span class="str">"delivery"</span>,
+      <span class="str">"sentiment"</span>: <span class="str">"negative"</span>,
+      <span class="str">"keywords"</span>: [<span class="str">"배송"</span>, <span class="str">"느렸어요"</span>]
+    },
+    {
+      <span class="str">"category"</span>: <span class="str">"price"</span>,
+      <span class="str">"sentiment"</span>: <span class="str">"positive"</span>,
+      <span class="str">"keywords"</span>: [<span class="str">"가격"</span>, <span class="str">"적당"</span>]
+    }
+  ],
+  <span class="str">"summary"</span>: <span class="str">"품질과 가격은 만족스러우나 배송이 지연됨"</span>
+}</code></pre>
+  </div>
+
+  <h3 id="output-markdown">Markdown 출력</h3>
+
+  <p>문서화가 필요한 경우 Markdown 형식을 지정하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Markdown 출력 프롬프트</span>
+    </div>
+    <pre><code>이 API를 문서화해주세요. Markdown 형식으로 출력하되 다음 구조를 따르세요:
+
+<span class="cmt"># 구조</span>
+# API 이름
+간단한 설명
+
+## Endpoint
+`METHOD /path`
+
+## Parameters
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| ... | ... | ... | ... |
+
+## Request Example
+```json
+{ ... }
+```
+
+## Response
+### Success (200)
+```json
+{ ... }
+```
+
+### Error (4xx/5xx)
+```json
+{ ... }
+```
+
+## Notes
+- 주의사항
+- 제한사항</code></pre>
+  </div>
+
+  <h3 id="output-table">테이블 출력</h3>
+
+  <p>비교나 요약에는 테이블 형식이 효과적입니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">테이블 출력 프롬프트</span>
+    </div>
+    <pre><code>다음 프레임워크들을 비교하여 테이블로 출력해주세요:
+React, Vue, Angular, Svelte
+
+<span class="cmt"># 비교 항목</span>
+- 학습 곡선
+- 성능 (번들 크기, 렌더링 속도)
+- 생태계 (라이브러리, 도구)
+- 커뮤니티 규모
+- 기업 지원
+- 적합한 프로젝트 규모
+
+<span class="cmt"># 출력 형식</span>
+Markdown 테이블, 각 항목에 간단한 평가 (상/중/하 또는 1-5점)</code></pre>
+  </div>
+
+  <h3 id="output-code">코드 블록</h3>
+
+  <p>코드 출력 시 언어를 명시하고 주석을 요청하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">코드 출력 프롬프트</span>
+    </div>
+    <pre><code>Python으로 LRU 캐시를 구현해주세요.
+
+<span class="cmt"># 출력 형식</span>
+1. 코드 블록은 ```python으로 시작
+2. 각 메서드 위에 docstring 추가 (Google 스타일)
+3. 복잡한 로직에는 인라인 주석
+4. 타입 힌트 포함
+5. 사용 예제 별도 코드 블록으로 제공</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="template-library">프롬프트 템플릿 라이브러리</h2>
+
+  <h3 id="template-analysis">분석 템플릿</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">코드 리뷰 템플릿</span>
+    </div>
+    <pre><code>다음 코드를 리뷰해주세요.
+
+<span class="cmt"># 리뷰 기준</span>
+1. 가독성 (네이밍, 구조)
+2. 성능 (시간/공간 복잡도)
+3. 보안 (취약점)
+4. 유지보수성 (SOLID 원칙)
+5. 테스트 가능성
+
+<span class="cmt"># 출력 형식</span>
+## 점수
+- 가독성: [1-10점]
+- 성능: [1-10점]
+- 보안: [1-10점]
+- 유지보수성: [1-10점]
+- 테스트 가능성: [1-10점]
+- **총점: [평균]**
+
+## Critical Issues (즉시 수정)
+- [문제]: [해결 방법]
+
+## Suggestions (권장 개선)
+- [문제]: [해결 방법]
+
+## Best Practices
+- [칭찬할 부분]
+
+## Refactored Code
+```python
+[개선된 코드]
+```
+
+<span class="cmt"># 리뷰 대상 코드</span>
+[코드 삽입]</code></pre>
+  </div>
+
+  <h3 id="template-debugging">디버깅 템플릿</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">디버깅 템플릿</span>
+    </div>
+    <pre><code>다음 버그를 디버깅해주세요.
+
+<span class="cmt"># 증상</span>
+- 예상 동작: [기대하는 결과]
+- 실제 동작: [실제 발생하는 결과]
+- 재현율: [항상/간헐적]
+- 에러 메시지: [에러 내용 또는 "없음"]
+
+<span class="cmt"># 환경</span>
+- OS: [운영체제]
+- 언어/프레임워크 버전: [버전]
+- 의존성: [관련 라이브러리]
+
+<span class="cmt"># 재현 단계</span>
+1. [단계]
+2. [단계]
+3. [단계]
+
+<span class="cmt"># 문제 코드</span>
+[코드]
+
+<span class="cmt"># 원하는 출력</span>
+1. **근본 원인 분석**
+2. **수정된 코드**
+3. **테스트 코드** (재발 방지)
+4. **설명** (왜 버그가 발생했는지)</code></pre>
+  </div>
+
+  <h3 id="template-optimization">최적화 템플릿</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">성능 최적화 템플릿</span>
+    </div>
+    <pre><code>다음 코드를 최적화해주세요.
+
+<span class="cmt"># 현재 성능</span>
+- 실행 시간: [측정값]
+- 메모리 사용: [측정값]
+- 처리량: [측정값]
+
+<span class="cmt"># 목표 성능</span>
+- 실행 시간: [목표값]
+- 메모리 사용: [목표값]
+- 처리량: [목표값]
+
+<span class="cmt"># 제약사항</span>
+- 정확도: [유지/근사 허용]
+- 메모리 제한: [제한사항]
+- 코드 복잡도: [유지보수성 우선/성능 우선]
+
+<span class="cmt"># 최적화 대상 코드</span>
+[코드]
+
+<span class="cmt"># 원하는 출력</span>
+1. **병목 분석** (프로파일링 결과)
+2. **최적화 전략** (우선순위별)
+3. **최적화된 코드**
+4. **성능 비교** (Before/After)
+5. **trade-offs** (성능 vs 가독성 등)</code></pre>
+  </div>
+
+  <h3 id="template-testing">테스트 템플릿</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">테스트 작성 템플릿</span>
+    </div>
+    <pre><code>[테스트 프레임워크]로 다음 함수의 테스트를 작성해주세요.
+
+<span class="cmt"># 테스트 대상</span>
+[함수 코드]
+
+<span class="cmt"># 테스트 범위</span>
+1. **Happy Path**: 정상 동작
+2. **Edge Cases**: 경계값, 특수 케이스
+3. **Error Cases**: 예외 상황
+4. **Performance**: 대용량 데이터 처리
+
+<span class="cmt"># 요구사항</span>
+- AAA 패턴 (Arrange-Act-Assert)
+- 테스트 함수명: test_[기능]_[시나리오]_[예상결과]
+- 모킹: [모킹 대상 명시]
+- 커버리지: Line 95%+, Branch 90%+
+
+<span class="cmt"># 출력 형식</span>
+```python
+<span class="kw">import</span> pytest
+
+<span class="cmt"># Fixtures</span>
+<span class="decorator">@pytest.fixture</span>
+<span class="kw">def</span> <span class="fn">setup</span>():
+    <span class="kw">pass</span>
+
+<span class="cmt"># Tests</span>
+<span class="kw">def</span> <span class="fn">test_example</span>():
+    <span class="cmt"># Arrange</span>
+
+    <span class="cmt"># Act</span>
+
+    <span class="cmt"># Assert</span>
+    <span class="kw">pass</span>
+```</code></pre>
+  </div>
+
+  <h3 id="template-documentation">문서화 템플릿</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">API 문서 템플릿</span>
+    </div>
+    <pre><code>다음 API를 문서화해주세요.
+
+<span class="cmt"># API 코드</span>
+[코드]
+
+<span class="cmt"># 문서 형식</span>
+Markdown, OpenAPI 3.0 스펙 참고
+
+<span class="cmt"># 포함 내용</span>
+1. **Overview**: API 목적 및 간단한 설명
+2. **Authentication**: 인증 방법
+3. **Endpoints**: 모든 엔드포인트 상세
+   - HTTP 메서드, 경로
+   - 요청 파라미터 (경로/쿼리/바디)
+   - 응답 형식 (성공/에러)
+   - 예제 (curl, JavaScript, Python)
+4. **Rate Limiting**: 제한사항
+5. **Error Codes**: 에러 코드 설명
+6. **Changelog**: 버전 변경 이력
+
+<span class="cmt"># 출력 언어</span>
+한국어 (코드 예제 제외)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="ab-testing">A/B 테스팅</h2>
+
+  <p>여러 프롬프트 변형을 테스트하여 최적의 프롬프트를 찾으세요.</p>
+
+  <h3 id="ab-methodology">테스트 방법론</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">A/B 테스트 프로세스</span>
+    </div>
+    <pre><code><span class="cmt"># 1단계: 가설 수립</span>
+"구체적인 예제를 포함하면 코드 품질이 향상될 것이다"
+
+<span class="cmt"># 2단계: 변형 작성</span>
+<span class="kw">Variant A</span> (Control): "Python으로 정렬 함수를 작성해주세요"
+<span class="kw">Variant B</span> (Treatment): "Python으로 정렬 함수를 작성해주세요. 예: [3,1,2] → [1,2,3]"
+
+<span class="cmt"># 3단계: 평가 기준 정의</span>
+- 정확성: 요구사항 충족 여부 (0-10점)
+- 코드 품질: 가독성, 효율성 (0-10점)
+- 완성도: 에러 처리, 엣지 케이스 (0-10점)
+
+<span class="cmt"># 4단계: 반복 테스트</span>
+각 변형을 3-5회 반복하여 평균 점수 계산
+
+<span class="cmt"># 5단계: 결과 분석</span>
+통계적 유의성 확인 (t-test 등)</code></pre>
+  </div>
+
+  <h3 id="ab-examples">A/B 테스트 예시</h3>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:50%">Variant A</th>
+        <th style="width:50%">Variant B</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>간결한 프롬프트</strong><br>
+          "API를 설계해주세요"<br><br>
+          <span style="color:var(--text-secondary)">평균 점수: 6.2/10</span>
+        </td>
+        <td>
+          <strong>상세한 프롬프트</strong><br>
+          "RESTful API를 설계해주세요. HTTP 메서드, 경로, 응답 형식을 포함하세요"<br><br>
+          <span style="color:var(--accent-success)">평균 점수: 8.7/10</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>일반적 요청</strong><br>
+          "이 코드를 최적화해주세요"<br><br>
+          <span style="color:var(--text-secondary)">평균 점수: 6.8/10</span>
+        </td>
+        <td>
+          <strong>측정 가능한 목표</strong><br>
+          "이 코드의 실행 시간을 50% 단축해주세요"<br><br>
+          <span style="color:var(--accent-success)">평균 점수: 8.3/10</span>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>예제 없음</strong><br>
+          "날짜 파싱 함수를 만들어주세요"<br><br>
+          <span style="color:var(--text-secondary)">평균 점수: 7.1/10</span>
+        </td>
+        <td>
+          <strong>Few-shot 예제</strong><br>
+          "날짜 파싱 함수를 만들어주세요<br>
+          예: '2024-01-01' → Date 객체<br>
+          예: 'yesterday' → 어제 날짜"<br><br>
+          <span style="color:var(--accent-success)">평균 점수: 9.1/10</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="metrics">메트릭 측정</h2>
+
+  <h3 id="metrics-quality">품질 메트릭</h3>
+
+  <p>프롬프트 효과를 정량화하여 측정하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">품질 평가 체크리스트</span>
+    </div>
+    <pre><code><span class="cmt"># 정확성 (Accuracy)</span>
+- [ ] 요구사항 100% 충족
+- [ ] 엣지 케이스 처리
+- [ ] 에러 케이스 처리
+
+<span class="cmt"># 완성도 (Completeness)</span>
+- [ ] 모든 기능 구현
+- [ ] 문서화 (docstring, 주석)
+- [ ] 예제 코드 포함
+
+<span class="cmt"># 품질 (Quality)</span>
+- [ ] 코드 스타일 준수
+- [ ] 네이밍 일관성
+- [ ] 적절한 추상화 수준
+
+<span class="cmt"># 효율성 (Efficiency)</span>
+- [ ] 시간 복잡도 최적
+- [ ] 공간 복잡도 최적
+- [ ] 불필요한 연산 없음
+
+<span class="cmt"># 점수 계산</span>
+각 항목 0-10점, 평균 계산</code></pre>
+  </div>
+
+  <h3 id="metrics-efficiency">효율성 메트릭</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">효율성 측정</span>
+    </div>
+    <pre><code><span class="cmt"># 토큰 효율성</span>
+효율성 = 품질 점수 / (입력 토큰 + 출력 토큰)
+
+<span class="cmt"># 시간 효율성</span>
+시간 효율성 = 품질 점수 / 응답 시간(초)
+
+<span class="cmt"># 비용 효율성</span>
+비용 효율성 = 품질 점수 / 비용($)
+
+<span class="cmt"># 반복 횟수</span>
+이상적 반복: 1-2회 (첫 응답이 만족스러울수록 좋음)
+
+<span class="cmt"># 예시</span>
+프롬프트 A: 품질 7점, 500토큰, 5초 → 효율성 0.014
+프롬프트 B: 품질 9점, 300토큰, 4초 → 효율성 0.030 (B가 2배 이상 효율적)</code></pre>
+  </div>
+
+  <h3 id="metrics-dashboard">대시보드 예시</h3>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th>프롬프트</th>
+        <th>품질</th>
+        <th>토큰</th>
+        <th>시간</th>
+        <th>반복</th>
+        <th>효율성</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>기본 프롬프트</td>
+        <td>6.5/10</td>
+        <td>800</td>
+        <td>8초</td>
+        <td>3회</td>
+        <td>0.008</td>
+      </tr>
+      <tr style="background:var(--info-bg-success)">
+        <td><strong>최적화된 프롬프트</strong></td>
+        <td><strong>9.2/10</strong></td>
+        <td><strong>450</strong></td>
+        <td><strong>5초</strong></td>
+        <td><strong>1회</strong></td>
+        <td><strong>0.020</strong></td>
+      </tr>
+      <tr>
+        <td>과도한 프롬프트</td>
+        <td>8.8/10</td>
+        <td>1200</td>
+        <td>12초</td>
+        <td>1회</td>
+        <td>0.007</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="iteration">반복 개선 프로세스</h2>
+
+  <h3 id="iteration-cycle">개선 사이클</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">PDCA 사이클</span>
+    </div>
+    <pre><code><span class="cmt"># Plan (계획)</span>
+1. 목표 정의: "코드 생성 품질을 8점 이상으로"
+2. 가설 수립: "타입 힌트를 명시하면 품질 향상"
+3. 테스트 설계: 5개 샘플로 A/B 테스트
+
+<span class="cmt"># Do (실행)</span>
+1. 기존 프롬프트로 5회 생성 (Baseline)
+2. 개선된 프롬프트로 5회 생성
+3. 결과 수집 및 저장
+
+<span class="cmt"># Check (확인)</span>
+1. 품질 점수 비교
+2. 토큰/시간 측정
+3. 통계적 유의성 검증
+
+<span class="cmt"># Act (조치)</span>
+1. 개선이 확인되면 프롬프트 업데이트
+2. 개선이 없으면 다른 가설 테스트
+3. 결과 문서화 및 공유</code></pre>
+  </div>
+
+  <h3 id="iteration-log">개선 로그 예시</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Markdown 로그</span>
+    </div>
+    <pre><code><span class="cmt"># 프롬프트 개선 로그</span>
+
+<span class="cmt">## 버전 1.0 (Baseline)</span>
+- 프롬프트: "Python으로 함수를 작성해주세요"
+- 품질: 6.2/10
+- 토큰: 800
+- 문제점: 에러 처리 누락, 타입 힌트 없음
+
+<span class="cmt">## 버전 1.1</span>
+- 변경사항: 타입 힌트 요구 추가
+- 품질: 7.5/10 (+1.3)
+- 토큰: 850 (+50)
+- 개선점: 타입 안전성 향상
+
+<span class="cmt">## 버전 1.2</span>
+- 변경사항: Few-shot 예제 추가
+- 품질: 8.8/10 (+1.3)
+- 토큰: 900 (+50)
+- 개선점: 코드 스타일 일관성
+
+<span class="cmt">## 버전 2.0 (최종)</span>
+- 변경사항: 불필요한 설명 제거, 구조화
+- 품질: 9.2/10 (+0.4)
+- 토큰: 450 (-450, 50% 절약!)
+- 결과: 품질 향상 + 토큰 절약 달성</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">베스트 프랙티스</h2>
+
+  <div class="info-box tip">
+    <div class="info-box-title">최적화 체크리스트</div>
+    <p><strong>프롬프트를 최적화하기 전에:</strong></p>
+    <ul>
+      <li>✅ 현재 프롬프트의 품질/토큰/시간을 측정했는가?</li>
+      <li>✅ 개선 목표를 구체적으로 정의했는가? (예: "품질 +2점")</li>
+      <li>✅ 하나의 변수만 변경하여 테스트하는가?</li>
+      <li>✅ 충분한 샘플(최소 3-5회)로 테스트하는가?</li>
+      <li>✅ 결과를 정량적으로 측정하는가?</li>
+      <li>✅ 개선 내용을 문서화하는가?</li>
+    </ul>
+  </div>
+
+  <h3 id="practice-antipatterns">안티패턴</h3>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:50%">❌ 안티패턴</th>
+        <th style="width:50%">✅ 권장 방법</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>과도한 최적화</strong><br>
+          토큰을 극단적으로 줄이려다 의미 손실
+        </td>
+        <td>
+          <strong>균형 잡힌 최적화</strong><br>
+          명확성을 유지하면서 불필요한 부분만 제거
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>주관적 평가</strong><br>
+          "이 프롬프트가 더 좋아 보인다"
+        </td>
+        <td>
+          <strong>객관적 측정</strong><br>
+          품질 점수, 토큰 수, 응답 시간으로 비교
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>일회성 테스트</strong><br>
+          한 번 테스트하고 결론 도출
+        </td>
+        <td>
+          <strong>반복 검증</strong><br>
+          3-5회 반복하여 평균값 비교
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>문서화 생략</strong><br>
+          개선 내용을 기록하지 않음
+        </td>
+        <td>
+          <strong>체계적 문서화</strong><br>
+          변경사항, 결과, 인사이트를 기록
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="tools">최적화 도구</h2>
+
+  <h3 id="tools-tokenizer">토큰 카운터</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python - tiktoken 사용</span>
+    </div>
+    <pre><code><span class="kw">import</span> tiktoken
+
+<span class="cmt"># Claude는 Claude 토크나이저 사용 (GPT 토크나이저와 유사)</span>
+encoding = tiktoken.<span class="fn">get_encoding</span>(<span class="str">"cl100k_base"</span>)
+
+prompt = <span class="str">"Python으로 사용자 인증 코드를 작성해주세요."</span>
+tokens = encoding.<span class="fn">encode</span>(prompt)
+
+<span class="fn">print</span>(<span class="str">f"토큰 수: </span>{<span class="fn">len</span>(tokens)}<span class="str">"</span>)
+<span class="fn">print</span>(<span class="str">f"토큰: </span>{tokens}<span class="str">"</span>)</code></pre>
+  </div>
+
+  <h3 id="tools-comparison">프롬프트 비교 스크립트</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 스크립트</span>
+    </div>
+    <pre><code><span class="kw">import</span> anthropic
+<span class="kw">import</span> tiktoken
+<span class="kw">import</span> time
+
+<span class="kw">def</span> <span class="fn">evaluate_prompt</span>(prompt: <span class="type">str</span>, test_cases: <span class="type">list</span>) -&gt; <span class="type">dict</span>:
+    client = anthropic.<span class="fn">Anthropic</span>()
+    encoding = tiktoken.<span class="fn">get_encoding</span>(<span class="str">"cl100k_base"</span>)
+
+    results = []
+    <span class="kw">for</span> test_case <span class="kw">in</span> test_cases:
+        start_time = time.<span class="fn">time</span>()
+
+        response = client.messages.<span class="fn">create</span>(
+            model=<span class="str">"claude-sonnet-4-5-20250929"</span>,
+            max_tokens=<span class="num">4096</span>,
+            messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+        )
+
+        elapsed = time.<span class="fn">time</span>() - start_time
+        input_tokens = <span class="fn">len</span>(encoding.<span class="fn">encode</span>(prompt))
+        output_tokens = <span class="fn">len</span>(encoding.<span class="fn">encode</span>(response.content[<span class="num">0</span>].text))
+
+        results.<span class="fn">append</span>({
+            <span class="str">"input_tokens"</span>: input_tokens,
+            <span class="str">"output_tokens"</span>: output_tokens,
+            <span class="str">"time"</span>: elapsed,
+            <span class="str">"response"</span>: response.content[<span class="num">0</span>].text
+        })
+
+    <span class="kw">return</span> {
+        <span class="str">"avg_input_tokens"</span>: <span class="fn">sum</span>(r[<span class="str">"input_tokens"</span>] <span class="kw">for</span> r <span class="kw">in</span> results) / <span class="fn">len</span>(results),
+        <span class="str">"avg_output_tokens"</span>: <span class="fn">sum</span>(r[<span class="str">"output_tokens"</span>] <span class="kw">for</span> r <span class="kw">in</span> results) / <span class="fn">len</span>(results),
+        <span class="str">"avg_time"</span>: <span class="fn">sum</span>(r[<span class="str">"time"</span>] <span class="kw">for</span> r <span class="kw">in</span> results) / <span class="fn">len</span>(results),
+        <span class="str">"responses"</span>: results
+    }
+
+<span class="cmt"># 사용 예시</span>
+prompt_a = <span class="str">"Python으로 사용자 인증 함수를 작성해주세요."</span>
+prompt_b = <span class="str">"Python으로 사용자 인증 함수를 작성해주세요. JWT 토큰 검증, bcrypt 비밀번호 해싱 포함."</span>
+
+result_a = <span class="fn">evaluate_prompt</span>(prompt_a, test_cases=[{} <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">3</span>)])
+result_b = <span class="fn">evaluate_prompt</span>(prompt_b, test_cases=[{} <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">3</span>)])
+
+<span class="fn">print</span>(<span class="str">"Prompt A:"</span>, result_a)
+<span class="fn">print</span>(<span class="str">"Prompt B:"</span>, result_b)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">학습 경로</div>
+    <p><strong>프롬프트 최적화를 마스터한 후:</strong></p>
+    <ol>
+      <li><a href="vibe-coding-patterns.html">Vibe Coding 패턴</a> - 실전 워크플로우</li>
+      <li><a href="prompt-patterns.html">고급 프롬프트 패턴</a> - 복잡한 패턴 학습</li>
+      <li><a href="system-prompts.html">시스템 프롬프트</a> - AI 행동 커스터마이징</li>
+      <li><a href="long-context.html">Long Context</a> - 대용량 컨텍스트 활용</li>
+    </ol>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+
+<footer class="site-footer"></footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

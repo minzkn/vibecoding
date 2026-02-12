@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP 고급 주제 - AI Vibe Coding 가이드 /with MINZKN</title>
+<meta name="description" content="Model Context Protocol 고급 주제 - 보안, 성능 최적화, 멀티 서버, 디버깅, 테스트, 프로덕션 배포">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">MCP 고급 주제</h1>
+<p class="lead">프로덕션 환경에서 MCP 서버를 안전하고 효율적으로 운영하기 위한 고급 주제를 다룹니다. 보안, 성능 최적화, 디버깅, 테스트, 배포 전략 등을 학습하세요.</p>
+
+<div class="info-box tip">
+<strong>이 페이지에서 배울 내용</strong>
+<ul>
+<li>보안: 샌드박싱, 권한 관리, 인증</li>
+<li>성능 최적화: 캐싱, 연결 풀링, 병렬 처리</li>
+<li>멀티 서버 아키텍처 및 조정</li>
+<li>효과적인 디버깅 및 로깅 전략</li>
+<li>테스트 자동화</li>
+<li>프로덕션 배포 및 모니터링</li>
+</ul>
+</div>
+
+<section class="content-section">
+<h2 id="security">보안</h2>
+
+<h3 id="sandboxing">샌드박싱</h3>
+
+<p>MCP 서버는 외부 데이터에 접근하므로 적절한 샌드박싱이 필수입니다.</p>
+
+<h4>파일 시스템 샌드박싱</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">secure_filesystem.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> pathlib <span class="kw">import</span> Path
+<span class="kw">from</span> typing <span class="kw">import</span> List
+
+<span class="kw">class</span> <span class="type">SecureFileSystem</span>:
+    <span class="str">"""보안이 강화된 파일 시스템 접근"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, allowed_dirs: List[Path]):
+        <span class="kw">self</span>.allowed_dirs = [d.<span class="fn">resolve</span>() <span class="kw">for</span> d <span class="kw">in</span> allowed_dirs]
+
+    <span class="kw">def</span> <span class="fn">validate_path</span>(<span class="kw">self</span>, path: Path) -> Path:
+        <span class="str">"""경로 검증 및 정규화"""</span>
+        <span class="cmt"># 1. 경로 정규화 (심볼릭 링크 해결)</span>
+        resolved = path.<span class="fn">resolve</span>()
+
+        <span class="cmt"># 2. 허용된 디렉토리 내에 있는지 확인</span>
+        <span class="kw">if</span> <span class="kw">not</span> <span class="fn">any</span>(resolved.<span class="fn">is_relative_to</span>(d) <span class="kw">for</span> d <span class="kw">in</span> <span class="kw">self</span>.allowed_dirs):
+            <span class="kw">raise</span> <span class="fn">PermissionError</span>(<span class="type">f</span><span class="str">"Access denied: {path}"</span>)
+
+        <span class="cmt"># 3. 숨김 파일/디렉토리 차단 (선택사항)</span>
+        <span class="kw">for</span> part <span class="kw">in</span> resolved.parts:
+            <span class="kw">if</span> part.<span class="fn">startswith</span>(<span class="str">"."</span>) <span class="kw">and</span> part <span class="kw">not</span> <span class="kw">in</span> {<span class="str">"."</span>, <span class="str">".."</span>}:
+                <span class="kw">raise</span> <span class="fn">PermissionError</span>(<span class="type">f</span><span class="str">"Hidden files not allowed: {path}"</span>)
+
+        <span class="kw">return</span> resolved
+
+    <span class="kw">def</span> <span class="fn">read_file</span>(<span class="kw">self</span>, path: <span class="type">str</span>) -> <span class="type">str</span>:
+        <span class="str">"""안전한 파일 읽기"""</span>
+        validated_path = <span class="kw">self</span>.<span class="fn">validate_path</span>(Path(path))
+
+        <span class="cmt"># 파일 크기 제한</span>
+        max_size = <span class="num">10</span> * <span class="num">1024</span> * <span class="num">1024</span>  <span class="cmt"># 10MB</span>
+        size = validated_path.<span class="fn">stat</span>().st_size
+        <span class="kw">if</span> size > max_size:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="type">f</span><span class="str">"File too large: {size} bytes"</span>)
+
+        <span class="kw">return</span> validated_path.<span class="fn">read_text</span>(encoding=<span class="str">"utf-8"</span>)
+
+    <span class="kw">def</span> <span class="fn">write_file</span>(<span class="kw">self</span>, path: <span class="type">str</span>, content: <span class="type">str</span>):
+        <span class="str">"""안전한 파일 쓰기"""</span>
+        validated_path = <span class="kw">self</span>.<span class="fn">validate_path</span>(Path(path))
+
+        <span class="cmt"># 콘텐츠 크기 제한</span>
+        max_size = <span class="num">5</span> * <span class="num">1024</span> * <span class="num">1024</span>  <span class="cmt"># 5MB</span>
+        <span class="kw">if</span> <span class="fn">len</span>(content) > max_size:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="type">f</span><span class="str">"Content too large: {len(content)} bytes"</span>)
+
+        <span class="cmt"># 임시 파일에 먼저 쓰고 원자적으로 이동</span>
+        tmp_path = validated_path.with_suffix(<span class="str">".tmp"</span>)
+        <span class="kw">try</span>:
+            tmp_path.<span class="fn">write_text</span>(content, encoding=<span class="str">"utf-8"</span>)
+            tmp_path.<span class="fn">replace</span>(validated_path)
+        <span class="kw">finally</span>:
+            <span class="kw">if</span> tmp_path.<span class="fn">exists</span>():
+                tmp_path.<span class="fn">unlink</span>()
+</code></pre>
+</div>
+
+<h4>SQL 인젝션 방지</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">secure_sql.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> sqlparse
+<span class="kw">from</span> sqlparse.sql <span class="kw">import</span> Token, TokenList
+<span class="kw">from</span> typing <span class="kw">import</span> List
+
+<span class="kw">class</span> <span class="type">SecureSQL</span>:
+    <span class="str">"""SQL 쿼리 검증 및 실행"""</span>
+
+    ALLOWED_STATEMENTS = {<span class="str">"SELECT"</span>}  <span class="cmt"># 읽기 전용</span>
+    FORBIDDEN_KEYWORDS = {
+        <span class="str">"DROP"</span>, <span class="str">"DELETE"</span>, <span class="str">"UPDATE"</span>, <span class="str">"INSERT"</span>,
+        <span class="str">"ALTER"</span>, <span class="str">"CREATE"</span>, <span class="str">"TRUNCATE"</span>, <span class="str">"EXEC"</span>
+    }
+
+    <span class="kw">def</span> <span class="fn">validate_query</span>(<span class="kw">self</span>, sql: <span class="type">str</span>) -> <span class="type">bool</span>:
+        <span class="str">"""쿼리 안전성 검증"""</span>
+        <span class="cmt"># 1. 파싱</span>
+        parsed = sqlparse.<span class="fn">parse</span>(sql)
+        <span class="kw">if</span> <span class="kw">not</span> parsed:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">"Invalid SQL syntax"</span>)
+
+        <span class="kw">for</span> statement <span class="kw">in</span> parsed:
+            <span class="cmt"># 2. 문장 타입 확인</span>
+            stmt_type = statement.<span class="fn">get_type</span>()
+            <span class="kw">if</span> stmt_type <span class="kw">not</span> <span class="kw">in</span> <span class="kw">self</span>.ALLOWED_STATEMENTS:
+                <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="type">f</span><span class="str">"Statement type not allowed: {stmt_type}"</span>)
+
+            <span class="cmt"># 3. 금지된 키워드 확인</span>
+            tokens = [t <span class="kw">for</span> t <span class="kw">in</span> statement.<span class="fn">flatten</span>() <span class="kw">if</span> t.ttype <span class="kw">is</span> Token.Keyword]
+            <span class="kw">for</span> token <span class="kw">in</span> tokens:
+                <span class="kw">if</span> token.value.<span class="fn">upper</span>() <span class="kw">in</span> <span class="kw">self</span>.FORBIDDEN_KEYWORDS:
+                    <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="type">f</span><span class="str">"Forbidden keyword: {token.value}"</span>)
+
+        <span class="kw">return</span> <span class="kw">True</span>
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">execute_safe</span>(<span class="kw">self</span>, conn, sql: <span class="type">str</span>, params: List = <span class="kw">None</span>):
+        <span class="str">"""안전한 쿼리 실행"""</span>
+        <span class="kw">self</span>.<span class="fn">validate_query</span>(sql)
+
+        <span class="cmt"># 매개변수화된 쿼리만 허용</span>
+        <span class="kw">if</span> params <span class="kw">is</span> <span class="kw">None</span>:
+            params = []
+
+        <span class="cmt"># 타임아웃 설정</span>
+        <span class="kw">async</span> <span class="kw">with</span> asyncio.<span class="fn">timeout</span>(<span class="num">30</span>):  <span class="cmt"># 30초</span>
+            result = <span class="kw">await</span> conn.<span class="fn">fetch</span>(sql, *params)
+
+        <span class="kw">return</span> result
+</code></pre>
+</div>
+
+<h3 id="authentication">인증 및 권한 관리</h3>
+
+<h4>API 키 인증</h4>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">auth_server.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> os
+<span class="kw">import</span> hashlib
+<span class="kw">import</span> secrets
+<span class="kw">from</span> typing <span class="kw">import</span> Dict, Optional
+
+<span class="kw">class</span> <span class="type">APIKeyAuth</span>:
+    <span class="str">"""API 키 기반 인증"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="cmt"># 환경 변수에서 마스터 키 로드</span>
+        <span class="kw">self</span>.master_key = os.<span class="fn">getenv</span>(<span class="str">"MCP_MASTER_KEY"</span>)
+        <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>.master_key:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">"MCP_MASTER_KEY not set"</span>)
+
+        <span class="cmt"># API 키 해시 저장 (실제로는 DB 사용)</span>
+        <span class="kw">self</span>.api_keys: Dict[<span class="type">str</span>, <span class="type">dict</span>] = {}
+
+    <span class="kw">def</span> <span class="fn">generate_api_key</span>(<span class="kw">self</span>, user_id: <span class="type">str</span>, permissions: <span class="type">list</span>) -> <span class="type">str</span>:
+        <span class="str">"""새 API 키 생성"""</span>
+        <span class="cmt"># 안전한 랜덤 키 생성</span>
+        api_key = secrets.<span class="fn">token_urlsafe</span>(<span class="num">32</span>)
+
+        <span class="cmt"># 해시 저장 (원본은 사용자에게만 표시)</span>
+        key_hash = hashlib.<span class="fn">sha256</span>(api_key.<span class="fn">encode</span>()).<span class="fn">hexdigest</span>()
+
+        <span class="kw">self</span>.api_keys[key_hash] = {
+            <span class="str">"user_id"</span>: user_id,
+            <span class="str">"permissions"</span>: permissions,
+            <span class="str">"created_at"</span>: datetime.<span class="fn">now</span>()
+        }
+
+        <span class="kw">return</span> api_key
+
+    <span class="kw">def</span> <span class="fn">validate_api_key</span>(<span class="kw">self</span>, api_key: <span class="type">str</span>) -> Optional[<span class="type">dict</span>]:
+        <span class="str">"""API 키 검증"""</span>
+        key_hash = hashlib.<span class="fn">sha256</span>(api_key.<span class="fn">encode</span>()).<span class="fn">hexdigest</span>()
+        <span class="kw">return</span> <span class="kw">self</span>.api_keys.<span class="fn">get</span>(key_hash)
+
+    <span class="kw">def</span> <span class="fn">check_permission</span>(<span class="kw">self</span>, api_key: <span class="type">str</span>, required_permission: <span class="type">str</span>) -> <span class="type">bool</span>:
+        <span class="str">"""권한 확인"""</span>
+        key_info = <span class="kw">self</span>.<span class="fn">validate_api_key</span>(api_key)
+        <span class="kw">if</span> <span class="kw">not</span> key_info:
+            <span class="kw">return</span> <span class="kw">False</span>
+
+        <span class="kw">return</span> required_permission <span class="kw">in</span> key_info[<span class="str">"permissions"</span>]
+
+<span class="cmt"># 서버에 통합</span>
+auth = APIKeyAuth()
+
+<span class="pp">@server.call_tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">call_tool</span>(name: <span class="type">str</span>, arguments: <span class="type">dict</span>, meta: <span class="type">dict</span>):
+    <span class="cmt"># 메타데이터에서 API 키 추출</span>
+    api_key = meta.<span class="fn">get</span>(<span class="str">"api_key"</span>)
+    <span class="kw">if</span> <span class="kw">not</span> api_key:
+        <span class="kw">raise</span> <span class="fn">PermissionError</span>(<span class="str">"API key required"</span>)
+
+    <span class="cmt"># 도구별 권한 확인</span>
+    required_permission = <span class="type">f</span><span class="str">"tool:{name}"</span>
+    <span class="kw">if</span> <span class="kw">not</span> auth.<span class="fn">check_permission</span>(api_key, required_permission):
+        <span class="kw">raise</span> <span class="fn">PermissionError</span>(<span class="type">f</span><span class="str">"Permission denied: {required_permission}"</span>)
+
+    <span class="cmt"># 도구 실행...</span>
+</code></pre>
+</div>
+
+<h3 id="rate-limiting">Rate Limiting</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">rate_limiter.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> time
+<span class="kw">from</span> collections <span class="kw">import</span> defaultdict
+<span class="kw">from</span> typing <span class="kw">import</span> Dict, Tuple
+
+<span class="kw">class</span> <span class="type">RateLimiter</span>:
+    <span class="str">"""토큰 버킷 알고리즘 기반 Rate Limiter"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, requests_per_minute: <span class="type">int</span> = <span class="num">60</span>):
+        <span class="kw">self</span>.capacity = requests_per_minute
+        <span class="kw">self</span>.refill_rate = requests_per_minute / <span class="num">60.0</span>  <span class="cmt"># 초당 토큰 수</span>
+
+        <span class="cmt"># 사용자별 버킷: {user_id: (tokens, last_update)}</span>
+        <span class="kw">self</span>.buckets: Dict[<span class="type">str</span>, Tuple[<span class="type">float</span>, <span class="type">float</span>]] = defaultdict(
+            <span class="kw">lambda</span>: (<span class="kw">self</span>.capacity, time.<span class="fn">time</span>())
+        )
+
+    <span class="kw">def</span> <span class="fn">_refill</span>(<span class="kw">self</span>, user_id: <span class="type">str</span>) -> <span class="type">float</span>:
+        <span class="str">"""버킷 리필"""</span>
+        tokens, last_update = <span class="kw">self</span>.buckets[user_id]
+        now = time.<span class="fn">time</span>()
+        elapsed = now - last_update
+
+        <span class="cmt"># 경과 시간에 따라 토큰 추가</span>
+        tokens = <span class="fn">min</span>(<span class="kw">self</span>.capacity, tokens + elapsed * <span class="kw">self</span>.refill_rate)
+
+        <span class="kw">self</span>.buckets[user_id] = (tokens, now)
+        <span class="kw">return</span> tokens
+
+    <span class="kw">def</span> <span class="fn">allow_request</span>(<span class="kw">self</span>, user_id: <span class="type">str</span>) -> <span class="type">bool</span>:
+        <span class="str">"""요청 허용 여부 확인"""</span>
+        tokens = <span class="kw">self</span>.<span class="fn">_refill</span>(user_id)
+
+        <span class="kw">if</span> tokens >= <span class="num">1.0</span>:
+            <span class="kw">self</span>.buckets[user_id] = (tokens - <span class="num">1.0</span>, time.<span class="fn">time</span>())
+            <span class="kw">return</span> <span class="kw">True</span>
+
+        <span class="kw">return</span> <span class="kw">False</span>
+
+    <span class="kw">def</span> <span class="fn">get_retry_after</span>(<span class="kw">self</span>, user_id: <span class="type">str</span>) -> <span class="type">float</span>:
+        <span class="str">"""다음 요청 가능 시간 (초)"""</span>
+        tokens = <span class="kw">self</span>.<span class="fn">_refill</span>(user_id)
+        <span class="kw">if</span> tokens >= <span class="num">1.0</span>:
+            <span class="kw">return</span> <span class="num">0.0</span>
+
+        needed = <span class="num">1.0</span> - tokens
+        <span class="kw">return</span> needed / <span class="kw">self</span>.refill_rate
+
+<span class="cmt"># 사용 예제</span>
+rate_limiter = RateLimiter(requests_per_minute=<span class="num">100</span>)
+
+<span class="pp">@server.call_tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">call_tool</span>(name: <span class="type">str</span>, arguments: <span class="type">dict</span>, user_id: <span class="type">str</span>):
+    <span class="kw">if</span> <span class="kw">not</span> rate_limiter.<span class="fn">allow_request</span>(user_id):
+        retry_after = rate_limiter.<span class="fn">get_retry_after</span>(user_id)
+        <span class="kw">raise</span> <span class="fn">Exception</span>(<span class="type">f</span><span class="str">"Rate limit exceeded. Retry after {retry_after:.2f}s"</span>)
+
+    <span class="cmt"># 도구 실행...</span>
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="performance">성능 최적화</h2>
+
+<h3 id="caching">캐싱</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">cache_decorator.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> asyncio
+<span class="kw">import</span> hashlib
+<span class="kw">import</span> json
+<span class="kw">from</span> functools <span class="kw">import</span> wraps
+<span class="kw">from</span> typing <span class="kw">import</span> Any, Callable
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime, timedelta
+
+<span class="kw">class</span> <span class="type">AsyncCache</span>:
+    <span class="str">"""비동기 메모리 캐시"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.cache: dict[<span class="type">str</span>, <span class="type">tuple</span>[Any, datetime]] = {}
+
+    <span class="kw">def</span> <span class="fn">_make_key</span>(<span class="kw">self</span>, func_name: <span class="type">str</span>, args: <span class="type">tuple</span>, kwargs: <span class="type">dict</span>) -> <span class="type">str</span>:
+        <span class="str">"""캐시 키 생성"""</span>
+        key_data = {
+            <span class="str">"func"</span>: func_name,
+            <span class="str">"args"</span>: args,
+            <span class="str">"kwargs"</span>: kwargs
+        }
+        key_str = json.<span class="fn">dumps</span>(key_data, sort_keys=<span class="kw">True</span>)
+        <span class="kw">return</span> hashlib.<span class="fn">sha256</span>(key_str.<span class="fn">encode</span>()).<span class="fn">hexdigest</span>()
+
+    <span class="kw">def</span> <span class="fn">get</span>(<span class="kw">self</span>, key: <span class="type">str</span>, ttl: <span class="type">int</span>) -> Any:
+        <span class="str">"""캐시에서 값 가져오기"""</span>
+        <span class="kw">if</span> key <span class="kw">in</span> <span class="kw">self</span>.cache:
+            value, timestamp = <span class="kw">self</span>.cache[key]
+            <span class="kw">if</span> datetime.<span class="fn">now</span>() - timestamp < timedelta(seconds=ttl):
+                <span class="kw">return</span> value
+            <span class="kw">else</span>:
+                <span class="kw">del</span> <span class="kw">self</span>.cache[key]
+        <span class="kw">return</span> <span class="kw">None</span>
+
+    <span class="kw">def</span> <span class="fn">set</span>(<span class="kw">self</span>, key: <span class="type">str</span>, value: Any):
+        <span class="str">"""캐시에 값 저장"""</span>
+        <span class="kw">self</span>.cache[key] = (value, datetime.<span class="fn">now</span>())
+
+    <span class="kw">def</span> <span class="fn">clear</span>(<span class="kw">self</span>):
+        <span class="str">"""캐시 초기화"""</span>
+        <span class="kw">self</span>.cache.<span class="fn">clear</span>()
+
+<span class="cmt"># 글로벌 캐시 인스턴스</span>
+cache = AsyncCache()
+
+<span class="kw">def</span> <span class="fn">cached</span>(ttl: <span class="type">int</span> = <span class="num">300</span>):
+    <span class="str">"""캐싱 데코레이터 (TTL 기본 5분)"""</span>
+    <span class="kw">def</span> <span class="fn">decorator</span>(func: Callable):
+        <span class="pp">@wraps(func)</span>
+        <span class="kw">async</span> <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+            <span class="cmt"># 캐시 키 생성</span>
+            cache_key = cache.<span class="fn">_make_key</span>(func.__name__, args, kwargs)
+
+            <span class="cmt"># 캐시 조회</span>
+            cached_value = cache.<span class="fn">get</span>(cache_key, ttl)
+            <span class="kw">if</span> cached_value <span class="kw">is</span> <span class="kw">not</span> <span class="kw">None</span>:
+                <span class="kw">return</span> cached_value
+
+            <span class="cmt"># 실제 함수 실행</span>
+            result = <span class="kw">await</span> <span class="fn">func</span>(*args, **kwargs)
+
+            <span class="cmt"># 결과 캐싱</span>
+            cache.<span class="fn">set</span>(cache_key, result)
+
+            <span class="kw">return</span> result
+
+        <span class="kw">return</span> wrapper
+    <span class="kw">return</span> decorator
+
+<span class="cmt"># 사용 예제</span>
+<span class="pp">@server.tool()</span>
+<span class="pp">@cached(ttl=600)  # 10분</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">fetch_github_issues</span>(repo: <span class="type">str</span>) -> <span class="type">list</span>:
+    <span class="str">"""GitHub 이슈 조회 (캐싱됨)"""</span>
+    <span class="cmt"># 비용이 큰 API 호출...</span>
+    <span class="kw">async</span> <span class="kw">with</span> httpx.AsyncClient() <span class="kw">as</span> client:
+        response = <span class="kw">await</span> client.<span class="fn">get</span>(<span class="type">f</span><span class="str">"https://api.github.com/repos/{repo}/issues"</span>)
+        <span class="kw">return</span> response.<span class="fn">json</span>()
+</code></pre>
+</div>
+
+<h3 id="connection-pooling">연결 풀링</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">db_pool.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> asyncpg
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+
+<span class="kw">class</span> <span class="type">DatabasePool</span>:
+    <span class="str">"""PostgreSQL 연결 풀 관리"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, dsn: <span class="type">str</span>):
+        <span class="kw">self</span>.dsn = dsn
+        <span class="kw">self</span>.pool: Optional[asyncpg.Pool] = <span class="kw">None</span>
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">initialize</span>(<span class="kw">self</span>):
+        <span class="str">"""풀 초기화"""</span>
+        <span class="kw">self</span>.pool = <span class="kw">await</span> asyncpg.<span class="fn">create_pool</span>(
+            <span class="kw">self</span>.dsn,
+            min_size=<span class="num">5</span>,           <span class="cmt"># 최소 연결 수</span>
+            max_size=<span class="num">20</span>,          <span class="cmt"># 최대 연결 수</span>
+            max_queries=<span class="num">50000</span>,    <span class="cmt"># 연결당 최대 쿼리 수 (재생성 전)</span>
+            max_inactive_connection_lifetime=<span class="num">300</span>,  <span class="cmt"># 비활성 연결 수명 (초)</span>
+            command_timeout=<span class="num">60</span>,    <span class="cmt"># 쿼리 타임아웃</span>
+        )
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">close</span>(<span class="kw">self</span>):
+        <span class="str">"""풀 종료"""</span>
+        <span class="kw">if</span> <span class="kw">self</span>.pool:
+            <span class="kw">await</span> <span class="kw">self</span>.pool.<span class="fn">close</span>()
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">execute</span>(<span class="kw">self</span>, query: <span class="type">str</span>, *args):
+        <span class="str">"""쿼리 실행"""</span>
+        <span class="kw">async</span> <span class="kw">with</span> <span class="kw">self</span>.pool.<span class="fn">acquire</span>() <span class="kw">as</span> conn:
+            <span class="kw">return</span> <span class="kw">await</span> conn.<span class="fn">execute</span>(query, *args)
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">fetch</span>(<span class="kw">self</span>, query: <span class="type">str</span>, *args):
+        <span class="str">"""데이터 조회"""</span>
+        <span class="kw">async</span> <span class="kw">with</span> <span class="kw">self</span>.pool.<span class="fn">acquire</span>() <span class="kw">as</span> conn:
+            <span class="kw">return</span> <span class="kw">await</span> conn.<span class="fn">fetch</span>(query, *args)
+
+<span class="cmt"># 서버 초기화 시 풀 생성</span>
+db_pool = DatabasePool(<span class="str">"postgresql://user:pass@localhost/db"</span>)
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">startup</span>():
+    <span class="kw">await</span> db_pool.<span class="fn">initialize</span>()
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">shutdown</span>():
+    <span class="kw">await</span> db_pool.<span class="fn">close</span>()
+</code></pre>
+</div>
+
+<h3 id="parallel-processing">병렬 처리</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">parallel_tasks.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> asyncio
+<span class="kw">from</span> typing <span class="kw">import</span> List, Any
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">process_files_parallel</span>(file_paths: List[<span class="type">str</span>]) -> List[Any]:
+    <span class="str">"""파일들을 병렬로 처리"""</span>
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">process_single_file</span>(path: <span class="type">str</span>) -> <span class="type">dict</span>:
+        <span class="str">"""단일 파일 처리"""</span>
+        <span class="cmt"># 비동기 파일 읽기 (aiofiles 사용)</span>
+        <span class="kw">import</span> aiofiles
+        <span class="kw">async</span> <span class="kw">with</span> aiofiles.<span class="fn">open</span>(path, <span class="str">'r'</span>) <span class="kw">as</span> f:
+            content = <span class="kw">await</span> f.<span class="fn">read</span>()
+
+        <span class="cmt"># 처리 로직...</span>
+        <span class="kw">return</span> {
+            <span class="str">"path"</span>: path,
+            <span class="str">"size"</span>: <span class="fn">len</span>(content),
+            <span class="str">"lines"</span>: content.<span class="fn">count</span>(<span class="str">"\n"</span>)
+        }
+
+    <span class="cmt"># asyncio.gather로 병렬 실행</span>
+    results = <span class="kw">await</span> asyncio.<span class="fn">gather</span>(
+        *[<span class="fn">process_single_file</span>(path) <span class="kw">for</span> path <span class="kw">in</span> file_paths],
+        return_exceptions=<span class="kw">True</span>  <span class="cmt"># 개별 에러를 결과에 포함</span>
+    )
+
+    <span class="cmt"># 에러 필터링</span>
+    valid_results = [r <span class="kw">for</span> r <span class="kw">in</span> results <span class="kw">if</span> <span class="kw">not</span> <span class="fn">isinstance</span>(r, Exception)]
+
+    <span class="kw">return</span> valid_results
+
+<span class="cmt"># Semaphore로 동시 실행 수 제한</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">process_with_limit</span>(items: List[Any], max_concurrent: <span class="type">int</span> = <span class="num">10</span>):
+    <span class="str">"""동시 실행 수를 제한하여 처리"""</span>
+    semaphore = asyncio.Semaphore(max_concurrent)
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">process_item</span>(item):
+        <span class="kw">async</span> <span class="kw">with</span> semaphore:
+            <span class="cmt"># 처리 로직...</span>
+            <span class="kw">await</span> asyncio.<span class="fn">sleep</span>(<span class="num">0.1</span>)  <span class="cmt"># 예시</span>
+            <span class="kw">return</span> item
+
+    results = <span class="kw">await</span> asyncio.<span class="fn">gather</span>(*[<span class="fn">process_item</span>(item) <span class="kw">for</span> item <span class="kw">in</span> items])
+    <span class="kw">return</span> results
+</code></pre>
+</div>
+
+<h3 id="streaming">스트리밍 응답</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">streaming.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">async</span> <span class="kw">def</span> <span class="fn">stream_large_file</span>(path: <span class="type">str</span>, chunk_size: <span class="type">int</span> = <span class="num">8192</span>):
+    <span class="str">"""대용량 파일을 청크 단위로 스트리밍"""</span>
+    <span class="kw">import</span> aiofiles
+
+    <span class="kw">async</span> <span class="kw">with</span> aiofiles.<span class="fn">open</span>(path, <span class="str">'rb'</span>) <span class="kw">as</span> f:
+        <span class="kw">while</span> <span class="kw">True</span>:
+            chunk = <span class="kw">await</span> f.<span class="fn">read</span>(chunk_size)
+            <span class="kw">if</span> <span class="kw">not</span> chunk:
+                <span class="kw">break</span>
+
+            <span class="cmt"># 청크 전송 (MCP progress notification 사용)</span>
+            <span class="kw">yield</span> chunk
+
+<span class="pp">@server.tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">read_large_file</span>(path: <span class="type">str</span>):
+    <span class="str">"""대용량 파일 읽기 with progress"""</span>
+    total_size = Path(path).<span class="fn">stat</span>().st_size
+    processed = <span class="num">0</span>
+
+    chunks = []
+    <span class="kw">async</span> <span class="kw">for</span> chunk <span class="kw">in</span> <span class="fn">stream_large_file</span>(path):
+        chunks.<span class="fn">append</span>(chunk)
+        processed += <span class="fn">len</span>(chunk)
+
+        <span class="cmt"># Progress notification 전송</span>
+        progress = processed / total_size
+        <span class="kw">await</span> server.<span class="fn">send_progress_notification</span>(
+            token=<span class="str">"read_file"</span>,
+            progress=progress,
+            total=total_size
+        )
+
+    <span class="kw">return</span> <span class="type">b</span><span class="str">""</span>.<span class="fn">join</span>(chunks)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="multi-server">멀티 서버 아키텍처</h2>
+
+<h3 id="server-coordination">서버 간 조정</h3>
+
+<p>여러 MCP 서버를 동시에 사용할 때의 조정 전략:</p>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TypeScript</span>
+<span class="filename">multi_server_client.ts</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> { Client } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/client/index.js"</span>;
+<span class="kw">import</span> { StdioClientTransport } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/client/stdio.js"</span>;
+
+<span class="kw">class</span> <span class="type">MultiServerClient</span> {
+  <span class="kw">private</span> servers: Map<<span class="type">string</span>, Client> = <span class="kw">new</span> <span class="fn">Map</span>();
+  <span class="kw">private</span> toolRegistry: Map<<span class="type">string</span>, <span class="type">string</span>> = <span class="kw">new</span> <span class="fn">Map</span>();
+
+  <span class="kw">async</span> <span class="fn">addServer</span>(name: <span class="type">string</span>, command: <span class="type">string</span>, args: <span class="type">string</span>[]) {
+    <span class="cmt">// 클라이언트 생성 및 연결</span>
+    <span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">Client</span>({ name: <span class="str">`client-${name}`</span>, version: <span class="str">"1.0.0"</span> }, {
+      capabilities: { tools: {} }
+    });
+
+    <span class="kw">const</span> transport = <span class="kw">new</span> <span class="fn">StdioClientTransport</span>({ command, args });
+    <span class="kw">await</span> client.<span class="fn">connect</span>(transport);
+
+    <span class="kw">this</span>.servers.<span class="fn">set</span>(name, client);
+
+    <span class="cmt">// 도구 목록 조회 및 등록</span>
+    <span class="kw">const</span> tools = <span class="kw">await</span> client.<span class="fn">listTools</span>();
+    <span class="kw">for</span> (<span class="kw">const</span> tool <span class="kw">of</span> tools.tools) {
+      <span class="kw">if</span> (<span class="kw">this</span>.toolRegistry.<span class="fn">has</span>(tool.name)) {
+        console.<span class="fn">warn</span>(<span class="str">`Tool ${tool.name} already registered, skipping`</span>);
+      } <span class="kw">else</span> {
+        <span class="kw">this</span>.toolRegistry.<span class="fn">set</span>(tool.name, name);
+      }
+    }
+  }
+
+  <span class="kw">async</span> <span class="fn">callTool</span>(toolName: <span class="type">string</span>, args: <span class="type">any</span>) {
+    <span class="cmt">// 도구가 등록된 서버 찾기</span>
+    <span class="kw">const</span> serverName = <span class="kw">this</span>.toolRegistry.<span class="fn">get</span>(toolName);
+    <span class="kw">if</span> (!serverName) {
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">`Tool ${toolName} not found`</span>);
+    }
+
+    <span class="kw">const</span> client = <span class="kw">this</span>.servers.<span class="fn">get</span>(serverName);
+    <span class="kw">return</span> <span class="kw">await</span> client!.<span class="fn">callTool</span>(toolName, args);
+  }
+
+  <span class="kw">async</span> <span class="fn">closeAll</span>() {
+    <span class="kw">for</span> (<span class="kw">const</span> client <span class="kw">of</span> <span class="kw">this</span>.servers.<span class="fn">values</span>()) {
+      <span class="kw">await</span> client.<span class="fn">close</span>();
+    }
+  }
+}
+
+<span class="cmt">// 사용 예제</span>
+<span class="kw">const</span> multiClient = <span class="kw">new</span> <span class="fn">MultiServerClient</span>();
+
+<span class="kw">await</span> multiClient.<span class="fn">addServer</span>(<span class="str">"filesystem"</span>, <span class="str">"npx"</span>, [
+  <span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-filesystem"</span>, <span class="str">"/home/user"</span>
+]);
+
+<span class="kw">await</span> multiClient.<span class="fn">addServer</span>(<span class="str">"github"</span>, <span class="str">"npx"</span>, [
+  <span class="str">"-y"</span>, <span class="str">"@modelcontextprotocol/server-github"</span>
+]);
+
+<span class="cmt">// 통합된 인터페이스로 도구 호출</span>
+<span class="kw">await</span> multiClient.<span class="fn">callTool</span>(<span class="str">"read_file"</span>, { path: <span class="str">"/home/user/test.txt"</span> });
+<span class="kw">await</span> multiClient.<span class="fn">callTool</span>(<span class="str">"list_issues"</span>, { owner: <span class="str">"anthropics"</span>, repo: <span class="str">"claude"</span> });
+</code></pre>
+</div>
+
+<h3 id="tool-namespacing">도구 네임스페이싱</h3>
+
+<p>여러 서버에서 동일한 이름의 도구를 제공하는 경우 충돌을 방지합니다:</p>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">namespaced_tools.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">class</span> <span class="type">NamespacedServer</span>:
+    <span class="str">"""네임스페이스가 적용된 MCP 서버"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, namespace: <span class="type">str</span>):
+        <span class="kw">self</span>.namespace = namespace
+        <span class="kw">self</span>.server = Server(<span class="type">f</span><span class="str">"{namespace}-server"</span>)
+
+    <span class="kw">def</span> <span class="fn">tool</span>(<span class="kw">self</span>, name: <span class="type">str</span>):
+        <span class="str">"""네임스페이스가 적용된 도구 등록"""</span>
+        namespaced_name = <span class="type">f</span><span class="str">"{self.namespace}_{name}"</span>
+
+        <span class="kw">def</span> <span class="fn">decorator</span>(func):
+            <span class="pp">@self.server.tool(name=namespaced_name)</span>
+            <span class="kw">async</span> <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+                <span class="kw">return</span> <span class="kw">await</span> <span class="fn">func</span>(*args, **kwargs)
+            <span class="kw">return</span> wrapper
+
+        <span class="kw">return</span> decorator
+
+<span class="cmt"># 사용 예제</span>
+local_fs = NamespacedServer(<span class="str">"local"</span>)
+remote_fs = NamespacedServer(<span class="str">"remote"</span>)
+
+<span class="pp">@local_fs.tool("read_file")</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">local_read_file</span>(path: <span class="type">str</span>):
+    <span class="cmt"># 로컬 파일 시스템 읽기...</span>
+    <span class="kw">pass</span>
+
+<span class="pp">@remote_fs.tool("read_file")</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">remote_read_file</span>(path: <span class="type">str</span>):
+    <span class="cmt"># 원격 파일 시스템 읽기...</span>
+    <span class="kw">pass</span>
+
+<span class="cmt"># 결과: "local_read_file", "remote_read_file" 도구 생성</span>
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="debugging">디버깅</h2>
+
+<h3 id="logging">로깅</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">logging_config.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> logging
+<span class="kw">import</span> json
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="kw">class</span> <span class="type">MCPLogger</span>:
+    <span class="str">"""구조화된 로깅"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name: <span class="type">str</span>, log_dir: Path):
+        <span class="kw">self</span>.logger = logging.<span class="fn">getLogger</span>(name)
+        <span class="kw">self</span>.logger.<span class="fn">setLevel</span>(logging.DEBUG)
+
+        <span class="cmt"># 파일 핸들러 (JSON 형식)</span>
+        log_file = log_dir / <span class="type">f</span><span class="str">"{name}.log"</span>
+        file_handler = logging.FileHandler(log_file)
+        file_handler.<span class="fn">setFormatter</span>(<span class="kw">self</span>.<span class="fn">_json_formatter</span>())
+        <span class="kw">self</span>.logger.<span class="fn">addHandler</span>(file_handler)
+
+        <span class="cmt"># 콘솔 핸들러 (사람이 읽기 쉬운 형식)</span>
+        console_handler = logging.StreamHandler()
+        console_handler.<span class="fn">setFormatter</span>(
+            logging.Formatter(<span class="str">"%(asctime)s - %(name)s - %(levelname)s - %(message)s"</span>)
+        )
+        <span class="kw">self</span>.logger.<span class="fn">addHandler</span>(console_handler)
+
+    <span class="kw">def</span> <span class="fn">_json_formatter</span>(<span class="kw">self</span>):
+        <span class="kw">class</span> <span class="type">JSONFormatter</span>(logging.Formatter):
+            <span class="kw">def</span> <span class="fn">format</span>(<span class="kw">self</span>, record):
+                log_data = {
+                    <span class="str">"timestamp"</span>: datetime.<span class="fn">utcnow</span>().<span class="fn">isoformat</span>(),
+                    <span class="str">"level"</span>: record.levelname,
+                    <span class="str">"logger"</span>: record.name,
+                    <span class="str">"message"</span>: record.getMessage(),
+                    <span class="str">"module"</span>: record.module,
+                    <span class="str">"function"</span>: record.funcName,
+                    <span class="str">"line"</span>: record.lineno,
+                }
+
+                <span class="kw">if</span> record.exc_info:
+                    log_data[<span class="str">"exception"</span>] = <span class="kw">self</span>.<span class="fn">formatException</span>(record.exc_info)
+
+                <span class="kw">return</span> json.<span class="fn">dumps</span>(log_data)
+
+        <span class="kw">return</span> JSONFormatter()
+
+    <span class="kw">def</span> <span class="fn">log_tool_call</span>(<span class="kw">self</span>, tool_name: <span class="type">str</span>, arguments: <span class="type">dict</span>, result: <span class="type">any</span> = <span class="kw">None</span>, error: Exception = <span class="kw">None</span>):
+        <span class="str">"""도구 호출 로깅"""</span>
+        log_data = {
+            <span class="str">"event"</span>: <span class="str">"tool_call"</span>,
+            <span class="str">"tool"</span>: tool_name,
+            <span class="str">"arguments"</span>: arguments,
+        }
+
+        <span class="kw">if</span> result <span class="kw">is</span> <span class="kw">not</span> <span class="kw">None</span>:
+            log_data[<span class="str">"result_size"</span>] = <span class="fn">len</span>(<span class="type">str</span>(result))
+
+        <span class="kw">if</span> error:
+            <span class="kw">self</span>.logger.<span class="fn">error</span>(<span class="type">f</span><span class="str">"Tool call failed: {json.dumps(log_data)}"</span>, exc_info=error)
+        <span class="kw">else</span>:
+            <span class="kw">self</span>.logger.<span class="fn">info</span>(<span class="type">f</span><span class="str">"Tool call succeeded: {json.dumps(log_data)}"</span>)
+
+<span class="cmt"># 사용 예제</span>
+logger = MCPLogger(<span class="str">"my-server"</span>, Path(<span class="str">"/var/log/mcp"</span>))
+
+<span class="pp">@server.call_tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">call_tool</span>(name: <span class="type">str</span>, arguments: <span class="type">dict</span>):
+    <span class="kw">try</span>:
+        result = <span class="kw">await</span> <span class="fn">execute_tool</span>(name, arguments)
+        logger.<span class="fn">log_tool_call</span>(name, arguments, result=result)
+        <span class="kw">return</span> result
+    <span class="kw">except</span> Exception <span class="kw">as</span> e:
+        logger.<span class="fn">log_tool_call</span>(name, arguments, error=e)
+        <span class="kw">raise</span>
+</code></pre>
+</div>
+
+<h3 id="tracing">분산 추적</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">tracing.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> opentelemetry <span class="kw">import</span> trace
+<span class="kw">from</span> opentelemetry.sdk.trace <span class="kw">import</span> TracerProvider
+<span class="kw">from</span> opentelemetry.sdk.trace.export <span class="kw">import</span> BatchSpanProcessor
+<span class="kw">from</span> opentelemetry.exporter.jaeger.thrift <span class="kw">import</span> JaegerExporter
+
+<span class="cmt"># Tracer 설정</span>
+trace.<span class="fn">set_tracer_provider</span>(TracerProvider())
+tracer = trace.<span class="fn">get_tracer</span>(__name__)
+
+<span class="cmt"># Jaeger 익스포터</span>
+jaeger_exporter = JaegerExporter(
+    agent_host_name=<span class="str">"localhost"</span>,
+    agent_port=<span class="num">6831</span>,
+)
+
+span_processor = BatchSpanProcessor(jaeger_exporter)
+trace.<span class="fn">get_tracer_provider</span>().<span class="fn">add_span_processor</span>(span_processor)
+
+<span class="cmt"># 도구 호출 추적</span>
+<span class="pp">@server.call_tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">call_tool</span>(name: <span class="type">str</span>, arguments: <span class="type">dict</span>):
+    <span class="kw">with</span> tracer.<span class="fn">start_as_current_span</span>(<span class="type">f</span><span class="str">"tool.{name}"</span>) <span class="kw">as</span> span:
+        <span class="cmt"># 속성 추가</span>
+        span.<span class="fn">set_attribute</span>(<span class="str">"tool.name"</span>, name)
+        span.<span class="fn">set_attribute</span>(<span class="str">"tool.args"</span>, <span class="type">str</span>(arguments))
+
+        <span class="kw">try</span>:
+            result = <span class="kw">await</span> <span class="fn">execute_tool</span>(name, arguments)
+            span.<span class="fn">set_attribute</span>(<span class="str">"tool.status"</span>, <span class="str">"success"</span>)
+            <span class="kw">return</span> result
+        <span class="kw">except</span> Exception <span class="kw">as</span> e:
+            span.<span class="fn">set_attribute</span>(<span class="str">"tool.status"</span>, <span class="str">"error"</span>)
+            span.<span class="fn">record_exception</span>(e)
+            <span class="kw">raise</span>
+</code></pre>
+</div>
+
+<h3 id="debugging-tools">디버깅 도구</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># MCP Inspector - 대화형 디버깅 도구</span>
+npx @modelcontextprotocol/inspector python server.py
+
+<span class="cmt"># 로그 수준 설정</span>
+MCP_LOG_LEVEL=debug python server.py
+
+<span class="cmt"># 프로토콜 메시지 덤프</span>
+MCP_DUMP_PROTOCOL=1 python server.py 2> protocol.log
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="testing">테스트</h2>
+
+<h3 id="unit-testing">단위 테스트</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">test_server.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> pytest
+<span class="kw">from</span> mcp.server.stdio <span class="kw">import</span> stdio_server
+<span class="kw">from</span> mcp <span class="kw">import</span> types
+
+<span class="pp">@pytest.mark.asyncio</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">test_read_file_tool</span>():
+    <span class="str">"""read_file 도구 테스트"""</span>
+    <span class="kw">from</span> my_server <span class="kw">import</span> server
+
+    <span class="cmt"># 임시 파일 생성</span>
+    <span class="kw">import</span> tempfile
+    <span class="kw">with</span> tempfile.NamedTemporaryFile(mode=<span class="str">'w'</span>, delete=<span class="kw">False</span>) <span class="kw">as</span> f:
+        f.<span class="fn">write</span>(<span class="str">"test content"</span>)
+        temp_path = f.name
+
+    <span class="kw">try</span>:
+        <span class="cmt"># 도구 호출</span>
+        result = <span class="kw">await</span> server.<span class="fn">call_tool</span>(<span class="str">"read_file"</span>, {<span class="str">"path"</span>: temp_path})
+
+        <span class="cmt"># 검증</span>
+        <span class="kw">assert</span> <span class="fn">len</span>(result) == <span class="num">1</span>
+        <span class="kw">assert</span> result[<span class="num">0</span>].type == <span class="str">"text"</span>
+        <span class="kw">assert</span> result[<span class="num">0</span>].text == <span class="str">"test content"</span>
+
+    <span class="kw">finally</span>:
+        <span class="kw">import</span> os
+        os.<span class="fn">unlink</span>(temp_path)
+
+<span class="pp">@pytest.mark.asyncio</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">test_permission_denied</span>():
+    <span class="str">"""권한 거부 테스트"""</span>
+    <span class="kw">from</span> my_server <span class="kw">import</span> server
+
+    <span class="kw">with</span> pytest.<span class="fn">raises</span>(<span class="type">PermissionError</span>):
+        <span class="kw">await</span> server.<span class="fn">call_tool</span>(<span class="str">"read_file"</span>, {<span class="str">"path"</span>: <span class="str">"/etc/shadow"</span>})
+</code></pre>
+</div>
+
+<h3 id="integration-testing">통합 테스트</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">test_integration.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> pytest
+<span class="kw">from</span> mcp <span class="kw">import</span> ClientSession, StdioServerParameters
+<span class="kw">from</span> mcp.client.stdio <span class="kw">import</span> stdio_client
+
+<span class="pp">@pytest.mark.asyncio</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">test_full_workflow</span>():
+    <span class="str">"""전체 워크플로우 테스트"""</span>
+
+    <span class="cmt"># 서버 시작</span>
+    server_params = StdioServerParameters(
+        command=<span class="str">"python"</span>,
+        args=[<span class="str">"my_server.py"</span>]
+    )
+
+    <span class="kw">async</span> <span class="kw">with</span> stdio_client(server_params) <span class="kw">as</span> (read, write):
+        <span class="kw">async</span> <span class="kw">with</span> ClientSession(read, write) <span class="kw">as</span> session:
+            <span class="cmt"># 초기화</span>
+            <span class="kw">await</span> session.<span class="fn">initialize</span>()
+
+            <span class="cmt"># 도구 목록 조회</span>
+            tools = <span class="kw">await</span> session.<span class="fn">list_tools</span>()
+            <span class="kw">assert</span> <span class="fn">len</span>(tools.tools) > <span class="num">0</span>
+
+            <span class="cmt"># 도구 실행</span>
+            result = <span class="kw">await</span> session.<span class="fn">call_tool</span>(<span class="str">"list_directory"</span>, {
+                <span class="str">"path"</span>: <span class="str">"/tmp"</span>
+            })
+
+            <span class="kw">assert</span> result <span class="kw">is</span> <span class="kw">not</span> <span class="kw">None</span>
+</code></pre>
+</div>
+
+<h3 id="load-testing">부하 테스트</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">load_test.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> asyncio
+<span class="kw">import</span> time
+<span class="kw">from</span> statistics <span class="kw">import</span> mean, stdev
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">load_test</span>(num_requests: <span class="type">int</span> = <span class="num">1000</span>, concurrency: <span class="type">int</span> = <span class="num">50</span>):
+    <span class="str">"""부하 테스트"""</span>
+
+    latencies = []
+    errors = <span class="num">0</span>
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">single_request</span>():
+        <span class="kw">nonlocal</span> errors
+        start = time.<span class="fn">time</span>()
+        <span class="kw">try</span>:
+            <span class="cmt"># 요청 실행...</span>
+            result = <span class="kw">await</span> session.<span class="fn">call_tool</span>(<span class="str">"some_tool"</span>, {})
+            latency = time.<span class="fn">time</span>() - start
+            latencies.<span class="fn">append</span>(latency)
+        <span class="kw">except</span> Exception:
+            errors += <span class="num">1</span>
+
+    <span class="cmt"># 동시 요청 실행</span>
+    tasks = [<span class="fn">single_request</span>() <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(num_requests)]
+
+    <span class="cmt"># Semaphore로 동시성 제한</span>
+    semaphore = asyncio.Semaphore(concurrency)
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">bounded_task</span>(task):
+        <span class="kw">async</span> <span class="kw">with</span> semaphore:
+            <span class="kw">await</span> task
+
+    <span class="kw">await</span> asyncio.<span class="fn">gather</span>(*[<span class="fn">bounded_task</span>(t) <span class="kw">for</span> t <span class="kw">in</span> tasks])
+
+    <span class="cmt"># 결과 분석</span>
+    <span class="fn">print</span>(<span class="type">f</span><span class="str">"Total requests: {num_requests}"</span>)
+    <span class="fn">print</span>(<span class="type">f</span><span class="str">"Successful: {len(latencies)}"</span>)
+    <span class="fn">print</span>(<span class="type">f</span><span class="str">"Errors: {errors}"</span>)
+    <span class="fn">print</span>(<span class="type">f</span><span class="str">"Mean latency: {mean(latencies):.3f}s"</span>)
+    <span class="fn">print</span>(<span class="type">f</span><span class="str">"Stdev latency: {stdev(latencies):.3f}s"</span>)
+    <span class="fn">print</span>(<span class="type">f</span><span class="str">"Min/Max latency: {min(latencies):.3f}s / {max(latencies):.3f}s"</span>)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="deployment">프로덕션 배포</h2>
+
+<h3 id="docker">Docker 컨테이너화</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Dockerfile</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">FROM</span> python:3.11-slim
+
+<span class="kw">WORKDIR</span> /app
+
+<span class="cmt"># 의존성 설치</span>
+<span class="kw">COPY</span> requirements.txt .
+<span class="kw">RUN</span> pip install --no-cache-dir -r requirements.txt
+
+<span class="cmt"># 애플리케이션 복사</span>
+<span class="kw">COPY</span> . .
+
+<span class="cmt"># 비-root 사용자로 실행</span>
+<span class="kw">RUN</span> useradd -m mcpuser
+<span class="kw">USER</span> mcpuser
+
+<span class="cmt"># 헬스체크</span>
+<span class="kw">HEALTHCHECK</span> --interval=30s --timeout=3s \
+  CMD python -c "import sys; sys.exit(0)"
+
+<span class="kw">CMD</span> [<span class="str">"python"</span>, <span class="str">"server.py"</span>]
+</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">YAML</span>
+<span class="filename">docker-compose.yml</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="kw">mcp-server</span>:
+    <span class="kw">build</span>: .
+    <span class="kw">restart</span>: unless-stopped
+    <span class="kw">environment</span>:
+      - MCP_LOG_LEVEL=info
+      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+    <span class="kw">volumes</span>:
+      - ./data:/app/data:ro
+      - ./logs:/app/logs
+    <span class="kw">networks</span>:
+      - mcp-network
+    <span class="kw">deploy</span>:
+      <span class="kw">resources</span>:
+        <span class="kw">limits</span>:
+          cpus: <span class="str">'2'</span>
+          memory: 1G
+        <span class="kw">reservations</span>:
+          cpus: <span class="str">'0.5'</span>
+          memory: 256M
+
+<span class="kw">networks</span>:
+  <span class="kw">mcp-network</span>:
+    <span class="kw">driver</span>: bridge
+</code></pre>
+</div>
+
+<h3 id="monitoring">모니터링</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">metrics.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> prometheus_client <span class="kw">import</span> Counter, Histogram, Gauge, start_http_server
+
+<span class="cmt"># 메트릭 정의</span>
+tool_calls_total = Counter(
+    <span class="str">'mcp_tool_calls_total'</span>,
+    <span class="str">'Total number of tool calls'</span>,
+    [<span class="str">'tool_name'</span>, <span class="str">'status'</span>]
+)
+
+tool_duration = Histogram(
+    <span class="str">'mcp_tool_duration_seconds'</span>,
+    <span class="str">'Tool execution duration'</span>,
+    [<span class="str">'tool_name'</span>]
+)
+
+active_connections = Gauge(
+    <span class="str">'mcp_active_connections'</span>,
+    <span class="str">'Number of active connections'</span>
+)
+
+<span class="cmt"># Prometheus 서버 시작 (별도 포트)</span>
+start_http_server(<span class="num">9090</span>)
+
+<span class="pp">@server.call_tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">call_tool</span>(name: <span class="type">str</span>, arguments: <span class="type">dict</span>):
+    <span class="kw">with</span> tool_duration.<span class="fn">labels</span>(tool_name=name).<span class="fn">time</span>():
+        <span class="kw">try</span>:
+            result = <span class="kw">await</span> <span class="fn">execute_tool</span>(name, arguments)
+            tool_calls_total.<span class="fn">labels</span>(tool_name=name, status=<span class="str">'success'</span>).<span class="fn">inc</span>()
+            <span class="kw">return</span> result
+        <span class="kw">except</span> Exception:
+            tool_calls_total.<span class="fn">labels</span>(tool_name=name, status=<span class="str">'error'</span>).<span class="fn">inc</span>()
+            <span class="kw">raise</span>
+</code></pre>
+</div>
+
+<h3 id="ci-cd">CI/CD 파이프라인</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">YAML</span>
+<span class="filename">.github/workflows/deploy.yml</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">name</span>: Deploy MCP Server
+
+<span class="kw">on</span>:
+  <span class="kw">push</span>:
+    <span class="kw">branches</span>: [main]
+
+<span class="kw">jobs</span>:
+  <span class="kw">test</span>:
+    <span class="kw">runs-on</span>: ubuntu-latest
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: actions/checkout@v3
+      - <span class="kw">uses</span>: actions/setup-python@v4
+        <span class="kw">with</span>:
+          <span class="kw">python-version</span>: <span class="str">'3.11'</span>
+      - <span class="kw">run</span>: pip install -r requirements.txt
+      - <span class="kw">run</span>: pytest tests/
+
+  <span class="kw">build</span>:
+    <span class="kw">needs</span>: test
+    <span class="kw">runs-on</span>: ubuntu-latest
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: actions/checkout@v3
+      - <span class="kw">uses</span>: docker/build-push-action@v4
+        <span class="kw">with</span>:
+          <span class="kw">push</span>: true
+          <span class="kw">tags</span>: myregistry/mcp-server:latest
+
+  <span class="kw">deploy</span>:
+    <span class="kw">needs</span>: build
+    <span class="kw">runs-on</span>: ubuntu-latest
+    <span class="kw">steps</span>:
+      - <span class="kw">run</span>: |
+          ssh deploy@server 'docker pull myregistry/mcp-server:latest'
+          ssh deploy@server 'docker-compose up -d'
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="best-practices">베스트 프랙티스</h2>
+
+<div class="info-box tip">
+<strong>보안</strong>
+<ul>
+<li>최소 권한 원칙 적용</li>
+<li>입력 검증 철저히</li>
+<li>API 키 환경 변수로 관리</li>
+<li>Rate limiting 구현</li>
+<li>샌드박싱으로 격리</li>
+</ul>
+</div>
+
+<div class="info-box tip">
+<strong>성능</strong>
+<ul>
+<li>적절한 캐싱 전략</li>
+<li>연결 풀링 사용</li>
+<li>비동기 I/O 활용</li>
+<li>타임아웃 설정</li>
+<li>리소스 제한 (CPU, 메모리)</li>
+</ul>
+</div>
+
+<div class="info-box tip">
+<strong>신뢰성</strong>
+<ul>
+<li>포괄적인 에러 처리</li>
+<li>재시도 로직 (exponential backoff)</li>
+<li>Circuit breaker 패턴</li>
+<li>헬스체크 엔드포인트</li>
+<li>Graceful shutdown</li>
+</ul>
+</div>
+
+<div class="info-box tip">
+<strong>관찰성</strong>
+<ul>
+<li>구조화된 로깅</li>
+<li>메트릭 수집 (Prometheus)</li>
+<li>분산 추적 (Jaeger, Zipkin)</li>
+<li>알림 설정 (PagerDuty, Slack)</li>
+</ul>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="next-steps">다음 단계</h2>
+
+<div class="info-box tip">
+<strong>학습 경로</strong>
+<ol>
+<li><strong>보안 강화:</strong> 프로덕션 서버에 인증 및 권한 관리 추가</li>
+<li><strong>성능 테스트:</strong> 부하 테스트로 병목 지점 식별 및 최적화</li>
+<li><strong>모니터링 구축:</strong> Prometheus + Grafana 대시보드 설정</li>
+<li><strong>CI/CD 구축:</strong> 자동화된 테스트 및 배포 파이프라인</li>
+<li><strong>스케일링:</strong> 수평 확장 전략 수립</li>
+</ol>
+</div>
+
+<h3 id="additional-resources">추가 리소스</h3>
+
+<ul>
+<li><a href="mcp-intro.html">MCP 개념</a></li>
+<li><a href="mcp-servers.html">MCP 서버 개발</a></li>
+<li><a href="mcp-examples.html">MCP 실전 예제</a></li>
+<li><a href="mcp-ecosystem.html">MCP 생태계</a></li>
+<li><a href="https://modelcontextprotocol.io/docs" target="_blank">MCP 공식 문서</a></li>
+</ul>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP 실전 예제 - AI Vibe Coding 가이드 /with MINZKN</title>
+<meta name="description" content="Model Context Protocol 실전 예제 - 파일 시스템, 데이터베이스, GitHub, Slack, RAG 서버 구현">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">MCP 실전 예제</h1>
+<p class="lead">실무에서 바로 활용할 수 있는 완전한 MCP 서버 구현 예제를 제공합니다. 파일 시스템, 데이터베이스, API 통합, RAG 시스템 등 다양한 사용 사례를 Python과 TypeScript로 구현하는 방법을 학습하세요.</p>
+
+<div class="info-box tip">
+<strong>이 페이지에서 배울 내용</strong>
+<ul>
+<li>파일 시스템 서버 완전 구현 (Python/TypeScript)</li>
+<li>데이터베이스 서버 (SQLite, PostgreSQL)</li>
+<li>GitHub API 통합 서버</li>
+<li>Slack 봇 MCP 서버</li>
+<li>RAG 시스템 구현</li>
+<li>각 예제마다 서버 + 클라이언트 코드 제공</li>
+</ul>
+</div>
+
+<section class="content-section">
+<h2 id="filesystem-server">파일 시스템 서버</h2>
+
+<h3 id="filesystem-python">Python 구현</h3>
+
+<p>파일 시스템 MCP 서버는 가장 기본적이면서도 실용적인 예제입니다. 파일 읽기/쓰기, 디렉토리 탐색, 검색 등의 기능을 제공합니다.</p>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">filesystem_server.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> asyncio
+<span class="kw">import</span> os
+<span class="kw">import</span> json
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+<span class="kw">from</span> typing <span class="kw">import</span> Optional, List
+
+<span class="kw">from</span> mcp.server <span class="kw">import</span> Server
+<span class="kw">from</span> mcp.server.stdio <span class="kw">import</span> stdio_server
+<span class="kw">from</span> mcp.types <span class="kw">import</span> (
+    Tool,
+    TextContent,
+    ImageContent,
+    EmbeddedResource,
+)
+
+<span class="cmt"># 서버 인스턴스 생성</span>
+server = Server(<span class="str">"filesystem-server"</span>)
+
+<span class="cmt"># 허용된 디렉토리 (보안을 위해)</span>
+ALLOWED_DIRECTORIES = [
+    Path.home() / <span class="str">"Documents"</span>,
+    Path.home() / <span class="str">"Projects"</span>,
+]
+
+<span class="kw">def</span> <span class="fn">is_path_allowed</span>(path: Path) -> <span class="type">bool</span>:
+    <span class="str">"""경로가 허용된 디렉토리 내에 있는지 확인"""</span>
+    path = path.<span class="fn">resolve</span>()
+    <span class="kw">return</span> <span class="fn">any</span>(
+        path.<span class="fn">is_relative_to</span>(allowed_dir)
+        <span class="kw">for</span> allowed_dir <span class="kw">in</span> ALLOWED_DIRECTORIES
+    )
+
+<span class="pp">@server.list_tools()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">list_tools</span>() -> <span class="type">list</span>[Tool]:
+    <span class="str">"""사용 가능한 도구 목록 반환"""</span>
+    <span class="kw">return</span> [
+        Tool(
+            name=<span class="str">"read_file"</span>,
+            description=<span class="str">"파일 내용을 읽습니다. 텍스트 및 바이너리 파일 지원."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"path"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"읽을 파일의 경로"</span>
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"path"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"write_file"</span>,
+            description=<span class="str">"파일에 내용을 씁니다. 파일이 없으면 생성합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"path"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"쓸 파일의 경로"</span>
+                    },
+                    <span class="str">"content"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"파일에 쓸 내용"</span>
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"path"</span>, <span class="str">"content"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"list_directory"</span>,
+            description=<span class="str">"디렉토리의 파일과 하위 디렉토리 목록을 반환합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"path"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"나열할 디렉토리 경로"</span>
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"path"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"search_files"</span>,
+            description=<span class="str">"파일 이름 패턴으로 파일을 검색합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"directory"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"검색할 디렉토리"</span>
+                    },
+                    <span class="str">"pattern"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"검색 패턴 (예: *.py)"</span>
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"directory"</span>, <span class="str">"pattern"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"create_directory"</span>,
+            description=<span class="str">"새 디렉토리를 생성합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"path"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"생성할 디렉토리 경로"</span>
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"path"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"delete_file"</span>,
+            description=<span class="str">"파일 또는 디렉토리를 삭제합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"path"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"삭제할 파일/디렉토리 경로"</span>
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"path"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"get_file_info"</span>,
+            description=<span class="str">"파일의 메타데이터(크기, 수정일 등)를 조회합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"path"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"정보를 조회할 파일 경로"</span>
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"path"</span>]
+            }
+        ),
+    ]
+
+<span class="pp">@server.call_tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">call_tool</span>(name: <span class="type">str</span>, arguments: <span class="type">dict</span>) -> <span class="type">list</span>[TextContent]:
+    <span class="str">"""도구 실행"""</span>
+
+    <span class="kw">if</span> name == <span class="str">"read_file"</span>:
+        path = Path(arguments[<span class="str">"path"</span>])
+
+        <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(path):
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">f"Access denied: {path}"</span>)
+
+        <span class="kw">if</span> <span class="kw">not</span> path.<span class="fn">exists</span>():
+            <span class="kw">raise</span> <span class="fn">FileNotFoundError</span>(<span class="str">f"File not found: {path}"</span>)
+
+        <span class="kw">try</span>:
+            content = path.<span class="fn">read_text</span>(encoding=<span class="str">"utf-8"</span>)
+            <span class="kw">return</span> [TextContent(
+                type=<span class="str">"text"</span>,
+                text=content
+            )]
+        <span class="kw">except</span> <span class="type">UnicodeDecodeError</span>:
+            <span class="cmt"># 바이너리 파일인 경우</span>
+            size = path.<span class="fn">stat</span>().st_size
+            <span class="kw">return</span> [TextContent(
+                type=<span class="str">"text"</span>,
+                text=<span class="type">f</span><span class="str">"Binary file ({size} bytes)"</span>
+            )]
+
+    <span class="kw">elif</span> name == <span class="str">"write_file"</span>:
+        path = Path(arguments[<span class="str">"path"</span>])
+        content = arguments[<span class="str">"content"</span>]
+
+        <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(path):
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">f"Access denied: {path}"</span>)
+
+        path.parent.<span class="fn">mkdir</span>(parents=<span class="kw">True</span>, exist_ok=<span class="kw">True</span>)
+        path.<span class="fn">write_text</span>(content, encoding=<span class="str">"utf-8"</span>)
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=<span class="type">f</span><span class="str">"Successfully wrote {len(content)} characters to {path}"</span>
+        )]
+
+    <span class="kw">elif</span> name == <span class="str">"list_directory"</span>:
+        path = Path(arguments[<span class="str">"path"</span>])
+
+        <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(path):
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">f"Access denied: {path}"</span>)
+
+        <span class="kw">if</span> <span class="kw">not</span> path.<span class="fn">is_dir</span>():
+            <span class="kw">raise</span> <span class="fn">NotADirectoryError</span>(<span class="str">f"Not a directory: {path}"</span>)
+
+        items = []
+        <span class="kw">for</span> item <span class="kw">in</span> <span class="fn">sorted</span>(path.<span class="fn">iterdir</span>()):
+            item_type = <span class="str">"dir"</span> <span class="kw">if</span> item.<span class="fn">is_dir</span>() <span class="kw">else</span> <span class="str">"file"</span>
+            size = item.<span class="fn">stat</span>().st_size <span class="kw">if</span> item.<span class="fn">is_file</span>() <span class="kw">else</span> <span class="num">0</span>
+            items.<span class="fn">append</span>(<span class="type">f</span><span class="str">"[{item_type}] {item.name} ({size} bytes)"</span>)
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=<span class="str">"\n"</span>.<span class="fn">join</span>(items) <span class="kw">if</span> items <span class="kw">else</span> <span class="str">"Empty directory"</span>
+        )]
+
+    <span class="kw">elif</span> name == <span class="str">"search_files"</span>:
+        directory = Path(arguments[<span class="str">"directory"</span>])
+        pattern = arguments[<span class="str">"pattern"</span>]
+
+        <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(directory):
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">f"Access denied: {directory}"</span>)
+
+        matches = <span class="fn">list</span>(directory.<span class="fn">rglob</span>(pattern))
+        results = [<span class="type">str</span>(match.<span class="fn">relative_to</span>(directory)) <span class="kw">for</span> match <span class="kw">in</span> matches]
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=<span class="type">f</span><span class="str">"Found {len(results)} files:\n"</span> + <span class="str">"\n"</span>.<span class="fn">join</span>(results)
+        )]
+
+    <span class="kw">elif</span> name == <span class="str">"create_directory"</span>:
+        path = Path(arguments[<span class="str">"path"</span>])
+
+        <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(path):
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">f"Access denied: {path}"</span>)
+
+        path.<span class="fn">mkdir</span>(parents=<span class="kw">True</span>, exist_ok=<span class="kw">True</span>)
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=<span class="type">f</span><span class="str">"Created directory: {path}"</span>
+        )]
+
+    <span class="kw">elif</span> name == <span class="str">"delete_file"</span>:
+        path = Path(arguments[<span class="str">"path"</span>])
+
+        <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(path):
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">f"Access denied: {path}"</span>)
+
+        <span class="kw">if</span> path.<span class="fn">is_file</span>():
+            path.<span class="fn">unlink</span>()
+            <span class="kw">return</span> [TextContent(type=<span class="str">"text"</span>, text=<span class="type">f</span><span class="str">"Deleted file: {path}"</span>)]
+        <span class="kw">elif</span> path.<span class="fn">is_dir</span>():
+            <span class="kw">import</span> shutil
+            shutil.<span class="fn">rmtree</span>(path)
+            <span class="kw">return</span> [TextContent(type=<span class="str">"text"</span>, text=<span class="type">f</span><span class="str">"Deleted directory: {path}"</span>)]
+        <span class="kw">else</span>:
+            <span class="kw">raise</span> <span class="fn">FileNotFoundError</span>(<span class="str">f"Not found: {path}"</span>)
+
+    <span class="kw">elif</span> name == <span class="str">"get_file_info"</span>:
+        path = Path(arguments[<span class="str">"path"</span>])
+
+        <span class="kw">if</span> <span class="kw">not</span> <span class="fn">is_path_allowed</span>(path):
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">f"Access denied: {path}"</span>)
+
+        <span class="kw">if</span> <span class="kw">not</span> path.<span class="fn">exists</span>():
+            <span class="kw">raise</span> <span class="fn">FileNotFoundError</span>(<span class="str">f"Not found: {path}"</span>)
+
+        stat = path.<span class="fn">stat</span>()
+        <span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+        info = {
+            <span class="str">"name"</span>: path.name,
+            <span class="str">"path"</span>: <span class="type">str</span>(path),
+            <span class="str">"type"</span>: <span class="str">"directory"</span> <span class="kw">if</span> path.<span class="fn">is_dir</span>() <span class="kw">else</span> <span class="str">"file"</span>,
+            <span class="str">"size"</span>: stat.st_size,
+            <span class="str">"created"</span>: datetime.<span class="fn">fromtimestamp</span>(stat.st_ctime).<span class="fn">isoformat</span>(),
+            <span class="str">"modified"</span>: datetime.<span class="fn">fromtimestamp</span>(stat.st_mtime).<span class="fn">isoformat</span>(),
+        }
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=json.<span class="fn">dumps</span>(info, indent=<span class="num">2</span>)
+        )]
+
+    <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">f"Unknown tool: {name}"</span>)
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="str">"""서버 실행"""</span>
+    <span class="kw">async</span> <span class="kw">with</span> stdio_server() <span class="kw">as</span> (read_stream, write_stream):
+        <span class="kw">await</span> server.run(
+            read_stream,
+            write_stream,
+            server.create_initialization_options()
+        )
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    asyncio.<span class="fn">run</span>(<span class="fn">main</span>())
+</code></pre>
+</div>
+
+<h3 id="filesystem-client">클라이언트 사용 예제</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TypeScript</span>
+<span class="filename">filesystem_client.ts</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> { Client } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/client/index.js"</span>;
+<span class="kw">import</span> { StdioClientTransport } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/client/stdio.js"</span>;
+
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">main</span>() {
+  <span class="cmt">// 클라이언트 생성</span>
+  <span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">Client</span>({
+    name: <span class="str">"filesystem-client"</span>,
+    version: <span class="str">"1.0.0"</span>
+  }, {
+    capabilities: {
+      tools: {}
+    }
+  });
+
+  <span class="cmt">// 전송 계층 설정 (Python 서버 실행)</span>
+  <span class="kw">const</span> transport = <span class="kw">new</span> <span class="fn">StdioClientTransport</span>({
+    command: <span class="str">"python"</span>,
+    args: [<span class="str">"filesystem_server.py"</span>]
+  });
+
+  <span class="kw">try</span> {
+    <span class="cmt">// 서버 연결</span>
+    <span class="kw">await</span> client.<span class="fn">connect</span>(transport);
+    console.<span class="fn">log</span>(<span class="str">"✓ Connected to filesystem server"</span>);
+
+    <span class="cmt">// 사용 가능한 도구 목록 조회</span>
+    <span class="kw">const</span> tools = <span class="kw">await</span> client.<span class="fn">listTools</span>();
+    console.<span class="fn">log</span>(<span class="str">"\nAvailable tools:"</span>);
+    tools.tools.<span class="fn">forEach</span>(tool => {
+      console.<span class="fn">log</span>(<span class="str">`  - ${tool.name}: ${tool.description}`</span>);
+    });
+
+    <span class="cmt">// 예제 1: 디렉토리 나열</span>
+    console.<span class="fn">log</span>(<span class="str">"\n--- Listing directory ---"</span>);
+    <span class="kw">const</span> listResult = <span class="kw">await</span> client.<span class="fn">callTool</span>(<span class="str">"list_directory"</span>, {
+      path: process.env.HOME + <span class="str">"/Documents"</span>
+    });
+    console.<span class="fn">log</span>(listResult.content[<span class="num">0</span>].text);
+
+    <span class="cmt">// 예제 2: 파일 쓰기</span>
+    console.<span class="fn">log</span>(<span class="str">"\n--- Writing file ---"</span>);
+    <span class="kw">const</span> writeResult = <span class="kw">await</span> client.<span class="fn">callTool</span>(<span class="str">"write_file"</span>, {
+      path: process.env.HOME + <span class="str">"/Documents/test.txt"</span>,
+      content: <span class="str">"Hello from MCP!\nThis is a test file."</span>
+    });
+    console.<span class="fn">log</span>(writeResult.content[<span class="num">0</span>].text);
+
+    <span class="cmt">// 예제 3: 파일 읽기</span>
+    console.<span class="fn">log</span>(<span class="str">"\n--- Reading file ---"</span>);
+    <span class="kw">const</span> readResult = <span class="kw">await</span> client.<span class="fn">callTool</span>(<span class="str">"read_file"</span>, {
+      path: process.env.HOME + <span class="str">"/Documents/test.txt"</span>
+    });
+    console.<span class="fn">log</span>(readResult.content[<span class="num">0</span>].text);
+
+    <span class="cmt">// 예제 4: 파일 검색</span>
+    console.<span class="fn">log</span>(<span class="str">"\n--- Searching files ---"</span>);
+    <span class="kw">const</span> searchResult = <span class="kw">await</span> client.<span class="fn">callTool</span>(<span class="str">"search_files"</span>, {
+      directory: process.env.HOME + <span class="str">"/Documents"</span>,
+      pattern: <span class="str">"*.txt"</span>
+    });
+    console.<span class="fn">log</span>(searchResult.content[<span class="num">0</span>].text);
+
+    <span class="cmt">// 예제 5: 파일 정보 조회</span>
+    console.<span class="fn">log</span>(<span class="str">"\n--- File info ---"</span>);
+    <span class="kw">const</span> infoResult = <span class="kw">await</span> client.<span class="fn">callTool</span>(<span class="str">"get_file_info"</span>, {
+      path: process.env.HOME + <span class="str">"/Documents/test.txt"</span>
+    });
+    console.<span class="fn">log</span>(infoResult.content[<span class="num">0</span>].text);
+
+  } <span class="kw">catch</span> (error) {
+    console.<span class="fn">error</span>(<span class="str">"Error:"</span>, error);
+  } <span class="kw">finally</span> {
+    <span class="kw">await</span> client.<span class="fn">close</span>();
+    console.<span class="fn">log</span>(<span class="str">"\n✓ Connection closed"</span>);
+  }
+}
+
+<span class="fn">main</span>();
+</code></pre>
+</div>
+
+<h3 id="filesystem-typescript">TypeScript 서버 구현</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TypeScript</span>
+<span class="filename">filesystem-server.ts</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> { Server } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/server/index.js"</span>;
+<span class="kw">import</span> { StdioServerTransport } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/server/stdio.js"</span>;
+<span class="kw">import</span> {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  Tool,
+} <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/types.js"</span>;
+<span class="kw">import</span> * <span class="kw">as</span> fs <span class="kw">from</span> <span class="str">"fs/promises"</span>;
+<span class="kw">import</span> * <span class="kw">as</span> path <span class="kw">from</span> <span class="str">"path"</span>;
+<span class="kw">import</span> { glob } <span class="kw">from</span> <span class="str">"glob"</span>;
+<span class="kw">import</span> os <span class="kw">from</span> <span class="str">"os"</span>;
+
+<span class="cmt">// 허용된 디렉토리</span>
+<span class="kw">const</span> ALLOWED_DIRECTORIES = [
+  path.<span class="fn">join</span>(os.<span class="fn">homedir</span>(), <span class="str">"Documents"</span>),
+  path.<span class="fn">join</span>(os.<span class="fn">homedir</span>(), <span class="str">"Projects"</span>),
+];
+
+<span class="kw">function</span> <span class="fn">isPathAllowed</span>(filePath: <span class="type">string</span>): <span class="type">boolean</span> {
+  <span class="kw">const</span> resolved = path.<span class="fn">resolve</span>(filePath);
+  <span class="kw">return</span> ALLOWED_DIRECTORIES.<span class="fn">some</span>(dir => resolved.<span class="fn">startsWith</span>(dir));
+}
+
+<span class="cmt">// 서버 생성</span>
+<span class="kw">const</span> server = <span class="kw">new</span> <span class="fn">Server</span>({
+  name: <span class="str">"filesystem-server"</span>,
+  version: <span class="str">"1.0.0"</span>
+}, {
+  capabilities: {
+    tools: {}
+  }
+});
+
+<span class="cmt">// 도구 목록 핸들러</span>
+server.<span class="fn">setRequestHandler</span>(ListToolsRequestSchema, <span class="kw">async</span> () => {
+  <span class="kw">return</span> {
+    tools: [
+      {
+        name: <span class="str">"read_file"</span>,
+        description: <span class="str">"파일 내용을 읽습니다"</span>,
+        inputSchema: {
+          type: <span class="str">"object"</span>,
+          properties: {
+            path: {
+              type: <span class="str">"string"</span>,
+              description: <span class="str">"읽을 파일 경로"</span>
+            }
+          },
+          required: [<span class="str">"path"</span>]
+        }
+      },
+      {
+        name: <span class="str">"write_file"</span>,
+        description: <span class="str">"파일에 내용을 씁니다"</span>,
+        inputSchema: {
+          type: <span class="str">"object"</span>,
+          properties: {
+            path: { type: <span class="str">"string"</span>, description: <span class="str">"파일 경로"</span> },
+            content: { type: <span class="str">"string"</span>, description: <span class="str">"파일 내용"</span> }
+          },
+          required: [<span class="str">"path"</span>, <span class="str">"content"</span>]
+        }
+      },
+      {
+        name: <span class="str">"list_directory"</span>,
+        description: <span class="str">"디렉토리 내용을 나열합니다"</span>,
+        inputSchema: {
+          type: <span class="str">"object"</span>,
+          properties: {
+            path: { type: <span class="str">"string"</span>, description: <span class="str">"디렉토리 경로"</span> }
+          },
+          required: [<span class="str">"path"</span>]
+        }
+      },
+      {
+        name: <span class="str">"search_files"</span>,
+        description: <span class="str">"패턴으로 파일을 검색합니다"</span>,
+        inputSchema: {
+          type: <span class="str">"object"</span>,
+          properties: {
+            directory: { type: <span class="str">"string"</span> },
+            pattern: { type: <span class="str">"string"</span> }
+          },
+          required: [<span class="str">"directory"</span>, <span class="str">"pattern"</span>]
+        }
+      }
+    ] <span class="kw">as</span> Tool[]
+  };
+});
+
+<span class="cmt">// 도구 호출 핸들러</span>
+server.<span class="fn">setRequestHandler</span>(CallToolRequestSchema, <span class="kw">async</span> (request) => {
+  <span class="kw">const</span> { name, arguments: args } = request.params;
+
+  <span class="kw">switch</span> (name) {
+    <span class="kw">case</span> <span class="str">"read_file"</span>: {
+      <span class="kw">const</span> filePath = args.path <span class="kw">as</span> <span class="type">string</span>;
+
+      <span class="kw">if</span> (!<span class="fn">isPathAllowed</span>(filePath)) {
+        <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">`Access denied: ${filePath}`</span>);
+      }
+
+      <span class="kw">const</span> content = <span class="kw">await</span> fs.<span class="fn">readFile</span>(filePath, <span class="str">"utf-8"</span>);
+
+      <span class="kw">return</span> {
+        content: [{
+          type: <span class="str">"text"</span>,
+          text: content
+        }]
+      };
+    }
+
+    <span class="kw">case</span> <span class="str">"write_file"</span>: {
+      <span class="kw">const</span> filePath = args.path <span class="kw">as</span> <span class="type">string</span>;
+      <span class="kw">const</span> content = args.content <span class="kw">as</span> <span class="type">string</span>;
+
+      <span class="kw">if</span> (!<span class="fn">isPathAllowed</span>(filePath)) {
+        <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">`Access denied: ${filePath}`</span>);
+      }
+
+      <span class="kw">await</span> fs.<span class="fn">mkdir</span>(path.<span class="fn">dirname</span>(filePath), { recursive: <span class="kw">true</span> });
+      <span class="kw">await</span> fs.<span class="fn">writeFile</span>(filePath, content, <span class="str">"utf-8"</span>);
+
+      <span class="kw">return</span> {
+        content: [{
+          type: <span class="str">"text"</span>,
+          text: <span class="str">`Successfully wrote ${content.length} characters to ${filePath}`</span>
+        }]
+      };
+    }
+
+    <span class="kw">case</span> <span class="str">"list_directory"</span>: {
+      <span class="kw">const</span> dirPath = args.path <span class="kw">as</span> <span class="type">string</span>;
+
+      <span class="kw">if</span> (!<span class="fn">isPathAllowed</span>(dirPath)) {
+        <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">`Access denied: ${dirPath}`</span>);
+      }
+
+      <span class="kw">const</span> entries = <span class="kw">await</span> fs.<span class="fn">readdir</span>(dirPath, { withFileTypes: <span class="kw">true</span> });
+      <span class="kw">const</span> items = <span class="kw">await</span> Promise.<span class="fn">all</span>(
+        entries.<span class="fn">map</span>(<span class="kw">async</span> entry => {
+          <span class="kw">const</span> fullPath = path.<span class="fn">join</span>(dirPath, entry.name);
+          <span class="kw">const</span> stats = <span class="kw">await</span> fs.<span class="fn">stat</span>(fullPath);
+          <span class="kw">const</span> type = entry.<span class="fn">isDirectory</span>() ? <span class="str">"dir"</span> : <span class="str">"file"</span>;
+          <span class="kw">return</span> <span class="str">`[${type}] ${entry.name} (${stats.size} bytes)`</span>;
+        })
+      );
+
+      <span class="kw">return</span> {
+        content: [{
+          type: <span class="str">"text"</span>,
+          text: items.<span class="fn">join</span>(<span class="str">"\n"</span>)
+        }]
+      };
+    }
+
+    <span class="kw">case</span> <span class="str">"search_files"</span>: {
+      <span class="kw">const</span> directory = args.directory <span class="kw">as</span> <span class="type">string</span>;
+      <span class="kw">const</span> pattern = args.pattern <span class="kw">as</span> <span class="type">string</span>;
+
+      <span class="kw">if</span> (!<span class="fn">isPathAllowed</span>(directory)) {
+        <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">`Access denied: ${directory}`</span>);
+      }
+
+      <span class="kw">const</span> matches = <span class="kw">await</span> <span class="fn">glob</span>(pattern, {
+        cwd: directory,
+        nodir: <span class="kw">false</span>
+      });
+
+      <span class="kw">return</span> {
+        content: [{
+          type: <span class="str">"text"</span>,
+          text: <span class="str">`Found ${matches.length} files:\n${matches.join("\n")}`</span>
+        }]
+      };
+    }
+
+    <span class="kw">default</span>:
+      <span class="kw">throw</span> <span class="kw">new</span> <span class="fn">Error</span>(<span class="str">`Unknown tool: ${name}`</span>);
+  }
+});
+
+<span class="cmt">// 서버 시작</span>
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">main</span>() {
+  <span class="kw">const</span> transport = <span class="kw">new</span> <span class="fn">StdioServerTransport</span>();
+  <span class="kw">await</span> server.<span class="fn">connect</span>(transport);
+  console.<span class="fn">error</span>(<span class="str">"Filesystem MCP Server running on stdio"</span>);
+}
+
+<span class="fn">main</span>().<span class="fn">catch</span>(console.error);
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="database-server">데이터베이스 서버</h2>
+
+<h3 id="sqlite-server">SQLite MCP 서버</h3>
+
+<p>SQLite 데이터베이스에 접근하는 MCP 서버 구현입니다. 쿼리 실행, 스키마 조회, 트랜잭션 관리 등을 지원합니다.</p>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">sqlite_server.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> asyncio
+<span class="kw">import</span> sqlite3
+<span class="kw">import</span> json
+<span class="kw">from</span> typing <span class="kw">import</span> Any, List, Dict
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="kw">from</span> mcp.server <span class="kw">import</span> Server
+<span class="kw">from</span> mcp.server.stdio <span class="kw">import</span> stdio_server
+<span class="kw">from</span> mcp.types <span class="kw">import</span> Tool, TextContent
+
+server = Server(<span class="str">"sqlite-server"</span>)
+
+<span class="cmt"># 데이터베이스 연결 풀</span>
+connections: Dict[<span class="type">str</span>, sqlite3.Connection] = {}
+
+<span class="kw">def</span> <span class="fn">get_connection</span>(db_path: <span class="type">str</span>) -> sqlite3.Connection:
+    <span class="str">"""데이터베이스 연결 가져오기 (연결 풀 사용)"""</span>
+    <span class="kw">if</span> db_path <span class="kw">not</span> <span class="kw">in</span> connections:
+        conn = sqlite3.<span class="fn">connect</span>(db_path)
+        conn.row_factory = sqlite3.Row  <span class="cmt"># 딕셔너리 형태로 결과 반환</span>
+        connections[db_path] = conn
+    <span class="kw">return</span> connections[db_path]
+
+<span class="pp">@server.list_tools()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">list_tools</span>() -> <span class="type">list</span>[Tool]:
+    <span class="kw">return</span> [
+        Tool(
+            name=<span class="str">"query"</span>,
+            description=<span class="str">"SQL SELECT 쿼리를 실행합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"db_path"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"데이터베이스 파일 경로"</span>
+                    },
+                    <span class="str">"sql"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"실행할 SELECT 쿼리"</span>
+                    },
+                    <span class="str">"params"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"array"</span>,
+                        <span class="str">"description"</span>: <span class="str">"쿼리 매개변수 (선택사항)"</span>,
+                        <span class="str">"items"</span>: {<span class="str">"type"</span>: [<span class="str">"string"</span>, <span class="str">"number"</span>, <span class="str">"null"</span>]}
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"db_path"</span>, <span class="str">"sql"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"execute"</span>,
+            description=<span class="str">"SQL INSERT/UPDATE/DELETE 쿼리를 실행합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"db_path"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"sql"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"params"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"array"</span>,
+                        <span class="str">"items"</span>: {<span class="str">"type"</span>: [<span class="str">"string"</span>, <span class="str">"number"</span>, <span class="str">"null"</span>]}
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"db_path"</span>, <span class="str">"sql"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"get_schema"</span>,
+            description=<span class="str">"데이터베이스 스키마를 조회합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"db_path"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"table_name"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"특정 테이블만 조회 (선택사항)"</span>
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"db_path"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"create_table"</span>,
+            description=<span class="str">"새 테이블을 생성합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"db_path"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"table_name"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"columns"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"object"</span>,
+                        <span class="str">"description"</span>: <span class="str">"컬럼명: 타입 형식"</span>
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"db_path"</span>, <span class="str">"table_name"</span>, <span class="str">"columns"</span>]
+            }
+        ),
+    ]
+
+<span class="pp">@server.call_tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">call_tool</span>(name: <span class="type">str</span>, arguments: <span class="type">dict</span>) -> <span class="type">list</span>[TextContent]:
+    db_path = arguments[<span class="str">"db_path"</span>]
+    conn = <span class="fn">get_connection</span>(db_path)
+    cursor = conn.<span class="fn">cursor</span>()
+
+    <span class="kw">if</span> name == <span class="str">"query"</span>:
+        sql = arguments[<span class="str">"sql"</span>]
+        params = arguments.<span class="fn">get</span>(<span class="str">"params"</span>, [])
+
+        <span class="cmt"># SELECT만 허용</span>
+        <span class="kw">if</span> <span class="kw">not</span> sql.<span class="fn">strip</span>().<span class="fn">upper</span>().<span class="fn">startswith</span>(<span class="str">"SELECT"</span>):
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">"Only SELECT queries are allowed in query()"</span>)
+
+        cursor.<span class="fn">execute</span>(sql, params)
+        rows = cursor.<span class="fn">fetchall</span>()
+
+        <span class="cmt"># Row 객체를 딕셔너리로 변환</span>
+        result = [<span class="fn">dict</span>(row) <span class="kw">for</span> row <span class="kw">in</span> rows]
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=json.<span class="fn">dumps</span>(result, indent=<span class="num">2</span>, ensure_ascii=<span class="kw">False</span>)
+        )]
+
+    <span class="kw">elif</span> name == <span class="str">"execute"</span>:
+        sql = arguments[<span class="str">"sql"</span>]
+        params = arguments.<span class="fn">get</span>(<span class="str">"params"</span>, [])
+
+        cursor.<span class="fn">execute</span>(sql, params)
+        conn.<span class="fn">commit</span>()
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=<span class="type">f</span><span class="str">"Executed successfully. Rows affected: {cursor.rowcount}"</span>
+        )]
+
+    <span class="kw">elif</span> name == <span class="str">"get_schema"</span>:
+        table_name = arguments.<span class="fn">get</span>(<span class="str">"table_name"</span>)
+
+        <span class="kw">if</span> table_name:
+            <span class="cmt"># 특정 테이블 스키마</span>
+            cursor.<span class="fn">execute</span>(<span class="str">f"PRAGMA table_info({table_name})"</span>)
+            columns = cursor.<span class="fn">fetchall</span>()
+            schema = {
+                <span class="str">"table"</span>: table_name,
+                <span class="str">"columns"</span>: [<span class="fn">dict</span>(col) <span class="kw">for</span> col <span class="kw">in</span> columns]
+            }
+        <span class="kw">else</span>:
+            <span class="cmt"># 전체 데이터베이스 스키마</span>
+            cursor.<span class="fn">execute</span>(<span class="str">"""
+                SELECT name, type, sql
+                FROM sqlite_master
+                WHERE type IN ('table', 'view')
+                ORDER BY name
+            """</span>)
+            objects = cursor.<span class="fn">fetchall</span>()
+            schema = {
+                <span class="str">"database"</span>: db_path,
+                <span class="str">"objects"</span>: [<span class="fn">dict</span>(obj) <span class="kw">for</span> obj <span class="kw">in</span> objects]
+            }
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=json.<span class="fn">dumps</span>(schema, indent=<span class="num">2</span>)
+        )]
+
+    <span class="kw">elif</span> name == <span class="str">"create_table"</span>:
+        table_name = arguments[<span class="str">"table_name"</span>]
+        columns = arguments[<span class="str">"columns"</span>]
+
+        column_defs = [<span class="type">f</span><span class="str">"{col_name} {col_type}"</span>
+                       <span class="kw">for</span> col_name, col_type <span class="kw">in</span> columns.<span class="fn">items</span>()]
+
+        sql = <span class="type">f</span><span class="str">"""
+            CREATE TABLE IF NOT EXISTS {table_name} (
+                {', '.join(column_defs)}
+            )
+        """</span>
+
+        cursor.<span class="fn">execute</span>(sql)
+        conn.<span class="fn">commit</span>()
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=<span class="type">f</span><span class="str">"Table '{table_name}' created successfully"</span>
+        )]
+
+    <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">f"Unknown tool: {name}"</span>)
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="kw">async</span> <span class="kw">with</span> stdio_server() <span class="kw">as</span> (read_stream, write_stream):
+        <span class="kw">await</span> server.run(
+            read_stream,
+            write_stream,
+            server.create_initialization_options()
+        )
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    asyncio.<span class="fn">run</span>(<span class="fn">main</span>())
+</code></pre>
+</div>
+
+<h3 id="postgresql-server">PostgreSQL MCP 서버</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">postgres_server.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> asyncio
+<span class="kw">import</span> json
+<span class="kw">from</span> typing <span class="kw">import</span> Any, List, Dict, Optional
+
+<span class="kw">import</span> asyncpg
+
+<span class="kw">from</span> mcp.server <span class="kw">import</span> Server
+<span class="kw">from</span> mcp.server.stdio <span class="kw">import</span> stdio_server
+<span class="kw">from</span> mcp.types <span class="kw">import</span> Tool, TextContent
+
+server = Server(<span class="str">"postgres-server"</span>)
+
+<span class="cmt"># 연결 풀</span>
+pool: Optional[asyncpg.Pool] = <span class="kw">None</span>
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">get_pool</span>(dsn: <span class="type">str</span>) -> asyncpg.Pool:
+    <span class="str">"""PostgreSQL 연결 풀 가져오기"""</span>
+    <span class="kw">global</span> pool
+    <span class="kw">if</span> pool <span class="kw">is</span> <span class="kw">None</span>:
+        pool = <span class="kw">await</span> asyncpg.<span class="fn">create_pool</span>(dsn, min_size=<span class="num">2</span>, max_size=<span class="num">10</span>)
+    <span class="kw">return</span> pool
+
+<span class="pp">@server.list_tools()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">list_tools</span>() -> <span class="type">list</span>[Tool]:
+    <span class="kw">return</span> [
+        Tool(
+            name=<span class="str">"pg_query"</span>,
+            description=<span class="str">"PostgreSQL SELECT 쿼리를 실행합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"dsn"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"PostgreSQL 연결 문자열"</span>
+                    },
+                    <span class="str">"sql"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"params"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"array"</span>,
+                        <span class="str">"items"</span>: {}
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"dsn"</span>, <span class="str">"sql"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"pg_execute"</span>,
+            description=<span class="str">"PostgreSQL INSERT/UPDATE/DELETE를 실행합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"dsn"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"sql"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"params"</span>: {<span class="str">"type"</span>: <span class="str">"array"</span>}
+                },
+                <span class="str">"required"</span>: [<span class="str">"dsn"</span>, <span class="str">"sql"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"pg_get_tables"</span>,
+            description=<span class="str">"데이터베이스의 모든 테이블 목록을 조회합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"dsn"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"schema"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"스키마 이름 (기본: public)"</span>,
+                        <span class="str">"default"</span>: <span class="str">"public"</span>
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"dsn"</span>]
+            }
+        ),
+    ]
+
+<span class="pp">@server.call_tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">call_tool</span>(name: <span class="type">str</span>, arguments: <span class="type">dict</span>) -> <span class="type">list</span>[TextContent]:
+    dsn = arguments[<span class="str">"dsn"</span>]
+    pool = <span class="kw">await</span> <span class="fn">get_pool</span>(dsn)
+
+    <span class="kw">if</span> name == <span class="str">"pg_query"</span>:
+        sql = arguments[<span class="str">"sql"</span>]
+        params = arguments.<span class="fn">get</span>(<span class="str">"params"</span>, [])
+
+        <span class="kw">async</span> <span class="kw">with</span> pool.<span class="fn">acquire</span>() <span class="kw">as</span> conn:
+            rows = <span class="kw">await</span> conn.<span class="fn">fetch</span>(sql, *params)
+            result = [<span class="fn">dict</span>(row) <span class="kw">for</span> row <span class="kw">in</span> rows]
+
+            <span class="kw">return</span> [TextContent(
+                type=<span class="str">"text"</span>,
+                text=json.<span class="fn">dumps</span>(result, indent=<span class="num">2</span>, default=<span class="type">str</span>)
+            )]
+
+    <span class="kw">elif</span> name == <span class="str">"pg_execute"</span>:
+        sql = arguments[<span class="str">"sql"</span>]
+        params = arguments.<span class="fn">get</span>(<span class="str">"params"</span>, [])
+
+        <span class="kw">async</span> <span class="kw">with</span> pool.<span class="fn">acquire</span>() <span class="kw">as</span> conn:
+            status = <span class="kw">await</span> conn.<span class="fn">execute</span>(sql, *params)
+
+            <span class="kw">return</span> [TextContent(
+                type=<span class="str">"text"</span>,
+                text=<span class="type">f</span><span class="str">"Executed: {status}"</span>
+            )]
+
+    <span class="kw">elif</span> name == <span class="str">"pg_get_tables"</span>:
+        schema = arguments.<span class="fn">get</span>(<span class="str">"schema"</span>, <span class="str">"public"</span>)
+
+        <span class="kw">async</span> <span class="kw">with</span> pool.<span class="fn">acquire</span>() <span class="kw">as</span> conn:
+            rows = <span class="kw">await</span> conn.<span class="fn">fetch</span>(<span class="str">"""
+                SELECT tablename, schemaname
+                FROM pg_tables
+                WHERE schemaname = $1
+                ORDER BY tablename
+            """</span>, schema)
+
+            tables = [<span class="fn">dict</span>(row) <span class="kw">for</span> row <span class="kw">in</span> rows]
+
+            <span class="kw">return</span> [TextContent(
+                type=<span class="str">"text"</span>,
+                text=json.<span class="fn">dumps</span>(tables, indent=<span class="num">2</span>)
+            )]
+
+    <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">f"Unknown tool: {name}"</span>)
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="kw">async</span> <span class="kw">with</span> stdio_server() <span class="kw">as</span> (read_stream, write_stream):
+        <span class="kw">await</span> server.run(
+            read_stream,
+            write_stream,
+            server.create_initialization_options()
+        )
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    asyncio.<span class="fn">run</span>(<span class="fn">main</span>())
+</code></pre>
+</div>
+
+<h3 id="database-client">데이터베이스 클라이언트 예제</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">database_client_example.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> asyncio
+<span class="kw">from</span> mcp <span class="kw">import</span> ClientSession, StdioServerParameters
+<span class="kw">from</span> mcp.client.stdio <span class="kw">import</span> stdio_client
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="cmt"># SQLite 서버에 연결</span>
+    server_params = StdioServerParameters(
+        command=<span class="str">"python"</span>,
+        args=[<span class="str">"sqlite_server.py"</span>]
+    )
+
+    <span class="kw">async</span> <span class="kw">with</span> stdio_client(server_params) <span class="kw">as</span> (read, write):
+        <span class="kw">async</span> <span class="kw">with</span> ClientSession(read, write) <span class="kw">as</span> session:
+            <span class="kw">await</span> session.<span class="fn">initialize</span>()
+
+            db_path = <span class="str">"./test.db"</span>
+
+            <span class="cmt"># 테이블 생성</span>
+            <span class="fn">print</span>(<span class="str">"Creating table..."</span>)
+            result = <span class="kw">await</span> session.<span class="fn">call_tool</span>(<span class="str">"create_table"</span>, {
+                <span class="str">"db_path"</span>: db_path,
+                <span class="str">"table_name"</span>: <span class="str">"users"</span>,
+                <span class="str">"columns"</span>: {
+                    <span class="str">"id"</span>: <span class="str">"INTEGER PRIMARY KEY"</span>,
+                    <span class="str">"name"</span>: <span class="str">"TEXT NOT NULL"</span>,
+                    <span class="str">"email"</span>: <span class="str">"TEXT UNIQUE"</span>,
+                    <span class="str">"created_at"</span>: <span class="str">"TIMESTAMP DEFAULT CURRENT_TIMESTAMP"</span>
+                }
+            })
+            <span class="fn">print</span>(result.content[<span class="num">0</span>].text)
+
+            <span class="cmt"># 데이터 삽입</span>
+            <span class="fn">print</span>(<span class="str">"\nInserting data..."</span>)
+            result = <span class="kw">await</span> session.<span class="fn">call_tool</span>(<span class="str">"execute"</span>, {
+                <span class="str">"db_path"</span>: db_path,
+                <span class="str">"sql"</span>: <span class="str">"INSERT INTO users (name, email) VALUES (?, ?)"</span>,
+                <span class="str">"params"</span>: [<span class="str">"Alice"</span>, <span class="str">"alice@example.com"</span>]
+            })
+            <span class="fn">print</span>(result.content[<span class="num">0</span>].text)
+
+            <span class="cmt"># 데이터 조회</span>
+            <span class="fn">print</span>(<span class="str">"\nQuerying data..."</span>)
+            result = <span class="kw">await</span> session.<span class="fn">call_tool</span>(<span class="str">"query"</span>, {
+                <span class="str">"db_path"</span>: db_path,
+                <span class="str">"sql"</span>: <span class="str">"SELECT * FROM users"</span>
+            })
+            <span class="fn">print</span>(result.content[<span class="num">0</span>].text)
+
+            <span class="cmt"># 스키마 조회</span>
+            <span class="fn">print</span>(<span class="str">"\nGetting schema..."</span>)
+            result = <span class="kw">await</span> session.<span class="fn">call_tool</span>(<span class="str">"get_schema"</span>, {
+                <span class="str">"db_path"</span>: db_path,
+                <span class="str">"table_name"</span>: <span class="str">"users"</span>
+            })
+            <span class="fn">print</span>(result.content[<span class="num">0</span>].text)
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    asyncio.<span class="fn">run</span>(<span class="fn">main</span>())
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="github-server">GitHub API 서버</h2>
+
+<p>GitHub API를 MCP 서버로 래핑하여 이슈, PR, 리포지토리 관리 기능을 제공합니다.</p>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<span class="filename">github_server.py</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> asyncio
+<span class="kw">import</span> os
+<span class="kw">import</span> json
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+
+<span class="kw">import</span> httpx
+
+<span class="kw">from</span> mcp.server <span class="kw">import</span> Server
+<span class="kw">from</span> mcp.server.stdio <span class="kw">import</span> stdio_server
+<span class="kw">from</span> mcp.types <span class="kw">import</span> Tool, TextContent
+
+server = Server(<span class="str">"github-server"</span>)
+
+<span class="cmt"># GitHub API 클라이언트</span>
+<span class="kw">class</span> <span class="type">GitHubClient</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, token: <span class="type">str</span>):
+        <span class="kw">self</span>.token = token
+        <span class="kw">self</span>.base_url = <span class="str">"https://api.github.com"</span>
+        <span class="kw">self</span>.client = httpx.AsyncClient(
+            headers={
+                <span class="str">"Authorization"</span>: <span class="type">f</span><span class="str">"token {token}"</span>,
+                <span class="str">"Accept"</span>: <span class="str">"application/vnd.github.v3+json"</span>
+            },
+            timeout=<span class="num">30.0</span>
+        )
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">get</span>(<span class="kw">self</span>, path: <span class="type">str</span>, params: <span class="type">dict</span> = <span class="kw">None</span>) -> <span class="type">dict</span>:
+        response = <span class="kw">await</span> <span class="kw">self</span>.client.<span class="fn">get</span>(<span class="type">f</span><span class="str">"{self.base_url}{path}"</span>, params=params)
+        response.<span class="fn">raise_for_status</span>()
+        <span class="kw">return</span> response.<span class="fn">json</span>()
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">post</span>(<span class="kw">self</span>, path: <span class="type">str</span>, data: <span class="type">dict</span>) -> <span class="type">dict</span>:
+        response = <span class="kw">await</span> <span class="kw">self</span>.client.<span class="fn">post</span>(<span class="type">f</span><span class="str">"{self.base_url}{path}"</span>, json=data)
+        response.<span class="fn">raise_for_status</span>()
+        <span class="kw">return</span> response.<span class="fn">json</span>()
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">patch</span>(<span class="kw">self</span>, path: <span class="type">str</span>, data: <span class="type">dict</span>) -> <span class="type">dict</span>:
+        response = <span class="kw">await</span> <span class="kw">self</span>.client.<span class="fn">patch</span>(<span class="type">f</span><span class="str">"{self.base_url}{path}"</span>, json=data)
+        response.<span class="fn">raise_for_status</span>()
+        <span class="kw">return</span> response.<span class="fn">json</span>()
+
+<span class="cmt"># 글로벌 클라이언트 인스턴스</span>
+github_client: Optional[GitHubClient] = <span class="kw">None</span>
+
+<span class="kw">def</span> <span class="fn">get_github_client</span>() -> GitHubClient:
+    <span class="kw">global</span> github_client
+    <span class="kw">if</span> github_client <span class="kw">is</span> <span class="kw">None</span>:
+        token = os.<span class="fn">getenv</span>(<span class="str">"GITHUB_TOKEN"</span>)
+        <span class="kw">if</span> <span class="kw">not</span> token:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">"GITHUB_TOKEN environment variable not set"</span>)
+        github_client = GitHubClient(token)
+    <span class="kw">return</span> github_client
+
+<span class="pp">@server.list_tools()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">list_tools</span>() -> <span class="type">list</span>[Tool]:
+    <span class="kw">return</span> [
+        Tool(
+            name=<span class="str">"list_issues"</span>,
+            description=<span class="str">"리포지토리의 이슈 목록을 조회합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"owner"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>, <span class="str">"description"</span>: <span class="str">"리포지토리 소유자"</span>},
+                    <span class="str">"repo"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>, <span class="str">"description"</span>: <span class="str">"리포지토리 이름"</span>},
+                    <span class="str">"state"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"enum"</span>: [<span class="str">"open"</span>, <span class="str">"closed"</span>, <span class="str">"all"</span>],
+                        <span class="str">"default"</span>: <span class="str">"open"</span>
+                    },
+                    <span class="str">"labels"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"array"</span>,
+                        <span class="str">"items"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"owner"</span>, <span class="str">"repo"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"create_issue"</span>,
+            description=<span class="str">"새 이슈를 생성합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"owner"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"repo"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"title"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"body"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"labels"</span>: {<span class="str">"type"</span>: <span class="str">"array"</span>, <span class="str">"items"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}},
+                    <span class="str">"assignees"</span>: {<span class="str">"type"</span>: <span class="str">"array"</span>, <span class="str">"items"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}}
+                },
+                <span class="str">"required"</span>: [<span class="str">"owner"</span>, <span class="str">"repo"</span>, <span class="str">"title"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"list_pull_requests"</span>,
+            description=<span class="str">"리포지토리의 Pull Request 목록을 조회합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"owner"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"repo"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"state"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>, <span class="str">"enum"</span>: [<span class="str">"open"</span>, <span class="str">"closed"</span>, <span class="str">"all"</span>]}
+                },
+                <span class="str">"required"</span>: [<span class="str">"owner"</span>, <span class="str">"repo"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"get_repository"</span>,
+            description=<span class="str">"리포지토리 정보를 조회합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"owner"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                    <span class="str">"repo"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}
+                },
+                <span class="str">"required"</span>: [<span class="str">"owner"</span>, <span class="str">"repo"</span>]
+            }
+        ),
+        Tool(
+            name=<span class="str">"search_code"</span>,
+            description=<span class="str">"코드를 검색합니다."</span>,
+            inputSchema={
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"query"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>, <span class="str">"description"</span>: <span class="str">"검색 쿼리"</span>},
+                    <span class="str">"repo"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>, <span class="str">"description"</span>: <span class="str">"owner/repo 형식"</span>}
+                },
+                <span class="str">"required"</span>: [<span class="str">"query"</span>]
+            }
+        ),
+    ]
+
+<span class="pp">@server.call_tool()</span>
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">call_tool</span>(name: <span class="type">str</span>, arguments: <span class="type">dict</span>) -> <span class="type">list</span>[TextContent]:
+    client = <span class="fn">get_github_client</span>()
+
+    <span class="kw">if</span> name == <span class="str">"list_issues"</span>:
+        owner = arguments[<span class="str">"owner"</span>]
+        repo = arguments[<span class="str">"repo"</span>]
+        state = arguments.<span class="fn">get</span>(<span class="str">"state"</span>, <span class="str">"open"</span>)
+        labels = arguments.<span class="fn">get</span>(<span class="str">"labels"</span>, [])
+
+        params = {<span class="str">"state"</span>: state}
+        <span class="kw">if</span> labels:
+            params[<span class="str">"labels"</span>] = <span class="str">","</span>.<span class="fn">join</span>(labels)
+
+        issues = <span class="kw">await</span> client.<span class="fn">get</span>(<span class="type">f</span><span class="str">"/repos/{owner}/{repo}/issues"</span>, params)
+
+        <span class="cmt"># 간소화된 정보만 추출</span>
+        simplified = [{
+            <span class="str">"number"</span>: issue[<span class="str">"number"</span>],
+            <span class="str">"title"</span>: issue[<span class="str">"title"</span>],
+            <span class="str">"state"</span>: issue[<span class="str">"state"</span>],
+            <span class="str">"user"</span>: issue[<span class="str">"user"</span>][<span class="str">"login"</span>],
+            <span class="str">"labels"</span>: [l[<span class="str">"name"</span>] <span class="kw">for</span> l <span class="kw">in</span> issue[<span class="str">"labels"</span>]],
+            <span class="str">"created_at"</span>: issue[<span class="str">"created_at"</span>],
+            <span class="str">"url"</span>: issue[<span class="str">"html_url"</span>]
+        } <span class="kw">for</span> issue <span class="kw">in</span> issues]
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=json.<span class="fn">dumps</span>(simplified, indent=<span class="num">2</span>)
+        )]
+
+    <span class="kw">elif</span> name == <span class="str">"create_issue"</span>:
+        owner = arguments[<span class="str">"owner"</span>]
+        repo = arguments[<span class="str">"repo"</span>]
+
+        data = {
+            <span class="str">"title"</span>: arguments[<span class="str">"title"</span>],
+            <span class="str">"body"</span>: arguments.<span class="fn">get</span>(<span class="str">"body"</span>, <span class="str">""</span>),
+        }
+
+        <span class="kw">if</span> <span class="str">"labels"</span> <span class="kw">in</span> arguments:
+            data[<span class="str">"labels"</span>] = arguments[<span class="str">"labels"</span>]
+        <span class="kw">if</span> <span class="str">"assignees"</span> <span class="kw">in</span> arguments:
+            data[<span class="str">"assignees"</span>] = arguments[<span class="str">"assignees"</span>]
+
+        issue = <span class="kw">await</span> client.<span class="fn">post</span>(<span class="type">f</span><span class="str">"/repos/{owner}/{repo}/issues"</span>, data)
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=<span class="type">f</span><span class="str">"Created issue #{issue['number']}: {issue['html_url']}"</span>
+        )]
+
+    <span class="kw">elif</span> name == <span class="str">"list_pull_requests"</span>:
+        owner = arguments[<span class="str">"owner"</span>]
+        repo = arguments[<span class="str">"repo"</span>]
+        state = arguments.<span class="fn">get</span>(<span class="str">"state"</span>, <span class="str">"open"</span>)
+
+        prs = <span class="kw">await</span> client.<span class="fn">get</span>(
+            <span class="type">f</span><span class="str">"/repos/{owner}/{repo}/pulls"</span>,
+            params={<span class="str">"state"</span>: state}
+        )
+
+        simplified = [{
+            <span class="str">"number"</span>: pr[<span class="str">"number"</span>],
+            <span class="str">"title"</span>: pr[<span class="str">"title"</span>],
+            <span class="str">"state"</span>: pr[<span class="str">"state"</span>],
+            <span class="str">"user"</span>: pr[<span class="str">"user"</span>][<span class="str">"login"</span>],
+            <span class="str">"head"</span>: pr[<span class="str">"head"</span>][<span class="str">"ref"</span>],
+            <span class="str">"base"</span>: pr[<span class="str">"base"</span>][<span class="str">"ref"</span>],
+            <span class="str">"url"</span>: pr[<span class="str">"html_url"</span>]
+        } <span class="kw">for</span> pr <span class="kw">in</span> prs]
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=json.<span class="fn">dumps</span>(simplified, indent=<span class="num">2</span>)
+        )]
+
+    <span class="kw">elif</span> name == <span class="str">"get_repository"</span>:
+        owner = arguments[<span class="str">"owner"</span>]
+        repo = arguments[<span class="str">"repo"</span>]
+
+        repo_data = <span class="kw">await</span> client.<span class="fn">get</span>(<span class="type">f</span><span class="str">"/repos/{owner}/{repo}"</span>)
+
+        info = {
+            <span class="str">"name"</span>: repo_data[<span class="str">"name"</span>],
+            <span class="str">"full_name"</span>: repo_data[<span class="str">"full_name"</span>],
+            <span class="str">"description"</span>: repo_data[<span class="str">"description"</span>],
+            <span class="str">"stars"</span>: repo_data[<span class="str">"stargazers_count"</span>],
+            <span class="str">"forks"</span>: repo_data[<span class="str">"forks_count"</span>],
+            <span class="str">"language"</span>: repo_data[<span class="str">"language"</span>],
+            <span class="str">"default_branch"</span>: repo_data[<span class="str">"default_branch"</span>],
+            <span class="str">"url"</span>: repo_data[<span class="str">"html_url"</span>]
+        }
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=json.<span class="fn">dumps</span>(info, indent=<span class="num">2</span>)
+        )]
+
+    <span class="kw">elif</span> name == <span class="str">"search_code"</span>:
+        query = arguments[<span class="str">"query"</span>]
+
+        <span class="kw">if</span> <span class="str">"repo"</span> <span class="kw">in</span> arguments:
+            query += <span class="type">f</span><span class="str">" repo:{arguments['repo']}"</span>
+
+        results = <span class="kw">await</span> client.<span class="fn">get</span>(<span class="str">"/search/code"</span>, params={<span class="str">"q"</span>: query})
+
+        items = [{
+            <span class="str">"name"</span>: item[<span class="str">"name"</span>],
+            <span class="str">"path"</span>: item[<span class="str">"path"</span>],
+            <span class="str">"repository"</span>: item[<span class="str">"repository"</span>][<span class="str">"full_name"</span>],
+            <span class="str">"url"</span>: item[<span class="str">"html_url"</span>]
+        } <span class="kw">for</span> item <span class="kw">in</span> results[<span class="str">"items"</span>][:  <span class="num">10</span>]]  <span class="cmt"># 최대 10개만</span>
+
+        <span class="kw">return</span> [TextContent(
+            type=<span class="str">"text"</span>,
+            text=json.<span class="fn">dumps</span>({
+                <span class="str">"total_count"</span>: results[<span class="str">"total_count"</span>],
+                <span class="str">"items"</span>: items
+            }, indent=<span class="num">2</span>)
+        )]
+
+    <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">f"Unknown tool: {name}"</span>)
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">main</span>():
+    <span class="kw">async</span> <span class="kw">with</span> stdio_server() <span class="kw">as</span> (read_stream, write_stream):
+        <span class="kw">await</span> server.run(
+            read_stream,
+            write_stream,
+            server.create_initialization_options()
+        )
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    asyncio.<span class="fn">run</span>(<span class="fn">main</span>())
+</code></pre>
+</div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

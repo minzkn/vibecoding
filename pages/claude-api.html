@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude API 완전 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<meta name="description" content="Claude API 개요, SDK 사용법, 스트리밍, 툴 사용, 프롬프트 캐싱, 비용 최적화">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Claude API 완전 가이드</h1>
+<p class="lead">Anthropic의 Claude API는 안전하고 강력한 AI 기능을 애플리케이션에 통합할 수 있는 RESTful API입니다. 이 가이드는 API 키 발급부터 고급 기능 활용까지 Claude API의 모든 것을 다룹니다.</p>
+
+<div class="info-box tip">
+<strong>핵심 포인트</strong>
+<ul>
+<li>Claude 4 시리즈: Opus (최고 성능), Sonnet (균형), Haiku (속도)</li>
+<li>Python, TypeScript SDK 및 HTTP API 지원</li>
+<li>스트리밍, 툴 사용, 비전 등 고급 기능</li>
+<li>프롬프트 캐싱으로 최대 90% 비용 절감</li>
+<li>200K 토큰 컨텍스트 윈도우</li>
+</ul>
+</div>
+
+<section class="content-section">
+<h2 id="overview">Claude API 개요</h2>
+
+<h3 id="models">모델 라인업</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">모델</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>Claude 4 시리즈 (2026):
+┌───────────────────┬──────────┬──────────┬─────────────────────┐
+│ 모델              │ 입력     │ 출력     │ 특징                │
+├───────────────────┼──────────┼──────────┼─────────────────────┤
+│ claude-4-opus     │ $15/1M   │ $75/1M   │ 최고 성능, 복잡작업 │
+│ claude-4-sonnet   │ $3/1M    │ $15/1M   │ 균형잡힌 성능/가격  │
+│ claude-4-haiku    │ $0.25/1M │ $1.25/1M │ 빠른 응답, 저렴     │
+└───────────────────┴──────────┴──────────┴─────────────────────┘
+
+Claude 3.5 (2024):
+┌───────────────────┬──────────┬──────────┬─────────────────────┐
+│ claude-3-5-sonnet │ $3/1M    │ $15/1M   │ 코딩 특화           │
+│ claude-3-5-haiku  │ $0.80/1M │ $4/1M    │ 빠른 응답           │
+└───────────────────┴──────────┴──────────┴─────────────────────┘
+
+모든 모델 공통:
+• 200K 토큰 컨텍스트 윈도우
+• 비전(이미지 입력) 지원
+• 툴 사용(Function Calling) 지원
+• 프롬프트 캐싱 지원
+</code></pre>
+</div>
+
+<h3 id="capabilities">주요 기능</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">기능</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 대화형 AI</span>
+• 다중 턴 대화
+• 컨텍스트 유지
+• 시스템 프롬프트로 행동 제어
+
+<span class="cmt">// 2. 비전 (Vision)</span>
+• 이미지 분석 및 설명
+• 차트, 다이어그램 해석
+• OCR 및 문서 이해
+• 최대 이미지 크기: 5MB
+• 지원 형식: JPEG, PNG, GIF, WebP
+
+<span class="cmt">// 3. 툴 사용 (Tool Use)</span>
+• 외부 함수/API 호출
+• 구조화된 데이터 반환
+• 다단계 툴 체이닝
+• JSON 스키마 기반 정의
+
+<span class="cmt">// 4. 스트리밍</span>
+• 실시간 응답 스트리밍
+• 사용자 경험 개선
+• 긴 응답에 적합
+
+<span class="cmt">// 5. 프롬프트 캐싱</span>
+• 반복 컨텍스트 캐싱
+• 입력 토큰 비용 90% 절감
+• 5분 TTL, 자동 갱신
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="getting-started">시작하기</h2>
+
+<h3 id="api-key">API 키 발급</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">절차</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>1. Anthropic Console 접속
+   https://console.anthropic.com
+
+2. 계정 생성 또는 로그인
+
+3. API Keys 메뉴로 이동
+
+4. "Create Key" 클릭
+
+5. 키 이름 입력 (예: "production", "development")
+
+6. 생성된 키 복사 (한 번만 표시됨)
+   sk-ant-api03-...
+
+7. 안전한 곳에 저장 (환경 변수 권장)
+</code></pre>
+</div>
+
+<div class="info-box warning">
+<strong>보안 주의사항</strong>
+<ul>
+<li>API 키는 절대 코드에 하드코딩하지 마세요</li>
+<li>환경 변수나 비밀 관리 시스템 사용</li>
+<li>Git에 커밋하지 않도록 .gitignore 설정</li>
+<li>프론트엔드에 노출 금지 (서버에서만 사용)</li>
+<li>주기적으로 키 교체</li>
+</ul>
+</div>
+
+<h3 id="quick-start">빠른 시작</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 1. SDK 설치</span>
+$ pip install anthropic
+
+<span class="cmt"># 2. API 키 설정</span>
+$ export ANTHROPIC_API_KEY='sk-ant-api03-...'
+
+<span class="cmt"># 3. 첫 요청</span>
+<span class="kw">import</span> anthropic
+
+client = anthropic.Anthropic()
+
+message = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}
+    ]
+)
+
+<span class="fn">print</span>(message.content[<span class="num">0</span>].text)
+</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TypeScript</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. SDK 설치</span>
+$ npm install @anthropic-ai/sdk
+
+<span class="cmt">// 2. 첫 요청</span>
+<span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="type">Anthropic</span>({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
+
+<span class="kw">const</span> message = <span class="kw">await</span> client.messages.create({
+  model: <span class="str">'claude-4-sonnet-20260101'</span>,
+  max_tokens: <span class="num">1024</span>,
+  messages: [
+    { role: <span class="str">'user'</span>, content: <span class="str">'안녕하세요!'</span> }
+  ],
+});
+
+console.log(message.content[<span class="num">0</span>].text);
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="messages-api">Messages API</h2>
+
+<h3 id="basic-usage">기본 사용법</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> anthropic
+
+client = anthropic.Anthropic(api_key=<span class="str">"sk-ant-..."</span>)
+
+message = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    system=<span class="str">"당신은 친절한 AI 어시스턴트입니다."</span>,  <span class="cmt"># 선택적</span>
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="str">"Python으로 피보나치 수열을 구하는 함수를 작성해줘."</span>
+        }
+    ],
+    temperature=<span class="num">1.0</span>,  <span class="cmt"># 0.0 ~ 1.0, 기본 1.0</span>
+    top_p=<span class="num">0.9</span>,       <span class="cmt"># 선택적</span>
+    top_k=<span class="num">40</span>,        <span class="cmt"># 선택적</span>
+)
+
+<span class="cmt"># 응답 출력</span>
+<span class="fn">print</span>(message.content[<span class="num">0</span>].text)
+
+<span class="cmt"># 응답 메타데이터</span>
+<span class="fn">print</span>(<span class="str">f"Model: <span class="macro">{message.model}</span>"</span>)
+<span class="fn">print</span>(<span class="str">f"Stop reason: <span class="macro">{message.stop_reason}</span>"</span>)  <span class="cmt"># end_turn, max_tokens, tool_use</span>
+<span class="fn">print</span>(<span class="str">f"Input tokens: <span class="macro">{message.usage.input_tokens}</span>"</span>)
+<span class="fn">print</span>(<span class="str">f"Output tokens: <span class="macro">{message.usage.output_tokens}</span>"</span>)
+</code></pre>
+</div>
+
+<h3 id="multi-turn">다중 턴 대화</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> anthropic
+
+client = anthropic.Anthropic()
+
+<span class="cmt"># 대화 히스토리 관리</span>
+conversation = [
+    {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"내 이름은 철수야."</span>},
+]
+
+<span class="cmt"># 첫 번째 요청</span>
+message1 = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    messages=conversation
+)
+
+<span class="fn">print</span>(<span class="str">"Claude:"</span>, message1.content[<span class="num">0</span>].text)
+
+<span class="cmt"># 대화에 Claude의 응답 추가</span>
+conversation.append({
+    <span class="str">"role"</span>: <span class="str">"assistant"</span>,
+    <span class="str">"content"</span>: message1.content[<span class="num">0</span>].text
+})
+
+<span class="cmt"># 사용자 메시지 추가</span>
+conversation.append({
+    <span class="str">"role"</span>: <span class="str">"user"</span>,
+    <span class="str">"content"</span>: <span class="str">"내 이름이 뭐라고 했지?"</span>
+})
+
+<span class="cmt"># 두 번째 요청</span>
+message2 = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    messages=conversation
+)
+
+<span class="fn">print</span>(<span class="str">"Claude:"</span>, message2.content[<span class="num">0</span>].text)  <span class="cmt"># "철수"라고 기억함</span>
+</code></pre>
+</div>
+
+<h3 id="system-prompts">시스템 프롬프트</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 시스템 프롬프트로 역할 정의</span>
+message = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">2048</span>,
+    system=<span class="str">"""당신은 시니어 백엔드 개발자입니다.
+
+규칙:
+1. Python과 FastAPI에 전문성을 가지고 있습니다
+2. 코드는 PEP 8 스타일을 따릅니다
+3. 타입 힌트를 반드시 포함합니다
+4. 보안과 성능을 우선시합니다
+5. 항상 에러 핸들링을 포함합니다"""</span>,
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="str">"FastAPI로 사용자 인증 엔드포인트를 만들어줘."</span>
+        }
+    ]
+)
+
+<span class="fn">print</span>(message.content[<span class="num">0</span>].text)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="streaming">스트리밍</h2>
+
+<h3 id="streaming-python">Python 스트리밍</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> anthropic
+
+client = anthropic.Anthropic()
+
+<span class="cmt"># stream=True로 스트리밍 활성화</span>
+<span class="kw">with</span> client.messages.stream(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"긴 이야기를 들려줘."</span>}
+    ],
+) <span class="kw">as</span> stream:
+    <span class="kw">for</span> text <span class="kw">in</span> stream.text_stream:
+        <span class="fn">print</span>(text, end=<span class="str">""</span>, flush=<span class="kw">True</span>)
+
+<span class="fn">print</span>()  <span class="cmt"># 줄바꿈</span>
+
+<span class="cmt"># 최종 메시지 객체 얻기</span>
+message = stream.get_final_message()
+<span class="fn">print</span>(<span class="str">f"\n\nTotal tokens: <span class="macro">{message.usage.input_tokens + message.usage.output_tokens}</span>"</span>)
+</code></pre>
+</div>
+
+<h3 id="streaming-advanced">고급 스트리밍</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> anthropic
+
+client = anthropic.Anthropic()
+
+<span class="cmt"># 이벤트별 처리</span>
+<span class="kw">with</span> client.messages.stream(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}],
+) <span class="kw">as</span> stream:
+    <span class="kw">for</span> event <span class="kw">in</span> stream:
+        <span class="kw">if</span> event.type == <span class="str">"message_start"</span>:
+            <span class="fn">print</span>(<span class="str">f"메시지 시작: <span class="macro">{event.message.model}</span>"</span>)
+
+        <span class="kw">elif</span> event.type == <span class="str">"content_block_start"</span>:
+            <span class="fn">print</span>(<span class="str">"콘텐츠 블록 시작"</span>)
+
+        <span class="kw">elif</span> event.type == <span class="str">"content_block_delta"</span>:
+            <span class="kw">if</span> hasattr(event.delta, <span class="str">'text'</span>):
+                <span class="fn">print</span>(event.delta.text, end=<span class="str">""</span>, flush=<span class="kw">True</span>)
+
+        <span class="kw">elif</span> event.type == <span class="str">"content_block_stop"</span>:
+            <span class="fn">print</span>(<span class="str">"\n콘텐츠 블록 종료"</span>)
+
+        <span class="kw">elif</span> event.type == <span class="str">"message_delta"</span>:
+            <span class="fn">print</span>(<span class="str">f"\nStop reason: <span class="macro">{event.delta.stop_reason}</span>"</span>)
+
+        <span class="kw">elif</span> event.type == <span class="str">"message_stop"</span>:
+            <span class="fn">print</span>(<span class="str">"메시지 종료"</span>)
+</code></pre>
+</div>
+
+<h3 id="streaming-typescript">TypeScript 스트리밍</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TypeScript</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> Anthropic <span class="kw">from</span> <span class="str">'@anthropic-ai/sdk'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="type">Anthropic</span>();
+
+<span class="kw">const</span> stream = <span class="kw">await</span> client.messages.stream({
+  model: <span class="str">'claude-4-sonnet-20260101'</span>,
+  max_tokens: <span class="num">1024</span>,
+  messages: [
+    { role: <span class="str">'user'</span>, content: <span class="str">'긴 이야기를 들려줘.'</span> }
+  ],
+});
+
+<span class="cmt">// 텍스트 스트림</span>
+<span class="kw">for await</span> (<span class="kw">const</span> text <span class="kw">of</span> stream.textStream) {
+  process.stdout.write(text);
+}
+
+<span class="cmt">// 최종 메시지</span>
+<span class="kw">const</span> message = <span class="kw">await</span> stream.finalMessage();
+console.log(<span class="str">`\n\nTotal tokens: <span class="macro">${message.usage.input_tokens + message.usage.output_tokens}</span>`</span>);
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="tool-use">툴 사용 (Function Calling)</h2>
+
+<h3 id="tool-definition">툴 정의</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> anthropic
+<span class="kw">import</span> json
+
+client = anthropic.Anthropic()
+
+<span class="cmt"># 툴 정의</span>
+tools = [
+    {
+        <span class="str">"name"</span>: <span class="str">"get_weather"</span>,
+        <span class="str">"description"</span>: <span class="str">"특정 위치의 현재 날씨를 가져옵니다."</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"location"</span>: {
+                    <span class="str">"type"</span>: <span class="str">"string"</span>,
+                    <span class="str">"description"</span>: <span class="str">"도시 이름, 예: Seoul"</span>
+                },
+                <span class="str">"unit"</span>: {
+                    <span class="str">"type"</span>: <span class="str">"string"</span>,
+                    <span class="str">"enum"</span>: [<span class="str">"celsius"</span>, <span class="str">"fahrenheit"</span>],
+                    <span class="str">"description"</span>: <span class="str">"온도 단위"</span>
+                }
+            },
+            <span class="str">"required"</span>: [<span class="str">"location"</span>]
+        }
+    },
+    {
+        <span class="str">"name"</span>: <span class="str">"calculate"</span>,
+        <span class="str">"description"</span>: <span class="str">"수학 계산을 수행합니다."</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"expression"</span>: {
+                    <span class="str">"type"</span>: <span class="str">"string"</span>,
+                    <span class="str">"description"</span>: <span class="str">"계산식, 예: 2 + 2"</span>
+                }
+            },
+            <span class="str">"required"</span>: [<span class="str">"expression"</span>]
+        }
+    }
+]
+
+<span class="cmt"># 첫 요청</span>
+message = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    tools=tools,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"서울의 현재 날씨는 어때?"</span>}
+    ]
+)
+
+<span class="fn">print</span>(<span class="str">"Response:"</span>, json.dumps(message.model_dump(), indent=<span class="num">2</span>, ensure_ascii=<span class="kw">False</span>))
+</code></pre>
+</div>
+
+<h3 id="tool-execution">툴 실행 루프</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> anthropic
+
+client = anthropic.Anthropic()
+
+<span class="cmt"># 실제 툴 구현</span>
+<span class="kw">def</span> <span class="fn">get_weather</span>(location: str, unit: str = <span class="str">"celsius"</span>) -> str:
+    <span class="cmt"># 실제로는 API 호출</span>
+    <span class="kw">return</span> json.dumps({
+        <span class="str">"location"</span>: location,
+        <span class="str">"temperature"</span>: <span class="num">22</span>,
+        <span class="str">"unit"</span>: unit,
+        <span class="str">"condition"</span>: <span class="str">"맑음"</span>
+    })
+
+<span class="kw">def</span> <span class="fn">calculate</span>(expression: str) -> str:
+    <span class="kw">try</span>:
+        result = eval(expression)  <span class="cmt"># 실제로는 안전한 파서 사용</span>
+        <span class="kw">return</span> str(result)
+    <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+        <span class="kw">return</span> <span class="str">f"Error: <span class="macro">{e}</span>"</span>
+
+<span class="cmt"># 툴 맵</span>
+tool_functions = {
+    <span class="str">"get_weather"</span>: get_weather,
+    <span class="str">"calculate"</span>: calculate,
+}
+
+<span class="cmt"># 대화 시작</span>
+messages = [
+    {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"서울 날씨를 알려주고, 화씨로 변환해줘."</span>}
+]
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="cmt"># Claude 호출</span>
+    response = client.messages.create(
+        model=<span class="str">"claude-4-sonnet-20260101"</span>,
+        max_tokens=<span class="num">4096</span>,
+        tools=tools,
+        messages=messages
+    )
+
+    <span class="fn">print</span>(<span class="str">f"\nStop reason: <span class="macro">{response.stop_reason}</span>"</span>)
+
+    <span class="cmt"># 종료 조건</span>
+    <span class="kw">if</span> response.stop_reason == <span class="str">"end_turn"</span>:
+        <span class="fn">print</span>(<span class="str">f"\nFinal answer: <span class="macro">{response.content[0].text}</span>"</span>)
+        <span class="kw">break</span>
+
+    <span class="cmt"># 툴 사용 요청 처리</span>
+    <span class="kw">if</span> response.stop_reason == <span class="str">"tool_use"</span>:
+        <span class="cmt"># Assistant 응답 추가</span>
+        messages.append({
+            <span class="str">"role"</span>: <span class="str">"assistant"</span>,
+            <span class="str">"content"</span>: response.content
+        })
+
+        <span class="cmt"># 툴 실행</span>
+        tool_results = []
+        <span class="kw">for</span> block <span class="kw">in</span> response.content:
+            <span class="kw">if</span> block.type == <span class="str">"tool_use"</span>:
+                tool_name = block.name
+                tool_input = block.input
+
+                <span class="fn">print</span>(<span class="str">f"\nCalling tool: <span class="macro">{tool_name}</span>(<span class="macro">{tool_input}</span>)"</span>)
+
+                <span class="cmt"># 툴 실행</span>
+                tool_function = tool_functions[tool_name]
+                tool_result = tool_function(**tool_input)
+
+                <span class="fn">print</span>(<span class="str">f"Tool result: <span class="macro">{tool_result}</span>"</span>)
+
+                tool_results.append({
+                    <span class="str">"type"</span>: <span class="str">"tool_result"</span>,
+                    <span class="str">"tool_use_id"</span>: block.id,
+                    <span class="str">"content"</span>: tool_result
+                })
+
+        <span class="cmt"># 툴 결과 추가</span>
+        messages.append({
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: tool_results
+        })
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="vision">비전 (이미지 입력)</h2>
+
+<h3 id="image-input">이미지 분석</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> anthropic
+<span class="kw">import</span> base64
+
+client = anthropic.Anthropic()
+
+<span class="cmt"># 이미지 파일 읽기</span>
+<span class="kw">with</span> open(<span class="str">"diagram.png"</span>, <span class="str">"rb"</span>) <span class="kw">as</span> f:
+    image_data = base64.standard_b64encode(f.read()).decode(<span class="str">"utf-8"</span>)
+
+<span class="cmt"># 이미지와 함께 요청</span>
+message = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: [
+                {
+                    <span class="str">"type"</span>: <span class="str">"image"</span>,
+                    <span class="str">"source"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"base64"</span>,
+                        <span class="str">"media_type"</span>: <span class="str">"image/png"</span>,  <span class="cmt"># image/jpeg, image/gif, image/webp</span>
+                        <span class="str">"data"</span>: image_data,
+                    },
+                },
+                {
+                    <span class="str">"type"</span>: <span class="str">"text"</span>,
+                    <span class="str">"text"</span>: <span class="str">"이 다이어그램을 설명해주세요."</span>
+                }
+            ],
+        }
+    ],
+)
+
+<span class="fn">print</span>(message.content[<span class="num">0</span>].text)
+</code></pre>
+</div>
+
+<h3 id="multiple-images">여러 이미지</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 여러 이미지 비교</span>
+<span class="kw">def</span> <span class="fn">load_image</span>(path: str) -> str:
+    <span class="kw">with</span> open(path, <span class="str">"rb"</span>) <span class="kw">as</span> f:
+        <span class="kw">return</span> base64.standard_b64encode(f.read()).decode(<span class="str">"utf-8"</span>)
+
+message = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">2048</span>,
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: [
+                {<span class="str">"type"</span>: <span class="str">"text"</span>, <span class="str">"text"</span>: <span class="str">"이 두 이미지의 차이점을 설명해주세요:"</span>},
+                {
+                    <span class="str">"type"</span>: <span class="str">"image"</span>,
+                    <span class="str">"source"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"base64"</span>,
+                        <span class="str">"media_type"</span>: <span class="str">"image/jpeg"</span>,
+                        <span class="str">"data"</span>: load_image(<span class="str">"before.jpg"</span>),
+                    },
+                },
+                {<span class="str">"type"</span>: <span class="str">"text"</span>, <span class="str">"text"</span>: <span class="str">"vs"</span>},
+                {
+                    <span class="str">"type"</span>: <span class="str">"image"</span>,
+                    <span class="str">"source"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"base64"</span>,
+                        <span class="str">"media_type"</span>: <span class="str">"image/jpeg"</span>,
+                        <span class="str">"data"</span>: load_image(<span class="str">"after.jpg"</span>),
+                    },
+                },
+            ],
+        }
+    ],
+)
+
+<span class="fn">print</span>(message.content[<span class="num">0</span>].text)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="prompt-caching">프롬프트 캐싱</h2>
+
+<h3 id="cache-basics">캐싱 기본</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">개념</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>프롬프트 캐싱이란?
+• 반복적으로 사용되는 컨텍스트(시스템 프롬프트, 문서 등)를 캐싱
+• 캐시된 토큰은 입력 비용의 10%만 청구 (90% 절감)
+• 5분 TTL, 사용 시마다 자동 갱신
+• 최소 1024 토큰부터 캐싱 가능
+
+비용 예시 (Claude 4 Sonnet):
+일반 입력: $3.00 / 1M tokens
+캐시 읽기: $0.30 / 1M tokens (90% 할인)
+캐시 쓰기: $3.75 / 1M tokens (25% 추가 비용)
+
+언제 사용?
+✓ 긴 시스템 프롬프트
+✓ 큰 문서 분석 (여러 질문)
+✓ 코드베이스 분석
+✓ 반복적인 대화 (5분 이내)
+</code></pre>
+</div>
+
+<h3 id="cache-usage">캐싱 사용법</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> anthropic
+
+client = anthropic.Anthropic()
+
+<span class="cmt"># cache_control을 사용하여 캐싱할 블록 지정</span>
+response = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    system=[
+        {
+            <span class="str">"type"</span>: <span class="str">"text"</span>,
+            <span class="str">"text"</span>: <span class="str">"당신은 Python 전문가입니다. PEP 8 스타일을 따르고..."</span>,  <span class="cmt"># 긴 시스템 프롬프트</span>
+            <span class="str">"cache_control"</span>: {<span class="str">"type"</span>: <span class="str">"ephemeral"</span>}  <span class="cmt"># 캐싱 활성화</span>
+        }
+    ],
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="str">"FastAPI 라우터를 작성해줘."</span>
+        }
+    ]
+)
+
+<span class="cmt"># 캐시 사용량 확인</span>
+<span class="fn">print</span>(<span class="str">f"Input tokens: <span class="macro">{response.usage.input_tokens}</span>"</span>)
+<span class="fn">print</span>(<span class="str">f"Cache creation tokens: <span class="macro">{response.usage.cache_creation_input_tokens}</span>"</span>)
+<span class="fn">print</span>(<span class="str">f"Cache read tokens: <span class="macro">{response.usage.cache_read_input_tokens}</span>"</span>)
+
+<span class="cmt"># 5분 이내 두 번째 요청 (캐시 히트)</span>
+response2 = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    system=[
+        {
+            <span class="str">"type"</span>: <span class="str">"text"</span>,
+            <span class="str">"text"</span>: <span class="str">"당신은 Python 전문가입니다. PEP 8 스타일을 따르고..."</span>,  <span class="cmt"># 동일한 텍스트</span>
+            <span class="str">"cache_control"</span>: {<span class="str">"type"</span>: <span class="str">"ephemeral"</span>}
+        }
+    ],
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="str">"이제 Pydantic 모델을 작성해줘."</span>
+        }
+    ]
+)
+
+<span class="cmt"># 캐시 히트 확인</span>
+<span class="fn">print</span>(<span class="str">f"\n두 번째 요청:"</span>)
+<span class="fn">print</span>(<span class="str">f"Cache read tokens: <span class="macro">{response2.usage.cache_read_input_tokens}</span>"</span>)  <span class="cmt"># 캐시된 토큰 수</span>
+</code></pre>
+</div>
+
+<h3 id="cache-documents">문서 캐싱</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 긴 문서를 캐싱하여 여러 질문</span>
+<span class="kw">with</span> open(<span class="str">"long_document.txt"</span>, <span class="str">"r"</span>) <span class="kw">as</span> f:
+    document = f.read()  <span class="cmt"># 예: 50,000 토큰</span>
+
+<span class="cmt"># 첫 번째 질문 (캐시 생성)</span>
+response1 = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: [
+                {
+                    <span class="str">"type"</span>: <span class="str">"text"</span>,
+                    <span class="str">"text"</span>: <span class="str">f"다음 문서를 기반으로 답변해주세요:\n\n<span class="macro">{document}</span>"</span>,
+                    <span class="str">"cache_control"</span>: {<span class="str">"type"</span>: <span class="str">"ephemeral"</span>}
+                },
+                {
+                    <span class="str">"type"</span>: <span class="str">"text"</span>,
+                    <span class="str">"text"</span>: <span class="str">"주요 내용을 요약해주세요."</span>
+                }
+            ]
+        }
+    ]
+)
+
+<span class="fn">print</span>(response1.content[<span class="num">0</span>].text)
+<span class="fn">print</span>(<span class="str">f"\n캐시 생성: <span class="macro">{response1.usage.cache_creation_input_tokens}</span> tokens"</span>)
+
+<span class="cmt"># 두 번째 질문 (캐시 재사용)</span>
+response2 = client.messages.create(
+    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    max_tokens=<span class="num">1024</span>,
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: [
+                {
+                    <span class="str">"type"</span>: <span class="str">"text"</span>,
+                    <span class="str">"text"</span>: <span class="str">f"다음 문서를 기반으로 답변해주세요:\n\n<span class="macro">{document}</span>"</span>,
+                    <span class="str">"cache_control"</span>: {<span class="str">"type"</span>: <span class="str">"ephemeral"</span>}
+                },
+                {
+                    <span class="str">"type"</span>: <span class="str">"text"</span>,
+                    <span class="str">"text"</span>: <span class="str">"주요 등장인물은 누구인가요?"</span>
+                }
+            ]
+        }
+    ]
+)
+
+<span class="fn">print</span>(response2.content[<span class="num">0</span>].text)
+<span class="fn">print</span>(<span class="str">f"\n캐시 읽기: <span class="macro">{response2.usage.cache_read_input_tokens}</span> tokens"</span>)
+
+<span class="cmt"># 비용 절감 계산</span>
+normal_cost = <span class="num">50000</span> * <span class="num">3.00</span> / <span class="num">1_000_000</span>  <span class="cmt"># $0.15</span>
+cached_cost = <span class="num">50000</span> * <span class="num">0.30</span> / <span class="num">1_000_000</span>  <span class="cmt"># $0.015</span>
+<span class="fn">print</span>(<span class="str">f"\n비용 절감: ${normal_cost - cached_cost:.4f} (90%)"</span>)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="http-api">HTTP API 직접 호출</h2>
+
+<h3 id="curl">cURL 예시</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>curl https://api.anthropic.com/v1/messages \
+  -H <span class="str">"x-api-key: $ANTHROPIC_API_KEY"</span> \
+  -H <span class="str">"anthropic-version: 2023-06-01"</span> \
+  -H <span class="str">"content-type: application/json"</span> \
+  -d '{
+    "model": "claude-4-sonnet-20260101",
+    "max_tokens": 1024,
+    "messages": [
+      {
+        "role": "user",
+        "content": "안녕하세요!"
+      }
+    ]
+  }'
+</code></pre>
+</div>
+
+<h3 id="http-response">응답 구조</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">JSON</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>{
+  <span class="str">"id"</span>: <span class="str">"msg_01XYZ..."</span>,
+  <span class="str">"type"</span>: <span class="str">"message"</span>,
+  <span class="str">"role"</span>: <span class="str">"assistant"</span>,
+  <span class="str">"content"</span>: [
+    {
+      <span class="str">"type"</span>: <span class="str">"text"</span>,
+      <span class="str">"text"</span>: <span class="str">"안녕하세요! 무엇을 도와드릴까요?"</span>
+    }
+  ],
+  <span class="str">"model"</span>: <span class="str">"claude-4-sonnet-20260101"</span>,
+  <span class="str">"stop_reason"</span>: <span class="str">"end_turn"</span>,
+  <span class="str">"stop_sequence"</span>: <span class="kw">null</span>,
+  <span class="str">"usage"</span>: {
+    <span class="str">"input_tokens"</span>: <span class="num">12</span>,
+    <span class="str">"output_tokens"</span>: <span class="num">18</span>
+  }
+}
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="cost-optimization">비용 최적화</h2>
+
+<h3 id="optimization-strategies">최적화 전략</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">전략</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 올바른 모델 선택</span>
+간단한 작업 → Haiku ($0.25/$1.25)
+일반 작업 → Sonnet ($3/$15)
+복잡한 작업 → Opus ($15/$75)
+
+<span class="cmt">// 2. 프롬프트 캐싱</span>
+• 긴 시스템 프롬프트 캐싱
+• 대용량 문서 캐싱
+• 반복적인 컨텍스트 캐싱
+→ 90% 비용 절감
+
+<span class="cmt">// 3. max_tokens 제한</span>
+• 필요한 만큼만 요청
+• 출력이 입력보다 5배 비쌈
+• 기본값 사용 지양
+
+<span class="cmt">// 4. 불필요한 토큰 제거</span>
+• 장황한 시스템 프롬프트 축약
+• 중복 컨텍스트 제거
+• XML 태그보다 간결한 구분자
+
+<span class="cmt">// 5. 스트리밍</span>
+• 비용은 동일하지만 사용자 경험 개선
+• 조기 종료 가능
+
+<span class="cmt">// 6. 배치 처리</span>
+• 여러 작업을 하나의 요청으로 통합
+• 단, 실패 시 전체 재시도 필요
+</code></pre>
+</div>
+
+<h3 id="cost-calculator">비용 계산기</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">class</span> <span class="type">CostCalculator</span>:
+    PRICING = {
+        <span class="str">"claude-4-opus"</span>: (<span class="num">15.0</span>, <span class="num">75.0</span>),
+        <span class="str">"claude-4-sonnet"</span>: (<span class="num">3.0</span>, <span class="num">15.0</span>),
+        <span class="str">"claude-4-haiku"</span>: (<span class="num">0.25</span>, <span class="num">1.25</span>),
+    }
+
+    <span class="kw">def</span> <span class="fn">calculate</span>(<span class="kw">self</span>, model: str, input_tokens: int, output_tokens: int,
+                  cached_tokens: int = <span class="num">0</span>) -> float:
+        <span class="str">"""비용 계산 (USD)"""</span>
+        input_price, output_price = <span class="kw">self</span>.PRICING[model]
+
+        <span class="cmt"># 일반 입력 토큰</span>
+        normal_input = input_tokens - cached_tokens
+        input_cost = normal_input * input_price / <span class="num">1_000_000</span>
+
+        <span class="cmt"># 캐시된 토큰 (90% 할인)</span>
+        cache_cost = cached_tokens * (input_price * <span class="num">0.1</span>) / <span class="num">1_000_000</span>
+
+        <span class="cmt"># 출력 토큰</span>
+        output_cost = output_tokens * output_price / <span class="num">1_000_000</span>
+
+        <span class="kw">return</span> input_cost + cache_cost + output_cost
+
+    <span class="kw">def</span> <span class="fn">compare_models</span>(<span class="kw">self</span>, input_tokens: int, output_tokens: int):
+        <span class="str">"""모델별 비용 비교"""</span>
+        <span class="fn">print</span>(<span class="str">f"입력: <span class="macro">{input_tokens}</span> 토큰, 출력: <span class="macro">{output_tokens}</span> 토큰\n"</span>)
+
+        <span class="kw">for</span> model <span class="kw">in</span> <span class="kw">self</span>.PRICING:
+            cost = <span class="kw">self</span>.calculate(model, input_tokens, output_tokens)
+            <span class="fn">print</span>(<span class="str">f"<span class="macro">{model:20}</span> ${cost:.6f}"</span>)
+
+<span class="cmt"># 사용 예시</span>
+calc = CostCalculator()
+
+<span class="cmt"># 일반적인 요청 (2K input, 500 output)</span>
+calc.compare_models(input_tokens=<span class="num">2000</span>, output_tokens=<span class="num">500</span>)
+
+<span class="cmt"># 출력:</span>
+<span class="cmt"># claude-4-opus         $0.043500</span>
+<span class="cmt"># claude-4-sonnet       $0.013500</span>
+<span class="cmt"># claude-4-haiku        $0.001125</span>
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="best-practices">모범 사례</h2>
+
+<h3 id="general-tips">일반 권장사항</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">모범 사례</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 에러 처리</span>
+✓ 항상 try-except 사용
+✓ 재시도 로직 구현 (지수 백오프)
+✓ Rate Limit 에러 처리 (429)
+✓ 타임아웃 설정
+
+<span class="cmt">// 2. 보안</span>
+✓ API 키 환경 변수 관리
+✓ 서버 사이드에서만 호출
+✓ HTTPS 필수
+✓ 로그에 민감 정보 제외
+
+<span class="cmt">// 3. 성능</span>
+✓ 스트리밍으로 UX 개선
+✓ 프롬프트 캐싱 적극 활용
+✓ 적절한 max_tokens 설정
+✓ 비동기 처리 (asyncio)
+
+<span class="cmt">// 4. 비용</span>
+✓ 작업에 맞는 모델 선택
+✓ 토큰 사용량 모니터링
+✓ 불필요한 컨텍스트 제거
+✓ 캐싱 가능한 부분 식별
+
+<span class="cmt">// 5. 품질</span>
+✓ 명확한 시스템 프롬프트
+✓ Few-shot 예시 제공
+✓ 출력 포맷 명시
+✓ 다양한 입력으로 테스트
+</code></pre>
+</div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

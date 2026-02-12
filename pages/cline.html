@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Cline 완전 가이드 - 자율 AI 코딩 에이전트">
+<meta property="og:description" content="Cline (구 Claude Dev) 완전 가이드. VS Code에서 사용하는 자율 AI 에이전트의 모든 기능과 활용법.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/cline.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Cline 완전 가이드. 자율 AI 코딩 에이전트의 모든 기능과 활용법을 배웁니다.">
+<meta name="keywords" content="cline, claude dev, vscode, ai agent, autonomous, coding">
+<meta name="author" content="MINZKN">
+<title>Cline 완전 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Cline 완전 가이드</h1>
+<p class="lead">VS Code에서 사용하는 자율 AI 코딩 에이전트. 파일 편집, 터미널 실행, 브라우저 제어까지 가능한 강력한 도구.</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 빠른 시작</div>
+  <pre><code><span class="cmt"># 1. VS Code 확장 설치</span>
+Extensions → "Cline" 검색 → 설치
+
+<span class="cmt"># 2. Anthropic API 키 설정</span>
+Cline 사이드바 → Settings → API Key 입력
+
+<span class="cmt"># 3. 첫 요청</span>
+<span class="str">"React 블로그 앱 만들어줘. 전체 기능 구현."</span>
+→ Cline이 자율적으로 파일 생성, 설치, 테스트</code></pre>
+</div>
+
+<!-- Section 1: 소개 -->
+<section class="content-section">
+  <h2 id="introduction">소개</h2>
+
+  <p>
+    <strong>Cline</strong> (이전 이름: Claude Dev)은 VS Code 확장으로,
+    단순한 코드 생성을 넘어 파일 시스템 조작, 터미널 명령 실행,
+    브라우저 제어까지 가능한 자율 AI 에이전트입니다.
+  </p>
+
+  <h3 id="what-is-agent">자율 에이전트란?</h3>
+
+  <p>
+    일반적인 AI 코딩 도구는 사용자가 요청할 때마다 응답합니다.
+    하지만 <strong>자율 에이전트</strong>는:
+  </p>
+
+  <ul>
+    <li><strong>계획 수립</strong>: 복잡한 작업을 단계별로 분해</li>
+    <li><strong>자율 실행</strong>: 각 단계를 스스로 실행</li>
+    <li><strong>에러 처리</strong>: 실패 시 자동으로 수정 시도</li>
+    <li><strong>승인 요청</strong>: 중요한 작업은 사용자 확인 요청</li>
+  </ul>
+
+  <h3 id="key-features">핵심 기능</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>기능</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>파일 편집</strong></td>
+        <td>파일 생성, 수정, 삭제 (자율)</td>
+      </tr>
+      <tr>
+        <td><strong>터미널 실행</strong></td>
+        <td>npm install, git commit 등 자동 실행</td>
+      </tr>
+      <tr>
+        <td><strong>브라우저 제어</strong></td>
+        <td>웹 페이지 테스트, 스크린샷 촬영</td>
+      </tr>
+      <tr>
+        <td><strong>컨텍스트 인식</strong></td>
+        <td>프로젝트 구조 이해, 파일 간 의존성 파악</td>
+      </tr>
+      <tr>
+        <td><strong>승인 시스템</strong></td>
+        <td>위험한 작업은 사용자 확인</td>
+      </tr>
+      <tr>
+        <td><strong>기록 보관</strong></td>
+        <td>모든 작업 히스토리 저장</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="vs-other-tools">다른 도구와의 차이점</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>자율성</th>
+        <th>터미널 실행</th>
+        <th>브라우저 제어</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Cline</strong></td>
+        <td>✅ 높음</td>
+        <td>✅</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong>Continue</strong></td>
+        <td>❌ 수동</td>
+        <td>제한적</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td><strong>Cursor</strong></td>
+        <td>❌ 수동</td>
+        <td>제한적</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td><strong>Claude CLI</strong></td>
+        <td>✅ 높음</td>
+        <td>❌</td>
+        <td>❌</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Section 2: 설치 -->
+<section class="content-section">
+  <h2 id="installation">설치</h2>
+
+  <h3 id="install-extension">VS Code 확장 설치</h3>
+
+  <h4>방법 1: 마켓플레이스</h4>
+  <pre><code>1. VS Code 열기
+2. Extensions (Cmd/Ctrl + Shift + X)
+3. "Cline" 검색
+4. Install
+5. Reload</code></pre>
+
+  <h4>방법 2: 커맨드라인</h4>
+  <pre><code>code --install-extension saoudrizwan.claude-dev</code></pre>
+
+  <h3 id="api-key-setup">API 키 설정</h3>
+
+  <p>
+    Cline은 주로 Anthropic Claude API를 사용합니다. (OpenAI, Google도 지원)
+  </p>
+
+  <h4>1. Anthropic API 키 발급</h4>
+  <pre><code>1. https://console.anthropic.com 접속
+2. "Get API Keys" 클릭
+3. API 키 생성 및 복사
+4. 키 형식: sk-ant-api03-xxxxxxx</code></pre>
+
+  <h4>2. Cline에 API 키 입력</h4>
+  <pre><code><span class="cmt"># 방법 1: Cline UI</span>
+1. Cline 사이드바 열기 (좌측 아이콘)
+2. Settings (톱니바퀴 아이콘)
+3. API Provider: Anthropic
+4. API Key 입력
+5. Model: claude-sonnet-4-5-20250929
+
+<span class="cmt"># 방법 2: 환경 변수</span>
+export ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxx"</span></code></pre>
+
+  <h3 id="first-run">첫 실행</h3>
+
+  <pre><code><span class="cmt"># 1. Cline 사이드바 열기</span>
+좌측 아이콘 클릭 또는 Cmd/Ctrl + Shift + P → "Cline: Open"
+
+<span class="cmt"># 2. 첫 요청</span>
+<span class="str">💬 You:</span> <span class="str">"안녕! 간단한 테스트로 hello.txt 파일 만들어줘."</span>
+
+<span class="fn">🤖 Cline:</span> <span class="str">"hello.txt를 생성하겠습니다."</span>
+
+<span class="cmt"># 승인 요청</span>
+<span class="fn">[Cline] 📝 Write to file: hello.txt</span>
+<span class="str">Approve? (Y/n)</span>
+
+<span class="cmt"># Y 누르면 파일 생성됨</span></code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 자동 승인 모드</div>
+    <p>Settings에서 "Auto Approve" 옵션을 켜면 파일 읽기/쓰기를 자동 승인합니다. (개발 중에는 편리하지만 주의 필요)</p>
+  </div>
+</section>
+
+<!-- Section 3: 기본 사용법 -->
+<section class="content-section">
+  <h2 id="basic-usage">기본 사용법</h2>
+
+  <h3 id="simple-tasks">간단한 작업</h3>
+
+  <h4>파일 생성</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"Python으로 간단한 계산기 만들어줘. calculator.py 파일로."</span>
+
+<span class="fn">🤖 Cline:</span> <span class="str">"calculator.py를 생성하겠습니다."</span>
+
+<span class="cmt"># Cline이 자동으로:</span>
+1. 파일 생성 (calculator.py)
+2. 코드 작성 (덧셈, 뺄셈, 곱셈, 나눗셈)
+3. 사용 예제 주석 추가
+
+<span class="fn">✅ 완료!</span></code></pre>
+
+  <h4>파일 수정</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"calculator.py에 제곱 기능 추가해줘."</span>
+
+<span class="fn">🤖 Cline:</span> <span class="str">"파일을 읽고 수정하겠습니다."</span>
+
+<span class="cmt"># Cline이 자동으로:</span>
+1. 파일 읽기
+2. power() 함수 추가
+3. 파일 저장
+
+<span class="fn">✅ 완료! power() 함수를 추가했습니다.</span></code></pre>
+
+  <h3 id="complex-tasks">복잡한 작업</h3>
+
+  <h4>전체 프로젝트 생성</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"React + TypeScript 투두 앱 만들어줘.
+
+필요한 것:
+- Create React App 설정
+- TypeScript 타입 정의
+- 컴포넌트 (TodoList, TodoItem, AddTodo)
+- 로컬 스토리지 저장
+- Tailwind CSS 스타일링
+
+모든 설정과 코드 작성해줘."</span>
+
+<span class="fn">🤖 Cline:</span> <span class="str">"React 투두 앱을 생성하겠습니다."</span>
+
+<span class="cmt"># Cline이 자율적으로:</span>
+
+<span class="fn">Step 1: 프로젝트 생성</span>
+→ npx create-react-app todo-app --template typescript
+
+<span class="fn">Step 2: Tailwind 설치</span>
+→ npm install -D tailwindcss postcss autoprefixer
+→ npx tailwindcss init -p
+
+<span class="fn">Step 3: 파일 생성</span>
+→ src/types/todo.ts
+→ src/components/TodoList.tsx
+→ src/components/TodoItem.tsx
+→ src/components/AddTodo.tsx
+→ src/hooks/useTodos.ts
+→ src/utils/localStorage.ts
+
+<span class="fn">Step 4: 설정 파일 수정</span>
+→ tailwind.config.js
+→ src/index.css
+
+<span class="fn">Step 5: 앱 통합</span>
+→ src/App.tsx
+
+<span class="fn">Step 6: 테스트</span>
+→ npm start
+
+<span class="fn">✅ 완료! 브라우저에서 http://localhost:3000 확인하세요.</span></code></pre>
+
+  <h3 id="autonomous-behavior">자율 작동 방식</h3>
+
+  <p>
+    Cline은 작업을 단계별로 분해하고 각 단계를 자율적으로 실행합니다.
+  </p>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"사용자 인증 시스템 추가해줘."</span>
+
+<span class="fn">🤖 Cline의 내부 계획:</span>
+
+1. 현재 프로젝트 구조 파악
+   → package.json 읽기
+   → 사용 중인 프레임워크 확인
+
+2. 필요한 패키지 설치
+   → npm install jsonwebtoken bcrypt express-session
+
+3. 파일 생성
+   → auth/jwt.js (JWT 유틸리티)
+   → middleware/auth.js (인증 미들웨어)
+   → routes/auth.js (인증 라우트)
+   → models/User.js (사용자 모델)
+
+4. 기존 파일 수정
+   → server.js (라우트 연결)
+   → .env (환경 변수)
+
+5. 테스트
+   → 서버 재시작
+   → API 테스트 (curl)
+
+<span class="cmt"># 각 단계마다 승인 요청 또는 자동 실행</span></code></pre>
+
+  <h3 id="approval-system">승인 시스템</h3>
+
+  <p>
+    Cline은 중요한 작업 전에 사용자 승인을 요청합니다.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>작업</th>
+        <th>승인 필요</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>파일 읽기</td>
+        <td>설정에 따라</td>
+      </tr>
+      <tr>
+        <td>파일 쓰기</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td>파일 삭제</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td>터미널 명령</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td>브라우저 열기</td>
+        <td>✅</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <pre><code><span class="cmt"># 승인 요청 예시</span>
+
+<span class="fn">[Cline] 🔧 Execute command:</span>
+npm install express mongoose
+
+<span class="str">This will modify package.json and install dependencies.
+Approve? (Y/n/edit)</span>
+
+Y → 실행
+n → 취소
+edit → 명령어 수정 후 실행</code></pre>
+</section>
+
+<!-- Section 4: 고급 기능 -->
+<section class="content-section">
+  <h2 id="advanced-features">고급 기능</h2>
+
+  <h3 id="terminal-control">터미널 제어</h3>
+
+  <p>
+    Cline은 터미널 명령을 실행하고 출력을 읽어 다음 단계를 결정합니다.
+  </p>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"npm test 실행하고 실패한 테스트 수정해줘."</span>
+
+<span class="fn">🤖 Cline:</span>
+
+<span class="fn">Step 1: 테스트 실행</span>
+→ npm test
+
+<span class="fn">Output:</span>
+FAIL src/utils/math.test.js
+  ● sum › should add two numbers
+    Expected: 5, Received: 4
+
+<span class="fn">Step 2: 분석</span>
+→ src/utils/math.js 읽기
+→ 버그 발견: return a + b; → return a + b - 1;
+
+<span class="fn">Step 3: 수정</span>
+→ src/utils/math.js 수정
+
+<span class="fn">Step 4: 재실행</span>
+→ npm test
+
+<span class="fn">✅ 모든 테스트 통과!</span></code></pre>
+
+  <h3 id="browser-control">브라우저 제어</h3>
+
+  <p>
+    Cline은 Puppeteer를 사용하여 브라우저를 제어할 수 있습니다.
+  </p>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"앱 실행하고 스크린샷 찍어줘. 버그 있으면 수정."</span>
+
+<span class="fn">🤖 Cline:</span>
+
+<span class="fn">Step 1: 서버 시작</span>
+→ npm start (백그라운드)
+
+<span class="fn">Step 2: 브라우저 열기</span>
+→ http://localhost:3000
+
+<span class="fn">Step 3: 스크린샷</span>
+→ screenshot.png 저장
+
+<span class="fn">Step 4: 시각적 분석</span>
+→ 버튼이 화면 밖으로 나감 (CSS 문제)
+
+<span class="fn">Step 5: 수정</span>
+→ styles.css 수정
+
+<span class="fn">Step 6: 재확인</span>
+→ 브라우저 새로고침, 스크린샷
+
+<span class="fn">✅ UI 수정 완료!</span></code></pre>
+
+  <h3 id="context-awareness">컨텍스트 인식</h3>
+
+  <p>
+    Cline은 프로젝트 구조를 이해하고 파일 간 의존성을 파악합니다.
+  </p>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"API 엔드포인트 추가해줘. /api/users"</span>
+
+<span class="fn">🤖 Cline의 컨텍스트 이해:</span>
+
+1. 프로젝트 타입 파악
+   → package.json 읽기 → Express 사용 중
+
+2. 기존 구조 확인
+   → routes/ 디렉토리 있음
+   → server.js에서 라우트 연결 방식 확인
+
+3. 데이터베이스 확인
+   → models/ 디렉토리 확인 → Mongoose 사용 중
+
+4. 일관된 코드 생성
+   → routes/users.js 생성 (기존 스타일 따름)
+   → models/User.js 생성 (기존 스키마 패턴 따름)
+   → server.js 수정 (기존 라우트 연결 방식 따름)
+
+<span class="fn">✅ 프로젝트 스타일에 맞게 통합 완료!</span></code></pre>
+
+  <h3 id="memory">기억 및 히스토리</h3>
+
+  <p>
+    Cline은 대화 히스토리를 저장하고 이전 작업을 참조합니다.
+  </p>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"React 컴포넌트 만들어줘. Button."</span>
+<span class="fn">🤖 Cline:</span> <span class="str">"Button.tsx를 생성했습니다."</span>
+
+<span class="str">💬 You:</span> <span class="str">"이 버튼에 hover 효과 추가해줘."</span>
+<span class="fn">🤖 Cline:</span> <span class="str">"Button.tsx에 hover 스타일을 추가했습니다."</span>
+<span class="cmt"># "이 버튼" = Button.tsx (컨텍스트 이해)</span>
+
+<span class="str">💬 You:</span> <span class="str">"테스트 코드도 작성해줘."</span>
+<span class="fn">🤖 Cline:</span> <span class="str">"Button.test.tsx를 생성했습니다."</span>
+<span class="cmt"># Button 컴포넌트에 대한 테스트 (암묵적 이해)</span></code></pre>
+</section>
+
+<!-- Section 5: 실전 워크플로우 -->
+<section class="content-section">
+  <h2 id="workflows">실전 워크플로우</h2>
+
+  <h3 id="new-project-workflow">새 프로젝트 시작</h3>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"Next.js 13 블로그 프로젝트 만들어줘.
+
+요구사항:
+- TypeScript
+- App Router
+- Tailwind CSS
+- Prisma + PostgreSQL
+- 마크다운 블로그 글
+- 관리자 페이지
+
+처음부터 끝까지 설정하고 실행까지 해줘."</span>
+
+<span class="fn">🤖 Cline:</span> <span class="str">"Next.js 블로그를 생성하겠습니다."</span>
+
+<span class="cmt"># Cline이 자동으로 수행:</span>
+
+1. 프로젝트 생성
+   → npx create-next-app@latest blog --typescript --tailwind --app
+
+2. Prisma 설정
+   → npm install prisma @prisma/client
+   → npx prisma init
+   → prisma/schema.prisma 작성
+
+3. 데이터베이스 연결
+   → .env 파일 생성
+   → DATABASE_URL 설정
+
+4. 파일 생성 (20개 이상)
+   → app/page.tsx (홈)
+   → app/blog/[slug]/page.tsx (블로그 글)
+   → app/admin/page.tsx (관리자)
+   → components/ (여러 컴포넌트)
+   → lib/prisma.ts
+   → lib/markdown.ts
+
+5. 데이터베이스 마이그레이션
+   → npx prisma migrate dev
+
+6. 샘플 데이터 생성
+   → prisma/seed.ts
+   → npm run seed
+
+7. 실행 및 테스트
+   → npm run dev
+   → 브라우저 열기
+   → 스크린샷
+
+<span class="fn">✅ 완료! 전체 블로그 시스템이 준비되었습니다.</span></code></pre>
+
+  <h3 id="feature-workflow">기능 추가</h3>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"블로그에 댓글 기능 추가해줘.
+- 비회원도 작성 가능 (이름, 이메일 입력)
+- 대댓글 지원
+- 관리자 승인 시스템"</span>
+
+<span class="fn">🤖 Cline:</span>
+
+1. 기존 코드 분석
+   → Prisma 스키마 확인
+   → 라우트 구조 파악
+
+2. 데이터베이스 스키마 수정
+   → prisma/schema.prisma (Comment 모델 추가)
+   → npx prisma migrate dev
+
+3. API 라우트 생성
+   → app/api/comments/route.ts
+   → app/api/comments/[id]/route.ts
+
+4. 컴포넌트 생성
+   → components/CommentForm.tsx
+   → components/CommentList.tsx
+   → components/CommentItem.tsx
+
+5. 블로그 글 페이지 통합
+   → app/blog/[slug]/page.tsx 수정
+
+6. 관리자 페이지 추가
+   → app/admin/comments/page.tsx
+
+7. 테스트
+   → npm run dev
+   → 브라우저에서 댓글 작성 테스트
+
+<span class="fn">✅ 댓글 시스템 완료!</span></code></pre>
+
+  <h3 id="debugging-workflow">디버깅</h3>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"앱 실행했는데 에러 나. 고쳐줘."</span>
+
+<span class="fn">🤖 Cline:</span>
+
+<span class="fn">Step 1: 앱 실행</span>
+→ npm run dev
+
+<span class="fn">Error Output:</span>
+Error: Cannot find module 'react-markdown'
+  at Module._resolveFilename
+
+<span class="fn">Step 2: 문제 진단</span>
+→ 패키지가 설치되지 않음
+
+<span class="fn">Step 3: 수정</span>
+→ npm install react-markdown
+
+<span class="fn">Step 4: 재실행</span>
+→ npm run dev
+
+<span class="fn">New Error:</span>
+TypeError: Cannot read property 'map' of undefined
+  at BlogList.tsx:15
+
+<span class="fn">Step 5: 파일 확인</span>
+→ BlogList.tsx 읽기
+→ posts 배열 null 체크 누락
+
+<span class="fn">Step 6: 수정</span>
+→ Optional chaining 추가
+
+<span class="fn">Step 7: 재실행</span>
+→ npm run dev
+
+<span class="fn">✅ 앱이 정상 작동합니다!</span></code></pre>
+
+  <h3 id="refactoring-workflow">리팩토링</h3>
+
+  <pre><code><span class="str">💬 You:</span> <span class="str">"코드 품질 개선해줘.
+- TypeScript strict 모드
+- ESLint 에러 수정
+- 중복 코드 제거
+- 성능 최적화"</span>
+
+<span class="fn">🤖 Cline:</span>
+
+1. TypeScript 설정 강화
+   → tsconfig.json (strict: true)
+   → 모든 타입 에러 수정
+
+2. ESLint 실행
+   → npm run lint
+   → 모든 경고 수정
+
+3. 중복 코드 분석
+   → 유사한 컴포넌트 발견
+   → 공통 컴포넌트로 추출
+
+4. 성능 최적화
+   → React.memo 추가
+   → useMemo, useCallback 적용
+   → 이미지 최적화 (Next.js Image)
+
+5. 테스트
+   → npm run build
+   → 빌드 성공 확인
+
+<span class="fn">✅ 코드 품질 개선 완료!</span></code></pre>
+</section>
+
+<!-- Section 6: 설정 -->
+<section class="content-section">
+  <h2 id="configuration">설정</h2>
+
+  <h3 id="api-providers">API 제공자 설정</h3>
+
+  <pre><code><span class="cmt"># Cline Settings</span>
+
+<span class="fn">API Provider:</span> Anthropic
+<span class="fn">Model:</span> claude-sonnet-4-5-20250929
+<span class="fn">API Key:</span> sk-ant-api03-xxx
+
+<span class="cmt"># 다른 제공자도 지원</span>
+- OpenAI (GPT-4)
+- Google (Gemini)
+- Azure OpenAI
+- OpenRouter</code></pre>
+
+  <h3 id="behavior-settings">동작 설정</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>설정</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Auto Approve Read</strong></td>
+        <td>파일 읽기 자동 승인</td>
+      </tr>
+      <tr>
+        <td><strong>Auto Approve Write</strong></td>
+        <td>파일 쓰기 자동 승인 (주의)</td>
+      </tr>
+      <tr>
+        <td><strong>Auto Execute</strong></td>
+        <td>터미널 명령 자동 실행 (주의)</td>
+      </tr>
+      <tr>
+        <td><strong>Max Iterations</strong></td>
+        <td>자율 작업 최대 반복 횟수</td>
+      </tr>
+      <tr>
+        <td><strong>Browser Enabled</strong></td>
+        <td>브라우저 제어 활성화</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 자동 승인 주의</div>
+    <p>Auto Approve Write와 Auto Execute를 켜면 Cline이 파일을 자유롭게 수정하고 명령을 실행합니다. 개발 중에는 편리하지만, 중요한 프로젝트에서는 수동 승인 권장!</p>
+  </div>
+
+  <h3 id="custom-instructions">커스텀 지시사항</h3>
+
+  <pre><code><span class="cmt"># Cline Settings → Custom Instructions</span>
+
+프로젝트 규칙:
+- TypeScript strict 모드 사용
+- 함수형 컴포넌트 (React Hooks)
+- Tailwind CSS로 스타일링
+- 모든 함수에 JSDoc 주석
+- 에러 처리 필수
+- 테스트 코드 작성
+
+네이밍 규칙:
+- 컴포넌트: PascalCase
+- 함수: camelCase
+- 상수: UPPER_SNAKE_CASE
+
+파일 구조:
+src/
+  components/
+  hooks/
+  utils/
+  types/</code></pre>
+</section>
+
+<!-- Section 7: 비교 -->
+<section class="content-section">
+  <h2 id="comparison">다른 도구와 비교</h2>
+
+  <h3 id="vs-continue">vs Continue</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>Cline</th>
+        <th>Continue</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>자율성</strong></td>
+        <td>✅ 높음 (에이전트)</td>
+        <td>❌ 낮음 (수동)</td>
+      </tr>
+      <tr>
+        <td><strong>터미널 실행</strong></td>
+        <td>✅ 완전 제어</td>
+        <td>제한적</td>
+      </tr>
+      <tr>
+        <td><strong>브라우저</strong></td>
+        <td>✅</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td><strong>학습 곡선</strong></td>
+        <td>중간</td>
+        <td>낮음</td>
+      </tr>
+      <tr>
+        <td><strong>가격</strong></td>
+        <td>종량제 (API)</td>
+        <td>무료 (Ollama)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="vs-cursor">vs Cursor</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>Cline</th>
+        <th>Cursor</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>환경</strong></td>
+        <td>VS Code 확장</td>
+        <td>별도 IDE</td>
+      </tr>
+      <tr>
+        <td><strong>자율성</strong></td>
+        <td>✅ 에이전트</td>
+        <td>❌ 수동</td>
+      </tr>
+      <tr>
+        <td><strong>가격</strong></td>
+        <td>종량제</td>
+        <td>$20/월</td>
+      </tr>
+      <tr>
+        <td><strong>UX</strong></td>
+        <td>우수</td>
+        <td>매우 우수</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="when-to-use-cline">Cline을 사용해야 하는 경우</h3>
+
+  <ul>
+    <li>복잡한 프로젝트를 빠르게 시작하고 싶음</li>
+    <li>AI가 자율적으로 작업하길 원함</li>
+    <li>터미널 명령 자동 실행 필요</li>
+    <li>브라우저 테스트 자동화 필요</li>
+    <li>VS Code 환경 유지하면서 강력한 AI 도구 사용</li>
+  </ul>
+
+  <h3 id="when-not-to-use">Cline을 사용하지 말아야 하는 경우</h3>
+
+  <ul>
+    <li>완전 무료 솔루션 필요 → <strong>Continue + Ollama</strong></li>
+    <li>수동 제어 선호 → <strong>Cursor, Continue</strong></li>
+    <li>간단한 코드 편집만 필요 → <strong>Continue</strong></li>
+    <li>터미널 명령어만 필요 → <strong>GitHub Copilot CLI</strong></li>
+  </ul>
+</section>
+
+<!-- Section 8: 팁과 트릭 -->
+<section class="content-section">
+  <h2 id="tips">팁과 트릭</h2>
+
+  <h3 id="effective-prompts">효과적인 프롬프트</h3>
+
+  <h4>❌ 나쁜 예</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"앱 만들어줘."</span></code></pre>
+  <p>너무 모호함. Cline이 여러 번 질문해야 함.</p>
+
+  <h4>✅ 좋은 예</h4>
+  <pre><code><span class="str">💬 You:</span> <span class="str">"React + TypeScript 투두 앱 만들어줘.
+
+기능:
+- 할 일 추가/삭제/완료
+- 로컬 스토리지 저장
+- 필터 (전체/진행중/완료)
+
+기술 스택:
+- Create React App (TypeScript)
+- Tailwind CSS
+- React Hooks
+
+처음부터 끝까지 설정하고 실행까지 해줘."</span></code></pre>
+
+  <h3 id="safety-tips">안전 사용 팁</h3>
+
+  <ol>
+    <li><strong>중요 프로젝트는 Git 사용</strong>
+      <pre><code>git init
+git add .
+git commit -m "Before Cline changes"</code></pre>
+    </li>
+    <li><strong>자동 승인 주의</strong>
+      <ul>
+        <li>개발 초기: Auto Approve ON (빠른 프로토타입)</li>
+        <li>중요 작업: Auto Approve OFF (안전)</li>
+      </ul>
+    </li>
+    <li><strong>대화 분할</strong>
+      <pre><code><span class="cmt"># 복잡한 작업은 단계별로</span>
+1단계: "프로젝트 초기 설정만 해줘"
+2단계: "이제 인증 기능 추가해줘"
+3단계: "테스트 작성해줘"</code></pre>
+    </li>
+  </ol>
+
+  <h3 id="cost-optimization">비용 최적화</h3>
+
+  <ul>
+    <li><strong>명확한 요청</strong>: 모호한 요청은 재시도로 이어져 비용 증가</li>
+    <li><strong>Claude Haiku</strong>: 간단한 작업은 Haiku 모델 사용</li>
+    <li><strong>Auto Approve</strong>: 승인 과정을 줄여 API 호출 감소</li>
+    <li><strong>대화 초기화</strong>: 불필요한 컨텍스트 제거</li>
+  </ul>
+</section>
+
+<!-- Section 9: 트러블슈팅 -->
+<section class="content-section">
+  <h2 id="troubleshooting">트러블슈팅</h2>
+
+  <h3 id="common-issues">일반적인 문제</h3>
+
+  <h4>❌ Cline이 응답하지 않음</h4>
+  <p><strong>해결:</strong></p>
+  <ul>
+    <li>API 키 확인</li>
+    <li>네트워크 연결 확인</li>
+    <li>VS Code 재시작</li>
+    <li>Cline 확장 재설치</li>
+  </ul>
+
+  <h4>❌ 파일이 생성되지 않음</h4>
+  <p><strong>해결:</strong></p>
+  <ul>
+    <li>워크스페이스 폴더가 열려 있는지 확인</li>
+    <li>파일 쓰기 권한 확인</li>
+    <li>승인 요청을 놓치지 않았는지 확인</li>
+  </ul>
+
+  <h4>❌ 터미널 명령이 실행되지 않음</h4>
+  <p><strong>해결:</strong></p>
+  <pre><code><span class="cmt"># Settings 확인</span>
+Terminal Integration: Enabled
+
+<span class="cmt"># VS Code 터미널 활성화</span>
+View → Terminal</code></pre>
+
+  <h4>❌ 브라우저 제어 실패</h4>
+  <p><strong>해결:</strong></p>
+  <pre><code><span class="cmt"># Puppeteer 설치</span>
+npm install -g puppeteer
+
+<span class="cmt"># Settings에서 브라우저 활성화</span>
+Browser Enabled: true</code></pre>
+</section>
+
+<!-- Section 10: 요약 -->
+<section class="content-section">
+  <h2 id="summary">요약</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">📝 핵심 요약</div>
+    <ul>
+      <li><strong>정체성</strong>: 자율 AI 코딩 에이전트 (VS Code 확장)</li>
+      <li><strong>자율성</strong>: 높음 - 계획, 실행, 에러 처리 자동</li>
+      <li><strong>파일 제어</strong>: 생성, 수정, 삭제 모두 가능</li>
+      <li><strong>터미널</strong>: 명령 실행 및 출력 분석</li>
+      <li><strong>브라우저</strong>: Puppeteer 통합, 스크린샷, 테스트</li>
+      <li><strong>승인 시스템</strong>: 중요 작업은 사용자 확인</li>
+      <li><strong>가격</strong>: 종량제 (Anthropic API 사용량)</li>
+    </ul>
+  </div>
+
+  <h3 id="best-for">최적의 사용 사례</h3>
+
+  <ol>
+    <li><strong>새 프로젝트 빠른 시작</strong>: 전체 설정 자동화</li>
+    <li><strong>복잡한 기능 추가</strong>: 여러 파일 동시 수정</li>
+    <li><strong>디버깅 자동화</strong>: 에러 분석 및 수정</li>
+    <li><strong>브라우저 테스트</strong>: UI 검증 및 스크린샷</li>
+    <li><strong>리팩토링</strong>: 대규모 코드 개선</li>
+  </ol>
+
+  <h3 id="next-learning">다음 학습</h3>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>🔄 Continue.dev</h3>
+      <p>수동 제어 AI 도구</p>
+      <a href="continue.html" class="card-link">비교하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔧 Cursor IDE</h3>
+      <p>AI 네이티브 IDE</p>
+      <a href="cursor.html" class="card-link">비교하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>💻 Claude CLI</h3>
+      <p>터미널 AI 도구</p>
+      <a href="claude-cli.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>⚙️ CLI 모범 사례</h3>
+      <p>효과적인 도구 활용</p>
+      <a href="cli-best-practices.html" class="card-link">마스터하기 →</a>
+    </div>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

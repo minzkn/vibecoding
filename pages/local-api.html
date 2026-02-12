@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로컬 LLM API 활용 - AI Vibe Coding 가이드 /with MINZKN</title>
+<meta name="description" content="Ollama, LM Studio, LocalAI 등 로컬 환경에서 실행 가능한 LLM API 사용법과 성능 비교">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">로컬 LLM API 활용</h1>
+<p class="lead">클라우드 API 대신 자체 하드웨어에서 LLM을 실행하면 데이터 프라이버시, 비용 절감, 오프라인 작업이 가능합니다. Ollama, LM Studio, LocalAI 등 주요 로컬 LLM 솔루션의 설치부터 API 활용까지 완벽 가이드를 제공합니다.</p>
+
+<div class="info-box tip">
+<strong>핵심 포인트</strong>
+<ul>
+<li>Ollama: 가장 간단한 설치와 사용, CLI 중심</li>
+<li>LM Studio: GUI 기반, 초보자 친화적</li>
+<li>LocalAI: OpenAI 호환 API, 다양한 모델 형식 지원</li>
+<li>Text Generation WebUI: 고급 설정, 커뮤니티 활발</li>
+<li>하드웨어 요구사항: 최소 8GB RAM, 권장 NVIDIA GPU</li>
+</ul>
+</div>
+
+<section class="content-section">
+<h2 id="why-local">로컬 LLM의 장점과 단점</h2>
+
+<h3 id="advantages">장점</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">장점</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 데이터 프라이버시</span>
+• 민감한 데이터가 외부로 전송되지 않음
+• 의료, 금융, 법률 분야에서 필수
+• GDPR, HIPAA 등 규제 준수 용이
+
+<span class="cmt">// 2. 비용 절감</span>
+• 초기 하드웨어 투자 후 무제한 사용
+• API 종량제 비용 없음
+• 대량 처리 시 특히 경제적
+
+<span class="cmt">// 3. 오프라인 작업</span>
+• 인터넷 연결 불필요
+• 네트워크 지연 없음
+• 항공, 군사, 원격지 환경에서 유용
+
+<span class="cmt">// 4. 커스터마이징</span>
+• 모델 파인튜닝 가능
+• 프롬프트 템플릿 완전 제어
+• 특정 도메인에 최적화
+
+<span class="cmt">// 5. 제한 없는 실험</span>
+• Rate Limiting 없음
+• 토큰 제한 없음 (하드웨어 한도 내)
+• 개발 및 테스트 자유로움
+</code></pre>
+</div>
+
+<h3 id="disadvantages">단점</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">단점</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 하드웨어 요구사항</span>
+┌──────────────┬────────────┬──────────────┬──────────────┐
+│ 모델 크기    │ 최소 RAM   │ 권장 VRAM    │ 성능         │
+├──────────────┼────────────┼──────────────┼──────────────┤
+│ 3B (소형)    │ 8GB        │ 4GB          │ 빠름         │
+│ 7B (중형)    │ 16GB       │ 8GB          │ 중간         │
+│ 13B (대형)   │ 32GB       │ 16GB         │ 느림         │
+│ 30B+ (초대형)│ 64GB+      │ 24GB+        │ 매우 느림    │
+└──────────────┴────────────┴──────────────┴──────────────┘
+
+<span class="cmt">// 2. 성능 제한</span>
+• 상용 API 대비 응답 품질 낮음
+• 추론 속도 느림 (특히 CPU 사용 시)
+• 멀티태스킹 시 리소스 경쟁
+
+<span class="cmt">// 3. 유지보수 부담</span>
+• 모델 업데이트 수동 관리
+• 서버 관리, 모니터링 필요
+• 트러블슈팅 직접 해결
+
+<span class="cmt">// 4. 초기 학습 곡선</span>
+• 모델 형식, 양자화 이해 필요
+• CLI 도구 사용법 습득
+• 성능 튜닝 복잡
+</code></pre>
+</div>
+
+<div class="info-box note">
+<strong>권장 사용 사례</strong>
+<ul>
+<li><strong>로컬 LLM 적합:</strong> 민감 데이터 처리, 대량 배치 작업, 오프라인 환경, 실험/개발</li>
+<li><strong>클라우드 API 적합:</strong> 최고 품질 요구, 소량 요청, 인프라 관리 회피, 멀티모달 기능</li>
+</ul>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="ollama">Ollama</h2>
+
+<p>Ollama는 로컬 LLM 실행을 위한 가장 인기 있는 도구로, Docker와 유사한 CLI 기반 워크플로우를 제공합니다.</p>
+
+<h3 id="ollama-install">설치</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># Linux/macOS</span>
+<span class="kw">curl</span> -fsSL https://ollama.com/install.sh | sh
+
+<span class="cmt"># macOS (Homebrew)</span>
+brew install ollama
+
+<span class="cmt"># Windows</span>
+<span class="cmt"># https://ollama.com/download 에서 설치 프로그램 다운로드</span>
+
+<span class="cmt"># 설치 확인</span>
+ollama --version
+<span class="cmt"># ollama version 0.5.7</span>
+
+<span class="cmt"># 서버 시작 (백그라운드)</span>
+ollama serve &
+
+<span class="cmt"># 모델 다운로드 (예: Llama 3.1)</span>
+ollama pull llama3.1:8b
+
+<span class="cmt"># 모델 목록 확인</span>
+ollama list
+
+<span class="cmt"># 대화형 테스트</span>
+ollama run llama3.1:8b
+</code></pre>
+</div>
+
+<h3 id="ollama-models">주요 모델</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">모델</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>인기 모델 (2026년 1월 기준):
+
+<span class="cmt">// 범용 모델</span>
+llama3.1:8b          <span class="cmt"># Meta Llama 3.1 (8B 파라미터, 4.7GB)</span>
+llama3.1:70b         <span class="cmt"># Llama 3.1 (70B 파라미터, 40GB)</span>
+mistral:7b           <span class="cmt"># Mistral 7B (4.1GB)</span>
+mixtral:8x7b         <span class="cmt"># Mixtral MoE (26GB)</span>
+gemma2:9b            <span class="cmt"># Google Gemma 2 (5.4GB)</span>
+
+<span class="cmt">// 코딩 특화</span>
+codellama:7b         <span class="cmt"># Meta Code Llama (3.8GB)</span>
+deepseek-coder:6.7b  <span class="cmt"># DeepSeek Coder (3.8GB)</span>
+starcoder2:15b       <span class="cmt"># StarCoder 2 (9GB)</span>
+
+<span class="cmt">// 한국어 지원</span>
+solar:10.7b          <span class="cmt"># Upstage Solar (6.1GB)</span>
+eeve:10.8b           <span class="cmt"># yanolja EEVE (6.2GB)</span>
+
+<span class="cmt">// 경량 모델</span>
+phi3:3.8b            <span class="cmt"># Microsoft Phi-3 Mini (2.3GB)</span>
+qwen2:1.5b           <span class="cmt"># Alibaba Qwen 2 (934MB)</span>
+
+모델 이름 형식: <span class="str">"모델명:크기-양자화"</span>
+예시:
+  llama3.1:8b        <span class="cmt"># 기본 양자화 (Q4_0)</span>
+  llama3.1:8b-q8_0   <span class="cmt"># Q8 양자화 (더 큼, 더 정확)</span>
+  llama3.1:8b-q4_K_M <span class="cmt"># Q4 K-Quant Medium</span>
+</code></pre>
+</div>
+
+<h3 id="ollama-api">Ollama API 사용</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># pip install ollama</span>
+
+<span class="kw">import</span> ollama
+
+<span class="cmt"># 1. 기본 완성</span>
+response = ollama.chat(
+    model=<span class="str">'llama3.1:8b'</span>,
+    messages=[
+        {<span class="str">'role'</span>: <span class="str">'user'</span>, <span class="str">'content'</span>: <span class="str">'Python으로 퀵소트를 구현해줘'</span>}
+    ]
+)
+<span class="fn">print</span>(response[<span class="str">'message'</span>][<span class="str">'content'</span>])
+
+<span class="cmt"># 2. 스트리밍</span>
+<span class="kw">for</span> chunk <span class="kw">in</span> ollama.chat(
+    model=<span class="str">'llama3.1:8b'</span>,
+    messages=[{<span class="str">'role'</span>: <span class="str">'user'</span>, <span class="str">'content'</span>: <span class="str">'긴 이야기 들려줘'</span>}],
+    stream=<span class="kw">True</span>
+):
+    <span class="fn">print</span>(chunk[<span class="str">'message'</span>][<span class="str">'content'</span>], end=<span class="str">''</span>, flush=<span class="kw">True</span>)
+
+<span class="cmt"># 3. 다중 턴 대화</span>
+messages = [
+    {<span class="str">'role'</span>: <span class="str">'system'</span>, <span class="str">'content'</span>: <span class="str">'너는 Python 전문가야.'</span>},
+    {<span class="str">'role'</span>: <span class="str">'user'</span>, <span class="str">'content'</span>: <span class="str">'async/await란?'</span>}
+]
+response = ollama.chat(model=<span class="str">'llama3.1:8b'</span>, messages=messages)
+messages.append(response[<span class="str">'message'</span>])
+messages.append({<span class="str">'role'</span>: <span class="str">'user'</span>, <span class="str">'content'</span>: <span class="str">'예제 코드 보여줘'</span>})
+response = ollama.chat(model=<span class="str">'llama3.1:8b'</span>, messages=messages)
+
+<span class="cmt"># 4. 임베딩 생성</span>
+embedding = ollama.embeddings(
+    model=<span class="str">'nomic-embed-text'</span>,
+    prompt=<span class="str">'LLM은 대규모 언어 모델이다.'</span>
+)
+<span class="fn">print</span>(<span class="fn">len</span>(embedding[<span class="str">'embedding'</span>]))  <span class="cmt"># 768차원 벡터</span>
+
+<span class="cmt"># 5. 모델 정보</span>
+info = ollama.show(<span class="str">'llama3.1:8b'</span>)
+<span class="fn">print</span>(info[<span class="str">'parameters'</span>])
+<span class="fn">print</span>(info[<span class="str">'template'</span>])
+</code></pre>
+</div>
+
+<h3 id="ollama-rest">REST API (HTTP)</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 기본 요청</span>
+curl http://localhost:11434/api/chat -d <span class="str">'{
+  "model": "llama3.1:8b",
+  "messages": [
+    {"role": "user", "content": "Hello, Ollama!"}
+  ]
+}'</span>
+
+<span class="cmt"># 스트리밍 응답</span>
+curl http://localhost:11434/api/chat -d <span class="str">'{
+  "model": "llama3.1:8b",
+  "messages": [{"role": "user", "content": "Count to 10"}],
+  "stream": true
+}'</span>
+
+<span class="cmt"># 생성 파라미터 조정</span>
+curl http://localhost:11434/api/chat -d <span class="str">'{
+  "model": "llama3.1:8b",
+  "messages": [{"role": "user", "content": "Write a poem"}],
+  "options": {
+    "temperature": 0.8,
+    "top_p": 0.9,
+    "max_tokens": 500
+  }
+}'</span>
+</code></pre>
+</div>
+
+<h3 id="ollama-modelfile">커스텀 모델 (Modelfile)</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">modelfile</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># Modelfile: 커스텀 프롬프트, 파라미터 설정</span>
+<span class="kw">FROM</span> llama3.1:8b
+
+<span class="cmt"># 시스템 프롬프트</span>
+<span class="kw">SYSTEM</span> <span class="str">"""
+당신은 한국어 Python 코딩 어시스턴트입니다.
+- 항상 한국어로 답변하세요.
+- 코드에는 상세한 주석을 포함하세요.
+- PEP 8 스타일을 준수하세요.
+"""</span>
+
+<span class="cmt"># 생성 파라미터</span>
+<span class="kw">PARAMETER</span> temperature 0.7
+<span class="kw">PARAMETER</span> top_p 0.9
+<span class="kw">PARAMETER</span> top_k 40
+<span class="kw">PARAMETER</span> repeat_penalty 1.1
+
+<span class="cmt"># 컨텍스트 길이</span>
+<span class="kw">PARAMETER</span> num_ctx 4096
+
+<span class="cmt"># 예시 대화</span>
+<span class="kw">MESSAGE</span> user 피보나치 함수 작성해줘
+<span class="kw">MESSAGE</span> assistant 재귀와 반복문 두 가지 방식으로 구현하겠습니다...
+</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># Modelfile로 커스텀 모델 생성</span>
+ollama create my-korean-coder -f Modelfile
+
+<span class="cmt"># 커스텀 모델 사용</span>
+ollama run my-korean-coder
+
+<span class="cmt"># 공유 (Ollama Hub)</span>
+ollama push myusername/my-korean-coder
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="lm-studio">LM Studio</h2>
+
+<p>LM Studio는 GUI 기반의 사용자 친화적인 로컬 LLM 플랫폼입니다. 코드 없이 모델을 다운로드하고 테스트할 수 있습니다.</p>
+
+<h3 id="lm-studio-features">주요 특징</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">특징</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>✓ 직관적인 GUI 인터페이스
+✓ HuggingFace 모델 브라우징 및 원클릭 다운로드
+✓ 내장 채팅 UI (ChatGPT 스타일)
+✓ OpenAI 호환 로컬 서버
+✓ GPU 가속 자동 감지
+✓ 모델 비교 및 벤치마크
+✓ 프롬프트 템플릿 관리
+✓ Windows, macOS, Linux 지원
+
+사용 사례:
+• 비개발자가 로컬 LLM 체험
+• 다양한 모델 빠른 프로토타이핑
+• 개발 전 모델 품질 평가
+• ChatGPT 대체 (프라이버시 중시)
+</code></pre>
+</div>
+
+<h3 id="lm-studio-install">설치 및 사용</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">설치</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="num">1.</span> https://lmstudio.ai/ 방문
+<span class="num">2.</span> OS에 맞는 설치 프로그램 다운로드
+<span class="num">3.</span> 설치 및 실행
+
+<span class="cmt">// 모델 다운로드</span>
+<span class="num">1.</span> 좌측 <span class="str">"Search"</span> 탭 클릭
+<span class="num">2.</span> 모델 검색 (예: <span class="str">"llama 3.1 8b"</span>)
+<span class="num">3.</span> 원하는 양자화 선택 (Q4_K_M 권장)
+<span class="num">4.</span> <span class="str">"Download"</span> 클릭
+
+<span class="cmt">// 채팅 테스트</span>
+<span class="num">1.</span> <span class="str">"Chat"</span> 탭 클릭
+<span class="num">2.</span> 상단에서 모델 선택
+<span class="num">3.</span> 우측 설정에서 파라미터 조정
+<span class="num">4.</span> 메시지 입력 및 전송
+
+<span class="cmt">// 로컬 서버 시작</span>
+<span class="num">1.</span> <span class="str">"Local Server"</span> 탭 클릭
+<span class="num">2.</span> 모델 선택 및 로드
+<span class="num">3.</span> <span class="str">"Start Server"</span> 클릭
+<span class="num">4.</span> 기본 URL: http://localhost:1234/v1
+</code></pre>
+</div>
+
+<h3 id="lm-studio-api">API 사용 (OpenAI 호환)</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># pip install openai</span>
+
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="cmt"># LM Studio 로컬 서버에 연결</span>
+client = OpenAI(
+    base_url=<span class="str">"http://localhost:1234/v1"</span>,
+    api_key=<span class="str">"lm-studio"</span>  <span class="cmt"># 임의 값 (필수지만 검증 안함)</span>
+)
+
+<span class="cmt"># OpenAI API와 동일한 방식으로 사용</span>
+response = client.chat.completions.create(
+    model=<span class="str">"local-model"</span>,  <span class="cmt"># LM Studio에서 로드한 모델</span>
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: <span class="str">"너는 도움이 되는 어시스턴트야."</span>},
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"LM Studio의 장점은?"</span>}
+    ],
+    temperature=<span class="num">0.7</span>,
+    max_tokens=<span class="num">500</span>
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+
+<span class="cmt"># 스트리밍</span>
+stream = client.chat.completions.create(
+    model=<span class="str">"local-model"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"1부터 20까지 세어줘"</span>}],
+    stream=<span class="kw">True</span>
+)
+
+<span class="kw">for</span> chunk <span class="kw">in</span> stream:
+    <span class="kw">if</span> chunk.choices[<span class="num">0</span>].delta.content:
+        <span class="fn">print</span>(chunk.choices[<span class="num">0</span>].delta.content, end=<span class="str">""</span>)
+</code></pre>
+</div>
+
+<h3 id="lm-studio-tips">LM Studio 팁</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">팁</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 모델 선택</span>
+• <span class="str">"Q4_K_M"</span> 양자화: 균형잡힌 성능/메모리 (권장)
+• <span class="str">"Q8_0"</span>: 더 높은 품질, 2배 메모리
+• <span class="str">"Q2_K"</span>: 최소 메모리, 품질 저하
+
+<span class="cmt">// 2. GPU 설정</span>
+• Settings → Hardware → GPU Offload
+• 레이어 수 조정 (더 많이 = 더 빠르지만 VRAM 많이 사용)
+• VRAM 부족 시 일부 레이어만 GPU에 로드
+
+<span class="cmt">// 3. 컨텍스트 길이</span>
+• 기본 2048토큰 → 필요시 4096, 8192로 증가
+• 길수록 메모리 사용량 증가
+• 모델의 학습 컨텍스트 초과 시 품질 저하
+
+<span class="cmt">// 4. 프롬프트 포맷</span>
+• 모델마다 다른 프롬프트 템플릿 사용
+• LM Studio가 자동 감지하지만 수동 설정 가능
+• Settings → Prompt Format 확인
+
+<span class="cmt">// 5. 성능 모니터링</span>
+• 하단 상태바에서 토큰/초 확인
+• CPU 사용 시: 2-5 tok/s
+• GPU 사용 시: 20-50 tok/s (모델/하드웨어 따라 다름)
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="localai">LocalAI</h2>
+
+<p>LocalAI는 OpenAI API와 완벽히 호환되는 오픈소스 프로젝트로, 다양한 모델 형식(GGUF, GGML, PyTorch)을 지원합니다.</p>
+
+<h3 id="localai-install">Docker로 설치</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># Docker Compose 파일 생성</span>
+cat &lt;&lt;EOF &gt; docker-compose.yml
+version: <span class="str">'3.8'</span>
+services:
+  localai:
+    image: quay.io/go-skynet/local-ai:latest
+    ports:
+      - <span class="str">"8080:8080"</span>
+    volumes:
+      - ./models:/models
+      - ./images:/tmp/generated/images
+    environment:
+      - THREADS=<span class="num">4</span>
+      - CONTEXT_SIZE=<span class="num">4096</span>
+      - DEBUG=<span class="kw">true</span>
+    restart: unless-stopped
+EOF
+
+<span class="cmt"># 컨테이너 시작</span>
+docker-compose up -d
+
+<span class="cmt"># 로그 확인</span>
+docker-compose logs -f
+
+<span class="cmt"># 모델 다운로드 (예: Llama 3.1)</span>
+mkdir -p models
+cd models
+wget https://huggingface.co/TheBloke/Llama-3.1-8B-Instruct-GGUF/resolve/main/llama-3.1-8b-instruct.Q4_K_M.gguf
+</code></pre>
+</div>
+
+<h3 id="localai-config">모델 설정 (YAML)</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">yaml</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># models/llama3.yaml</span>
+<span class="kw">name:</span> llama3-8b
+<span class="kw">backend:</span> llama
+<span class="kw">parameters:</span>
+  <span class="kw">model:</span> llama-3.1-8b-instruct.Q4_K_M.gguf
+  <span class="kw">temperature:</span> <span class="num">0.7</span>
+  <span class="kw">top_k:</span> <span class="num">40</span>
+  <span class="kw">top_p:</span> <span class="num">0.9</span>
+  <span class="kw">max_tokens:</span> <span class="num">2048</span>
+  <span class="kw">context_size:</span> <span class="num">4096</span>
+
+<span class="cmt"># 프롬프트 템플릿 (Llama 3 형식)</span>
+<span class="kw">template:</span>
+  <span class="kw">chat:</span> |
+    &lt;|begin_of_text|&gt;
+    {{<span class="kw">.Input</span>}}
+    &lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;
+  <span class="kw">completion:</span> |
+    {{<span class="kw">.Input</span>}}
+
+<span class="cmt"># GPU 설정</span>
+<span class="kw">f16:</span> <span class="kw">true</span>
+<span class="kw">gpu_layers:</span> <span class="num">35</span>  <span class="cmt"># GPU에 오프로드할 레이어 수</span>
+
+<span class="cmt"># 임베딩 지원</span>
+<span class="kw">embeddings:</span> <span class="kw">true</span>
+</code></pre>
+</div>
+
+<h3 id="localai-api">LocalAI API 사용</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+<span class="cmt"># LocalAI 서버에 연결</span>
+client = OpenAI(
+    base_url=<span class="str">"http://localhost:8080/v1"</span>,
+    api_key=<span class="str">"not-needed"</span>
+)
+
+<span class="cmt"># 1. 채팅 완성</span>
+response = client.chat.completions.create(
+    model=<span class="str">"llama3-8b"</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: <span class="str">"You are a helpful assistant."</span>},
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Explain quantum computing in simple terms."</span>}
+    ]
+)
+
+<span class="cmt"># 2. 텍스트 완성 (레거시)</span>
+response = client.completions.create(
+    model=<span class="str">"llama3-8b"</span>,
+    prompt=<span class="str">"Once upon a time"</span>,
+    max_tokens=<span class="num">100</span>
+)
+
+<span class="cmt"># 3. 임베딩</span>
+response = client.embeddings.create(
+    model=<span class="str">"llama3-8b"</span>,
+    input=<span class="str">"LocalAI is an OpenAI alternative."</span>
+)
+embedding = response.data[<span class="num">0</span>].embedding
+
+<span class="cmt"># 4. 이미지 생성 (Stable Diffusion 백엔드 필요)</span>
+response = client.images.generate(
+    model=<span class="str">"stable-diffusion"</span>,
+    prompt=<span class="str">"A cat wearing sunglasses"</span>,
+    size=<span class="str">"512x512"</span>
+)
+</code></pre>
+</div>
+
+<h3 id="localai-features">고급 기능</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">features</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 다중 모델 동시 실행</span>
+• 모델별 YAML 파일 작성
+• 동일 LocalAI 인스턴스에서 여러 모델 제공
+• 요청 시 model 파라미터로 선택
+
+<span class="cmt">// 2. Function Calling</span>
+• OpenAI 스타일 도구 사용 지원
+• JSON 스키마 기반 함수 정의
+• 호환 모델: Llama 3.1, Mistral
+
+<span class="cmt">// 3. 오디오 처리</span>
+• Whisper 백엔드: 음성 → 텍스트
+• TTS 백엔드: 텍스트 → 음성
+
+<span class="cmt">// 4. 이미지 생성</span>
+• Stable Diffusion 통합
+• text-to-image, image-to-image
+
+<span class="cmt">// 5. 프롬프트 템플릿</span>
+• 모델별 커스텀 템플릿
+• ChatML, Alpaca, Vicuna 등 지원
+• Jinja2 스타일 변수 치환
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="text-gen-webui">Text Generation WebUI (oobabooga)</h2>
+
+<p>Text Generation WebUI는 가장 많은 기능과 커스터마이징 옵션을 제공하는 고급 로컬 LLM 플랫폼입니다.</p>
+
+<h3 id="webui-install">설치</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 1. 저장소 클론</span>
+git clone https://github.com/oobabooga/text-generation-webui
+cd text-generation-webui
+
+<span class="cmt"># 2. 원클릭 설치 스크립트 실행</span>
+<span class="cmt"># Linux/macOS</span>
+./start_linux.sh
+<span class="cmt"># Windows</span>
+start_windows.bat
+
+<span class="cmt"># 3. 브라우저에서 접속</span>
+<span class="cmt"># http://localhost:7860</span>
+
+<span class="cmt"># 수동 설치 (고급 사용자)</span>
+conda create -n textgen python=<span class="num">3.11</span>
+conda activate textgen
+pip install -r requirements.txt
+
+<span class="cmt"># GPU 지원 (NVIDIA)</span>
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+<span class="cmt"># 실행</span>
+python server.py --listen --api
+</code></pre>
+</div>
+
+<h3 id="webui-features">주요 기능</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">특징</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>✓ 다양한 모델 로더:
+  • Transformers (HuggingFace)
+  • llama.cpp (GGUF)
+  • GPTQ, AWQ, ExLlama (양자화)
+  • AutoGPTQ, bitsandbytes
+
+✓ 여러 인터페이스:
+  • Chat: ChatGPT 스타일 대화
+  • Default: 단순 텍스트 완성
+  • Notebook: Jupyter 스타일
+  • API: OpenAI 호환 엔드포인트
+
+✓ 확장 시스템:
+  • 커뮤니티 플러그인
+  • RAG (Retrieval Augmented Generation)
+  • TTS, STT 통합
+  • Stable Diffusion 연동
+
+✓ 캐릭터/페르소나:
+  • 사전 정의된 대화 스타일
+  • 커스텀 시스템 프롬프트
+  • 예시 대화 주입
+
+✓ 고급 샘플링:
+  • Temperature, Top-P, Top-K
+  • Mirostat, DRY, Contrastive Search
+  • Repetition Penalty 세밀 조정
+</code></pre>
+</div>
+
+<h3 id="webui-api">API 사용</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># API 서버 모드로 실행</span>
+python server.py --api --listen
+
+<span class="cmt"># OpenAI 호환 API</span>
+curl http://localhost:5000/v1/chat/completions \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{
+    "model": "gpt-3.5-turbo",
+    "messages": [
+      {"role": "user", "content": "Hello!"}
+    ]
+  }'</span>
+
+<span class="cmt"># 전용 API (더 많은 파라미터)</span>
+curl http://localhost:5000/api/v1/generate \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{
+    "prompt": "Once upon a time",
+    "max_new_tokens": 200,
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "top_k": 40,
+    "repetition_penalty": 1.1,
+    "do_sample": true
+  }'</span>
+</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> requests
+
+<span class="cmt"># 1. OpenAI 호환 방식</span>
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+client = OpenAI(
+    base_url=<span class="str">"http://localhost:5000/v1"</span>,
+    api_key=<span class="str">"not-needed"</span>
+)
+
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-3.5-turbo"</span>,  <span class="cmt"># 임의 이름 (무시됨)</span>
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hi!"</span>}]
+)
+
+<span class="cmt"># 2. 전용 API (더 많은 제어)</span>
+url = <span class="str">"http://localhost:5000/api/v1/generate"</span>
+payload = {
+    <span class="str">"prompt"</span>: <span class="str">"Explain neural networks"</span>,
+    <span class="str">"max_new_tokens"</span>: <span class="num">300</span>,
+    <span class="str">"temperature"</span>: <span class="num">0.7</span>,
+    <span class="str">"top_p"</span>: <span class="num">0.9</span>,
+    <span class="str">"repetition_penalty"</span>: <span class="num">1.15</span>,
+    <span class="str">"do_sample"</span>: <span class="kw">True</span>,
+    <span class="str">"seed"</span>: <span class="num">42</span>  <span class="cmt"># 재현 가능한 출력</span>
+}
+
+response = requests.post(url, json=payload)
+result = response.json()
+<span class="fn">print</span>(result[<span class="str">'results'</span>][<span class="num">0</span>][<span class="str">'text'</span>])
+</code></pre>
+</div>
+
+<h3 id="webui-extensions">유용한 확장</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">확장</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 설치: Session 탭 → Extensions → 확장 이름 입력 → Install</span>
+
+<span class="num">1.</span> <span class="str">superbooga</span> - RAG (문서 기반 답변)
+   • PDF, TXT, DOCX 임베딩
+   • ChromaDB 벡터 저장소
+   • 컨텍스트 자동 주입
+
+<span class="num">2.</span> <span class="str">openai</span> - OpenAI 호환 API 서버
+   • /v1/chat/completions 엔드포인트
+   • Function Calling 지원
+
+<span class="num">3.</span> <span class="str">silero_tts</span> - 음성 합성
+   • 다국어 TTS
+   • 캐릭터별 음성 설정
+
+<span class="num">4.</span> <span class="str">whisper_stt</span> - 음성 인식
+   • 음성 입력
+   • 실시간 전사
+
+<span class="num">5.</span> <span class="str">sd_api_pictures</span> - 이미지 생성
+   • Stable Diffusion WebUI 연동
+   • 대화 중 이미지 생성 명령
+
+<span class="num">6.</span> <span class="str">long_term_memory</span> - 장기 기억
+   • 대화 히스토리 벡터화
+   • 과거 대화 검색 및 참조
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="performance">성능 비교 및 벤치마크</h2>
+
+<h3 id="hardware-req">하드웨어 요구사항</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">요구사항</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>모델별 최소 사양 (Q4 양자화 기준):
+
+┌────────────┬────────────┬──────────────┬──────────────┬──────────────┐
+│ 모델 크기  │ 최소 RAM   │ 권장 RAM     │ VRAM (GPU)   │ 속도 (tok/s) │
+├────────────┼────────────┼──────────────┼──────────────┼──────────────┤
+│ 3B         │ 4GB        │ 8GB          │ 4GB          │ 30-50        │
+│ 7B         │ 8GB        │ 16GB         │ 6GB          │ 20-40        │
+│ 13B        │ 16GB       │ 32GB         │ 10GB         │ 10-25        │
+│ 30B        │ 32GB       │ 64GB         │ 20GB         │ 5-15         │
+│ 70B        │ 64GB       │ 128GB        │ 40GB         │ 2-8          │
+└────────────┴────────────┴──────────────┴──────────────┴──────────────┘
+
+CPU vs GPU 성능 차이:
+• CPU (16코어): 2-5 tok/s (7B 모델)
+• RTX 3060 (12GB): 20-30 tok/s
+• RTX 4090 (24GB): 60-100 tok/s
+• Apple M1 Max (64GB): 15-25 tok/s (Metal 가속)
+
+양자화 수준별 트레이드오프:
+┌──────────┬──────────────┬──────────────┬──────────────┐
+│ 양자화   │ 크기 (7B)    │ 품질         │ 속도         │
+├──────────┼──────────────┼──────────────┼──────────────┤
+│ FP16     │ 14GB         │ 최고         │ 기준         │
+│ Q8_0     │ 7.5GB        │ 매우 높음    │ 1.2x         │
+│ Q6_K     │ 5.8GB        │ 높음         │ 1.4x         │
+│ Q4_K_M   │ 4.1GB        │ 중간 (권장)  │ 1.8x         │
+│ Q4_0     │ 3.8GB        │ 중하         │ 2.0x         │
+│ Q2_K     │ 2.5GB        │ 낮음         │ 2.5x         │
+└──────────┴──────────────┴──────────────┴──────────────┘
+</code></pre>
+</div>
+
+<h3 id="quality-benchmark">품질 벤치마크</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">벤치마크</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>일반 능력 (MMLU, HumanEval 기준, 2026년 1월):
+
+<span class="cmt">// 범용 모델</span>
+┌──────────────────┬──────────┬────────────┬──────────────┐
+│ 모델             │ MMLU     │ HumanEval  │ 한국어       │
+├──────────────────┼──────────┼────────────┼──────────────┤
+│ Llama 3.1 70B    │ 79.5%    │ 67.8%      │ 보통         │
+│ Llama 3.1 8B     │ 68.4%    │ 58.2%      │ 보통         │
+│ Mistral 7B       │ 62.5%    │ 40.2%      │ 낮음         │
+│ Gemma 2 9B       │ 71.3%    │ 51.8%      │ 보통         │
+│ Qwen 2.5 7B      │ 70.3%    │ 54.2%      │ 높음         │
+│ Solar 10.7B      │ 66.2%    │ 45.3%      │ 매우 높음    │
+└──────────────────┴──────────┴────────────┴──────────────┘
+
+<span class="cmt">// 코딩 특화 모델</span>
+┌──────────────────┬────────────┬────────────┬──────────────┐
+│ 모델             │ HumanEval  │ MBPP       │ 비고         │
+├──────────────────┼────────────┼────────────┼──────────────┤
+│ DeepSeek 33B     │ 79.3%      │ 70.2%      │ 최고 코딩    │
+│ Code Llama 34B   │ 53.7%      │ 56.2%      │ 범용 코딩    │
+│ StarCoder 2 15B  │ 46.2%      │ 54.5%      │ 다국어       │
+│ Qwen 2.5 Coder   │ 65.9%      │ 61.8%      │ 균형잡힘     │
+└──────────────────┴────────────┴────────────┴──────────────┘
+
+실사용 평가 (주관적):
+• 대화 자연스러움: Llama 3.1 &gt; Gemma 2 &gt; Mistral
+• 긴 컨텍스트: Llama 3.1 &gt; Qwen 2.5 &gt; Mistral
+• 코드 생성: DeepSeek &gt; Code Llama &gt; Llama 3.1
+• 한국어: Solar &gt; EEVE &gt; Qwen 2.5 &gt; Llama 3.1
+• 추론 능력: Llama 3.1 70B &gt; Qwen 2.5 &gt; Gemma 2
+</code></pre>
+</div>
+
+<h3 id="platform-comparison">플랫폼 비교</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">비교</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>┌─────────────────┬─────────┬─────────┬─────────┬─────────┬─────────┐
+│ 기능            │ Ollama  │ LM Stud │ LocalAI │ WebUI   │ vLLM    │
+├─────────────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+│ 설치 난이도     │ ★☆☆☆☆  │ ★☆☆☆☆  │ ★★★☆☆  │ ★★★☆☆  │ ★★★★☆  │
+│ GUI             │ ✗       │ ✓       │ ✗       │ ✓       │ ✗       │
+│ CLI             │ ✓       │ ✗       │ ✗       │ ✗       │ ✓       │
+│ OpenAI 호환     │ ✗       │ ✓       │ ✓       │ ✓       │ ✓       │
+│ 모델 형식       │ GGUF    │ GGUF    │ ALL     │ ALL     │ PyTorch │
+│ GPU 최적화      │ ★★★☆☆  │ ★★★☆☆  │ ★★★☆☆  │ ★★★★☆  │ ★★★★★  │
+│ 확장성          │ ★★☆☆☆  │ ★☆☆☆☆  │ ★★★★☆  │ ★★★★★  │ ★★★★☆  │
+│ 커뮤니티        │ ★★★★★  │ ★★★★☆  │ ★★★☆☆  │ ★★★★★  │ ★★★☆☆  │
+│ 문서 품질       │ ★★★★☆  │ ★★★★☆  │ ★★★☆☆  │ ★★★☆☆  │ ★★★★☆  │
+│ 프로덕션 사용   │ ★★★☆☆  │ ★☆☆☆☆  │ ★★★★☆  │ ★★☆☆☆  │ ★★★★★  │
+└─────────────────┴─────────┴─────────┴─────────┴─────────┴─────────┘
+
+권장 사용 사례:
+• Ollama: 개발자, CLI 선호, 빠른 프로토타입
+• LM Studio: 비개발자, GUI 필수, 간단한 테스트
+• LocalAI: 프로덕션, OpenAI 대체, 다양한 모델
+• Text Gen WebUI: 고급 사용자, 최대 커스터마이징
+• vLLM: 대규모 서비스, 최고 처리량, 인퍼런스 최적화
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="optimization">성능 최적화</h2>
+
+<h3 id="gpu-optimization">GPU 최적화</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">최적화</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 레이어 오프로드</span>
+<span class="cmt"># Ollama</span>
+OLLAMA_NUM_GPU_LAYERS=<span class="num">35</span> ollama run llama3.1:8b
+
+<span class="cmt"># llama.cpp 직접 사용</span>
+./main -m model.gguf -ngl <span class="num">35</span>  <span class="cmt"># --n-gpu-layers</span>
+
+<span class="cmt">// 2. 배치 크기 조정</span>
+<span class="cmt"># 더 큰 배치 = 높은 처리량, 더 많은 VRAM</span>
+<span class="cmt"># Text Generation WebUI</span>
+python server.py --auto-devices --gpu-memory <span class="num">10</span> --batch-size <span class="num">512</span>
+
+<span class="cmt">// 3. Flash Attention</span>
+<span class="cmt"># 메모리 효율적인 어텐션 (CUDA 지원 GPU)</span>
+pip install flash-attn
+python server.py --flash-attn
+
+<span class="cmt">// 4. 양자화 선택</span>
+<span class="cmt"># VRAM 부족 시: Q4_K_M 또는 Q4_0</span>
+<span class="cmt"># 품질 우선: Q6_K 또는 Q8_0</span>
+ollama pull llama3.1:8b-q4_K_M
+ollama pull llama3.1:8b-q8_0
+
+<span class="cmt">// 5. 컨텍스트 길이 제한</span>
+<span class="cmt"># 긴 컨텍스트 = 메모리 사용량 증가</span>
+<span class="cmt"># 필요한 만큼만 설정</span>
+OLLAMA_CTX_SIZE=<span class="num">2048</span> ollama run llama3.1:8b
+</code></pre>
+</div>
+
+<h3 id="memory-optimization">메모리 최적화</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 1. 대화 히스토리 트리밍</span>
+<span class="kw">def</span> <span class="fn">trim_messages</span>(messages, max_tokens=<span class="num">2000</span>):
+    <span class="str">"""오래된 메시지 제거하여 컨텍스트 제한"""</span>
+    total_tokens = <span class="num">0</span>
+    trimmed = []
+
+    <span class="cmt"># 최신 메시지부터 역순으로</span>
+    <span class="kw">for</span> msg <span class="kw">in</span> <span class="fn">reversed</span>(messages):
+        msg_tokens = <span class="fn">len</span>(msg[<span class="str">'content'</span>]) // <span class="num">4</span>  <span class="cmt"># 대략 추정</span>
+        <span class="kw">if</span> total_tokens + msg_tokens &gt; max_tokens:
+            <span class="kw">break</span>
+        trimmed.insert(<span class="num">0</span>, msg)
+        total_tokens += msg_tokens
+
+    <span class="cmt"># 시스템 메시지는 항상 유지</span>
+    <span class="kw">if</span> messages[<span class="num">0</span>][<span class="str">'role'</span>] == <span class="str">'system'</span>:
+        <span class="kw">if</span> trimmed[<span class="num">0</span>][<span class="str">'role'</span>] != <span class="str">'system'</span>:
+            trimmed.insert(<span class="num">0</span>, messages[<span class="num">0</span>])
+
+    <span class="kw">return</span> trimmed
+
+<span class="cmt"># 2. 모델 언로드 (메모리 확보)</span>
+<span class="kw">import</span> subprocess
+
+<span class="kw">def</span> <span class="fn">unload_ollama_model</span>():
+    <span class="cmt"># Ollama는 5분 후 자동 언로드 (기본값)</span>
+    <span class="cmt"># 즉시 언로드: 다른 모델 로드</span>
+    subprocess.run([<span class="str">'ollama'</span>, <span class="str">'run'</span>, <span class="str">'qwen2:1.5b'</span>, <span class="str">''</span>])
+
+<span class="cmt"># 3. 스트리밍으로 메모리 절약</span>
+<span class="kw">for</span> chunk <span class="kw">in</span> ollama.chat(model=<span class="str">'llama3.1:8b'</span>, messages=messages, stream=<span class="kw">True</span>):
+    content = chunk[<span class="str">'message'</span>][<span class="str">'content'</span>]
+    <span class="fn">print</span>(content, end=<span class="str">''</span>)
+    <span class="cmt"># 전체 응답을 메모리에 저장하지 않음</span>
+</code></pre>
+</div>
+
+<h3 id="inference-optimization">추론 최적화</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">최적화</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. Continuous Batching (vLLM)</span>
+<span class="cmt"># 여러 요청 동시 처리 (처리량 증가)</span>
+pip install vllm
+python -m vllm.entrypoints.openai.api_server \
+  --model TheBloke/Llama-3.1-8B-Instruct-GGUF \
+  --port <span class="num">8000</span> \
+  --max-model-len <span class="num">4096</span>
+
+<span class="cmt">// 2. KV 캐싱</span>
+<span class="cmt"># 이전 토큰의 key/value 재사용</span>
+<span class="cmt"># 대부분의 엔진에서 자동 활성화</span>
+<span class="cmt"># 긴 프롬프트 + 짧은 완성에 유리</span>
+
+<span class="cmt">// 3. Speculative Decoding</span>
+<span class="cmt"># 작은 모델로 예측 → 큰 모델로 검증</span>
+<span class="cmt"># 2-3배 속도 향상 (품질 동일)</span>
+<span class="cmt"># llama.cpp 지원</span>
+./main -m large.gguf -md small.gguf --draft <span class="num">16</span>
+
+<span class="cmt">// 4. 병렬 디코딩</span>
+<span class="cmt"># 여러 시퀀스 동시 생성 (beam search)</span>
+<span class="cmt"># Text Generation WebUI</span>
+<span class="str">"num_beams"</span>: <span class="num">4</span>,
+<span class="str">"length_penalty"</span>: <span class="num">1.0</span>
+
+<span class="cmt">// 5. 조기 종료</span>
+<span class="cmt"># EOS 토큰 또는 최대 길이 도달 시 중단</span>
+<span class="str">"max_tokens"</span>: <span class="num">100</span>,
+<span class="str">"stop"</span>: [<span class="str">"\n\n"</span>, <span class="str">"###"</span>, <span class="str">"</s>"</span>]
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="selection-guide">모델 선택 가이드</h2>
+
+<h3 id="use-cases">사용 사례별 권장</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">권장</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 일반 대화 / 질의응답</span>
+✓ Llama 3.1 8B (균형잡힌 성능)
+✓ Gemma 2 9B (Google, 빠름)
+✓ Qwen 2.5 7B (한국어/중국어 우수)
+
+<span class="cmt">// 2. 코드 생성</span>
+✓ DeepSeek Coder 33B (최고 품질)
+✓ Code Llama 13B (범용)
+✓ StarCoder 2 15B (다국어)
+
+<span class="cmt">// 3. 한국어 중심</span>
+✓ Solar 10.7B (Upstage, 한국어 최적화)
+✓ EEVE 10.8B (yanolja)
+✓ Qwen 2.5 7B (한국어 지원 좋음)
+
+<span class="cmt">// 4. 긴 컨텍스트 (32K+)</span>
+✓ Llama 3.1 8B/70B
+✓ Qwen 2.5 (128K 지원)
+✓ Yi 34B (200K 지원)
+
+<span class="cmt">// 5. 임베딩 / RAG</span>
+✓ nomic-embed-text (Ollama 기본)
+✓ bge-large-en (영어)
+✓ bge-m3 (다국어)
+
+<span class="cmt">// 6. 저사양 (8GB RAM 이하)</span>
+✓ Phi-3 Mini 3.8B (Microsoft, 소형이지만 강력)
+✓ Qwen 2 1.5B (초경량)
+✓ Llama 3.2 3B
+
+<span class="cmt">// 7. 수학 / 추론</span>
+✓ Qwen 2.5 Math (수학 특화)
+✓ Llama 3.1 70B (복잡한 추론)
+✓ DeepSeek Math
+
+<span class="cmt">// 8. 멀티모달 (이미지+텍스트)</span>
+✓ LLaVA 13B (Ollama: llava:13b)
+✓ BakLLaVA 7B
+✓ Obsidian 3B (경량)
+</code></pre>
+</div>
+
+<h3 id="decision-tree">결정 트리</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">결정</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>로컬 LLM 선택 플로우:
+
+<span class="num">1.</span> 하드웨어 확인
+   ├─ 8GB RAM 미만 → Qwen 2 1.5B, Phi-3 Mini
+   ├─ 8-16GB RAM → Llama 3.1 8B, Mistral 7B
+   ├─ 16-32GB RAM → Llama 3.1 8B (Q8), Qwen 2.5 14B
+   ├─ 32-64GB RAM → Llama 3.1 70B (Q4), Mixtral 8x7B
+   └─ 64GB+ RAM → Llama 3.1 70B (Q8), Qwen 2.5 72B
+
+<span class="num">2.</span> GPU 유무
+   ├─ CPU만 → 7B 이하 모델, Q4 양자화
+   ├─ 8GB VRAM → 7B 모델, Q4/Q5 양자화
+   ├─ 12-16GB VRAM → 13B 모델, Q4 양자화
+   ├─ 24GB VRAM → 30B 모델 또는 70B (Q4)
+   └─ 40GB+ VRAM → 70B 모델 (Q6/Q8)
+
+<span class="num">3.</span> 주 사용 언어
+   ├─ 한국어 → Solar, EEVE, Qwen 2.5
+   ├─ 영어 → Llama 3.1, Gemma 2
+   ├─ 중국어 → Qwen 2.5, Yi
+   └─ 다국어 → Llama 3.1, Gemma 2
+
+<span class="num">4.</span> 작업 유형
+   ├─ 코딩 → DeepSeek Coder, Code Llama
+   ├─ 수학 → Qwen Math, DeepSeek Math
+   ├─ 일반 대화 → Llama 3.1, Gemma 2
+   └─ 특수 도메인 → 파인튜닝 고려
+
+<span class="num">5.</span> 플랫폼 선택
+   ├─ CLI 선호 → Ollama
+   ├─ GUI 필요 → LM Studio
+   ├─ 프로덕션 → LocalAI, vLLM
+   └─ 실험 → Text Generation WebUI
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="best-practices">모범 사례</h2>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">모범 사례</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 시작은 작게</span>
+• 3-7B 모델로 시작하여 워크플로우 확립
+• 필요시 점진적으로 큰 모델 테스트
+• 벤치마크보다 실제 작업 성능 중시
+
+<span class="cmt">// 2. 양자화 실험</span>
+• Q4_K_M을 기본으로 시작
+• 품질 부족 시 Q6_K 또는 Q8_0 시도
+• 메모리 부족 시 Q4_0 또는 Q2_K
+
+<span class="cmt">// 3. 프롬프트 최적화</span>
+• 모델별 프롬프트 템플릿 준수
+• 시스템 프롬프트로 행동 명확히 정의
+• Few-shot 예제로 품질 향상
+
+<span class="cmt">// 4. 컨텍스트 관리</span>
+• 필요한 만큼만 컨텍스트 사용
+• 긴 대화는 주기적으로 요약
+• 슬라이딩 윈도우 기법 활용
+
+<span class="cmt">// 5. 모니터링</span>
+• 토큰/초 속도 추적
+• 메모리 사용량 모니터링
+• 응답 품질 정기 평가
+
+<span class="cmt">// 6. 보안</span>
+• 로컬 API는 localhost만 바인딩
+• 외부 노출 시 인증 추가
+• 민감한 데이터 로깅 주의
+
+<span class="cmt">// 7. 업데이트</span>
+• 정기적으로 플랫폼 업데이트
+• 새 모델 출시 시 테스트
+• 커뮤니티 피드백 참고
+
+<span class="cmt">// 8. 하이브리드 접근</span>
+• 간단한 작업 → 로컬 LLM
+• 복잡한 작업 → 클라우드 API
+• 비용과 품질 균형 유지
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="troubleshooting">문제 해결</h2>
+
+<h3 id="common-issues">흔한 문제</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">문제</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. Out of Memory (OOM)</span>
+<span class="str">증상:</span> 모델 로드 실패, 시스템 프리징
+<span class="str">해결:</span>
+  • 더 작은 모델 또는 낮은 양자화 사용
+  • GPU 레이어 수 줄이기 (--n-gpu-layers)
+  • 배치 크기 감소
+  • 컨텍스트 길이 제한
+
+<span class="cmt">// 2. 느린 추론 속도</span>
+<span class="str">증상:</span> 1-2 tok/s 이하
+<span class="str">해결:</span>
+  • GPU 활용 확인 (nvidia-smi)
+  • 더 공격적인 양자화 (Q4_0, Q2_K)
+  • Metal/ROCm 등 가속 활성화
+  • CPU 스레드 수 조정 (OLLAMA_NUM_THREADS)
+
+<span class="cmt">// 3. 모델이 로드되지 않음</span>
+<span class="str">증상:</span> <span class="str">"failed to load model"</span> 오류
+<span class="str">해결:</span>
+  • 모델 파일 경로 확인
+  • 모델 파일 손상 여부 (재다운로드)
+  • 호환되는 모델 형식인지 확인
+  • 로그에서 구체적 오류 메시지 확인
+
+<span class="cmt">// 4. 응답 품질 저하</span>
+<span class="str">증상:</span> 무의미한 답변, 반복, 환각
+<span class="str">해결:</span>
+  • 더 큰 모델 또는 높은 양자화 시도
+  • 프롬프트 개선 (명확한 지시)
+  • 생성 파라미터 조정 (temperature, repetition_penalty)
+  • Few-shot 예제 추가
+
+<span class="cmt">// 5. API 연결 실패</span>
+<span class="str">증상:</span> <span class="str">"connection refused"</span>
+<span class="str">해결:</span>
+  • 서버 실행 여부 확인
+  • 포트 번호 일치 여부
+  • 방화벽/보안 그룹 설정
+  • localhost vs 0.0.0.0 바인딩
+
+<span class="cmt">// 6. CUDA/GPU 인식 안됨</span>
+<span class="str">증상:</span> CPU로만 실행
+<span class="str">해결:</span>
+  • NVIDIA 드라이버 업데이트
+  • CUDA Toolkit 설치
+  • GPU 지원 버전 설치 확인
+  • nvidia-smi로 GPU 상태 확인
+</code></pre>
+</div>
+
+<h3 id="debug-commands">디버그 명령어</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># GPU 정보</span>
+nvidia-smi
+<span class="cmt"># 또는 (AMD)</span>
+rocm-smi
+
+<span class="cmt"># 메모리 사용량</span>
+<span class="kw">free</span> -h
+htop
+
+<span class="cmt"># Ollama 로그</span>
+journalctl -u ollama -f
+
+<span class="cmt"># 프로세스별 GPU 사용</span>
+nvidia-smi pmon
+
+<span class="cmt"># CUDA 버전</span>
+nvcc --version
+
+<span class="cmt"># 포트 사용 확인</span>
+lsof -i :<span class="num">11434</span>  <span class="cmt"># Ollama</span>
+lsof -i :<span class="num">1234</span>   <span class="cmt"># LM Studio</span>
+
+<span class="cmt"># 모델 파일 검증</span>
+sha256sum model.gguf
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="resources">추가 리소스</h2>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">리소스</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 공식 문서</span>
+• Ollama: https://ollama.com/
+• LM Studio: https://lmstudio.ai/
+• LocalAI: https://localai.io/
+• Text Gen WebUI: https://github.com/oobabooga/text-generation-webui
+• vLLM: https://docs.vllm.ai/
+
+<span class="cmt">// 모델 허브</span>
+• HuggingFace: https://huggingface.co/models
+• Ollama Library: https://ollama.com/library
+• TheBloke (GGUF): https://huggingface.co/TheBloke
+
+<span class="cmt">// 커뮤니티</span>
+• r/LocalLLaMA (Reddit): 로컬 LLM 전문
+• HuggingFace Forums: 기술 토론
+• Ollama Discord: 실시간 지원
+
+<span class="cmt">// 벤치마크</span>
+• Open LLM Leaderboard: https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard
+• FastEval: 로컬 벤치마크 도구
+
+<span class="cmt">// 튜토리얼</span>
+• "Running LLMs Locally" (YouTube 채널)
+• Ollama Tutorials (공식)
+• LoRA 파인튜닝 가이드
+</code></pre>
+</div>
+
+</section>
+
+<div class="info-box tip">
+<strong>다음 단계</strong>
+<ul>
+<li><strong>다중 LLM 전환:</strong> 여러 LLM을 조합하여 비용과 품질 최적화</li>
+<li><strong>API 모범 사례:</strong> 프로덕션 환경의 에러 처리, 모니터링, 보안</li>
+<li><strong>프롬프트 엔지니어링:</strong> 로컬 LLM에서 최고 품질 얻기</li>
+</ul>
+</div>
+
+<nav class="page-nav"></nav>
+</main>
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="데이터 추출 - Claude 문서">
+<meta property="og:description" content="Claude를 활용한 구조화된 데이터 추출 및 파싱 가이드">
+<meta property="og:url" content="https://minzkn.com/claude/pages/data-extraction.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude를 활용한 구조화된 데이터 추출 및 파싱 가이드">
+<meta name="keywords" content="데이터 추출, data extraction, parsing, JSON, 구조화">
+<meta name="author" content="MINZKN">
+<title>데이터 추출 - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">데이터 추출 (Data Extraction)</h1>
+  <p class="lead">
+    Claude는 비구조화된 텍스트에서 구조화된 데이터를 추출하는 데 탁월합니다.
+    이메일, 영수증, 이력서, 계약서 등에서 필요한 정보를 JSON으로 변환하세요.
+  </p>
+
+  <figure style="margin: 2.5rem 0;">
+    <svg viewBox="0 0 1000 450" style="width: 100%; max-width: 1000px; height: auto; display: block; margin: 0 auto;">
+      <defs>
+        <marker id="dataext-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- 제목 -->
+      <text x="500" y="25" text-anchor="middle" font-size="15" font-weight="bold" fill="var(--diagram-text)">데이터 추출 파이프라인: 비구조화 → 구조화</text>
+
+      <!-- Step 1: 비구조화 데이터 입력 -->
+      <rect x="50" y="60" width="200" height="160" fill="var(--diagram-warning)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <text x="150" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">1️⃣ 비구조화 데이터</text>
+
+      <!-- 다양한 소스 아이콘 -->
+      <rect x="70" y="95" width="160" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="150" y="115" text-anchor="middle" font-size="9" fill="var(--diagram-text)">📧 이메일 (자연어 텍스트)</text>
+
+      <rect x="70" y="130" width="160" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="150" y="150" text-anchor="middle" font-size="9" fill="var(--diagram-text)">🧾 영수증 (OCR 텍스트)</text>
+
+      <rect x="70" y="165" width="160" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="150" y="185" text-anchor="middle" font-size="9" fill="var(--diagram-text)">📄 이력서 (문서)</text>
+
+      <rect x="70" y="200" width="160" height="15" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="150" y="211" text-anchor="middle" font-size="8" fill="var(--diagram-secondary)">+ 계약서, 뉴스 등</text>
+
+      <!-- 화살표 1 -->
+      <line x1="250" y1="140" x2="300" y2="140" stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#dataext-arrow)"/>
+
+      <!-- Step 2: Claude 처리 -->
+      <rect x="300" y="85" width="150" height="110" fill="var(--diagram-primary)" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <text x="375" y="110" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">2️⃣ Claude 처리</text>
+      <text x="375" y="135" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• 패턴 인식</text>
+      <text x="375" y="150" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• 엔티티 추출</text>
+      <text x="375" y="165" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• 관계 파악</text>
+      <text x="375" y="180" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• JSON 변환</text>
+
+      <!-- 화살표 2 -->
+      <line x1="450" y1="140" x2="500" y2="140" stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#dataext-arrow)"/>
+
+      <!-- Step 3: 구조화된 JSON -->
+      <rect x="500" y="60" width="200" height="160" fill="var(--diagram-success)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <text x="600" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">3️⃣ 구조화된 JSON</text>
+
+      <!-- JSON 예시 -->
+      <rect x="520" y="95" width="160" height="115" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="530" y="110" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">{</text>
+      <text x="530" y="122" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">  "name": "김철수",</text>
+      <text x="530" y="134" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">  "email": "...",</text>
+      <text x="530" y="146" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">  "date": "2024-02-15",</text>
+      <text x="530" y="158" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">  "amount": 10000,</text>
+      <text x="530" y="170" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">  "items": [...]</text>
+      <text x="530" y="182" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">}</text>
+      <text x="600" y="200" text-anchor="middle" font-size="9" fill="var(--diagram-success)" font-weight="bold">✅ 파싱 가능</text>
+
+      <!-- 화살표 3 -->
+      <line x1="700" y1="140" x2="750" y2="140" stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#dataext-arrow)"/>
+
+      <!-- Step 4: 활용 -->
+      <rect x="750" y="60" width="200" height="160" fill="var(--diagram-cache)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <text x="850" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">4️⃣ 활용</text>
+
+      <!-- 활용 사례 -->
+      <rect x="770" y="95" width="160" height="25" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="850" y="112" text-anchor="middle" font-size="9" fill="var(--diagram-text)">💾 데이터베이스 저장</text>
+
+      <rect x="770" y="125" width="160" height="25" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="850" y="142" text-anchor="middle" font-size="9" fill="var(--diagram-text)">📊 분석 및 리포트</text>
+
+      <rect x="770" y="155" width="160" height="25" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="850" y="172" text-anchor="middle" font-size="9" fill="var(--diagram-text)">🔄 자동화 워크플로우</text>
+
+      <rect x="770" y="185" width="160" height="25" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="850" y="202" text-anchor="middle" font-size="9" fill="var(--diagram-text)">🔗 API 연동</text>
+
+      <!-- 하단 상세 예시 -->
+      <text x="500" y="255" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--diagram-text)">실제 추출 예시</text>
+
+      <!-- 예시 1: 이메일 → JSON -->
+      <rect x="50" y="275" width="450" height="160" fill="var(--diagram-bg-tertiary)" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <text x="275" y="295" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">📧 이메일 파싱</text>
+
+      <!-- 입력 -->
+      <rect x="70" y="305" width="190" height="120" fill="var(--diagram-warning)" fill-opacity="0.2" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="165" y="320" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--diagram-text)">입력 (자연어)</text>
+      <text x="80" y="338" font-size="8" fill="var(--diagram-text)">발신: 김철수</text>
+      <text x="80" y="352" font-size="8" fill="var(--diagram-text)">(chulsoo@example.com)</text>
+      <text x="80" y="366" font-size="8" fill="var(--diagram-text)">일시: 2024년 2월 15일</text>
+      <text x="80" y="380" font-size="8" fill="var(--diagram-text)">오후 3시 30분</text>
+      <text x="80" y="394" font-size="8" fill="var(--diagram-text)">제목: 긴급 회의 요청</text>
+      <text x="80" y="408" font-size="8" fill="var(--diagram-text)">다음 주 수요일...</text>
+
+      <line x1="260" y1="365" x2="290" y2="365" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#dataext-arrow)"/>
+
+      <!-- 출력 -->
+      <rect x="290" y="305" width="190" height="120" fill="var(--diagram-success)" fill-opacity="0.2" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="385" y="320" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--diagram-text)">출력 (JSON)</text>
+      <text x="300" y="338" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">{ "sender": {</text>
+      <text x="300" y="352" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">    "name": "김철수",</text>
+      <text x="300" y="366" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">    "email": "chulsoo@..."</text>
+      <text x="300" y="380" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">  },</text>
+      <text x="300" y="394" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">  "date": "2024-02-15",</text>
+      <text x="300" y="408" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">  ... }</text>
+
+      <!-- 예시 2: 영수증 → JSON -->
+      <rect x="530" y="275" width="420" height="160" fill="var(--diagram-bg-tertiary)" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <text x="740" y="295" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">🧾 영수증 파싱</text>
+
+      <!-- 입력 -->
+      <rect x="550" y="305" width="180" height="120" fill="var(--diagram-warning)" fill-opacity="0.2" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="640" y="320" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--diagram-text)">입력 (OCR 텍스트)</text>
+      <text x="560" y="338" font-size="8" fill="var(--diagram-text)">ABC 전자</text>
+      <text x="560" y="352" font-size="8" fill="var(--diagram-text)">세금계산서</text>
+      <text x="560" y="366" font-size="8" fill="var(--diagram-text)">발행일: 2024-02-10</text>
+      <text x="560" y="380" font-size="8" fill="var(--diagram-text)">노트북  5  1,500,000</text>
+      <text x="560" y="394" font-size="8" fill="var(--diagram-text)">모니터 10    300,000</text>
+      <text x="560" y="408" font-size="8" fill="var(--diagram-text)">합계: 12,100,000</text>
+
+      <line x1="730" y1="365" x2="760" y2="365" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#dataext-arrow)"/>
+
+      <!-- 출력 -->
+      <rect x="760" y="305" width="170" height="120" fill="var(--diagram-success)" fill-opacity="0.2" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="845" y="320" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--diagram-text)">출력 (JSON)</text>
+      <text x="770" y="338" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">{ "vendor": "ABC 전자",</text>
+      <text x="770" y="352" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">  "date": "2024-02-10",</text>
+      <text x="770" y="366" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">  "items": [{</text>
+      <text x="770" y="380" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">    "name": "노트북",</text>
+      <text x="770" y="394" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">    "qty": 5, ... }],</text>
+      <text x="770" y="408" font-size="8" font-family="D2Coding" fill="var(--diagram-text)">  "total": 12100000 }</text>
+    </svg>
+    <figcaption style="text-align: center; margin-top: 0.8rem; font-size: 0.95rem; color: var(--text-tertiary);">
+      그림 1: 데이터 추출 파이프라인 - 비구조화된 텍스트를 구조화된 JSON으로 변환하는 4단계 프로세스
+    </figcaption>
+  </figure>
+</section>
+
+<section class="content-section">
+  <h2 id="use-cases">활용 사례</h2>
+  <ul>
+    <li><strong>이메일 파싱:</strong> 연락처, 날짜, 요청사항 추출</li>
+    <li><strong>영수증 OCR:</strong> 항목, 금액, 일자 구조화</li>
+    <li><strong>이력서 파싱:</strong> 경력, 학력, 기술 추출</li>
+    <li><strong>계약서 메타데이터:</strong> 당사자, 기간, 금액 추출</li>
+    <li><strong>뉴스 기사:</strong> 제목, 날짜, 카테고리, 엔티티 추출</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="basic-extraction">기본: JSON 추출</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python JSON 추출</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> json
+<span class="kw">from</span> anthropic <span class="kw">import</span> Anthropic
+
+client <span class="kw">=</span> <span class="fn">Anthropic</span>()
+
+email_text <span class="kw">=</span> <span class="str">"""발신: 김철수 (chulsoo@example.com)
+수신: 프로젝트팀
+일시: 2024년 2월 15일 오후 3시 30분
+제목: 긴급 회의 요청
+
+안녕하세요,
+
+다음 주 수요일(2월 21일) 오전 10시에 긴급 회의를 소집합니다.
+안건은 Q1 예산 검토 및 신규 프로젝트 승인입니다.
+회의실 301호에서 진행되며, 예상 소요 시간은 2시간입니다.
+
+참석 필수: 김영희, 박민수, 이지은
+선택 참석: 최준호
+
+감사합니다."""</span>
+
+message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    max_tokens<span class="kw">=</span><span class="num">1024</span>,
+    messages<span class="kw">=</span>[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"""다음 이메일에서 정보를 추출하고 JSON으로 출력하세요:
+
+{email_text}
+
+JSON 형식:
+{{
+  "sender": {{
+    "name": "이름",
+    "email": "이메일"
+  }},
+  "subject": "제목",
+  "meeting": {{
+    "date": "YYYY-MM-DD",
+    "time": "HH:MM",
+    "location": "장소",
+    "duration_hours": 숫자,
+    "agenda": ["안건1", "안건2"]
+  }},
+  "attendees": {{
+    "required": ["이름1", "이름2"],
+    "optional": ["이름3"]
+  }}
+}}
+
+JSON만 출력하고 다른 텍스트는 포함하지 마세요."""</span>
+        }
+    ]
+)
+
+<span class="cmt"># 파싱</span>
+data <span class="kw">=</span> json.<span class="fn">loads</span>(message.content[<span class="num">0</span>].text)
+<span class="fn">print</span>(json.<span class="fn">dumps</span>(data, ensure_ascii<span class="kw">=</span><span class="kw">False</span>, indent<span class="kw">=</span><span class="num">2</span>))</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="invoice-extraction">영수증/송장 추출</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 영수증 파싱</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>invoice_text <span class="kw">=</span> <span class="str">"""ABC 전자
+서울시 강남구 테헤란로 123
+사업자번호: 123-45-67890
+
+세금계산서
+
+발행일: 2024-02-10
+거래처: XYZ 주식회사
+담당자: 김매니저
+
+품목명          수량    단가        금액
+노트북          5      1,500,000   7,500,000
+모니터          10     300,000     3,000,000
+키보드          10     50,000      500,000
+
+공급가액: 11,000,000
+부가세: 1,100,000
+합계: 12,100,000"""</span>
+
+<span class="kw">def</span> <span class="fn">extract_invoice</span>(text: <span class="type">str</span>) <span class="kw">-></span> <span class="type">dict</span>:
+    message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+        max_tokens<span class="kw">=</span><span class="num">1024</span>,
+        messages<span class="kw">=</span>[{
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"""다음 송장에서 정보를 추출하여 JSON으로 출력하세요:
+
+{text}
+
+JSON 형식:
+{{
+  "vendor": {{
+    "name": "회사명",
+    "address": "주소",
+    "business_number": "사업자번호"
+  }},
+  "customer": {{
+    "name": "거래처명",
+    "contact": "담당자"
+  }},
+  "date": "YYYY-MM-DD",
+  "items": [
+    {{"name": "품목", "quantity": 수량, "unit_price": 단가, "amount": 금액}}
+  ],
+  "totals": {{
+    "subtotal": 공급가액,
+    "tax": 부가세,
+    "total": 합계
+  }}
+}}"""</span>
+        }]
+    )
+
+    <span class="kw">return</span> json.<span class="fn">loads</span>(message.content[<span class="num">0</span>].text)
+
+invoice_data <span class="kw">=</span> <span class="fn">extract_invoice</span>(invoice_text)
+<span class="fn">print</span>(json.<span class="fn">dumps</span>(invoice_data, ensure_ascii<span class="kw">=</span><span class="kw">False</span>, indent<span class="kw">=</span><span class="num">2</span>))</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="resume-parsing">이력서 파싱</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 이력서 구조화</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">def</span> <span class="fn">parse_resume</span>(resume_text: <span class="type">str</span>) <span class="kw">-></span> <span class="type">dict</span>:
+    message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+        max_tokens<span class="kw">=</span><span class="num">2048</span>,
+        messages<span class="kw">=</span>[{
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"""다음 이력서를 JSON으로 파싱하세요:
+
+{resume_text}
+
+JSON 스키마:
+{{
+  "personal": {{
+    "name": "이름",
+    "email": "이메일",
+    "phone": "전화번호",
+    "location": "지역"
+  }},
+  "summary": "한 줄 요약",
+  "experience": [
+    {{
+      "company": "회사명",
+      "position": "직책",
+      "start_date": "YYYY-MM",
+      "end_date": "YYYY-MM 또는 present",
+      "achievements": ["성과1", "성과2"]
+    }}
+  ],
+  "education": [
+    {{
+      "school": "학교명",
+      "degree": "학위",
+      "major": "전공",
+      "graduation_year": "YYYY"
+    }}
+  ],
+  "skills": {{
+    "programming_languages": [],
+    "frameworks": [],
+    "tools": [],
+    "languages": []
+  }},
+  "certifications": []
+}}"""</span>
+        }]
+    )
+
+    <span class="kw">return</span> json.<span class="fn">loads</span>(message.content[<span class="num">0</span>].text)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="entity-extraction">엔티티 추출 (NER)</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python Named Entity Recognition</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">def</span> <span class="fn">extract_entities</span>(text: <span class="type">str</span>) <span class="kw">-></span> <span class="type">dict</span>:
+    message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+        max_tokens<span class="kw">=</span><span class="num">1024</span>,
+        messages<span class="kw">=</span>[{
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"""다음 텍스트에서 개체명을 추출하여 JSON으로 출력하세요:
+
+{text}
+
+JSON 형식:
+{{
+  "persons": ["사람1", "사람2"],
+  "organizations": ["조직1", "조직2"],
+  "locations": ["장소1", "장소2"],
+  "dates": ["날짜1", "날짜2"],
+  "money": ["금액1", "금액2"],
+  "products": ["제품1", "제품2"],
+  "events": ["이벤트1", "이벤트2"]
+}}
+
+없는 카테고리는 빈 배열로 설정하세요."""</span>
+        }]
+    )
+
+    <span class="kw">return</span> json.<span class="fn">loads</span>(message.content[<span class="num">0</span>].text)
+
+<span class="cmt"># 사용</span>
+news_text <span class="kw">=</span> <span class="str">"""삼성전자가 2024년 2월 15일 서울 강남에서
+갤럭시 S25 신제품 발표회를 개최했다. CEO 이재용 부회장은
+"AI 기술로 스마트폰 시장을 혁신하겠다"고 밝혔다.
+제품 가격은 120만원부터 시작한다."""</span>
+
+entities <span class="kw">=</span> <span class="fn">extract_entities</span>(news_text)
+<span class="fn">print</span>(json.<span class="fn">dumps</span>(entities, ensure_ascii<span class="kw">=</span><span class="kw">False</span>, indent<span class="kw">=</span><span class="num">2</span>))</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="batch-processing">일괄 처리</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 여러 문서 일괄 처리</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> asyncio
+<span class="kw">from</span> anthropic <span class="kw">import</span> AsyncAnthropic
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">extract_single</span>(client, text, schema):
+    message <span class="kw">=</span> <span class="kw">await</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+        max_tokens<span class="kw">=</span><span class="num">1024</span>,
+        messages<span class="kw">=</span>[{
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"다음 텍스트에서 정보 추출:\n\n{text}\n\nJSON: {schema}"</span>
+        }]
+    )
+    <span class="kw">return</span> json.<span class="fn">loads</span>(message.content[<span class="num">0</span>].text)
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">batch_extract</span>(documents, schema):
+    client <span class="kw">=</span> <span class="fn">AsyncAnthropic</span>()
+
+    tasks <span class="kw">=</span> [
+        <span class="fn">extract_single</span>(client, doc, schema)
+        <span class="kw">for</span> doc <span class="kw">in</span> documents
+    ]
+
+    results <span class="kw">=</span> <span class="kw">await</span> asyncio.<span class="fn">gather</span>(<span class="kw">*</span>tasks)
+    <span class="kw">return</span> results
+
+<span class="cmt"># 사용</span>
+emails <span class="kw">=</span> [<span class="str">"이메일1"</span>, <span class="str">"이메일2"</span>, <span class="str">"이메일3"</span>]
+schema <span class="kw">=</span> <span class="str">'{"sender": "", "subject": "", "date": ""}'</span>
+
+results <span class="kw">=</span> asyncio.<span class="fn">run</span>(<span class="fn">batch_extract</span>(emails, schema))
+<span class="kw">for</span> i, result <span class="kw">in</span> <span class="fn">enumerate</span>(results):
+    <span class="fn">print</span>(<span class="fn">f</span><span class="str">"문서 {i+1}: {result}"</span>)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="validation">데이터 검증</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python Pydantic 검증</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, EmailStr, validator
+<span class="kw">from</span> typing <span class="kw">import</span> List, Optional
+<span class="kw">from</span> datetime <span class="kw">import</span> date
+
+<span class="kw">class</span> <span class="type">ContactInfo</span>(BaseModel):
+    name: <span class="type">str</span>
+    email: <span class="type">EmailStr</span>
+    phone: Optional[<span class="type">str</span>] <span class="kw">=</span> <span class="kw">None</span>
+
+<span class="kw">class</span> <span class="type">InvoiceItem</span>(BaseModel):
+    name: <span class="type">str</span>
+    quantity: <span class="type">int</span>
+    unit_price: <span class="type">float</span>
+    amount: <span class="type">float</span>
+
+    <span class="kw">@validator</span>(<span class="str">'amount'</span>)
+    <span class="kw">def</span> <span class="fn">check_amount</span>(<span class="fn">cls</span>, v, values):
+        expected <span class="kw">=</span> values[<span class="str">'quantity'</span>] <span class="kw">*</span> values[<span class="str">'unit_price'</span>]
+        <span class="kw">if</span> <span class="fn">abs</span>(v <span class="kw">-</span> expected) <span class="kw">></span> <span class="num">0.01</span>:
+            <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="str">'금액 계산 오류'</span>)
+        <span class="kw">return</span> v
+
+<span class="kw">class</span> <span class="type">Invoice</span>(BaseModel):
+    vendor: <span class="type">ContactInfo</span>
+    customer: <span class="type">ContactInfo</span>
+    date: <span class="type">date</span>
+    items: List[<span class="type">InvoiceItem</span>]
+
+<span class="kw">def</span> <span class="fn">extract_and_validate</span>(text: <span class="type">str</span>) <span class="kw">-></span> <span class="type">Invoice</span>:
+    <span class="cmt"># Claude로 추출</span>
+    raw_data <span class="kw">=</span> <span class="fn">extract_invoice</span>(text)
+
+    <span class="cmt"># Pydantic 검증</span>
+    invoice <span class="kw">=</span> <span class="fn">Invoice</span>(<span class="kw">**</span>raw_data)
+    <span class="kw">return</span> invoice
+
+<span class="kw">try</span>:
+    invoice <span class="kw">=</span> <span class="fn">extract_and_validate</span>(invoice_text)
+    <span class="fn">print</span>(<span class="str">"검증 성공"</span>)
+<span class="kw">except</span> <span class="fn">Exception</span> <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="fn">f</span><span class="str">"검증 실패: {e}"</span>)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">베스트 프랙티스</h2>
+
+  <h3 id="bp-1">1. 명확한 스키마 제공</h3>
+  <p>
+    원하는 JSON 구조를 명확히 제시하면 정확도가 향상됩니다.
+  </p>
+
+  <h3 id="bp-2">2. Few-shot 예제 사용</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Few-shot 데이터 추출</span>
+    </div>
+    <pre><code>prompt <span class="kw">=</span> <span class="str">"""이메일에서 정보를 추출하여 JSON으로 출력하세요.
+
+예시 1:
+입력: "발신: john@example.com, 주제: 회의"
+출력: {"sender": "john@example.com", "subject": "회의"}
+
+예시 2:
+입력: "보낸사람: mary@company.com, 제목: 보고서"
+출력: {"sender": "mary@company.com", "subject": "보고서"}
+
+이제 다음 이메일을 처리하세요:
+{email_text}"""</span></code></pre>
+  </div>
+
+  <h3 id="bp-3">3. 오류 처리 및 재시도</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 견고한 추출</span>
+    </div>
+    <pre><code><span class="kw">def</span> <span class="fn">safe_extract</span>(text, schema, max_retries<span class="kw">=</span><span class="num">3</span>):
+    <span class="kw">for</span> attempt <span class="kw">in</span> <span class="fn">range</span>(max_retries):
+        <span class="kw">try</span>:
+            message <span class="kw">=</span> client.messages.<span class="fn">create</span>(<span class="kw">...</span>)
+            data <span class="kw">=</span> json.<span class="fn">loads</span>(message.content[<span class="num">0</span>].text)
+
+            <span class="cmt"># 스키마 검증</span>
+            <span class="kw">for</span> key <span class="kw">in</span> schema.<span class="fn">keys</span>():
+                <span class="kw">if</span> key <span class="kw">not</span> <span class="kw">in</span> data:
+                    <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="fn">f</span><span class="str">"Missing key: {key}"</span>)
+
+            <span class="kw">return</span> data
+
+        <span class="kw">except</span> (json.JSONDecodeError, <span class="fn">ValueError</span>) <span class="kw">as</span> e:
+            <span class="kw">if</span> attempt <span class="kw">==</span> max_retries <span class="kw">-</span> <span class="num">1</span>:
+                <span class="kw">raise</span>
+            <span class="fn">print</span>(<span class="fn">f</span><span class="str">"재시도 {attempt + 1}/{max_retries}"</span>)
+
+    <span class="kw">return</span> <span class="kw">None</span></code></pre>
+  </div>
+
+  <h3 id="bp-4">4. 비용 최적화</h3>
+  <ul>
+    <li>간단한 추출은 Haiku 모델 사용</li>
+    <li>불필요한 텍스트 제거 (헤더, 푸터 등)</li>
+    <li>배치 처리 시 비동기 활용</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>데이터 추출을 익혔다면 관련 주제들을 탐색하세요:</p>
+
+  <ul>
+    <li><a href="document-analysis.html">문서 분석</a> - 추출한 데이터 분석</li>
+    <li><a href="vision.html">Vision</a> - 이미지에서 텍스트 추출</li>
+    <li><a href="tool-use.html">Tool Use</a> - 추출 후 데이터베이스 저장</li>
+  </ul>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Ollama 로컬 시작 - 완전 무료 Vibe Coding">
+<meta property="og:description" content="Ollama를 설치하고 로컬 LLM으로 무료 Vibe Coding을 시작하세요. API 키 불필요, 완전 무료입니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/quickstart-local.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Ollama 로컬 LLM 빠른 시작 가이드. 완전 무료로 Vibe Coding을 경험하세요.">
+<meta name="keywords" content="ollama, local llm, 로컬, 무료, vibe coding, llama2, mistral">
+<meta name="author" content="MINZKN">
+<title>Ollama 로컬 시작 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Ollama 로컬 시작</h1>
+<p class="lead">Ollama를 설치하고 로컬 LLM으로 완전 무료 Vibe Coding을 시작하세요. API 키 불필요!</p>
+
+<!-- Quick Start Info-box -->
+<div class="info-box tip">
+  <div class="info-box-title">🎁 완전 무료!</div>
+  <p><strong>Ollama의 장점:</strong></p>
+  <ul>
+    <li>✅ 완전 무료 (API 비용 $0)</li>
+    <li>✅ API 키 불필요</li>
+    <li>✅ 인터넷 없이 작동 (오프라인 가능)</li>
+    <li>✅ 프라이버시 보호 (모든 데이터 로컬)</li>
+    <li>✅ 무제한 사용 (속도 제한 없음)</li>
+  </ul>
+  <p><strong>필요한 것:</strong> 컴퓨터 (최소 8GB RAM 권장)</p>
+</div>
+
+<!-- Section 1: Ollama란? -->
+<section class="content-section">
+  <h2 id="what-is-ollama">Ollama란?</h2>
+
+  <p>
+    <strong>Ollama</strong>는 로컬 컴퓨터에서 LLM(Large Language Model)을 실행하는 가장 쉬운 도구입니다.
+    클라우드 API 없이, 여러분의 PC나 Mac에서 직접 AI 모델을 구동합니다.
+  </p>
+
+  <h3 id="why-ollama">왜 Ollama인가?</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">💰 비용 비교</div>
+    <table>
+      <thead>
+        <tr>
+          <th>방식</th>
+          <th>초기 비용</th>
+          <th>월 비용</th>
+          <th>제한</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Claude API</strong></td>
+          <td>$5 무료</td>
+          <td>$20-100</td>
+          <td>토큰 제한</td>
+        </tr>
+        <tr>
+          <td><strong>GPT-4 API</strong></td>
+          <td>$0</td>
+          <td>$20-200</td>
+          <td>토큰 제한</td>
+        </tr>
+        <tr>
+          <td><strong>Ollama (로컬)</strong></td>
+          <td>$0</td>
+          <td>$0</td>
+          <td>하드웨어만</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="pros-cons">장단점</h3>
+
+  <h4>✅ 장점</h4>
+  <ul>
+    <li><strong>완전 무료</strong>: 초기 비용도, 월 비용도 없음</li>
+    <li><strong>프라이버시</strong>: 모든 데이터가 로컬에만 저장</li>
+    <li><strong>오프라인</strong>: 인터넷 없이도 작동</li>
+    <li><strong>무제한</strong>: API 호출 제한 없음</li>
+    <li><strong>빠른 응답</strong>: 네트워크 지연 없음 (로컬 처리)</li>
+  </ul>
+
+  <h4>❌ 단점</h4>
+  <ul>
+    <li><strong>하드웨어 필요</strong>: 최소 8GB RAM (16GB 권장)</li>
+    <li><strong>품질</strong>: Claude/GPT-4보다는 낮을 수 있음</li>
+    <li><strong>초기 다운로드</strong>: 모델 파일 크기 4-7GB</li>
+    <li><strong>GPU 선택</strong>: NVIDIA GPU 있으면 훨씬 빠름 (선택사항)</li>
+  </ul>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 시스템 요구사항</div>
+    <ul>
+      <li><strong>최소</strong>: 8GB RAM, 10GB 디스크 공간</li>
+      <li><strong>권장</strong>: 16GB RAM, NVIDIA GPU (선택)</li>
+      <li><strong>최적</strong>: 32GB RAM, NVIDIA GPU 8GB+</li>
+    </ul>
+    <p>
+      8GB RAM이면 <strong>Llama 3.2 (3B)</strong> 같은 작은 모델 실행 가능합니다.
+      16GB RAM이면 대부분의 모델을 편하게 실행할 수 있습니다.
+    </p>
+  </div>
+</section>
+
+<!-- Section 2: Ollama 설치 -->
+<section class="content-section">
+  <h2 id="installation">Ollama 설치</h2>
+
+  <p>
+    운영체제별 설치 방법입니다. 2-3분이면 완료됩니다.
+  </p>
+
+  <h3 id="install-macos">macOS 설치</h3>
+
+  <h4>방법 1: 다운로드 (권장)</h4>
+  <ol>
+    <li><a href="https://ollama.com/download" target="_blank" rel="noopener">Ollama 공식 사이트</a> 접속</li>
+    <li><strong>Download for macOS</strong> 클릭</li>
+    <li>다운로드된 <code>Ollama.dmg</code> 열기</li>
+    <li>Ollama 아이콘을 Applications 폴더로 드래그</li>
+    <li>Ollama 앱 실행</li>
+  </ol>
+
+  <h4>방법 2: Homebrew</h4>
+  <pre><code><span class="cmt"># Homebrew로 설치</span>
+brew install ollama
+
+<span class="cmt"># 설치 확인</span>
+ollama --version</code></pre>
+
+  <h3 id="install-windows">Windows 설치</h3>
+
+  <h4>방법 1: 설치 파일 (권장)</h4>
+  <ol>
+    <li><a href="https://ollama.com/download" target="_blank" rel="noopener">Ollama 공식 사이트</a> 접속</li>
+    <li><strong>Download for Windows</strong> 클릭</li>
+    <li><code>OllamaSetup.exe</code> 실행</li>
+    <li>설치 마법사 따라가기</li>
+    <li>설치 완료 후 자동 실행</li>
+  </ol>
+
+  <h4>방법 2: winget</h4>
+  <pre><code><span class="cmt"># PowerShell에서 실행</span>
+winget install Ollama.Ollama
+
+<span class="cmt"># 설치 확인</span>
+ollama --version</code></pre>
+
+  <h3 id="install-linux">Linux 설치</h3>
+
+  <pre><code><span class="cmt"># 공식 설치 스크립트 (Ubuntu, Debian, Fedora 등)</span>
+curl -fsSL https://ollama.com/install.sh | sh
+
+<span class="cmt"># 설치 확인</span>
+ollama --version
+
+<span class="cmt"># 서비스 시작</span>
+sudo systemctl start ollama</code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">✅ 설치 확인</div>
+    <p>터미널에서 다음 명령어를 실행해보세요:</p>
+    <pre><code>ollama --version
+
+<span class="cmt"># 예상 출력</span>
+ollama version is 0.1.x</code></pre>
+    <p>버전이 출력되면 설치 성공입니다! ✅</p>
+  </div>
+</section>
+
+<!-- Section 3: 첫 번째 모델 실행 -->
+<section class="content-section">
+  <h2 id="first-model">첫 번째 모델 실행</h2>
+
+  <p>
+    Ollama의 대표 모델 <strong>Llama 3.2</strong>를 실행해봅시다.
+  </p>
+
+  <h3 id="pull-model">모델 다운로드</h3>
+
+  <pre><code><span class="cmt"># Llama 3.2 (3B 파라미터) 다운로드</span>
+ollama pull llama3.2
+
+<span class="cmt"># 다운로드 진행 상황</span>
+<span class="str">pulling manifest
+pulling e8a35b5937a5... 100% ▕████████████████▏ 2.0 GB
+pulling 966de95ca8a6... 100% ▕████████████████▏ 1.4 KB
+pulling fcc5a6bec9da... 100% ▕████████████████▏ 7.7 KB
+pulling a70ff7e570d9... 100% ▕████████████████▏ 6.0 KB
+pulling 56bb8bd477a5... 100% ▕████████████████▏  96 B
+pulling 34bb5ab01051... 100% ▕████████████████▏ 562 B
+verifying sha256 digest
+writing manifest
+removing any unused layers
+success</span></code></pre>
+
+  <div class="info-box info">
+    <div class="info-box-title">📦 모델 크기</div>
+    <ul>
+      <li><strong>Llama 3.2 (3B)</strong>: ~2GB (빠름, 적은 RAM)</li>
+      <li><strong>Llama 3.2 (1B)</strong>: ~1.3GB (매우 빠름, 품질 낮음)</li>
+      <li><strong>Llama 3.1 (8B)</strong>: ~4.7GB (느림, 품질 높음)</li>
+      <li><strong>Mistral (7B)</strong>: ~4.1GB (균형)</li>
+    </ul>
+    <p>처음에는 <strong>Llama 3.2 (3B)</strong>를 권장합니다!</p>
+  </div>
+
+  <h3 id="run-model">모델 실행</h3>
+
+  <pre><code><span class="cmt"># Llama 3.2 실행</span>
+ollama run llama3.2
+
+<span class="cmt"># 대화 인터페이스 시작</span>
+<span class="fn">>>> </span>_</code></pre>
+
+  <h3 id="first-chat">첫 번째 대화</h3>
+
+  <pre><code><span class="fn">>>> </span><span class="str">안녕! Python으로 간단한 인사말을 출력하는 코드 작성해줘.</span>
+
+<span class="cmt"># Llama 3.2 응답</span>
+물론입니다! Python으로 간단한 인사말을 출력하는 코드는 다음과 같습니다:
+
+```python
+def greet():
+    print("안녕하세요! Ollama로 Vibe Coding을 시작합니다.")
+    print("로컬 LLM으로 무료로 코드를 생성할 수 있어요!")
+
+greet()
+```
+
+이 코드를 실행하면 인사말이 출력됩니다. 더 복잡한 기능이 필요하면 알려주세요!
+
+<span class="fn">>>> </span>_</code></pre>
+
+  <p>
+    작동합니다! 🎉 이제 Ollama와 대화할 수 있습니다.
+  </p>
+
+  <h3 id="exit-ollama">Ollama 종료</h3>
+
+  <pre><code><span class="fn">>>> </span><span class="str">/bye</span>
+
+<span class="cmt"># 또는 Ctrl+D</span></code></pre>
+</section>
+
+<!-- Section 4: Aider와 Ollama 연동 -->
+<section class="content-section">
+  <h2 id="aider-integration">Aider와 Ollama 연동</h2>
+
+  <p>
+    Ollama 단독으로도 사용 가능하지만, <strong>Aider CLI</strong>와 연동하면 훨씬 강력합니다.
+    Aider는 Git 통합, 멀티파일 편집 등 Vibe Coding에 최적화된 기능을 제공합니다.
+  </p>
+
+  <h3 id="install-aider">Aider 설치</h3>
+
+  <pre><code><span class="cmt"># pip로 Aider 설치</span>
+pip install aider-chat
+
+<span class="cmt"># 설치 확인</span>
+aider --version</code></pre>
+
+  <div class="info-box info">
+    <div class="info-box-title">Python이 없다면?</div>
+    <p><a href="https://python.org" target="_blank" rel="noopener">Python 공식 사이트</a>에서 Python 3.8 이상을 설치하세요.</p>
+    <ul>
+      <li><strong>macOS:</strong> <code>brew install python</code></li>
+      <li><strong>Windows:</strong> <code>winget install Python.Python.3.12</code></li>
+      <li><strong>Linux:</strong> <code>sudo apt install python3 python3-pip</code></li>
+    </ul>
+  </div>
+
+  <h3 id="aider-ollama-setup">Aider + Ollama 설정</h3>
+
+  <pre><code><span class="cmt"># 프로젝트 디렉토리 생성</span>
+mkdir my-vibe-project
+cd my-vibe-project
+
+<span class="cmt"># Git 초기화 (Aider는 Git 저장소 필요)</span>
+git init
+
+<span class="cmt"># Aider 실행 (Ollama 모델 지정)</span>
+aider --model ollama/llama3.2</code></pre>
+
+  <p>
+    Aider가 Ollama와 연결되어 실행됩니다:
+  </p>
+
+  <pre><code><span class="cmt"># Aider 시작 화면</span>
+<span class="fn">Aider v0.x.x</span>
+<span class="str">Model: ollama/llama3.2
+Repo: /path/to/my-vibe-project (clean)</span>
+
+<span class="fn">You can run shell commands with /run <command>
+You can drop to a shell with /run
+
+────────────────────────────────────────────────────────</span>
+
+<span class="str">💬 You> </span>_</code></pre>
+
+  <h3 id="first-project-aider">첫 번째 프로젝트</h3>
+
+  <p>
+    Aider + Ollama로 TODO 앱을 만들어봅시다:
+  </p>
+
+  <pre><code><span class="str">💬 You> HTML, CSS, JavaScript로 TODO 앱 만들어줘.
+할 일 추가/삭제/완료, localStorage 저장, 모바일 반응형.
+파일 3개: index.html, style.css, script.js</span>
+
+<span class="fn">🤖 Aider></span> <span class="str">TODO 앱을 생성하겠습니다!</span>
+
+<span class="cmt"># 파일 생성 중...</span>
+<span class="fn">Add index.html</span>
+<span class="fn">Add style.css</span>
+<span class="fn">Add script.js</span>
+
+<span class="cmt"># Git 자동 커밋</span>
+<span class="fn">Commit 3ed7f2a</span> <span class="str">Create TODO app with localStorage and responsive design</span>
+
+<span class="fn">🤖 Aider></span> <span class="str">3개 파일을 생성하고 커밋했습니다!
+index.html을 브라우저에서 열어 테스트해보세요.</span></code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">✨ Aider의 장점</div>
+    <ul>
+      <li>✅ Git 자동 커밋 (모든 변경사항 추적)</li>
+      <li>✅ diff 확인 (변경 전/후 비교)</li>
+      <li>✅ 멀티파일 동시 편집</li>
+      <li>✅ 파일 검색 및 리팩토링</li>
+      <li>✅ 쉘 명령어 실행 (<code>/run</code>)</li>
+    </ul>
+  </div>
+
+  <h3 id="test-app-local">앱 테스트</h3>
+
+  <pre><code><span class="cmt"># Aider 내부에서 바로 서버 실행</span>
+<span class="str">💬 You> /run python3 -m http.server 8000</span>
+
+<span class="cmt"># 브라우저에서 열기</span>
+open http://localhost:8000</code></pre>
+
+  <p>
+    완전 무료로 TODO 앱을 만들었습니다! 🎉
+  </p>
+</section>
+
+<!-- Section 5: 모델 비교 및 추천 -->
+<section class="content-section">
+  <h2 id="model-comparison">Ollama 모델 비교</h2>
+
+  <p>
+    Ollama에서 사용 가능한 주요 모델들을 비교합니다:
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>크기</th>
+        <th>RAM 필요</th>
+        <th>속도</th>
+        <th>품질</th>
+        <th>추천 대상</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Llama 3.2 (1B)</strong></td>
+        <td>1.3GB</td>
+        <td>4GB</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>⭐⭐</td>
+        <td>빠른 테스트</td>
+      </tr>
+      <tr>
+        <td><strong>Llama 3.2 (3B)</strong></td>
+        <td>2.0GB</td>
+        <td>8GB</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐</td>
+        <td>일반 사용 (권장)</td>
+      </tr>
+      <tr>
+        <td><strong>Llama 3.1 (8B)</strong></td>
+        <td>4.7GB</td>
+        <td>16GB</td>
+        <td>⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>고품질 코드</td>
+      </tr>
+      <tr>
+        <td><strong>Mistral (7B)</strong></td>
+        <td>4.1GB</td>
+        <td>16GB</td>
+        <td>⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>균형잡힌 성능</td>
+      </tr>
+      <tr>
+        <td><strong>CodeLlama (7B)</strong></td>
+        <td>3.8GB</td>
+        <td>16GB</td>
+        <td>⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>코딩 특화</td>
+      </tr>
+      <tr>
+        <td><strong>Phi-3 (3.8B)</strong></td>
+        <td>2.3GB</td>
+        <td>8GB</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>⭐⭐⭐</td>
+        <td>작고 빠름</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="model-recommendations">시스템별 추천 모델</h3>
+
+  <h4>💻 8GB RAM</h4>
+  <p><strong>추천:</strong> <code>llama3.2:3b</code> 또는 <code>phi3</code></p>
+  <pre><code>ollama pull llama3.2:3b
+aider --model ollama/llama3.2:3b</code></pre>
+
+  <h4>💻 16GB RAM</h4>
+  <p><strong>추천:</strong> <code>codellama:7b</code> (코딩 특화) 또는 <code>llama3.1:8b</code></p>
+  <pre><code>ollama pull codellama:7b
+aider --model ollama/codellama:7b</code></pre>
+
+  <h4>💻 32GB+ RAM</h4>
+  <p><strong>추천:</strong> <code>llama3.1:70b</code> (최고 품질)</p>
+  <pre><code>ollama pull llama3.1:70b
+aider --model ollama/llama3.1:70b</code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 모델 전환 팁</div>
+    <p>
+      여러 모델을 설치해두고 작업에 따라 전환하세요:
+    </p>
+    <ul>
+      <li><strong>간단한 작업</strong>: <code>llama3.2:3b</code> (빠름)</li>
+      <li><strong>복잡한 코드</strong>: <code>codellama:7b</code> (정확)</li>
+      <li><strong>문서 작성</strong>: <code>llama3.1:8b</code> (자연어 우수)</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Section 6: 다음 단계 -->
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <p>
+    Ollama 기본을 마스터했습니다! 이제 더 고급 기능을 배워봅시다:
+  </p>
+
+  <h3 id="advanced-ollama">Ollama 고급 활용</h3>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>🦙 Ollama 모델 가이드</h3>
+      <p>모든 모델 비교, 선택 가이드, 커스텀 모델 생성</p>
+      <a href="ollama-models.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔧 Ollama 사용법</h3>
+      <p>CLI 명령어, API, 모델 관리 종합 가이드</p>
+      <a href="ollama-usage.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔌 Ollama 연동</h3>
+      <p>Continue.dev, Cursor 등 다른 도구와 연동</p>
+      <a href="ollama-integration.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>⚡ 성능 최적화</h3>
+      <p>GPU 활용, 양자화, 배치 처리 등</p>
+      <a href="ollama-advanced.html" class="card-link">최적화 →</a>
+    </div>
+  </div>
+
+  <h3 id="practice-local">연습 프로젝트</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>난이도</th>
+        <th>프로젝트</th>
+        <th>모델 추천</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>⭐ 초급</td>
+        <td>계산기 웹 앱</td>
+        <td>llama3.2:3b</td>
+      </tr>
+      <tr>
+        <td>⭐ 초급</td>
+        <td>Markdown 에디터</td>
+        <td>llama3.2:3b</td>
+      </tr>
+      <tr>
+        <td>⭐⭐ 중급</td>
+        <td>REST API 서버 (Express)</td>
+        <td>codellama:7b</td>
+      </tr>
+      <tr>
+        <td>⭐⭐ 중급</td>
+        <td>React TODO 앱</td>
+        <td>codellama:7b</td>
+      </tr>
+      <tr>
+        <td>⭐⭐⭐ 고급</td>
+        <td>실시간 채팅 (WebSocket)</td>
+        <td>llama3.1:8b</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- Section 7: 문제 해결 -->
+<section class="content-section">
+  <h2 id="troubleshooting">문제 해결</h2>
+
+  <h3 id="common-issues-local">일반적인 문제</h3>
+
+  <h4>❌ "ollama: command not found"</h4>
+  <p><strong>원인:</strong> Ollama가 설치되지 않았거나 PATH에 없음</p>
+  <p><strong>해결:</strong> 다시 설치하고 터미널 재시작</p>
+
+  <h4>❌ 모델 다운로드 느림</h4>
+  <p><strong>원인:</strong> 네트워크 속도</p>
+  <p><strong>해결:</strong> 인내심을 가지고 기다리세요. 한 번만 다운로드하면 됩니다.</p>
+
+  <h4>❌ "Out of memory" 오류</h4>
+  <p><strong>원인:</strong> RAM 부족</p>
+  <p><strong>해결:</strong> 더 작은 모델 사용 (<code>llama3.2:1b</code>)</p>
+
+  <h4>❌ Aider가 Ollama 연결 실패</h4>
+  <p><strong>원인:</strong> Ollama 서비스가 실행 중이 아님</p>
+  <p><strong>해결:</strong></p>
+  <pre><code><span class="cmt"># Ollama 서비스 확인</span>
+ollama list
+
+<span class="cmt"># 서비스가 없으면 Ollama 앱 실행</span></code></pre>
+
+  <h4>❌ 응답이 너무 느림</h4>
+  <p><strong>원인:</strong> GPU 미사용 또는 큰 모델</p>
+  <p><strong>해결:</strong></p>
+  <ul>
+    <li>더 작은 모델로 전환 (<code>llama3.2:3b</code>)</li>
+    <li>NVIDIA GPU가 있다면 자동으로 활용됨</li>
+    <li><a href="ollama-advanced.html">성능 최적화 가이드</a> 참고</li>
+  </ul>
+</section>
+
+<!-- Summary -->
+<section class="content-section">
+  <h2 id="summary">요약</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">🎉 축하합니다!</div>
+    <p>
+      Ollama로 완전 무료 Vibe Coding을 시작했습니다! 이제 여러분은:
+    </p>
+    <ul>
+      <li>✅ Ollama를 설치했습니다</li>
+      <li>✅ 첫 번째 로컬 LLM을 실행했습니다</li>
+      <li>✅ Aider와 Ollama를 연동했습니다</li>
+      <li>✅ 무료로 TODO 앱을 만들었습니다</li>
+      <li>✅ 다양한 모델을 비교했습니다</li>
+    </ul>
+    <p>
+      <strong>이제 API 비용 걱정 없이 무제한 Vibe Coding이 가능합니다!</strong>
+    </p>
+  </div>
+
+  <h3 id="free-vs-paid">무료 vs 유료 비교</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>측면</th>
+        <th>Ollama (무료)</th>
+        <th>Claude API (유료)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>비용</strong></td>
+        <td>✅ $0</td>
+        <td>❌ $20-100/월</td>
+      </tr>
+      <tr>
+        <td><strong>품질</strong></td>
+        <td>⭐⭐⭐</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td><strong>속도</strong></td>
+        <td>⭐⭐⭐ (HW 의존)</td>
+        <td>⭐⭐⭐⭐⭐</td>
+      </tr>
+      <tr>
+        <td><strong>프라이버시</strong></td>
+        <td>✅ 완벽</td>
+        <td>❌ 클라우드</td>
+      </tr>
+      <tr>
+        <td><strong>오프라인</strong></td>
+        <td>✅ 가능</td>
+        <td>❌ 불가</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    <strong>권장:</strong> 둘 다 사용하세요! 간단한 작업은 Ollama, 복잡한 작업은 Claude API.
+  </p>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== Inline TOC (Aside) ===== -->
+<aside class="inline-toc">
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

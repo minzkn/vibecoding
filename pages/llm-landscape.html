@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM 생태계 개요 - AI Vibe Coding 가이드 /with MINZKN</title>
+<meta name="description" content="주요 LLM 제공자, 모델 비교, API vs 로컬 LLM, 가격 비교 및 선택 가이드">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">LLM 생태계 개요</h1>
+<p class="lead">현대 AI 개발 환경에서 사용할 수 있는 다양한 Large Language Model(LLM) 제공자와 모델들을 비교하고, 프로젝트에 적합한 LLM을 선택하는 방법을 안내합니다. 상용 API 서비스부터 로컬 실행 가능한 오픈소스 모델까지 전체 생태계를 탐색합니다.</p>
+
+<div class="info-box tip">
+<strong>핵심 포인트</strong>
+<ul>
+<li>주요 LLM 제공자: Anthropic, OpenAI, Google, Cohere, Mistral</li>
+<li>모델 특성 비교: 성능, 가격, 컨텍스트 길이, 특화 기능</li>
+<li>API 서비스 vs 로컬 LLM의 장단점</li>
+<li>토큰당 가격 비교 및 비용 최적화</li>
+<li>사용 사례별 LLM 선택 가이드</li>
+</ul>
+</div>
+
+<section class="content-section">
+<h2 id="major-providers">주요 LLM 제공자</h2>
+
+<h3 id="anthropic">Anthropic (Claude)</h3>
+<p>Anthropic은 안전하고 유용한 AI 개발에 중점을 둔 AI 연구 기업으로, Claude 시리즈 모델을 제공합니다.</p>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">특징</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>Claude 모델 라인업:
+┌────────────────┬─────────────┬──────────────┬──────────────┐
+│ 모델           │ 출시일      │ 컨텍스트     │ 강점         │
+├────────────────┼─────────────┼──────────────┼──────────────┤
+│ Claude 4 Opus  │ 2026-01     │ 200K tokens  │ 최고 성능    │
+│ Claude 4 Sonnet│ 2026-01     │ 200K tokens  │ 균형잡힌 성능│
+│ Claude 4 Haiku │ 2026-01     │ 200K tokens  │ 빠른 응답    │
+│ Claude 3.5     │ 2024-06     │ 200K tokens  │ 코딩 우수    │
+└────────────────┴─────────────┴──────────────┴──────────────┘
+
+핵심 강점:
+• 긴 컨텍스트 처리 능력 (200K 토큰)
+• 안전성과 유용성의 균형
+• 복잡한 추론 및 분석 작업 탁월
+• 한국어 지원 우수
+• 프롬프트 캐싱으로 비용 절감
+</code></pre>
+</div>
+
+<h3 id="openai">OpenAI (GPT)</h3>
+<p>ChatGPT로 유명한 OpenAI는 GPT 시리즈를 통해 LLM 시장을 선도하고 있습니다.</p>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">특징</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>GPT 모델 라인업:
+┌────────────────┬─────────────┬──────────────┬──────────────┐
+│ 모델           │ 출시일      │ 컨텍스트     │ 강점         │
+├────────────────┼─────────────┼──────────────┼──────────────┤
+│ GPT-4o         │ 2024-05     │ 128K tokens  │ 멀티모달     │
+│ o1             │ 2024-09     │ 200K tokens  │ 고급 추론    │
+│ o1-mini        │ 2024-09     │ 128K tokens  │ 빠른 추론    │
+│ GPT-4 Turbo    │ 2024-04     │ 128K tokens  │ 범용         │
+│ GPT-3.5 Turbo  │ 2022-11     │ 16K tokens   │ 저렴한 비용  │
+└────────────────┴─────────────┴──────────────┴──────────────┘
+
+핵심 강점:
+• 방대한 생태계와 커뮤니티
+• 다양한 모델 옵션 (성능/비용 트레이드오프)
+• Function Calling 안정적
+• 이미지 생성 (DALL-E 연동)
+• 음성 입출력 (Whisper, TTS)
+</code></pre>
+</div>
+
+<h3 id="google">Google (Gemini)</h3>
+<p>Google의 Gemini는 멀티모달 기능과 긴 컨텍스트를 강점으로 하는 차세대 LLM입니다.</p>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">특징</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>Gemini 모델 라인업:
+┌────────────────┬─────────────┬──────────────┬──────────────┐
+│ 모델           │ 출시일      │ 컨텍스트     │ 강점         │
+├────────────────┼─────────────┼──────────────┼──────────────┤
+│ Gemini 1.5 Pro │ 2024-02     │ 2M tokens    │ 초장문 처리  │
+│ Gemini 1.5 Flash│2024-05     │ 1M tokens    │ 빠른 속도    │
+│ Gemini 1.0 Pro │ 2023-12     │ 32K tokens   │ 범용         │
+└────────────────┴─────────────┴──────────────┴──────────────┘
+
+핵심 강점:
+• 업계 최장 컨텍스트 (최대 2M 토큰)
+• 네이티브 멀티모달 (텍스트, 이미지, 비디오, 오디오)
+• Google 서비스 통합 (Search, Maps, YouTube 등)
+• 무료 티어 제공 (AI Studio)
+• 빠른 응답 속도 (Flash 모델)
+</code></pre>
+</div>
+
+<h3 id="other-providers">기타 주요 제공자</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">비교</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// Cohere</span>
+• 엔터프라이즈 중심 LLM
+• Command, Embed, Rerank 모델
+• RAG 최적화
+• 다국어 지원 우수
+
+<span class="cmt">// Mistral AI</span>
+• 유럽 기반 AI 스타트업
+• Mistral Large, Medium, Small
+• 오픈소스 모델 제공 (Mixtral)
+• 합리적인 가격
+
+<span class="cmt">// AI21 Labs</span>
+• Jurassic 시리즈
+• 긴 문서 처리 특화
+• 문법 및 교정 기능
+
+<span class="cmt">// Together AI</span>
+• 오픈소스 모델 호스팅
+• Llama, Mixtral, Yi 등
+• 저렴한 가격
+• 커스터마이징 가능
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="model-comparison">모델 성능 비교</h2>
+
+<h3 id="benchmark-scores">벤치마크 점수</h3>
+<p>주요 LLM 모델의 다양한 벤치마크 점수를 비교합니다. (2026년 1월 기준)</p>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">벤치마크</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>MMLU (Massive Multitask Language Understanding):
+┌────────────────────┬────────┬─────────────────────┐
+│ 모델               │ 점수   │ 비고                │
+├────────────────────┼────────┼─────────────────────┤
+│ Claude 4 Opus      │ 88.7%  │ 최고 수준           │
+│ GPT-4o             │ 88.0%  │ 멀티모달 우수       │
+│ Gemini 1.5 Pro     │ 85.9%  │ 긴 컨텍스트 강점    │
+│ Claude 3.5 Sonnet  │ 88.3%  │ 코딩 특화           │
+│ o1                 │ 90.8%  │ 추론 특화           │
+└────────────────────┴────────┴─────────────────────┘
+
+HumanEval (코딩 능력):
+┌────────────────────┬────────┬─────────────────────┐
+│ 모델               │ 점수   │ 비고                │
+├────────────────────┼────────┼─────────────────────┤
+│ Claude 3.5 Sonnet  │ 92.0%  │ 코딩 최강           │
+│ GPT-4o             │ 90.2%  │ 범용 우수           │
+│ o1                 │ 92.0%  │ 복잡한 문제 해결    │
+│ Claude 4 Opus      │ 91.5%  │ 균형잡힌 성능       │
+│ Gemini 1.5 Pro     │ 84.0%  │ 멀티모달 강점       │
+└────────────────────┴────────┴─────────────────────┘
+
+GPQA (고급 추론):
+┌────────────────────┬────────┬─────────────────────┐
+│ 모델               │ 점수   │ 비고                │
+├────────────────────┼────────┼─────────────────────┤
+│ o1                 │ 78.3%  │ 추론 특화           │
+│ Claude 4 Opus      │ 60.4%  │ 균형잡힌 성능       │
+│ GPT-4o             │ 53.6%  │ 범용                │
+│ Gemini 1.5 Pro     │ 50.2%  │ 멀티모달            │
+└────────────────────┴────────┴─────────────────────┘
+</code></pre>
+</div>
+
+<div class="info-box note">
+<strong>벤치마크 해석 주의사항</strong>
+<ul>
+<li>벤치마크는 특정 작업에서의 성능만 측정</li>
+<li>실제 사용 환경에서는 프롬프트 엔지니어링이 더 중요할 수 있음</li>
+<li>최신 모델일수록 벤치마크 과적합 가능성 존재</li>
+<li>사용 사례에 맞는 실제 테스트가 필수</li>
+</ul>
+</div>
+
+<h3 id="context-length">컨텍스트 길이 비교</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">비교</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>최대 컨텍스트 길이:
+┌────────────────────┬──────────────┬─────────────────────┐
+│ 모델               │ 컨텍스트     │ 대략적인 페이지 수  │
+├────────────────────┼──────────────┼─────────────────────┤
+│ Gemini 1.5 Pro     │ 2M tokens    │ ~1,500 페이지       │
+│ Gemini 1.5 Flash   │ 1M tokens    │ ~750 페이지         │
+│ Claude 4 시리즈    │ 200K tokens  │ ~150 페이지         │
+│ o1                 │ 200K tokens  │ ~150 페이지         │
+│ GPT-4o             │ 128K tokens  │ ~96 페이지          │
+│ GPT-4 Turbo        │ 128K tokens  │ ~96 페이지          │
+└────────────────────┴──────────────┴─────────────────────┘
+
+<span class="cmt">// 실용적 고려사항</span>
+• 긴 컨텍스트 = 높은 비용
+• 실제 필요한 컨텍스트는 대부분 32K 이하
+• RAG 등 대안 기술 고려
+• 프롬프트 캐싱으로 비용 절감 가능
+</code></pre>
+</div>
+
+<h3 id="special-capabilities">특수 기능 비교</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">기능</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>주요 특수 기능:
+┌──────────────┬─────────┬─────────┬─────────┬─────────┐
+│ 기능         │ Claude  │ GPT-4o  │ Gemini  │ o1      │
+├──────────────┼─────────┼─────────┼─────────┼─────────┤
+│ Vision       │ ✓       │ ✓       │ ✓       │ ✓       │
+│ Function Call│ ✓       │ ✓       │ ✓       │ ✗       │
+│ Streaming    │ ✓       │ ✓       │ ✓       │ ✗       │
+│ JSON Mode    │ ✓       │ ✓       │ ✓       │ ✗       │
+│ 프롬프트캐싱│ ✓       │ ✗       │ ✓       │ ✗       │
+│ Video Input  │ ✗       │ ✗       │ ✓       │ ✗       │
+│ Audio Input  │ ✗       │ ✓       │ ✓       │ ✗       │
+│ Code Interp. │ ✗       │ ✓       │ ✓       │ ✗       │
+└──────────────┴─────────┴─────────┴─────────┴─────────┘
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="pricing">가격 비교</h2>
+
+<h3 id="api-pricing">API 서비스 가격</h3>
+<p>주요 LLM API의 토큰당 가격을 비교합니다. (2026년 1월 기준, USD)</p>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">가격표</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>토큰당 가격 (Input / Output):
+┌────────────────────┬─────────────┬─────────────┬────────────┐
+│ 모델               │ Input (1M)  │ Output (1M) │ 비고       │
+├────────────────────┼─────────────┼─────────────┼────────────┤
+│ Claude 4 Opus      │ $15.00      │ $75.00      │ 최고성능   │
+│ Claude 4 Sonnet    │ $3.00       │ $15.00      │ 균형       │
+│ Claude 4 Haiku     │ $0.25       │ $1.25       │ 경제적     │
+│ GPT-4o             │ $2.50       │ $10.00      │ 멀티모달   │
+│ o1                 │ $15.00      │ $60.00      │ 추론특화   │
+│ o1-mini            │ $3.00       │ $12.00      │ 빠른추론   │
+│ GPT-4 Turbo        │ $10.00      │ $30.00      │ 범용       │
+│ GPT-3.5 Turbo      │ $0.50       │ $1.50       │ 저렴       │
+│ Gemini 1.5 Pro     │ $1.25       │ $5.00       │ 긴컨텍스트 │
+│ Gemini 1.5 Flash   │ $0.075      │ $0.30       │ 빠름       │
+└────────────────────┴─────────────┴─────────────┴────────────┘
+
+<span class="cmt">// 실제 비용 예시 (1,000 요청, 평균 2K input, 500 output)</span>
+Claude 4 Sonnet: (2,000 × $3 + 500 × $15) / 1M × 1,000 = $13.50
+GPT-4o:          (2,000 × $2.5 + 500 × $10) / 1M × 1,000 = $10.00
+Gemini 1.5 Pro:  (2,000 × $1.25 + 500 × $5) / 1M × 1,000 = $5.00
+</code></pre>
+</div>
+
+<h3 id="free-tiers">무료 티어</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">무료 옵션</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// Anthropic Console</span>
+<span class="kw">free</span>: <span class="str">"$5 크레딧 (신규 가입)"</span>
+
+<span class="cmt">// OpenAI</span>
+<span class="kw">free</span>: <span class="str">"$5 크레딧 (신규 가입, 3개월)"</span>
+
+<span class="cmt">// Google AI Studio</span>
+<span class="kw">free</span>: <span class="str">"Gemini 1.5 Flash - 분당 15 요청, 일일 1,500 요청"</span>
+<span class="kw">free</span>: <span class="str">"Gemini 1.5 Pro - 분당 2 요청, 일일 50 요청"</span>
+
+<span class="cmt">// Cohere</span>
+<span class="kw">free</span>: <span class="str">"Trial API 키 (월 100 API 호출)"</span>
+
+<span class="cmt">// Mistral AI</span>
+<span class="kw">free</span>: <span class="str">"€5 크레딧 (신규 가입)"</span>
+</code></pre>
+</div>
+
+<div class="info-box tip">
+<strong>비용 절감 팁</strong>
+<ul>
+<li>간단한 작업은 저렴한 모델 사용 (Haiku, GPT-3.5, Flash)</li>
+<li>프롬프트 캐싱 활용 (Claude의 경우 90% 할인)</li>
+<li>배치 API 사용 (OpenAI는 50% 할인)</li>
+<li>출력 토큰 제한 설정 (max_tokens)</li>
+<li>불필요한 시스템 프롬프트 제거</li>
+</ul>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="api-vs-local">API vs 로컬 LLM</h2>
+
+<h3 id="api-services">API 서비스 (클라우드)</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">장단점</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 장점</span>
+✓ 최신 최고 성능 모델 사용
+✓ 인프라 관리 불필요
+✓ 즉시 시작 가능
+✓ 자동 스케일링
+✓ 지속적인 모델 업데이트
+✓ 낮은 초기 비용
+
+<span class="cmt">// 단점</span>
+✗ 사용량에 따른 지속 비용
+✗ 데이터 외부 전송 (프라이버시)
+✗ 인터넷 연결 필요
+✗ API 제한 (Rate Limit)
+✗ 벤더 종속성
+✗ 예측 불가능한 비용 (트래픽 급증 시)
+
+<span class="cmt">// 적합한 경우</span>
+• 빠른 프로토타이핑
+• 최고 성능 필요
+• 트래픽 변동이 큰 경우
+• 인프라 관리 리소스 부족
+• 다양한 모델 실험 필요
+</code></pre>
+</div>
+
+<h3 id="local-llm">로컬 LLM (온프레미스)</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">장단점</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 장점</span>
+✓ 데이터 프라이버시 보장
+✓ 인터넷 불필요
+✓ 무제한 사용 (하드웨어 범위 내)
+✓ 벤더 독립적
+✓ 커스터마이징 가능
+✓ 예측 가능한 비용
+
+<span class="cmt">// 단점</span>
+✗ 높은 초기 하드웨어 비용
+✗ 인프라 관리 필요
+✗ 성능이 클라우드 모델보다 낮을 수 있음
+✗ 모델 업데이트 수동 관리
+✗ 스케일링 어려움
+✗ 전문 지식 필요
+
+<span class="cmt">// 적합한 경우</span>
+• 민감한 데이터 처리
+• 높은 사용량 (장기적으로 저렴)
+• 오프라인 환경
+• 특정 도메인 파인튜닝 필요
+• 규제 준수 (GDPR, HIPAA 등)
+</code></pre>
+</div>
+
+<h3 id="hybrid-approach">하이브리드 접근</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> anthropic
+<span class="kw">import</span> requests
+
+<span class="kw">class</span> <span class="type">HybridLLM</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, api_key, local_url=<span class="str">"http://localhost:11434"</span>):
+        <span class="kw">self</span>.claude = anthropic.Anthropic(api_key=api_key)
+        <span class="kw">self</span>.local_url = local_url
+
+    <span class="kw">def</span> <span class="fn">process</span>(<span class="kw">self</span>, prompt, sensitive=<span class="kw">False</span>, complex=<span class="kw">False</span>):
+        <span class="cmt"># 민감한 데이터는 로컬 LLM 사용</span>
+        <span class="kw">if</span> sensitive:
+            <span class="kw">return</span> <span class="kw">self</span>._use_local(prompt)
+
+        <span class="cmt"># 복잡한 작업은 Claude API 사용</span>
+        <span class="kw">if</span> complex:
+            <span class="kw">return</span> <span class="kw">self</span>._use_claude(prompt)
+
+        <span class="cmt"># 기본: 로컬 LLM 시도, 실패 시 Claude 폴백</span>
+        <span class="kw">try</span>:
+            <span class="kw">return</span> <span class="kw">self</span>._use_local(prompt)
+        <span class="kw">except</span> <span class="type">Exception</span>:
+            <span class="kw">return</span> <span class="kw">self</span>._use_claude(prompt)
+
+    <span class="kw">def</span> <span class="fn">_use_local</span>(<span class="kw">self</span>, prompt):
+        response = requests.post(
+            <span class="str">f"<span class="macro">{self.local_url}</span>/api/generate"</span>,
+            json={<span class="str">"model"</span>: <span class="str">"llama3"</span>, <span class="str">"prompt"</span>: prompt}
+        )
+        <span class="kw">return</span> response.json()[<span class="str">"response"</span>]
+
+    <span class="kw">def</span> <span class="fn">_use_claude</span>(<span class="kw">self</span>, prompt):
+        message = <span class="kw">self</span>.claude.messages.create(
+            model=<span class="str">"claude-4-sonnet-20260101"</span>,
+            max_tokens=<span class="num">1024</span>,
+            messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+        )
+        <span class="kw">return</span> message.content[<span class="num">0</span>].text
+
+<span class="cmt"># 사용 예시</span>
+llm = HybridLLM(api_key=<span class="str">"sk-ant-..."</span>)
+
+<span class="cmt"># 일반 요청: 로컬 LLM</span>
+result1 = llm.process(<span class="str">"간단한 요약"</span>)
+
+<span class="cmt"># 민감 데이터: 반드시 로컬</span>
+result2 = llm.process(<span class="str">"환자 기록 분석"</span>, sensitive=<span class="kw">True</span>)
+
+<span class="cmt"># 복잡한 작업: Claude API</span>
+result3 = llm.process(<span class="str">"복잡한 코드 리팩토링"</span>, complex=<span class="kw">True</span>)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="open-source">오픈소스 LLM</h2>
+
+<h3 id="popular-models">인기 오픈소스 모델</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">모델 목록</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>주요 오픈소스 LLM:
+┌──────────────┬────────────┬──────────┬─────────────────────┐
+│ 모델         │ 파라미터   │ 라이선스 │ 특징                │
+├──────────────┼────────────┼──────────┼─────────────────────┤
+│ Llama 3      │ 8B-70B     │ Llama 3  │ Meta, 고성능        │
+│ Mixtral      │ 8x7B, 8x22B│ Apache 2 │ MoE, 효율적         │
+│ Qwen 2.5     │ 0.5B-72B   │ Apache 2 │ 다국어 우수         │
+│ Yi           │ 6B-34B     │ Apache 2 │ 한중일 강점         │
+│ Phi-3        │ 3.8B-14B   │ MIT      │ Microsoft, 작고효율│
+│ Gemma 2      │ 2B-27B     │ Gemma    │ Google, 안전성     │
+│ DeepSeek     │ 7B-67B     │ MIT      │ 코딩 특화           │
+│ Mistral      │ 7B         │ Apache 2 │ 효율적              │
+└──────────────┴────────────┴──────────┴─────────────────────┘
+
+<span class="cmt">// 성능 티어 (대략적)</span>
+Tier 1 (최고): Llama 3 70B, Mixtral 8x22B, Qwen 2.5 72B
+Tier 2 (우수): Llama 3 8B, Mixtral 8x7B, Yi 34B
+Tier 3 (양호): Gemma 2 27B, Phi-3 14B, Qwen 2.5 7B
+Tier 4 (경량): Phi-3 3.8B, Gemma 2 2B, Qwen 2.5 0.5B
+</code></pre>
+</div>
+
+<h3 id="hardware-requirements">하드웨어 요구사항</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">사양</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>모델별 최소 VRAM (FP16 기준):
+┌──────────────┬──────────┬────────────┬─────────────────┐
+│ 모델 크기    │ 최소 RAM │ 권장 RAM   │ 예시            │
+├──────────────┼──────────┼────────────┼─────────────────┤
+│ 3B           │ 6GB      │ 8GB        │ Phi-3 mini      │
+│ 7B           │ 14GB     │ 16GB       │ Mistral 7B      │
+│ 13B          │ 26GB     │ 32GB       │ Llama 3 13B     │
+│ 34B          │ 68GB     │ 80GB       │ Yi 34B          │
+│ 70B          │ 140GB    │ 160GB      │ Llama 3 70B     │
+└──────────────┴──────────┴────────────┴─────────────────┘
+
+<span class="cmt">// 양자화로 메모리 절감</span>
+FP16:  100% 메모리, 100% 성능
+INT8:   50% 메모리,  95% 성능
+INT4:   25% 메모리,  85% 성능
+INT2:   12% 메모리,  70% 성능
+
+<span class="cmt">// 실용적 권장사항</span>
+개인용 (16GB VRAM):   7B INT4, 3B FP16
+워크스테이션 (48GB):  13B INT4, 7B FP16
+서버 (80GB+):         34B INT4, 13B FP16
+</code></pre>
+</div>
+
+<h3 id="local-deployment">로컬 배포 도구</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">도구</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// Ollama - 가장 쉬운 시작</span>
+$ ollama run llama3
+$ ollama run mistral
+$ ollama run qwen2.5
+
+<span class="cmt">// LM Studio - GUI 기반</span>
+• 모델 다운로드 및 관리
+• 채팅 인터페이스
+• OpenAI 호환 API 서버
+• Windows/Mac/Linux 지원
+
+<span class="cmt">// Text Generation WebUI (oobabooga)</span>
+• 웹 기반 인터페이스
+• 다양한 모델 포맷 지원
+• 파인튜닝 기능
+• 확장 생태계
+
+<span class="cmt">// llama.cpp</span>
+• 순수 C++ 구현
+• CPU에서도 실행 가능
+• 양자화 지원
+• 모바일 기기 지원
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="selection-guide">LLM 선택 가이드</h2>
+
+<h3 id="use-case-matrix">사용 사례별 추천</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">추천 모델</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 코드 생성 및 리뷰</span>
+1순위: Claude 3.5 Sonnet, Claude 4 Sonnet
+2순위: GPT-4o, DeepSeek Coder (로컬)
+이유: 코드 이해도, 설명 능력 우수
+
+<span class="cmt">// 복잡한 추론</span>
+1순위: o1, Claude 4 Opus
+2순위: Claude 4 Sonnet, GPT-4o
+이유: 다단계 추론 능력
+
+<span class="cmt">// 긴 문서 분석</span>
+1순위: Gemini 1.5 Pro (2M 토큰)
+2순위: Claude 4 (200K 토큰)
+이유: 긴 컨텍스트 처리
+
+<span class="cmt">// 비용 최적화</span>
+1순위: Gemini 1.5 Flash, Claude 4 Haiku
+2순위: GPT-3.5 Turbo, 로컬 LLM
+이유: 저렴한 가격
+
+<span class="cmt">// 멀티모달 (이미지+텍스트)</span>
+1순위: GPT-4o, Gemini 1.5 Pro
+2순위: Claude 4 Sonnet
+이유: 이미지 이해 능력
+
+<span class="cmt">// 비디오 분석</span>
+1순위: Gemini 1.5 Pro
+2순위: GPT-4o (프레임 추출)
+이유: 네이티브 비디오 지원
+
+<span class="cmt">// 데이터 프라이버시</span>
+1순위: 로컬 LLM (Llama 3, Mistral)
+2순위: 프라이빗 클라우드 배포
+이유: 데이터 외부 전송 없음
+
+<span class="cmt">// 한국어 처리</span>
+1순위: Claude 4, GPT-4o
+2순위: Gemini 1.5, Qwen 2.5, Yi
+이유: 한국어 성능 우수
+</code></pre>
+</div>
+
+<h3 id="decision-tree">의사결정 트리</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">의사결정</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>LLM 선택 의사결정 트리:
+
+데이터 프라이버시가 최우선인가?
+├─ YES → 로컬 LLM (Llama 3, Mistral, Qwen)
+└─ NO ↓
+
+예산이 매우 제한적인가?
+├─ YES → Gemini 1.5 Flash (무료 티어) 또는 로컬 LLM
+└─ NO ↓
+
+초장문 컨텍스트(100K+ 토큰)가 필요한가?
+├─ YES → Gemini 1.5 Pro (2M) 또는 Claude 4 (200K)
+└─ NO ↓
+
+비디오 입력이 필요한가?
+├─ YES → Gemini 1.5 Pro
+└─ NO ↓
+
+코드 생성이 주 용도인가?
+├─ YES → Claude 3.5/4 Sonnet
+└─ NO ↓
+
+복잡한 추론이 필요한가?
+├─ YES → o1 또는 Claude 4 Opus
+└─ NO ↓
+
+범용적인 작업인가?
+├─ YES → GPT-4o 또는 Claude 4 Sonnet
+└─ NO → 구체적인 요구사항에 따라 선택
+</code></pre>
+</div>
+
+<h3 id="evaluation-checklist">평가 체크리스트</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">체크리스트</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 성능 요구사항</span>
+□ 필요한 작업 유형 (코딩, 추론, 요약 등)
+□ 정확도 요구사항
+□ 응답 속도 요구사항
+□ 컨텍스트 길이 요구사항
+
+<span class="cmt">// 비용 고려사항</span>
+□ 예상 월간 토큰 사용량
+□ 예산 제한
+□ Input/Output 토큰 비율
+□ 피크 시간대 사용 패턴
+
+<span class="cmt">// 기술적 요구사항</span>
+□ 프로그래밍 언어 (Python, JavaScript 등)
+□ 필요한 특수 기능 (Vision, Function Calling 등)
+□ 스트리밍 필요 여부
+□ 응답 포맷 (JSON, XML 등)
+
+<span class="cmt">// 운영 고려사항</span>
+□ 데이터 프라이버시 요구사항
+□ 규제 준수 (GDPR, HIPAA 등)
+□ 가용성 요구사항 (SLA)
+□ 지원 언어
+
+<span class="cmt">// 확장성</span>
+□ 향후 확장 계획
+□ 다중 모델 지원 필요성
+□ 폴백 전략 필요성
+□ 벤더 종속성 리스크
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="multi-model">다중 모델 전략</h2>
+
+<h3 id="task-routing">작업별 라우팅</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> enum <span class="kw">import</span> Enum
+<span class="kw">import</span> anthropic
+<span class="kw">import</span> openai
+
+<span class="kw">class</span> <span class="type">TaskType</span>(Enum):
+    CODING = <span class="str">"coding"</span>
+    REASONING = <span class="str">"reasoning"</span>
+    SUMMARIZATION = <span class="str">"summarization"</span>
+    TRANSLATION = <span class="str">"translation"</span>
+    SIMPLE = <span class="str">"simple"</span>
+
+<span class="kw">class</span> <span class="type">SmartRouter</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, claude_key, openai_key):
+        <span class="kw">self</span>.claude = anthropic.Anthropic(api_key=claude_key)
+        <span class="kw">self</span>.openai = openai.OpenAI(api_key=openai_key)
+
+    <span class="kw">def</span> <span class="fn">route</span>(<span class="kw">self</span>, prompt: str, task_type: TaskType):
+        <span class="cmt"># 작업 유형에 따라 최적 모델 선택</span>
+        <span class="kw">if</span> task_type == TaskType.CODING:
+            <span class="kw">return</span> <span class="kw">self</span>._use_claude_sonnet(prompt)
+
+        <span class="kw">elif</span> task_type == TaskType.REASONING:
+            <span class="kw">return</span> <span class="kw">self</span>._use_o1(prompt)
+
+        <span class="kw">elif</span> task_type == TaskType.SIMPLE:
+            <span class="kw">return</span> <span class="kw">self</span>._use_gpt35(prompt)
+
+        <span class="kw">else</span>:
+            <span class="kw">return</span> <span class="kw">self</span>._use_claude_sonnet(prompt)
+
+    <span class="kw">def</span> <span class="fn">_use_claude_sonnet</span>(<span class="kw">self</span>, prompt):
+        message = <span class="kw">self</span>.claude.messages.create(
+            model=<span class="str">"claude-4-sonnet-20260101"</span>,
+            max_tokens=<span class="num">2048</span>,
+            messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+        )
+        <span class="kw">return</span> message.content[<span class="num">0</span>].text
+
+    <span class="kw">def</span> <span class="fn">_use_o1</span>(<span class="kw">self</span>, prompt):
+        response = <span class="kw">self</span>.openai.chat.completions.create(
+            model=<span class="str">"o1"</span>,
+            messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+        )
+        <span class="kw">return</span> response.choices[<span class="num">0</span>].message.content
+
+    <span class="kw">def</span> <span class="fn">_use_gpt35</span>(<span class="kw">self</span>, prompt):
+        response = <span class="kw">self</span>.openai.chat.completions.create(
+            model=<span class="str">"gpt-3.5-turbo"</span>,
+            messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+        )
+        <span class="kw">return</span> response.choices[<span class="num">0</span>].message.content
+
+<span class="cmt"># 사용 예시</span>
+router = SmartRouter(claude_key=<span class="str">"..."</span>, openai_key=<span class="str">"..."</span>)
+
+<span class="cmt"># 코딩 작업 → Claude Sonnet</span>
+code = router.route(
+    <span class="str">"이 함수를 리팩토링해줘: ..."</span>,
+    TaskType.CODING
+)
+
+<span class="cmt"># 추론 작업 → o1</span>
+reasoning = router.route(
+    <span class="str">"다음 퍼즐을 풀어줘: ..."</span>,
+    TaskType.REASONING
+)
+
+<span class="cmt"># 간단한 작업 → GPT-3.5 (저렴)</span>
+simple = router.route(
+    <span class="str">"이 문장을 영어로 번역: ..."</span>,
+    TaskType.SIMPLE
+)
+</code></pre>
+</div>
+
+<h3 id="cost-optimization">비용 기반 최적화</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">class</span> <span class="type">CostOptimizedRouter</span>:
+    <span class="cmt"># 모델별 가격 (Input/Output per 1M tokens)</span>
+    PRICING = {
+        <span class="str">"claude-4-opus"</span>: (<span class="num">15.0</span>, <span class="num">75.0</span>),
+        <span class="str">"claude-4-sonnet"</span>: (<span class="num">3.0</span>, <span class="num">15.0</span>),
+        <span class="str">"claude-4-haiku"</span>: (<span class="num">0.25</span>, <span class="num">1.25</span>),
+        <span class="str">"gpt-4o"</span>: (<span class="num">2.5</span>, <span class="num">10.0</span>),
+        <span class="str">"gpt-3.5-turbo"</span>: (<span class="num">0.5</span>, <span class="num">1.5</span>),
+    }
+
+    <span class="kw">def</span> <span class="fn">select_model</span>(<span class="kw">self</span>, input_tokens, max_budget_usd):
+        <span class="str">"""예산 내에서 최고 성능 모델 선택"""</span>
+        <span class="cmt"># Output은 Input의 50%로 가정</span>
+        output_tokens = input_tokens * <span class="num">0.5</span>
+
+        affordable = []
+        <span class="kw">for</span> model, (input_price, output_price) <span class="kw">in</span> <span class="kw">self</span>.PRICING.items():
+            cost = (input_tokens * input_price +
+                   output_tokens * output_price) / <span class="num">1_000_000</span>
+
+            <span class="kw">if</span> cost <= max_budget_usd:
+                affordable.append((model, cost))
+
+        <span class="cmt"># 성능 순서 (간단한 예시)</span>
+        performance_order = [
+            <span class="str">"claude-4-opus"</span>, <span class="str">"claude-4-sonnet"</span>, <span class="str">"gpt-4o"</span>,
+            <span class="str">"claude-4-haiku"</span>, <span class="str">"gpt-3.5-turbo"</span>
+        ]
+
+        <span class="kw">for</span> model <span class="kw">in</span> performance_order:
+            <span class="kw">if</span> any(m == model <span class="kw">for</span> m, c <span class="kw">in</span> affordable):
+                <span class="kw">return</span> model
+
+        <span class="kw">return</span> <span class="kw">None</span>  <span class="cmt"># 예산 초과</span>
+
+<span class="cmt"># 사용 예시</span>
+router = CostOptimizedRouter()
+
+<span class="cmt"># 5,000 토큰, $0.10 예산</span>
+model = router.select_model(input_tokens=<span class="num">5000</span>, max_budget_usd=<span class="num">0.10</span>)
+<span class="fn">print</span>(<span class="str">f"선택된 모델: <span class="macro">{model}</span>"</span>)  <span class="cmt"># claude-4-sonnet</span>
+
+<span class="cmt"># 1,000 토큰, $0.01 예산</span>
+model = router.select_model(input_tokens=<span class="num">1000</span>, max_budget_usd=<span class="num">0.01</span>)
+<span class="fn">print</span>(<span class="str">f"선택된 모델: <span class="macro">{model}</span>"</span>)  <span class="cmt"># gpt-3.5-turbo</span>
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="future-trends">미래 트렌드</h2>
+
+<h3 id="emerging-trends">떠오르는 트렌드</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">트렌드</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 멀티모달 통합</span>
+• 텍스트 + 이미지 + 비디오 + 오디오 통합 처리
+• Gemini 1.5, GPT-4o가 선도
+• 향후 모든 주요 모델이 멀티모달로 진화 예상
+
+<span class="cmt">// 2. 초장문 컨텍스트</span>
+• Gemini 1.5 Pro의 2M 토큰
+• 전체 코드베이스, 책 한 권 처리 가능
+• RAG 없이도 긴 문서 처리
+
+<span class="cmt">// 3. 추론 최적화 모델</span>
+• OpenAI o1의 "생각하는" 모델
+• 내부 Chain-of-Thought로 복잡한 문제 해결
+• 수학, 과학, 프로그래밍에서 우수
+
+<span class="cmt">// 4. 효율적인 소형 모델</span>
+• Phi-3, Gemma 2 등 3B 이하 모델
+• 모바일, 엣지 디바이스에서 실행
+• 프라이버시와 비용 효율성
+
+<span class="cmt">// 5. 에이전트 기능 강화</span>
+• Tool Use / Function Calling 고도화
+• 자율적인 작업 수행 능력
+• MCP 등 표준 프로토콜 등장
+
+<span class="cmt">// 6. 오픈소스 발전</span>
+• Llama 3, Mixtral 등 고성능 오픈소스
+• 상용 모델과 격차 축소
+• 기업의 자체 파인튜닝 증가
+</code></pre>
+</div>
+
+<div class="info-box note">
+<strong>2026년 예상</strong>
+<ul>
+<li>GPT-5 / Claude 5 출시 가능성</li>
+<li>컨텍스트 10M 토큰 돌파</li>
+<li>실시간 멀티모달 스트리밍 보편화</li>
+<li>토큰당 가격 지속적 하락</li>
+<li>규제 강화 (AI Act, Executive Order 등)</li>
+</ul>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="best-practices">모범 사례</h2>
+
+<h3 id="general-guidelines">일반 가이드라인</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">모범 사례</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 올바른 모델 선택</span>
+✓ 작업에 맞는 모델 사용 (과도한 성능 지양)
+✓ 프로토타입은 빠른 모델, 프로덕션은 최고 성능
+✓ 비용과 성능의 균형 고려
+
+<span class="cmt">// 2. 프롬프트 최적화</span>
+✓ 명확하고 구체적인 지시사항
+✓ Few-shot 예시 활용
+✓ 시스템 프롬프트로 일관성 확보
+✓ 불필요한 토큰 제거
+
+<span class="cmt">// 3. 비용 관리</span>
+✓ 토큰 사용량 모니터링
+✓ max_tokens 설정으로 출력 제한
+✓ 캐싱 활용 (Claude, Gemini)
+✓ 배치 처리 활용 (OpenAI)
+
+<span class="cmt">// 4. 에러 처리</span>
+✓ 재시도 로직 구현 (지수 백오프)
+✓ 다중 모델 폴백 전략
+✓ Rate Limit 처리
+✓ 타임아웃 설정
+
+<span class="cmt">// 5. 보안</span>
+✓ API 키 환경 변수 관리
+✓ 최소 권한 원칙
+✓ 민감한 데이터 처리 주의
+✓ 로깅 시 개인정보 마스킹
+
+<span class="cmt">// 6. 성능 최적화</span>
+✓ 스트리밍으로 사용자 경험 개선
+✓ 동시 요청 제한
+✓ 응답 캐싱
+✓ 비동기 처리 활용
+</code></pre>
+</div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

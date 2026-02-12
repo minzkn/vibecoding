@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="LLM API 비용 모니터링 - 사용량 추적 및 최적화">
+<meta property="og:description" content="Claude, GPT, Gemini API 비용을 추적하고 최적화하는 완전 가이드">
+<meta property="og:url" content="https://minzkn.com/claude/pages/monitoring-costs.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="LLM API 비용 모니터링 완전 가이드. 토큰 사용량 추적, 알림 설정, 최적화 전략, 대시보드 구축까지.">
+<meta name="keywords" content="llm cost monitoring api 비용 모니터링 토큰 usage 사용량">
+<meta name="author" content="MINZKN">
+<title>비용 모니터링 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">LLM API 비용 모니터링</h1>
+<p class="lead">Claude, GPT, Gemini API 비용을 효과적으로 추적하고 최적화하는 완벽한 가이드</p>
+
+<div class="info-box warning">
+  <div class="info-box-title">⚠️ 비용 관리가 중요한 이유</div>
+  <ul>
+    <li><strong>예상치 못한 청구</strong>: 무제한 사용 시 수천~수만 달러 청구 가능</li>
+    <li><strong>테스트 실수</strong>: 무한 루프나 대량 호출로 인한 비용 폭증</li>
+    <li><strong>악의적 사용</strong>: API 키 유출 시 타인의 악용</li>
+    <li><strong>비효율</strong>: 불필요하게 긴 컨텍스트나 큰 모델 사용</li>
+  </ul>
+  <p><strong>모니터링과 알림 설정은 필수입니다!</strong></p>
+</div>
+
+<section class="content-section">
+  <h2 id="pricing">LLM 가격 구조</h2>
+
+  <h3 id="pricing-models">주요 모델 가격 (2024년 기준)</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>제공자</th>
+        <th>모델</th>
+        <th>입력 (1M 토큰)</th>
+        <th>출력 (1M 토큰)</th>
+        <th>컨텍스트</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td rowspan="3"><strong>Anthropic</strong></td>
+        <td>Claude Opus 4</td>
+        <td>$15.00</td>
+        <td>$75.00</td>
+        <td>200K</td>
+      </tr>
+      <tr>
+        <td>Claude Sonnet 4</td>
+        <td>$3.00</td>
+        <td>$15.00</td>
+        <td>200K</td>
+      </tr>
+      <tr>
+        <td>Claude Haiku 4</td>
+        <td>$0.80</td>
+        <td>$4.00</td>
+        <td>200K</td>
+      </tr>
+      <tr>
+        <td rowspan="4"><strong>OpenAI</strong></td>
+        <td>GPT-4 Turbo</td>
+        <td>$10.00</td>
+        <td>$30.00</td>
+        <td>128K</td>
+      </tr>
+      <tr>
+        <td>GPT-4o</td>
+        <td>$2.50</td>
+        <td>$10.00</td>
+        <td>128K</td>
+      </tr>
+      <tr>
+        <td>GPT-4o mini</td>
+        <td>$0.15</td>
+        <td>$0.60</td>
+        <td>128K</td>
+      </tr>
+      <tr>
+        <td>o1-preview</td>
+        <td>$15.00</td>
+        <td>$60.00</td>
+        <td>128K</td>
+      </tr>
+      <tr>
+        <td rowspan="2"><strong>Google</strong></td>
+        <td>Gemini 1.5 Pro</td>
+        <td>$3.50</td>
+        <td>$10.50</td>
+        <td>2M</td>
+      </tr>
+      <tr>
+        <td>Gemini 1.5 Flash</td>
+        <td>$0.075</td>
+        <td>$0.30</td>
+        <td>1M</td>
+      </tr>
+      <tr>
+        <td><strong>Ollama</strong></td>
+        <td>모든 모델</td>
+        <td colspan="3">무료 (로컬 실행, 하드웨어 비용만)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="pricing-calc">비용 계산기</h3>
+
+<pre><code><span class="kw">def</span> <span class="fn">calculate_cost</span>(
+    model: str,
+    input_tokens: int,
+    output_tokens: int
+) -> float:
+    <span class="str">"""토큰 수로 비용 계산"""</span>
+
+    <span class="cmt"># 가격표 (입력, 출력 per 1M tokens)</span>
+    prices = {
+        <span class="str">"claude-opus-4"</span>: (15.00, 75.00),
+        <span class="str">"claude-sonnet-4"</span>: (3.00, 15.00),
+        <span class="str">"claude-haiku-4"</span>: (0.80, 4.00),
+        <span class="str">"gpt-4-turbo"</span>: (10.00, 30.00),
+        <span class="str">"gpt-4o"</span>: (2.50, 10.00),
+        <span class="str">"gpt-4o-mini"</span>: (0.15, 0.60),
+        <span class="str">"gemini-1.5-pro"</span>: (3.50, 10.50),
+        <span class="str">"gemini-1.5-flash"</span>: (0.075, 0.30),
+    }
+
+    <span class="kw">if</span> model <span class="kw">not in</span> prices:
+        <span class="kw">raise</span> ValueError(f<span class="str">"Unknown model: {model}"</span>)
+
+    input_price, output_price = prices[model]
+
+    input_cost = (input_tokens / 1_000_000) * input_price
+    output_cost = (output_tokens / 1_000_000) * output_price
+
+    <span class="kw">return</span> input_cost + output_cost
+
+<span class="cmt"># 사용 예시</span>
+cost = calculate_cost(
+    model=<span class="str">"claude-sonnet-4"</span>,
+    input_tokens=5000,
+    output_tokens=1000
+)
+print(f<span class="str">"비용: ${cost:.4f}"</span>)
+<span class="cmt"># 출력: 비용: $0.0300</span></code></pre>
+
+  <h3 id="pricing-examples">실제 사용 예시</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>작업</th>
+        <th>모델</th>
+        <th>토큰 (입력/출력)</th>
+        <th>비용</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>간단한 질문</td>
+        <td>Sonnet 4</td>
+        <td>100 / 50</td>
+        <td>$0.0001</td>
+      </tr>
+      <tr>
+        <td>코드 리뷰 (1파일)</td>
+        <td>Sonnet 4</td>
+        <td>2,000 / 500</td>
+        <td>$0.0135</td>
+      </tr>
+      <tr>
+        <td>문서 요약 (10페이지)</td>
+        <td>Haiku 4</td>
+        <td>8,000 / 300</td>
+        <td>$0.0076</td>
+      </tr>
+      <tr>
+        <td>PR 전체 리뷰</td>
+        <td>Sonnet 4</td>
+        <td>15,000 / 3,000</td>
+        <td>$0.0900</td>
+      </tr>
+      <tr>
+        <td>대규모 코드베이스 분석</td>
+        <td>Opus 4</td>
+        <td>100,000 / 5,000</td>
+        <td>$1.8750</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 비용 절감 팁</div>
+    <ul>
+      <li><strong>작은 모델 우선</strong>: Haiku → Sonnet → Opus 순으로 시도</li>
+      <li><strong>캐싱 활용</strong>: Prompt Caching으로 반복 컨텍스트 90% 절감</li>
+      <li><strong>컨텍스트 최소화</strong>: 필요한 정보만 전달</li>
+      <li><strong>출력 길이 제한</strong>: max_tokens 적절히 설정</li>
+      <li><strong>로컬 모델</strong>: Ollama로 비용 제로화 (하드웨어 비용만)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="tracking">사용량 추적</h2>
+
+  <h3 id="tracking-basic">기본 로깅</h3>
+
+  <h4>Python 예제</h4>
+
+<pre><code><span class="kw">import</span> anthropic
+<span class="kw">import</span> os
+<span class="kw">import</span> json
+<span class="kw">import</span> logging
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+<span class="cmt"># 로깅 설정</span>
+logging.basicConfig(
+    filename=<span class="str">'llm_usage.log'</span>,
+    level=logging.INFO,
+    format=<span class="str">'%(asctime)s - %(message)s'</span>
+)
+
+<span class="kw">class</span> <span class="type">CostTracker</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.client = anthropic.Anthropic(
+            api_key=os.getenv(<span class="str">"ANTHROPIC_API_KEY"</span>)
+        )
+
+    <span class="kw">def</span> <span class="fn">log_usage</span>(self, model, usage, cost):
+        <span class="str">"""API 사용량 로깅"""</span>
+        log_entry = {
+            <span class="str">"timestamp"</span>: datetime.utcnow().isoformat(),
+            <span class="str">"model"</span>: model,
+            <span class="str">"input_tokens"</span>: usage.input_tokens,
+            <span class="str">"output_tokens"</span>: usage.output_tokens,
+            <span class="str">"cost_usd"</span>: cost,
+        }
+        logging.info(json.dumps(log_entry))
+
+    <span class="kw">def</span> <span class="fn">create_message</span>(self, model, messages, **kwargs):
+        <span class="str">"""비용 추적과 함께 메시지 생성"""</span>
+        message = self.client.messages.create(
+            model=model,
+            messages=messages,
+            **kwargs
+        )
+
+        <span class="cmt"># 비용 계산</span>
+        cost = calculate_cost(
+            model=model,
+            input_tokens=message.usage.input_tokens,
+            output_tokens=message.usage.output_tokens
+        )
+
+        <span class="cmt"># 로깅</span>
+        self.log_usage(model, message.usage, cost)
+
+        <span class="kw">return</span> message
+
+<span class="cmt"># 사용</span>
+tracker = CostTracker()
+message = tracker.create_message(
+    model=<span class="str">"claude-sonnet-4"</span>,
+    max_tokens=1024,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello!"</span>}]
+)</code></pre>
+
+  <h3 id="tracking-db">데이터베이스 저장</h3>
+
+  <h4>SQLite 예제</h4>
+
+<pre><code><span class="kw">import</span> sqlite3
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+<span class="kw">class</span> <span class="type">UsageDatabase</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, db_path=<span class="str">"llm_usage.db"</span>):
+        self.conn = sqlite3.connect(db_path)
+        self.create_table()
+
+    <span class="kw">def</span> <span class="fn">create_table</span>(self):
+        self.conn.execute(<span class="str">"""
+            CREATE TABLE IF NOT EXISTS api_usage (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                user_id TEXT,
+                model TEXT NOT NULL,
+                input_tokens INTEGER NOT NULL,
+                output_tokens INTEGER NOT NULL,
+                cost_usd REAL NOT NULL,
+                request_id TEXT,
+                metadata TEXT
+            )
+        """</span>)
+        self.conn.commit()
+
+    <span class="kw">def</span> <span class="fn">log_request</span>(
+        self,
+        model: str,
+        input_tokens: int,
+        output_tokens: int,
+        cost: float,
+        user_id: str = <span class="kw">None</span>,
+        request_id: str = <span class="kw">None</span>,
+        metadata: dict = <span class="kw">None</span>
+    ):
+        self.conn.execute(
+            <span class="str">"""
+            INSERT INTO api_usage
+            (timestamp, user_id, model, input_tokens, output_tokens, cost_usd, request_id, metadata)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """</span>,
+            (
+                datetime.utcnow().isoformat(),
+                user_id,
+                model,
+                input_tokens,
+                output_tokens,
+                cost,
+                request_id,
+                json.dumps(metadata) <span class="kw">if</span> metadata <span class="kw">else</span> <span class="kw">None</span>
+            )
+        )
+        self.conn.commit()
+
+    <span class="kw">def</span> <span class="fn">get_daily_cost</span>(self, date: str = <span class="kw">None</span>) -> float:
+        <span class="str">"""특정 날짜의 총 비용"""</span>
+        <span class="kw">if not</span> date:
+            date = datetime.utcnow().strftime(<span class="str">"%Y-%m-%d"</span>)
+
+        cursor = self.conn.execute(
+            <span class="str">"SELECT SUM(cost_usd) FROM api_usage WHERE DATE(timestamp) = ?"</span>,
+            (date,)
+        )
+        result = cursor.fetchone()[0]
+        <span class="kw">return</span> result <span class="kw">or</span> 0.0
+
+    <span class="kw">def</span> <span class="fn">get_user_usage</span>(self, user_id: str, days: int = 30):
+        <span class="str">"""사용자별 사용량 통계"""</span>
+        cursor = self.conn.execute(
+            <span class="str">"""
+            SELECT
+                model,
+                COUNT(*) as requests,
+                SUM(input_tokens) as total_input,
+                SUM(output_tokens) as total_output,
+                SUM(cost_usd) as total_cost
+            FROM api_usage
+            WHERE user_id = ?
+              AND timestamp &gt;= datetime('now', '-' || ? || ' days')
+            GROUP BY model
+            """</span>,
+            (user_id, days)
+        )
+        <span class="kw">return</span> cursor.fetchall()
+
+<span class="cmt"># 사용</span>
+db = UsageDatabase()
+db.log_request(
+    model=<span class="str">"claude-sonnet-4"</span>,
+    input_tokens=5000,
+    output_tokens=1000,
+    cost=0.03,
+    user_id=<span class="str">"user123"</span>
+)
+
+print(f<span class="str">"Today's cost: ${db.get_daily_cost():.2f}"</span>)</code></pre>
+
+  <h3 id="tracking-wrapper">API 래퍼 클래스</h3>
+
+<pre><code><span class="kw">class</span> <span class="type">MonitoredAnthropicClient</span>:
+    <span class="str">"""비용 추적 기능이 내장된 Anthropic 클라이언트"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, api_key: str, db: UsageDatabase):
+        self.client = anthropic.Anthropic(api_key=api_key)
+        self.db = db
+
+    <span class="kw">def</span> <span class="fn">messages_create</span>(
+        self,
+        user_id: str = <span class="kw">None</span>,
+        **kwargs
+    ) -> anthropic.types.Message:
+        <span class="str">"""메시지 생성 + 자동 로깅"""</span>
+
+        <span class="cmt"># API 호출</span>
+        message = self.client.messages.create(**kwargs)
+
+        <span class="cmt"># 비용 계산</span>
+        cost = calculate_cost(
+            model=kwargs[<span class="str">'model'</span>],
+            input_tokens=message.usage.input_tokens,
+            output_tokens=message.usage.output_tokens
+        )
+
+        <span class="cmt"># DB 로깅</span>
+        self.db.log_request(
+            model=kwargs[<span class="str">'model'</span>],
+            input_tokens=message.usage.input_tokens,
+            output_tokens=message.usage.output_tokens,
+            cost=cost,
+            user_id=user_id,
+            request_id=message.id
+        )
+
+        <span class="kw">return</span> message
+
+<span class="cmt"># 사용</span>
+db = UsageDatabase()
+client = MonitoredAnthropicClient(
+    api_key=os.getenv(<span class="str">"ANTHROPIC_API_KEY"</span>),
+    db=db
+)
+
+message = client.messages_create(
+    model=<span class="str">"claude-sonnet-4"</span>,
+    max_tokens=1024,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello!"</span>}],
+    user_id=<span class="str">"user123"</span>
+)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="alerts">알림 설정</h2>
+
+  <h3 id="alerts-threshold">비용 임계값 알림</h3>
+
+  <h4>이메일 알림</h4>
+
+<pre><code><span class="kw">import</span> smtplib
+<span class="kw">from</span> email.mime.text <span class="kw">import</span> MIMEText
+
+<span class="kw">class</span> <span class="type">CostAlerter</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(
+        self,
+        daily_limit: float = 100.0,
+        monthly_limit: float = 1000.0,
+        email_to: str = <span class="str">"admin@example.com"</span>
+    ):
+        self.daily_limit = daily_limit
+        self.monthly_limit = monthly_limit
+        self.email_to = email_to
+        self.db = UsageDatabase()
+
+    <span class="kw">def</span> <span class="fn">check_limits</span>(self):
+        <span class="str">"""비용 제한 확인 및 알림"""</span>
+        daily_cost = self.db.get_daily_cost()
+        monthly_cost = self.get_monthly_cost()
+
+        <span class="cmt"># 일일 한도 초과</span>
+        <span class="kw">if</span> daily_cost &gt; self.daily_limit:
+            self.send_alert(
+                subject=<span class="str">"⚠️ Daily API cost limit exceeded"</span>,
+                message=f<span class="str">"Daily cost: ${daily_cost:.2f} (limit: ${self.daily_limit})"</span>
+            )
+
+        <span class="cmt"># 월간 한도 초과</span>
+        <span class="kw">if</span> monthly_cost &gt; self.monthly_limit:
+            self.send_alert(
+                subject=<span class="str">"🚨 Monthly API cost limit exceeded"</span>,
+                message=f<span class="str">"Monthly cost: ${monthly_cost:.2f} (limit: ${self.monthly_limit})"</span>
+            )
+
+        <span class="cmt"># 경고 (80% 도달)</span>
+        <span class="kw">if</span> daily_cost &gt; self.daily_limit * 0.8:
+            self.send_alert(
+                subject=<span class="str">"⚠️ Approaching daily limit"</span>,
+                message=f<span class="str">"Daily cost: ${daily_cost:.2f} (80% of limit)"</span>
+            )
+
+    <span class="kw">def</span> <span class="fn">send_alert</span>(self, subject: str, message: str):
+        <span class="str">"""이메일 알림 전송"""</span>
+        msg = MIMEText(message)
+        msg[<span class="str">'Subject'</span>] = subject
+        msg[<span class="str">'From'</span>] = <span class="str">'alerts@example.com'</span>
+        msg[<span class="str">'To'</span>] = self.email_to
+
+        <span class="kw">with</span> smtplib.SMTP(<span class="str">'smtp.gmail.com'</span>, 587) <span class="kw">as</span> server:
+            server.starttls()
+            server.login(
+                os.getenv(<span class="str">'SMTP_USER'</span>),
+                os.getenv(<span class="str">'SMTP_PASS'</span>)
+            )
+            server.send_message(msg)
+
+    <span class="kw">def</span> <span class="fn">get_monthly_cost</span>(self) -> float:
+        cursor = self.db.conn.execute(
+            <span class="str">"SELECT SUM(cost_usd) FROM api_usage WHERE strftime('%Y-%m', timestamp) = strftime('%Y-%m', 'now')"</span>
+        )
+        result = cursor.fetchone()[0]
+        <span class="kw">return</span> result <span class="kw">or</span> 0.0
+
+<span class="cmt"># 주기적으로 실행 (cron 또는 스케줄러)</span>
+alerter = CostAlerter(daily_limit=50.0, monthly_limit=500.0)
+alerter.check_limits()</code></pre>
+
+  <h3 id="alerts-slack">Slack 알림</h3>
+
+<pre><code><span class="kw">import</span> requests
+
+<span class="kw">def</span> <span class="fn">send_slack_alert</span>(webhook_url: str, message: str):
+    <span class="str">"""Slack으로 알림 전송"""</span>
+    payload = {
+        <span class="str">"text"</span>: message,
+        <span class="str">"blocks"</span>: [
+            {
+                <span class="str">"type"</span>: <span class="str">"section"</span>,
+                <span class="str">"text"</span>: {
+                    <span class="str">"type"</span>: <span class="str">"mrkdwn"</span>,
+                    <span class="str">"text"</span>: message
+                }
+            }
+        ]
+    }
+
+    response = requests.post(webhook_url, json=payload)
+    response.raise_for_status()
+
+<span class="cmt"># 사용</span>
+<span class="kw">if</span> daily_cost &gt; 100:
+    send_slack_alert(
+        webhook_url=os.getenv(<span class="str">"SLACK_WEBHOOK_URL"</span>),
+        message=f<span class="str">"🚨 *API Cost Alert*\n\nDaily cost: ${daily_cost:.2f}\nLimit: $100.00"</span>
+    )</code></pre>
+
+  <h3 id="alerts-realtime">실시간 알림</h3>
+
+<pre><code><span class="kw">class</span> <span class="type">RealtimeMonitor</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, threshold_per_request: float = 1.0):
+        self.threshold = threshold_per_request
+
+    <span class="kw">def</span> <span class="fn">monitor_request</span>(self, cost: float, model: str, user_id: str):
+        <span class="str">"""단일 요청이 임계값 초과 시 즉시 알림"""</span>
+        <span class="kw">if</span> cost &gt; self.threshold:
+            self.alert_expensive_request(cost, model, user_id)
+
+    <span class="kw">def</span> <span class="fn">alert_expensive_request</span>(self, cost: float, model: str, user_id: str):
+        message = f<span class="str">"""
+⚠️ Expensive API Request Detected
+
+User: {user_id}
+Model: {model}
+Cost: ${cost:.2f}
+Threshold: ${self.threshold:.2f}
+
+This single request exceeded the per-request cost threshold.
+Please review the usage pattern.
+        """</span>
+
+        send_slack_alert(
+            webhook_url=os.getenv(<span class="str">"SLACK_WEBHOOK_URL"</span>),
+            message=message
+        )</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="optimization">비용 최적화 전략</h2>
+
+  <h3 id="opt-caching">프롬프트 캐싱</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 Prompt Caching (Claude)</div>
+    <p>
+      반복되는 컨텍스트를 캐시하면 입력 토큰 비용을 90% 절감할 수 있습니다.
+      캐시는 5분간 유지되며, 1024 토큰 이상의 블록에 적용됩니다.
+    </p>
+  </div>
+
+<pre><code><span class="cmt"># 캐싱 없이 (매번 전체 비용 지불)</span>
+message = client.messages.create(
+    model=<span class="str">"claude-sonnet-4"</span>,
+    max_tokens=1024,
+    system=<span class="str">"You are a code reviewer. [긴 가이드라인...]"</span>,  <span class="cmt"># 10,000 토큰</span>
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Review this code..."</span>}]
+)
+<span class="cmt"># 비용: $0.0300 (10,000 입력 토큰)</span>
+
+<span class="cmt"># 캐싱 사용 (첫 요청 후 90% 절감)</span>
+message = client.messages.create(
+    model=<span class="str">"claude-sonnet-4"</span>,
+    max_tokens=1024,
+    system=[
+        {
+            <span class="str">"type"</span>: <span class="str">"text"</span>,
+            <span class="str">"text"</span>: <span class="str">"You are a code reviewer. [긴 가이드라인...]"</span>,
+            <span class="str">"cache_control"</span>: {<span class="str">"type"</span>: <span class="str">"ephemeral"</span>}  <span class="cmt"># 캐싱 활성화</span>
+        }
+    ],
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Review this code..."</span>}]
+)
+<span class="cmt"># 첫 요청: $0.0375 (캐시 쓰기 비용 25% 추가)</span>
+<span class="cmt"># 이후 요청: $0.0030 (캐시 읽기 비용 90% 절감)</span></code></pre>
+
+  <h3 id="opt-model">모델 선택 전략</h3>
+
+  <h4>계층적 모델 사용</h4>
+
+<pre><code><span class="kw">def</span> <span class="fn">smart_generate</span>(prompt: str, complexity: str = <span class="str">"auto"</span>):
+    <span class="str">"""복잡도에 따라 적절한 모델 선택"""</span>
+
+    <span class="kw">if</span> complexity == <span class="str">"auto"</span>:
+        <span class="cmt"># 간단한 휴리스틱으로 복잡도 판단</span>
+        <span class="kw">if</span> len(prompt) &lt; 500:
+            complexity = <span class="str">"simple"</span>
+        <span class="kw">elif</span> <span class="str">"analyze"</span> <span class="kw">in</span> prompt.lower() <span class="kw">or</span> <span class="str">"complex"</span> <span class="kw">in</span> prompt.lower():
+            complexity = <span class="str">"complex"</span>
+        <span class="kw">else</span>:
+            complexity = <span class="str">"medium"</span>
+
+    <span class="cmt"># 모델 선택</span>
+    model_map = {
+        <span class="str">"simple"</span>: <span class="str">"claude-haiku-4"</span>,      <span class="cmt"># $0.80/$4.00 per 1M</span>
+        <span class="str">"medium"</span>: <span class="str">"claude-sonnet-4"</span>,     <span class="cmt"># $3.00/$15.00 per 1M</span>
+        <span class="str">"complex"</span>: <span class="str">"claude-opus-4"</span>,      <span class="cmt"># $15.00/$75.00 per 1M</span>
+    }
+
+    model = model_map[complexity]
+
+    message = client.messages.create(
+        model=model,
+        max_tokens=1024,
+        messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+    )
+
+    <span class="kw">return</span> message
+
+<span class="cmt"># 사용</span>
+<span class="cmt"># 간단한 작업 → Haiku (저렴)</span>
+response = smart_generate(<span class="str">"What is 2+2?"</span>)
+
+<span class="cmt"># 복잡한 작업 → Opus (비싸지만 정확)</span>
+response = smart_generate(<span class="str">"Analyze this complex algorithm..."</span>, complexity=<span class="str">"complex"</span>)</code></pre>
+
+  <h3 id="opt-context">컨텍스트 최적화</h3>
+
+<pre><code><span class="kw">def</span> <span class="fn">summarize_context</span>(long_text: str, max_tokens: int = 2000) -> str:
+    <span class="str">"""긴 컨텍스트를 요약하여 토큰 절약"""</span>
+
+    <span class="cmt"># 이미 충분히 짧으면 그대로 반환</span>
+    estimated_tokens = len(long_text) / 4  <span class="cmt"># 대략적인 추정</span>
+    <span class="kw">if</span> estimated_tokens &lt; max_tokens:
+        <span class="kw">return</span> long_text
+
+    <span class="cmt"># Haiku로 요약 (저렴)</span>
+    message = client.messages.create(
+        model=<span class="str">"claude-haiku-4"</span>,
+        max_tokens=max_tokens,
+        messages=[{
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: f<span class="str">"Summarize the following in {max_tokens} tokens or less:\n\n{long_text}"</span>
+        }]
+    )
+
+    <span class="kw">return</span> message.content[0].text
+
+<span class="cmt"># 사용</span>
+large_codebase = read_all_files()  <span class="cmt"># 100,000 토큰</span>
+summary = summarize_context(large_codebase, max_tokens=5000)  <span class="cmt"># 5,000 토큰으로 축소</span>
+
+<span class="cmt"># 요약된 컨텍스트로 메인 작업 수행</span>
+result = client.messages.create(
+    model=<span class="str">"claude-sonnet-4"</span>,
+    max_tokens=2048,
+    messages=[{
+        <span class="str">"role"</span>: <span class="str">"user"</span>,
+        <span class="str">"content"</span>: f<span class="str">"Based on this codebase summary:\n{summary}\n\nGenerate a README."</span>
+    }]
+)
+<span class="cmt"># 총 비용: 요약($0.08) + 메인($0.03) = $0.11</span>
+<span class="cmt"># vs 전체 전달: $0.30 (3배 절감!)</span></code></pre>
+
+  <h3 id="opt-batch">배치 처리</h3>
+
+<pre><code><span class="kw">def</span> <span class="fn">batch_reviews</span>(files: list[str]) -> list[str]:
+    <span class="str">"""여러 파일을 한 번에 리뷰하여 오버헤드 감소"""</span>
+
+    <span class="cmt"># 개별 요청 (비효율)</span>
+    <span class="cmt"># for file in files:</span>
+    <span class="cmt">#     review(file)  # 각각 시스템 프롬프트 전송</span>
+
+    <span class="cmt"># 배치 요청 (효율적)</span>
+    combined_content = <span class="str">"\n\n---\n\n"</span>.join([
+        f<span class="str">"## File: {file}\n```\n{read_file(file)}\n```"</span>
+        <span class="kw">for</span> file <span class="kw">in</span> files
+    ])
+
+    message = client.messages.create(
+        model=<span class="str">"claude-sonnet-4"</span>,
+        max_tokens=8192,
+        system=<span class="str">"You are a code reviewer..."</span>,  <span class="cmt"># 한 번만 전송</span>
+        messages=[{
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: f<span class="str">"Review these {len(files)} files:\n\n{combined_content}"</span>
+        }]
+    )
+
+    <span class="cmt"># 파일별 리뷰 파싱</span>
+    reviews = message.content[0].text.split(<span class="str">"## File:"</span>)
+    <span class="kw">return</span> reviews[1:]  <span class="cmt"># 첫 번째는 빈 문자열</span></code></pre>
+
+  <h3 id="opt-local">로컬 모델 활용</h3>
+
+<pre><code><span class="kw">import</span> ollama
+
+<span class="kw">def</span> <span class="fn">hybrid_generation</span>(prompt: str, require_accuracy: bool = <span class="kw">False</span>):
+    <span class="str">"""간단한 작업은 Ollama, 복잡한 작업은 Claude"""</span>
+
+    <span class="kw">if not</span> require_accuracy:
+        <span class="cmt"># Ollama 사용 (무료)</span>
+        response = ollama.generate(
+            model=<span class="str">'llama3.2:3b'</span>,
+            prompt=prompt
+        )
+        <span class="kw">return</span> response[<span class="str">'response'</span>]
+    <span class="kw">else</span>:
+        <span class="cmt"># Claude 사용 (유료, 더 정확)</span>
+        message = client.messages.create(
+            model=<span class="str">"claude-sonnet-4"</span>,
+            max_tokens=1024,
+            messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
+        )
+        <span class="kw">return</span> message.content[0].text
+
+<span class="cmt"># 사용</span>
+<span class="cmt"># 간단한 질문 → Ollama (무료)</span>
+answer = hybrid_generation(<span class="str">"Explain what a for loop is"</span>)
+
+<span class="cmt"># 중요한 작업 → Claude (유료, 정확)</span>
+review = hybrid_generation(
+    <span class="str">"Review this security-critical code..."</span>,
+    require_accuracy=<span class="kw">True</span>
+)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="dashboard">대시보드 구축</h2>
+
+  <h3 id="dash-streamlit">Streamlit 대시보드</h3>
+
+  <h4>dashboard.py</h4>
+
+<pre><code><span class="kw">import</span> streamlit <span class="kw">as</span> st
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> plotly.express <span class="kw">as</span> px
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime, timedelta
+
+st.set_page_config(page_title=<span class="str">"LLM Cost Dashboard"</span>, layout=<span class="str">"wide"</span>)
+
+<span class="cmt"># 데이터 로드</span>
+db = UsageDatabase()
+
+<span class="cmt"># 제목</span>
+st.title(<span class="str">"🤖 LLM API Cost Dashboard"</span>)
+
+<span class="cmt"># 날짜 범위 선택</span>
+col1, col2 = st.columns(2)
+<span class="kw">with</span> col1:
+    start_date = st.date_input(<span class="str">"Start Date"</span>, datetime.now() - timedelta(days=30))
+<span class="kw">with</span> col2:
+    end_date = st.date_input(<span class="str">"End Date"</span>, datetime.now())
+
+<span class="cmt"># 전체 통계</span>
+st.header(<span class="str">"📊 Overall Statistics"</span>)
+
+cursor = db.conn.execute(
+    <span class="str">"""
+    SELECT
+        COUNT(*) as total_requests,
+        SUM(input_tokens) as total_input,
+        SUM(output_tokens) as total_output,
+        SUM(cost_usd) as total_cost
+    FROM api_usage
+    WHERE DATE(timestamp) BETWEEN ? AND ?
+    """</span>,
+    (start_date.isoformat(), end_date.isoformat())
+)
+stats = cursor.fetchone()
+
+col1, col2, col3, col4 = st.columns(4)
+col1.metric(<span class="str">"Total Requests"</span>, f<span class="str">"{stats[0]:,}"</span>)
+col2.metric(<span class="str">"Total Tokens"</span>, f<span class="str">"{(stats[1] + stats[2]):,}"</span>)
+col3.metric(<span class="str">"Total Cost"</span>, f<span class="str">"${stats[3]:.2f}"</span>)
+col4.metric(<span class="str">"Avg Cost/Request"</span>, f<span class="str">"${stats[3]/max(stats[0],1):.4f}"</span>)
+
+<span class="cmt"># 일별 비용 그래프</span>
+st.header(<span class="str">"📈 Daily Cost Trend"</span>)
+
+df = pd.read_sql_query(
+    <span class="str">"""
+    SELECT
+        DATE(timestamp) as date,
+        model,
+        SUM(cost_usd) as cost
+    FROM api_usage
+    WHERE DATE(timestamp) BETWEEN ? AND ?
+    GROUP BY DATE(timestamp), model
+    ORDER BY date
+    """</span>,
+    db.conn,
+    params=(start_date.isoformat(), end_date.isoformat())
+)
+
+<span class="kw">if not</span> df.empty:
+    fig = px.line(
+        df,
+        x=<span class="str">"date"</span>,
+        y=<span class="str">"cost"</span>,
+        color=<span class="str">"model"</span>,
+        title=<span class="str">"Daily Cost by Model"</span>
+    )
+    st.plotly_chart(fig, use_container_width=<span class="kw">True</span>)
+
+<span class="cmt"># 모델별 통계</span>
+st.header(<span class="str">"🤖 Cost by Model"</span>)
+
+model_stats = pd.read_sql_query(
+    <span class="str">"""
+    SELECT
+        model,
+        COUNT(*) as requests,
+        SUM(cost_usd) as total_cost,
+        AVG(cost_usd) as avg_cost
+    FROM api_usage
+    WHERE DATE(timestamp) BETWEEN ? AND ?
+    GROUP BY model
+    ORDER BY total_cost DESC
+    """</span>,
+    db.conn,
+    params=(start_date.isoformat(), end_date.isoformat())
+)
+
+<span class="kw">if not</span> model_stats.empty:
+    fig = px.pie(
+        model_stats,
+        values=<span class="str">"total_cost"</span>,
+        names=<span class="str">"model"</span>,
+        title=<span class="str">"Cost Distribution by Model"</span>
+    )
+    st.plotly_chart(fig, use_container_width=<span class="kw">True</span>)
+
+    st.dataframe(model_stats, use_container_width=<span class="kw">True</span>)
+
+<span class="cmt"># 사용자별 통계 (있는 경우)</span>
+st.header(<span class="str">"👤 Top Users by Cost"</span>)
+
+user_stats = pd.read_sql_query(
+    <span class="str">"""
+    SELECT
+        user_id,
+        COUNT(*) as requests,
+        SUM(cost_usd) as total_cost
+    FROM api_usage
+    WHERE user_id IS NOT NULL
+      AND DATE(timestamp) BETWEEN ? AND ?
+    GROUP BY user_id
+    ORDER BY total_cost DESC
+    LIMIT 10
+    """</span>,
+    db.conn,
+    params=(start_date.isoformat(), end_date.isoformat())
+)
+
+<span class="kw">if not</span> user_stats.empty:
+    st.dataframe(user_stats, use_container_width=<span class="kw">True</span>)
+<span class="kw">else</span>:
+    st.info(<span class="str">"No user data available"</span>)
+
+<span class="cmt"># 최근 요청</span>
+st.header(<span class="str">"🕐 Recent Requests"</span>)
+
+recent = pd.read_sql_query(
+    <span class="str">"""
+    SELECT
+        timestamp,
+        user_id,
+        model,
+        input_tokens,
+        output_tokens,
+        cost_usd
+    FROM api_usage
+    ORDER BY timestamp DESC
+    LIMIT 50
+    """</span>,
+    db.conn
+)
+
+st.dataframe(recent, use_container_width=<span class="kw">True</span>)</code></pre>
+
+  <h4>실행</h4>
+
+<pre><code><span class="cmt"># 의존성 설치</span>
+pip install streamlit pandas plotly
+
+<span class="cmt"># 대시보드 실행</span>
+streamlit run dashboard.py
+
+<span class="cmt"># 브라우저에서 http://localhost:8501 열기</span></code></pre>
+
+  <h3 id="dash-grafana">Grafana + Prometheus</h3>
+
+  <h4>prometheus.yml</h4>
+
+<pre><code><span class="kw">global</span>:
+  <span class="kw">scrape_interval</span>: 15s
+
+<span class="kw">scrape_configs</span>:
+  - <span class="kw">job_name</span>: <span class="str">'llm-api'</span>
+    <span class="kw">static_configs</span>:
+      - <span class="kw">targets</span>: [<span class="str">'localhost:8000'</span>]</code></pre>
+
+  <h4>FastAPI 메트릭 엔드포인트</h4>
+
+<pre><code><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> prometheus_client <span class="kw">import</span> Counter, Histogram, generate_latest
+
+app = FastAPI()
+
+<span class="cmt"># 메트릭 정의</span>
+api_requests = Counter(
+    <span class="str">'llm_api_requests_total'</span>,
+    <span class="str">'Total API requests'</span>,
+    [<span class="str">'model'</span>, <span class="str">'status'</span>]
+)
+
+api_cost = Counter(
+    <span class="str">'llm_api_cost_usd_total'</span>,
+    <span class="str">'Total cost in USD'</span>,
+    [<span class="str">'model'</span>]
+)
+
+api_tokens = Counter(
+    <span class="str">'llm_api_tokens_total'</span>,
+    <span class="str">'Total tokens used'</span>,
+    [<span class="str">'model'</span>, <span class="str">'type'</span>]  <span class="cmt"># type: input or output</span>
+)
+
+api_latency = Histogram(
+    <span class="str">'llm_api_latency_seconds'</span>,
+    <span class="str">'API request latency'</span>,
+    [<span class="str">'model'</span>]
+)
+
+<span class="pp">@app.get</span>(<span class="str">"/metrics"</span>)
+<span class="kw">def</span> <span class="fn">metrics</span>():
+    <span class="kw">return</span> generate_latest()
+
+<span class="pp">@app.post</span>(<span class="str">"/chat"</span>)
+<span class="kw">async def</span> <span class="fn">chat</span>(request: ChatRequest):
+    <span class="kw">with</span> api_latency.labels(model=request.model).time():
+        <span class="kw">try</span>:
+            message = client.messages.create(
+                model=request.model,
+                max_tokens=1024,
+                messages=request.messages
+            )
+
+            <span class="cmt"># 메트릭 업데이트</span>
+            api_requests.labels(model=request.model, status=<span class="str">'success'</span>).inc()
+
+            cost = calculate_cost(
+                model=request.model,
+                input_tokens=message.usage.input_tokens,
+                output_tokens=message.usage.output_tokens
+            )
+            api_cost.labels(model=request.model).inc(cost)
+
+            api_tokens.labels(model=request.model, type=<span class="str">'input'</span>).inc(message.usage.input_tokens)
+            api_tokens.labels(model=request.model, type=<span class="str">'output'</span>).inc(message.usage.output_tokens)
+
+            <span class="kw">return</span> {<span class="str">"response"</span>: message.content[0].text}
+
+        <span class="kw">except</span> Exception <span class="kw">as</span> e:
+            api_requests.labels(model=request.model, status=<span class="str">'error'</span>).inc()
+            <span class="kw">raise</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">종합 베스트 프랙티스</h2>
+
+  <h3 id="best-monitoring">모니터링</h3>
+
+  <ul>
+    <li><strong>실시간 추적</strong>: 모든 API 호출 로깅</li>
+    <li><strong>일일 리포트</strong>: 매일 비용 요약 이메일</li>
+    <li><strong>대시보드</strong>: 시각화된 통계 확인</li>
+    <li><strong>알림 설정</strong>: 임계값 초과 시 즉시 알림</li>
+  </ul>
+
+  <h3 id="best-optimization">최적화</h3>
+
+  <ul>
+    <li><strong>캐싱</strong>: 반복 컨텍스트는 Prompt Caching 사용</li>
+    <li><strong>모델 선택</strong>: 작업에 맞는 최소 모델 사용</li>
+    <li><strong>컨텍스트 축소</strong>: 불필요한 정보 제거</li>
+    <li><strong>배치 처리</strong>: 여러 작업을 한 번에 처리</li>
+    <li><strong>로컬 모델</strong>: 간단한 작업은 Ollama 활용</li>
+  </ul>
+
+  <h3 id="best-budgeting">예산 관리</h3>
+
+  <ul>
+    <li><strong>일일/월간 한도</strong>: 명확한 예산 설정</li>
+    <li><strong>사용자별 할당</strong>: 팀원별 예산 분배</li>
+    <li><strong>자동 차단</strong>: 한도 초과 시 API 호출 중단</li>
+    <li><strong>정기 리뷰</strong>: 주간/월간 비용 분석</li>
+  </ul>
+
+  <div class="info-box success">
+    <div class="info-box-title">✅ 비용 관리 체크리스트</div>
+    <ul>
+      <li>모든 API 호출을 데이터베이스에 로깅</li>
+      <li>일일 비용 알림 설정 (예: $50 초과 시)</li>
+      <li>월간 예산 설정 및 모니터링</li>
+      <li>Prompt Caching 적용 (반복 컨텍스트)</li>
+      <li>작업별로 적절한 모델 선택 (Haiku/Sonnet/Opus)</li>
+      <li>대시보드 구축 (Streamlit 또는 Grafana)</li>
+      <li>사용자별 할당량 설정</li>
+      <li>주간 비용 리포트 자동화</li>
+    </ul>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🚀 다음 단계</div>
+    <ul>
+      <li><a href="api-key-management.html">API 키 관리</a> - 보안을 통한 비용 누수 방지</li>
+      <li><a href="ci-cd-llm.html">CI/CD & LLM</a> - 자동화 파이프라인 비용 최적화</li>
+      <li><a href="dev-environment.html">LLM 개발 환경</a> - 로컬 개발로 비용 절감</li>
+      <li><a href="../pages/ollama-intro.html">Ollama 소개</a> - 무료 로컬 LLM 활용</li>
+    </ul>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

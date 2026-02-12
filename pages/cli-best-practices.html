@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="AI CLI 도구 모범 사례 - 효과적인 활용법">
+<meta property="og:description" content="AI CLI 도구 모범 사례 완전 가이드. Claude CLI, Aider, Continue, Cursor, Cline을 효과적으로 활용하는 방법.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/cli-best-practices.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI CLI 도구 모범 사례. 효과적인 프롬프팅, 워크플로우 최적화, 비용 절감, 보안 고려사항.">
+<meta name="keywords" content="ai cli, best practices, prompt engineering, workflow, optimization">
+<meta name="author" content="MINZKN">
+<title>AI CLI 도구 모범 사례 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">AI CLI 도구 모범 사례</h1>
+<p class="lead">Claude CLI, Aider, Continue, Cursor, Cline을 효과적으로 활용하는 방법. 프롬프팅, 워크플로우, 비용 최적화, 보안까지.</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 핵심 요약</div>
+  <ul>
+    <li><strong>명확한 프롬프트</strong>: 구체적이고 명확하게</li>
+    <li><strong>적절한 도구 선택</strong>: 작업에 맞는 도구 사용</li>
+    <li><strong>Git 통합</strong>: 변경사항 항상 추적</li>
+    <li><strong>비용 최적화</strong>: Ollama, 캐싱, 명확한 요청</li>
+    <li><strong>보안</strong>: API 키, 민감 정보 관리</li>
+  </ul>
+</div>
+
+<!-- Section 1: 도구 선택 가이드 -->
+<section class="content-section">
+  <h2 id="tool-selection">도구 선택 가이드</h2>
+
+  <h3 id="comparison-matrix">비교 매트릭스</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>최적 용도</th>
+        <th>자율성</th>
+        <th>가격</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Claude CLI</strong></td>
+        <td>프로젝트 관리, 고품질 코드</td>
+        <td>중간</td>
+        <td>종량제</td>
+      </tr>
+      <tr>
+        <td><strong>Aider</strong></td>
+        <td>Git 통합, 오픈소스</td>
+        <td>낮음</td>
+        <td>무료 가능</td>
+      </tr>
+      <tr>
+        <td><strong>Continue</strong></td>
+        <td>IDE 통합, 커스터마이징</td>
+        <td>낮음</td>
+        <td>무료 가능</td>
+      </tr>
+      <tr>
+        <td><strong>Cursor</strong></td>
+        <td>멀티파일 편집, 전문 개발</td>
+        <td>낮음</td>
+        <td>$20/월</td>
+      </tr>
+      <tr>
+        <td><strong>Cline</strong></td>
+        <td>자율 에이전트, 복잡한 작업</td>
+        <td>높음</td>
+        <td>종량제</td>
+      </tr>
+      <tr>
+        <td><strong>GitHub Copilot CLI</strong></td>
+        <td>터미널 명령어</td>
+        <td>낮음</td>
+        <td>$10/월</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="decision-tree">결정 트리</h3>
+
+  <pre><code>Q: 무료로 사용하고 싶다?
+└─ Yes → <strong>Continue + Ollama</strong> 또는 <strong>Aider + Ollama</strong>
+└─ No → Q: IDE 내부에서 사용하고 싶다?
+   └─ Yes → Q: 최고 품질이 필요하다?
+      └─ Yes → <strong>Cursor Pro ($20/월)</strong>
+      └─ No → <strong>Continue (API 키 사용)</strong>
+   └─ No → Q: 터미널 전용인가?
+      └─ Yes → Q: 명령어만 필요한가?
+         └─ Yes → <strong>GitHub Copilot CLI</strong>
+         └─ No → <strong>Claude CLI</strong> 또는 <strong>Aider</strong>
+      └─ No → <strong>Cline (자율 에이전트)</strong></code></pre>
+
+  <h3 id="use-cases">작업별 추천</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>작업</th>
+        <th>추천 도구</th>
+        <th>이유</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>새 프로젝트 시작</td>
+        <td>Cline, Claude CLI</td>
+        <td>전체 설정 자동화</td>
+      </tr>
+      <tr>
+        <td>기존 코드 수정</td>
+        <td>Continue, Cursor</td>
+        <td>IDE 통합, 빠른 편집</td>
+      </tr>
+      <tr>
+        <td>Git 워크플로우</td>
+        <td>Aider</td>
+        <td>자동 커밋, diff</td>
+      </tr>
+      <tr>
+        <td>복잡한 리팩토링</td>
+        <td>Cursor Composer, Cline</td>
+        <td>멀티파일 편집</td>
+      </tr>
+      <tr>
+        <td>터미널 명령어</td>
+        <td>GitHub Copilot CLI</td>
+        <td>명령어 생성 특화</td>
+      </tr>
+      <tr>
+        <td>학습 목적</td>
+        <td>Continue + Ollama</td>
+        <td>무료, 실험 가능</td>
+      </tr>
+      <tr>
+        <td>프로덕션 개발</td>
+        <td>Cursor Pro, Claude CLI</td>
+        <td>고품질, 안정성</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="multi-tool-strategy">멀티 도구 전략</h3>
+
+  <p>
+    하나의 도구만 고집하지 말고, 상황에 맞게 조합하세요.
+  </p>
+
+  <pre><code><span class="cmt"># 추천 조합 1: 무료 중심</span>
+- IDE 작업: Continue + Ollama
+- Git 통합: Aider + Ollama
+- 터미널: 직접 입력 또는 alias
+
+<span class="cmt"># 추천 조합 2: 균형형</span>
+- IDE 작업: Continue (Claude API)
+- 복잡한 작업: Claude CLI
+- 터미널: GitHub Copilot CLI
+
+<span class="cmt"># 추천 조합 3: 프리미엄</span>
+- 주 도구: Cursor Pro
+- 자율 작업: Cline (Claude API)
+- 터미널: GitHub Copilot CLI
+
+<span class="cmt"># 추천 조합 4: 전문가</span>
+- 빠른 편집: Cursor (Cmd+K)
+- 프로젝트 관리: Claude CLI
+- Git: Aider
+- 자율 작업: Cline</code></pre>
+</section>
+
+<!-- Section 2: 효과적인 프롬프팅 -->
+<section class="content-section">
+  <h2 id="prompting">효과적인 프롬프팅</h2>
+
+  <h3 id="prompt-principles">프롬프트 작성 원칙</h3>
+
+  <h4>1. 명확성 (Clarity)</h4>
+
+  <div class="info-box warning">
+    <div class="info-box-title">❌ 나쁜 예</div>
+    <pre><code>"웹사이트 만들어줘."</code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">✅ 좋은 예</div>
+    <pre><code>"React + TypeScript로 블로그 웹사이트 만들어줘.
+
+기능:
+- 마크다운 글 작성
+- 카테고리별 분류
+- 검색 기능
+- 반응형 디자인
+
+기술 스택:
+- Next.js 13 (App Router)
+- TypeScript
+- Tailwind CSS
+- Contentlayer (마크다운 처리)
+
+파일 구조:
+- app/ (페이지)
+- components/ (재사용 컴포넌트)
+- content/ (마크다운 글)
+- lib/ (유틸리티)
+
+처음부터 끝까지 설정하고 개발 서버 실행까지 해줘."</code></pre>
+  </div>
+
+  <h4>2. 컨텍스트 (Context)</h4>
+
+  <pre><code><span class="cmt"># 프로젝트 컨텍스트 제공</span>
+<span class="str">"이 프로젝트는 Next.js 13 프로젝트야.
+현재 App Router를 사용 중이고,
+Tailwind CSS로 스타일링하고 있어.
+
+블로그 글에 댓글 기능 추가해줘.
+기존 코드 스타일을 유지하면서."</span>
+
+<span class="cmt"># 도구별 컨텍스트 참조</span>
+<span class="cmt"># Claude CLI: .claude/instructions.md</span>
+<span class="cmt"># Cursor: @Files, @Codebase</span>
+<span class="cmt"># Continue: @file, @codebase</span>
+<span class="cmt"># Aider: /add file.js</span></code></pre>
+
+  <h4>3. 구체성 (Specificity)</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모호함</th>
+        <th>구체적</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"에러 고쳐줘"</td>
+        <td>"app.js 15번 줄 TypeError 수정해줘. users가 undefined일 때 발생"</td>
+      </tr>
+      <tr>
+        <td>"성능 개선해줘"</td>
+        <td>"React.memo와 useMemo로 불필요한 리렌더링 방지해줘"</td>
+      </tr>
+      <tr>
+        <td>"테스트 작성해줘"</td>
+        <td>"Jest로 유닛 테스트 작성해줘. 엣지 케이스 포함. 80% 커버리지 목표"</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>4. 단계별 접근 (Step-by-step)</h4>
+
+  <pre><code><span class="cmt"># 복잡한 작업은 단계별로</span>
+
+<span class="cmt"># 1단계</span>
+<span class="str">"먼저 프로젝트 초기 설정만 해줘.
+Next.js + TypeScript + Tailwind 설정."</span>
+
+<span class="cmt"># 2단계 (1단계 완료 후)</span>
+<span class="str">"좋아. 이제 블로그 글 목록 페이지 만들어줘.
+Contentlayer로 마크다운 파싱."</span>
+
+<span class="cmt"># 3단계</span>
+<span class="str">"목록 페이지 잘 작동해. 이제 개별 글 페이지 만들어줘."</span>
+
+<span class="cmt"># 4단계</span>
+<span class="str">"완벽해! 마지막으로 검색 기능 추가해줘."</span></code></pre>
+
+  <h3 id="prompt-templates">프롬프트 템플릿</h3>
+
+  <h4>템플릿 1: 새 기능 추가</h4>
+  <pre><code>[기능명]을 추가해줘.
+
+<span class="fn">요구사항:</span>
+- [기능 1]
+- [기능 2]
+- [기능 3]
+
+<span class="fn">기술 스택:</span>
+- [프레임워크]
+- [라이브러리 1]
+- [라이브러리 2]
+
+<span class="fn">제약사항:</span>
+- [제약 1]
+- [제약 2]
+
+<span class="fn">예상 파일:</span>
+- [파일 1]
+- [파일 2]
+
+<span class="fn">테스트:</span>
+[테스트 방법]</code></pre>
+
+  <h4>템플릿 2: 버그 수정</h4>
+  <pre><code>[파일명]에서 [에러 타입] 발생해.
+
+<span class="fn">에러 메시지:</span>
+[에러 로그 전체]
+
+<span class="fn">재현 방법:</span>
+1. [단계 1]
+2. [단계 2]
+3. [에러 발생]
+
+<span class="fn">예상 원인:</span>
+[추측 가능하면]
+
+<span class="fn">수정 후 확인:</span>
+[테스트 방법]</code></pre>
+
+  <h4>템플릿 3: 리팩토링</h4>
+  <pre><code>[파일명 또는 모듈]을 리팩토링해줘.
+
+<span class="fn">목표:</span>
+- [목표 1: 예- 중복 코드 제거]
+- [목표 2: 예- TypeScript strict 모드 적용]
+- [목표 3: 예- 성능 최적화]
+
+<span class="fn">유지할 것:</span>
+- [기능 유지]
+- [API 호환성]
+
+<span class="fn">개선 방향:</span>
+- [구체적인 개선안]
+
+<span class="fn">테스트:</span>
+기존 테스트가 모두 통과해야 함</code></pre>
+
+  <h3 id="advanced-prompting">고급 프롬프팅 기법</h3>
+
+  <h4>1. 역할 부여 (Role Assignment)</h4>
+  <pre><code><span class="str">"당신은 시니어 React 개발자입니다.
+Next.js 13 App Router와 TypeScript에 정통합니다.
+성능 최적화와 접근성을 중요시합니다.
+
+이 컴포넌트를 최적화해주세요."</span></code></pre>
+
+  <h4>2. 제약 조건 명시 (Constraints)</h4>
+  <pre><code><span class="str">"다음 제약 조건을 반드시 지켜주세요:
+- 외부 라이브러리 추가 금지 (현재 의존성만 사용)
+- 기존 API 호환성 유지
+- 브라우저 호환: IE11 제외, 모던 브라우저
+- 파일 크기: 최대 200줄
+- 성능: Lighthouse 점수 90점 이상"</span></code></pre>
+
+  <h4>3. 예시 제공 (Examples)</h4>
+  <pre><code><span class="str">"다음과 같은 스타일로 코드 작성해줘:
+
+예시 (기존 코드):
+```typescript
+export const fetchUser = async (id: string): Promise<User> => {
+  try {
+    const response = await fetch(`/api/users/${id}`);
+    if (!response.ok) throw new Error('Failed to fetch');
+    return await response.json();
+  } catch (error) {
+    console.error('fetchUser error:', error);
+    throw error;
+  }
+};
+```
+
+이 스타일을 따라서 fetchPosts 함수 만들어줘."</span></code></pre>
+
+  <h4>4. 반복 개선 (Iteration)</h4>
+  <pre><code><span class="cmt"># 첫 번째 시도</span>
+<span class="str">"React 버튼 컴포넌트 만들어줘."</span>
+
+<span class="cmt"># 피드백 및 개선</span>
+<span class="str">"좋아. 이제 여기에 다음을 추가해줘:
+- loading 상태
+- disabled 상태
+- 아이콘 지원
+- 다양한 크기 (sm, md, lg)"</span>
+
+<span class="cmt"># 추가 개선</span>
+<span class="str">"완벽해. 마지막으로 Storybook 스토리도 작성해줘."</span></code></pre>
+</section>
+
+<!-- Section 3: 워크플로우 최적화 -->
+<section class="content-section">
+  <h2 id="workflow">워크플로우 최적화</h2>
+
+  <h3 id="development-flow">개발 플로우</h3>
+
+  <h4>워크플로우 1: 새 프로젝트 시작</h4>
+  <pre><code><span class="cmt"># 1. Git 초기화</span>
+git init
+git add .
+git commit -m "Initial commit"
+
+<span class="cmt"># 2. 프로젝트 지시사항 작성</span>
+<span class="cmt"># Claude CLI: .claude/instructions.md</span>
+<span class="cmt"># Cursor: .cursorrules</span>
+<span class="cmt"># Aider: .aider.conf.yml</span>
+
+<span class="cmt"># 3. AI 도구로 초기 구조 생성</span>
+<span class="cmt"># Cline 또는 Claude CLI 사용 (자율성 높음)</span>
+
+<span class="cmt"># 4. 첫 커밋</span>
+git add .
+git commit -m "feat: Initial project structure
+
+Co-Authored-By: Claude <noreply@anthropic.com>"</code></pre>
+
+  <h4>워크플로우 2: 기능 개발</h4>
+  <pre><code><span class="cmt"># 1. 브랜치 생성</span>
+git checkout -b feature/user-auth
+
+<span class="cmt"># 2. AI에게 요청 (명확하고 구체적으로)</span>
+<span class="cmt"># Continue 또는 Cursor 사용 (IDE 통합)</span>
+
+<span class="cmt"># 3. 코드 검토</span>
+<span class="cmt"># AI가 생성한 코드를 항상 검토!</span>
+
+<span class="cmt"># 4. 테스트</span>
+npm test
+npm run dev  <span class="cmt"># 브라우저에서 확인</span>
+
+<span class="cmt"># 5. 커밋</span>
+git add .
+git commit -m "feat: Add user authentication
+
+- JWT token-based auth
+- Login/signup endpoints
+- Protected routes
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+<span class="cmt"># 6. 푸시</span>
+git push origin feature/user-auth</code></pre>
+
+  <h4>워크플로우 3: 버그 수정</h4>
+  <pre><code><span class="cmt"># 1. 버그 재현</span>
+npm run dev
+<span class="cmt"># 에러 발생 확인</span>
+
+<span class="cmt"># 2. 에러 로그 복사</span>
+<span class="cmt"># 전체 스택 트레이스 포함</span>
+
+<span class="cmt"># 3. AI에게 요청</span>
+<span class="cmt"># 에러 로그와 함께 파일 컨텍스트 제공</span>
+<span class="cmt"># Continue @terminal 또는 Cline 사용</span>
+
+<span class="cmt"># 4. 수정 확인</span>
+npm test
+npm run dev
+
+<span class="cmt"># 5. 커밋</span>
+git add .
+git commit -m "fix: Resolve TypeError in UserList
+
+Cannot read property 'map' of undefined
+Added optional chaining
+
+Fixes #123"</code></pre>
+
+  <h4>워크플로우 4: 리팩토링</h4>
+  <pre><code><span class="cmt"># 1. 테스트 확인 (리팩토링 전)</span>
+npm test  <span class="cmt"># 모두 통과 확인</span>
+
+<span class="cmt"># 2. AI에게 리팩토링 요청</span>
+<span class="cmt"># Cursor Composer 또는 Claude CLI</span>
+
+<span class="cmt"># 3. 변경사항 검토</span>
+git diff
+
+<span class="cmt"># 4. 테스트 재실행</span>
+npm test  <span class="cmt"># 여전히 통과하는지 확인</span>
+
+<span class="cmt"># 5. 커밋</span>
+git add .
+git commit -m "refactor: Convert utils to TypeScript
+
+- Split into smaller modules
+- Add strict type checking
+- Improve error handling"</code></pre>
+
+  <h3 id="git-best-practices">Git 통합 모범 사례</h3>
+
+  <h4>1. 자주 커밋</h4>
+  <pre><code><span class="cmt"># AI가 여러 파일 변경 후 바로 커밋</span>
+git add .
+git commit -m "feat: Add authentication system"
+
+<span class="cmt"># 다음 기능 추가</span>
+<span class="cmt"># AI에게 요청...</span>
+
+<span class="cmt"># 또 커밋</span>
+git add .
+git commit -m "feat: Add email verification"
+
+<span class="cmt"># 장점: 문제 생기면 쉽게 되돌리기</span>
+git revert HEAD  <span class="cmt"># 마지막 커밋만 취소</span></code></pre>
+
+  <h4>2. 명확한 커밋 메시지</h4>
+  <pre><code><span class="cmt"># 나쁜 예</span>
+git commit -m "update"
+git commit -m "fix bug"
+
+<span class="cmt"># 좋은 예</span>
+git commit -m "feat: Add user authentication with JWT
+
+- Implement login/signup endpoints
+- Add JWT middleware
+- Create User model with bcrypt hashing
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+
+<span class="cmt"># Conventional Commits 규칙</span>
+feat:     새 기능
+fix:      버그 수정
+refactor: 리팩토링
+docs:     문서
+test:     테스트
+chore:    빌드, 설정</code></pre>
+
+  <h4>3. Co-Authored-By 추가</h4>
+  <pre><code><span class="cmt"># AI가 생성한 코드는 명시</span>
+git commit -m "feat: Add search functionality
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+
+<span class="cmt"># 또는 Cursor</span>
+Co-Authored-By: Cursor AI <noreply@cursor.sh>
+
+<span class="cmt"># 또는 GitHub Copilot</span>
+Co-Authored-By: GitHub Copilot <noreply@github.com></code></pre>
+
+  <h4>4. .gitignore 철저히</h4>
+  <pre><code><span class="cmt"># .gitignore</span>
+.env
+.env.local
+*.log
+node_modules/
+dist/
+build/
+
+<span class="cmt"># AI 도구 관련</span>
+.cursor/
+.continue/
+.aider*
+
+<span class="cmt"># API 키 절대 커밋 금지!</span></code></pre>
+
+  <h3 id="efficiency-tips">효율성 팁</h3>
+
+  <ol>
+    <li><strong>단축키 숙달</strong>
+      <pre><code>Cursor: Cmd+K (편집), Cmd+L (채팅)
+Continue: Cmd+I (인라인), Cmd+L (채팅)
+VS Code: Cmd+P (파일 찾기), Cmd+Shift+P (명령)</code></pre>
+    </li>
+    <li><strong>별칭 설정</strong>
+      <pre><code><span class="cmt"># ~/.zshrc</span>
+alias cl='npx claude'
+alias ghcs='gh copilot suggest'
+alias ghce='gh copilot explain'</code></pre>
+    </li>
+    <li><strong>스니펫 활용</strong>
+      <pre><code><span class="cmt"># VS Code 스니펫</span>
+"Prompt for feature": {
+  "prefix": "aiprompt",
+  "body": [
+    "$1 기능 추가해줘.",
+    "",
+    "요구사항:",
+    "- $2",
+    "",
+    "기술 스택:",
+    "- $3"
+  ]
+}</code></pre>
+    </li>
+  </ol>
+</section>
+
+<!-- Section 4: 비용 최적화 -->
+<section class="content-section">
+  <h2 id="cost-optimization">비용 최적화</h2>
+
+  <h3 id="free-options">무료 옵션</h3>
+
+  <h4>전략 1: Ollama 활용</h4>
+  <pre><code><span class="cmt"># Ollama 설치 (한 번만)</span>
+curl -fsSL https://ollama.com/install.sh | sh
+
+<span class="cmt"># 모델 다운로드</span>
+ollama pull llama3.2         <span class="cmt"># 범용 (2GB)</span>
+ollama pull deepseek-coder-v2  <span class="cmt"># 코딩 특화 (8.9GB)</span>
+ollama pull starcoder2:3b    <span class="cmt"># 자동완성 (1.7GB)</span>
+
+<span class="cmt"># Continue + Ollama</span>
+<span class="cmt"># config.json에서 Ollama 설정</span>
+<span class="cmt"># → 완전 무료!</span>
+
+<span class="cmt"># Aider + Ollama</span>
+aider --model ollama/llama3.2
+<span class="cmt"># → 완전 무료!</span>
+
+<span class="cmt"># 장점</span>
+- 비용 $0
+- 프라이버시 (코드가 외부로 나가지 않음)
+- 오프라인 작업 가능
+
+<span class="cmt"># 단점</span>
+- 품질이 Claude/GPT-4보다 낮음
+- 로컬 컴퓨팅 리소스 필요</code></pre>
+
+  <h4>전략 2: 무료 티어 활용</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>무료 제공</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Cursor</td>
+        <td>월 2000회 (GPT-3.5), 500회 (GPT-4)</td>
+      </tr>
+      <tr>
+        <td>Continue</td>
+        <td>완전 무료 (Ollama 사용 시)</td>
+      </tr>
+      <tr>
+        <td>Claude API</td>
+        <td>$5 무료 크레딧 (신규 가입)</td>
+      </tr>
+      <tr>
+        <td>GitHub Copilot</td>
+        <td>학생/교육자 무료</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="cost-reduction">비용 절감 전략</h3>
+
+  <h4>1. 적절한 모델 선택</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>작업</th>
+        <th>추천 모델</th>
+        <th>비용</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>간단한 수정</td>
+        <td>Ollama llama3.2, GPT-3.5</td>
+        <td>무료 또는 저렴</td>
+      </tr>
+      <tr>
+        <td>일반 코딩</td>
+        <td>Claude Haiku</td>
+        <td>$</td>
+      </tr>
+      <tr>
+        <td>복잡한 코드</td>
+        <td>Claude Sonnet</td>
+        <td>$$</td>
+      </tr>
+      <tr>
+        <td>최고 품질</td>
+        <td>Claude Opus, GPT-4</td>
+        <td>$$$</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>2. 명확한 프롬프트로 재시도 방지</h4>
+  <pre><code><span class="cmt"># 나쁜 예 (비용 낭비)</span>
+<span class="str">"앱 만들어줘"</span>  <span class="cmt"># → 모호함</span>
+<span class="str">"아니야, React로"</span>  <span class="cmt"># → 재시도</span>
+<span class="str">"TypeScript 사용해"</span>  <span class="cmt"># → 또 재시도</span>
+<span class="cmt"># → 3배 비용!</span>
+
+<span class="cmt"># 좋은 예 (비용 절감)</span>
+<span class="str">"React + TypeScript 앱 만들어줘..."</span>  <span class="cmt"># → 한 번에 성공</span>
+<span class="cmt"># → 1배 비용</span></code></pre>
+
+  <h4>3. Prompt Caching 활용</h4>
+  <pre><code><span class="cmt"># Claude API의 Prompt Caching</span>
+<span class="cmt"># 반복되는 긴 컨텍스트를 캐싱 (90% 비용 절감)</span>
+
+<span class="cmt"># 자동 적용되는 경우:</span>
+- .claude/instructions.md (Claude CLI)
+- 프로젝트 구조 (대부분 도구)
+- 이전 대화 컨텍스트
+
+<span class="cmt"># 팁: 프로젝트 지시사항을 길게 작성해도 OK</span>
+<span class="cmt"># 캐싱되므로 비용 걱정 없음</span></code></pre>
+
+  <h4>4. 불필요한 파일 제외</h4>
+  <pre><code><span class="cmt"># Claude CLI: .claudeignore</span>
+node_modules/
+.git/
+dist/
+build/
+*.log
+package-lock.json
+yarn.lock
+
+<span class="cmt"># Aider: .aiderignore</span>
+<span class="cmt"># (위와 동일)</span>
+
+<span class="cmt"># 효과: 컨텍스트 크기 90% 감소 → 비용 절감</span></code></pre>
+
+  <h4>5. 배치 작업</h4>
+  <pre><code><span class="cmt"># 나쁜 예 (여러 번 요청)</span>
+<span class="str">"Button 컴포넌트 만들어줘"</span>
+<span class="str">"이제 Card 컴포넌트 만들어줘"</span>
+<span class="str">"Input 컴포넌트도 만들어줘"</span>
+<span class="cmt"># → 3번 API 호출</span>
+
+<span class="cmt"># 좋은 예 (한 번에 요청)</span>
+<span class="str">"다음 컴포넌트들 만들어줘:
+- Button
+- Card
+- Input
+
+모두 TypeScript + Tailwind 사용."</span>
+<span class="cmt"># → 1번 API 호출</span></code></pre>
+
+  <h3 id="cost-monitoring">비용 모니터링</h3>
+
+  <pre><code><span class="cmt"># Anthropic Console</span>
+https://console.anthropic.com/settings/usage
+
+<span class="cmt"># 확인 항목</span>
+- 일일 사용량
+- 월간 누적 비용
+- 토큰 사용 패턴
+
+<span class="cmt"># 알림 설정</span>
+Settings → Usage Limits → Set Limit
+<span class="cmt"># 예: $50 초과 시 알림</span></code></pre>
+
+  <p><a href="monitoring-costs.html">비용 모니터링 완전 가이드 →</a></p>
+</section>
+
+<!-- Section 5: 보안 고려사항 -->
+<section class="content-section">
+  <h2 id="security">보안 고려사항</h2>
+
+  <h3 id="api-key-management">API 키 관리</h3>
+
+  <h4>1. 환경 변수 사용</h4>
+  <pre><code><span class="cmt"># 나쁜 예</span>
+const apiKey = "sk-ant-api03-xxx";  <span class="cmt">// 코드에 직접 하드코딩</span>
+
+<span class="cmt"># 좋은 예</span>
+<span class="cmt"># .env</span>
+ANTHROPIC_API_KEY=sk-ant-api03-xxx
+
+<span class="cmt"># .env.example (Git에 커밋)</span>
+ANTHROPIC_API_KEY=your_api_key_here
+
+<span class="cmt"># .gitignore</span>
+.env
+.env.local</code></pre>
+
+  <h4>2. 플랫폼별 안전한 저장</h4>
+  <pre><code><span class="cmt"># macOS: Keychain</span>
+security add-generic-password -a "anthropic" -s "api_key" -w "sk-ant-api03-xxx"
+
+<span class="cmt"># Linux: pass</span>
+pass insert anthropic/api_key
+
+<span class="cmt"># Windows: Credential Manager</span>
+cmdkey /generic:anthropic /user:api_key /pass:sk-ant-api03-xxx</code></pre>
+
+  <h4>3. 권한 제한</h4>
+  <pre><code><span class="cmt"># .env 파일 권한 설정 (Linux/macOS)</span>
+chmod 600 .env
+
+<span class="cmt"># 읽기/쓰기: 소유자만</span>
+<span class="cmt"># 다른 사용자: 접근 불가</span></code></pre>
+
+  <h3 id="sensitive-data">.gitignore 철저히</h3>
+
+  <pre><code><span class="cmt"># .gitignore (필수 항목)</span>
+
+<span class="cmt"># 환경 변수</span>
+.env
+.env.local
+.env.production
+
+<span class="cmt"># API 키</span>
+**/secrets/
+credentials.json
+service-account.json
+
+<span class="cmt"># 로그 (민감 정보 포함 가능)</span>
+*.log
+logs/
+
+<span class="cmt"># 데이터베이스</span>
+*.db
+*.sqlite
+
+<span class="cmt"># AI 도구 설정 (API 키 포함 가능)</span>
+.cursor/
+.continue/
+.aider.conf.yml</code></pre>
+
+  <h3 id="code-review">AI 생성 코드 검토</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ AI 코드는 항상 검토!</div>
+    <p>AI가 생성한 코드를 검토 없이 프로덕션에 배포하지 마세요.</p>
+  </div>
+
+  <h4>검토 체크리스트</h4>
+  <ul>
+    <li><strong>보안 취약점</strong>
+      <ul>
+        <li>SQL Injection 방지</li>
+        <li>XSS 방지</li>
+        <li>CSRF 토큰</li>
+        <li>입력 검증</li>
+      </ul>
+    </li>
+    <li><strong>에러 처리</strong>
+      <ul>
+        <li>try-catch 적절한지</li>
+        <li>에러 메시지 유저 친화적인지</li>
+        <li>민감 정보 노출 여부</li>
+      </ul>
+    </li>
+    <li><strong>성능</strong>
+      <ul>
+        <li>불필요한 루프</li>
+        <li>메모리 누수</li>
+        <li>비효율적인 쿼리</li>
+      </ul>
+    </li>
+    <li><strong>테스트</strong>
+      <ul>
+        <li>엣지 케이스 커버</li>
+        <li>에러 상황 테스트</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3 id="privacy">프라이버시</h3>
+
+  <h4>코드가 외부로 전송되는 도구</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>데이터 전송</th>
+        <th>저장 여부</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Claude CLI</td>
+        <td>✅ (API)</td>
+        <td>❌ (30일 후 삭제)</td>
+      </tr>
+      <tr>
+        <td>Cursor</td>
+        <td>✅ (암호화)</td>
+        <td>❌ (Privacy Mode: OFF)</td>
+      </tr>
+      <tr>
+        <td>GitHub Copilot</td>
+        <td>✅</td>
+        <td>일부 (개선용)</td>
+      </tr>
+      <tr>
+        <td>Continue + Ollama</td>
+        <td>❌ (로컬)</td>
+        <td>❌</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>프라이버시 중요 시</h4>
+  <ul>
+    <li><strong>로컬 LLM 사용</strong>: Continue + Ollama</li>
+    <li><strong>Privacy Mode</strong>: Cursor의 Privacy Mode 활성화</li>
+    <li><strong>민감 코드 제외</strong>: .claudeignore에 추가</li>
+    <li><strong>익명화</strong>: 실제 이름, 이메일 등 제거 후 요청</li>
+  </ul>
+</section>
+
+<!-- Section 6: 일반적인 실수 -->
+<section class="content-section">
+  <h2 id="common-mistakes">일반적인 실수 회피</h2>
+
+  <h3 id="mistake-1">실수 1: AI를 맹신</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">❌ 나쁜 습관</div>
+    <pre><code><span class="cmt"># AI가 코드 생성</span>
+<span class="cmt"># 검토 없이 바로 커밋</span>
+git add .
+git commit -m "feat: Add feature"
+git push</code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">✅ 좋은 습관</div>
+    <pre><code><span class="cmt"># AI가 코드 생성</span>
+<span class="cmt"># 1. 코드 검토</span>
+<span class="cmt"># 2. 테스트 실행</span>
+npm test
+npm run dev  <span class="cmt"># 브라우저 확인</span>
+<span class="cmt"># 3. 문제 없으면 커밋</span>
+git add .
+git commit -m "feat: Add feature"</code></pre>
+  </div>
+
+  <h3 id="mistake-2">실수 2: 모호한 요청</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>❌ 모호한 요청</th>
+        <th>✅ 명확한 요청</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>"사이트 만들어줘"</td>
+        <td>"React + TypeScript 블로그 사이트 만들어줘. Next.js 13 사용."</td>
+      </tr>
+      <tr>
+        <td>"에러 고쳐줘"</td>
+        <td>"app.js 15번 줄 TypeError 수정해줘. 에러 로그: [붙여넣기]"</td>
+      </tr>
+      <tr>
+        <td>"성능 개선해줘"</td>
+        <td>"React 컴포넌트 리렌더링 최적화해줘. React.memo 사용."</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="mistake-3">실수 3: Git 무시</h3>
+
+  <pre><code><span class="cmt"># 나쁜 습관</span>
+<span class="cmt"># Git 없이 AI 도구 사용</span>
+<span class="cmt"># → AI가 파일 삭제하면 복구 불가!</span>
+
+<span class="cmt"># 좋은 습관</span>
+<span class="cmt"># 1. 항상 Git 사용</span>
+git init
+
+<span class="cmt"># 2. AI 작업 전 커밋</span>
+git add .
+git commit -m "Before AI changes"
+
+<span class="cmt"># 3. AI 작업 후 diff 확인</span>
+git diff
+
+<span class="cmt"># 4. 문제 있으면 되돌리기</span>
+git reset --hard HEAD</code></pre>
+
+  <h3 id="mistake-4">실수 4: 비용 무시</h3>
+
+  <pre><code><span class="cmt"># 나쁜 습관</span>
+<span class="cmt"># Claude Opus를 모든 작업에 사용</span>
+<span class="cmt"># → 월 $500 청구</span>
+
+<span class="cmt"># 좋은 습관</span>
+<span class="cmt"># 작업별 모델 선택</span>
+간단한 수정 → Ollama 또는 Haiku (무료 또는 저렴)
+복잡한 코드 → Sonnet ($$)
+최고 품질 필요 → Opus ($$$)
+
+<span class="cmt"># 비용 모니터링</span>
+https://console.anthropic.com/settings/usage</code></pre>
+
+  <h3 id="mistake-5">실수 5: API 키 노출</h3>
+
+  <pre><code><span class="cmt"># 나쁜 예</span>
+<span class="cmt"># config.js (Git에 커밋됨)</span>
+export const API_KEY = "sk-ant-api03-xxx";
+
+<span class="cmt"># 좋은 예</span>
+<span class="cmt"># .env (Git에서 제외)</span>
+ANTHROPIC_API_KEY=sk-ant-api03-xxx
+
+<span class="cmt"># .gitignore</span>
+.env</code></pre>
+
+  <h3 id="mistake-6">실수 6: 단일 도구 고집</h3>
+
+  <pre><code><span class="cmt"># 비효율적</span>
+<span class="cmt"># Cursor만 사용</span>
+<span class="cmt"># → 터미널 명령어 생성에 비효율적</span>
+
+<span class="cmt"># 효율적</span>
+<span class="cmt"># 상황에 맞게 도구 선택</span>
+IDE 작업 → Cursor
+터미널 명령어 → GitHub Copilot CLI
+복잡한 프로젝트 → Cline
+Git 통합 → Aider</code></pre>
+
+  <h3 id="mistake-7">실수 7: 컨텍스트 무시</h3>
+
+  <pre><code><span class="cmt"># 나쁜 예</span>
+<span class="str">"Button 컴포넌트 만들어줘"</span>
+<span class="cmt"># → AI가 어떤 스타일로 만들어야 할지 모름</span>
+
+<span class="cmt"># 좋은 예</span>
+<span class="str">"Button 컴포넌트 만들어줘.
+
+프로젝트는 React + TypeScript + Tailwind 사용 중.
+기존 Card 컴포넌트와 동일한 스타일 적용.
+@file:components/Card.tsx 참조해서 만들어줘."</span></code></pre>
+</section>
+
+<!-- Section 7: 생산성 팁 10가지 -->
+<section class="content-section">
+  <h2 id="productivity-tips">생산성 팁 10가지</h2>
+
+  <h3 id="tip-1">1. 프로젝트 지시사항 파일 작성</h3>
+  <pre><code><span class="cmt"># Claude CLI: .claude/instructions.md</span>
+<span class="cmt"># Cursor: .cursorrules</span>
+<span class="cmt"># Aider: .aider.conf.yml</span>
+
+<span class="cmt"># 한 번 작성하면 매번 반복 안 해도 됨</span></code></pre>
+
+  <h3 id="tip-2">2. 별칭으로 단축</h3>
+  <pre><code><span class="cmt"># ~/.zshrc</span>
+alias cl='npx claude'
+alias ghcs='gh copilot suggest'
+alias ghce='gh copilot explain'
+alias adr='aider --model ollama/llama3.2'</code></pre>
+
+  <h3 id="tip-3">3. 템플릿 프롬프트 저장</h3>
+  <pre><code><span class="cmt"># ~/prompts/feature.txt</span>
+[기능명] 추가해줘.
+
+요구사항:
+- [기능 1]
+- [기능 2]
+
+기술 스택:
+- [프레임워크]
+
+<span class="cmt"># 사용</span>
+cat ~/prompts/feature.txt | pbcopy
+<span class="cmt"># Paste to AI tool</span></code></pre>
+
+  <h3 id="tip-4">4. 여러 도구 병행 사용</h3>
+  <pre><code>빠른 편집 → Cursor Cmd+K
+프로젝트 관리 → Claude CLI
+Git 통합 → Aider
+터미널 → GitHub Copilot CLI</code></pre>
+
+  <h3 id="tip-5">5. 자동완성 적극 활용</h3>
+  <pre><code><span class="cmt"># Continue, Cursor의 Tab 자동완성</span>
+<span class="cmt"># 타이핑하면 자동으로 제안</span>
+<span class="cmt"># Tab으로 수락</span>
+
+<span class="cmt"># 많은 시간 절약!</span></code></pre>
+
+  <h3 id="tip-6">6. 대화 히스토리 활용</h3>
+  <pre><code><span class="cmt"># 이전 대화 참조</span>
+<span class="str">"이 버튼에 hover 효과 추가해줘"</span>
+<span class="cmt"># "이 버튼" = 이전에 만든 Button 컴포넌트</span>
+<span class="cmt"># AI가 컨텍스트로 이해</span></code></pre>
+
+  <h3 id="tip-7">7. 에러 로그 직접 붙여넣기</h3>
+  <pre><code><span class="cmt"># 에러 발생</span>
+TypeError: Cannot read property 'map' of undefined
+  at UserList.tsx:15:18
+
+<span class="cmt"># AI에게 복사-붙여넣기</span>
+<span class="str">"이 에러 수정해줘:
+[에러 로그 붙여넣기]"</span>
+
+<span class="cmt"># AI가 즉시 분석 및 수정</span></code></pre>
+
+  <h3 id="tip-8">8. 배치 작업으로 API 호출 최소화</h3>
+  <pre><code><span class="cmt"># 나쁜 예</span>
+"Button 만들어줘"
+"Card 만들어줘"
+"Input 만들어줘"
+
+<span class="cmt"># 좋은 예</span>
+"Button, Card, Input 컴포넌트 만들어줘"</code></pre>
+
+  <h3 id="tip-9">9. Git 브랜치 전략</h3>
+  <pre><code><span class="cmt"># 실험적 AI 작업은 별도 브랜치</span>
+git checkout -b ai-experiment
+
+<span class="cmt"># AI에게 자유롭게 실험 요청</span>
+
+<span class="cmt"># 성공하면 merge</span>
+git checkout main
+git merge ai-experiment
+
+<span class="cmt"># 실패하면 버리기</span>
+git branch -D ai-experiment</code></pre>
+
+  <h3 id="tip-10">10. 학습 모드로 활용</h3>
+  <pre><code><span class="cmt"># AI가 코드 생성 후</span>
+<span class="str">"이 코드 설명해줘. 각 부분이 왜 필요한지."</span>
+
+<span class="cmt"># 또는</span>
+<span class="str">"더 나은 방법도 알려줘."</span>
+
+<span class="cmt"># AI를 튜터로 활용!</span></code></pre>
+</section>
+
+<!-- Section 8: 요약 -->
+<section class="content-section">
+  <h2 id="summary">요약</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">📝 핵심 정리</div>
+
+    <h3>도구 선택</h3>
+    <ul>
+      <li>무료: Continue + Ollama</li>
+      <li>프리미엄: Cursor Pro ($20/월)</li>
+      <li>자율 에이전트: Cline</li>
+      <li>터미널: GitHub Copilot CLI</li>
+    </ul>
+
+    <h3>프롬프팅</h3>
+    <ul>
+      <li>명확하고 구체적으로</li>
+      <li>컨텍스트 제공</li>
+      <li>단계별 접근</li>
+      <li>예시 포함</li>
+    </ul>
+
+    <h3>워크플로우</h3>
+    <ul>
+      <li>Git 항상 사용</li>
+      <li>자주 커밋</li>
+      <li>AI 코드 항상 검토</li>
+      <li>테스트 필수</li>
+    </ul>
+
+    <h3>비용 최적화</h3>
+    <ul>
+      <li>Ollama 활용</li>
+      <li>명확한 프롬프트</li>
+      <li>적절한 모델 선택</li>
+      <li>캐싱 활용</li>
+    </ul>
+
+    <h3>보안</h3>
+    <ul>
+      <li>API 키 환경 변수로</li>
+      <li>.gitignore 철저히</li>
+      <li>AI 코드 검토</li>
+      <li>프라이버시 고려</li>
+    </ul>
+  </div>
+
+  <h3 id="final-advice">최종 조언</h3>
+
+  <ol>
+    <li><strong>AI는 도구, 개발자는 당신</strong>
+      <ul>
+        <li>AI가 생성한 코드의 최종 책임은 개발자</li>
+        <li>항상 검토하고 이해한 후 사용</li>
+      </ul>
+    </li>
+    <li><strong>학습을 멈추지 마세요</strong>
+      <ul>
+        <li>AI가 모든 걸 해주지만, 기초는 알아야</li>
+        <li>AI를 학습 도구로도 활용</li>
+      </ul>
+    </li>
+    <li><strong>실험하세요</strong>
+      <ul>
+        <li>여러 도구를 시도해보세요</li>
+        <li>자신에게 맞는 워크플로우 찾기</li>
+      </ul>
+    </li>
+    <li><strong>비용을 신경 쓰세요</strong>
+      <ul>
+        <li>무분별한 사용은 고액 청구로</li>
+        <li>무료 옵션 (Ollama) 적극 활용</li>
+      </ul>
+    </li>
+    <li><strong>보안은 항상 최우선</strong>
+      <ul>
+        <li>API 키 노출 주의</li>
+        <li>민감 정보 Git에 커밋 금지</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h3 id="next-steps">다음 단계</h3>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>💻 Claude CLI</h3>
+      <p>공식 CLI 도구 마스터</p>
+      <a href="claude-cli.html" class="card-link">시작하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔧 Cursor IDE</h3>
+      <p>AI 네이티브 IDE 활용</p>
+      <a href="cursor.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔄 Continue.dev</h3>
+      <p>무료 오픈소스 도구</p>
+      <a href="continue.html" class="card-link">시작하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🤖 Cline</h3>
+      <p>자율 에이전트 활용</p>
+      <a href="cline.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🦙 Ollama 연동</h3>
+      <p>무료 로컬 LLM 사용</p>
+      <a href="ollama-integration.html" class="card-link">설정하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>💰 비용 모니터링</h3>
+      <p>API 비용 추적 및 최적화</p>
+      <a href="monitoring-costs.html" class="card-link">최적화하기 →</a>
+    </div>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>다중 LLM 전환 전략 - AI Vibe Coding 가이드 /with MINZKN</title>
+<meta name="description" content="여러 LLM을 조합하여 비용 최적화, 폴백 구현, 로드 밸런싱을 통한 안정적인 AI 서비스 구축">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">다중 LLM 전환 전략</h1>
+<p class="lead">단일 LLM에 의존하는 것은 비용, 성능, 안정성 측면에서 비효율적입니다. 작업 복잡도에 따라 적절한 LLM을 선택하고, 실패 시 자동으로 대체하며, 부하를 분산하는 전략을 통해 견고하고 경제적인 AI 시스템을 구축하는 방법을 다룹니다.</p>
+
+<div class="info-box tip">
+<strong>핵심 포인트</strong>
+<ul>
+<li>작업 복잡도에 따른 LLM 라우팅으로 비용 절감 (최대 70%)</li>
+<li>폴백 체인으로 99.9% 가용성 확보</li>
+<li>로드 밸런싱으로 처리량 증대 및 Rate Limit 회피</li>
+<li>LiteLLM, Portkey 등 통합 프레임워크 활용</li>
+<li>실시간 모니터링으로 최적 모델 자동 선택</li>
+</ul>
+</div>
+
+<section class="content-section">
+<h2 id="why-multi-llm">다중 LLM의 필요성</h2>
+
+<h3 id="cost-optimization">비용 최적화</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">비용</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>실제 사용 사례별 비용 비교:
+
+<span class="cmt">// 시나리오: 고객 지원 챗봇 (10만 요청/월)</span>
+┌──────────────────────┬──────────────┬────────────┬──────────────┐
+│ 전략                 │ 평균 비용    │ 월 총비용  │ 절감율       │
+├──────────────────────┼──────────────┼────────────┼──────────────┤
+│ Claude Opus만        │ $0.045/req   │ $4,500     │ 기준         │
+│ GPT-4o만             │ $0.018/req   │ $1,800     │ 60%          │
+│ 복잡도 기반 라우팅   │ $0.012/req   │ $1,200     │ 73%          │
+│ 로컬 LLM 우선        │ $0.003/req   │ $300       │ 93%          │
+└──────────────────────┴──────────────┴────────────┴──────────────┘
+
+<span class="cmt">// 복잡도 기반 라우팅 분포</span>
+<span class="num">60%</span> 단순 질문 → Claude Haiku ($<span class="num">0.25</span>/1M 입력)
+<span class="num">30%</span> 중간 복잡도 → GPT-4o Mini ($<span class="num">0.15</span>/1M)
+<span class="num">10%</span> 복잡한 추론 → Claude Opus ($<span class="num">15</span>/1M)
+
+<span class="cmt">// 실제 절감 계산</span>
+기존: <span class="num">100,000</span> × $<span class="num">0.045</span> = $<span class="num">4,500</span>
+최적화:
+  <span class="num">60,000</span> × $<span class="num">0.003</span> = $<span class="num">180</span>  (Haiku)
+  <span class="num">30,000</span> × $<span class="num">0.008</span> = $<span class="num">240</span>  (GPT-4o Mini)
+  <span class="num">10,000</span> × $<span class="num">0.045</span> = $<span class="num">450</span>  (Opus)
+  총: $<span class="num">870</span> (81% 절감)
+</code></pre>
+</div>
+
+<h3 id="reliability">안정성 향상</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">안정성</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 단일 LLM vs 다중 LLM 가용성</span>
+단일 LLM:
+  가용성: <span class="num">99.5%</span> (OpenAI SLA)
+  월 다운타임: ~<span class="num">3.6</span>시간
+  연간 손실: 중단 시간 × 시간당 매출
+
+폴백 체인 (3개 LLM):
+  주 LLM: OpenAI (<span class="num">99.5%</span>)
+  폴백 1: Anthropic (<span class="num">99.5%</span>)
+  폴백 2: 로컬 LLM (<span class="num">100%</span>)
+
+  복합 가용성: <span class="num">1</span> - (<span class="num">0.005</span> × <span class="num">0.005</span> × <span class="num">0</span>) ≈ <span class="num">99.9975%</span>
+  월 다운타임: ~<span class="num">1.3</span>분
+
+<span class="cmt">// 실제 장애 사례</span>
+<span class="num">2024-11-15:</span> OpenAI API 다운 (<span class="num">2</span>시간)
+  • 폴백 없음: 전체 서비스 중단
+  • 폴백 있음: 자동 전환, 사용자 영향 최소
+
+<span class="cmt">// Rate Limit 회피</span>
+단일 계정:
+  • GPT-4: <span class="num">10,000</span> RPM (요청/분)
+  • 트래픽 급증 시 거부
+
+다중 계정/제공자:
+  • OpenAI: <span class="num">10,000</span> RPM
+  • Anthropic: <span class="num">5,000</span> RPM
+  • Google: <span class="num">1,500</span> RPM
+  • 총: <span class="num">16,500</span> RPM
+</code></pre>
+</div>
+
+<h3 id="performance">성능 최적화</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">성능</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 작업별 최적 모델 선택</span>
+┌──────────────────────┬──────────────────┬──────────────────┐
+│ 작업                 │ 최적 모델        │ 이유             │
+├──────────────────────┼──────────────────┼──────────────────┤
+│ 코드 생성            │ Claude Sonnet    │ 높은 정확도      │
+│ 번역                 │ GPT-4o           │ 다국어 지원      │
+│ 요약                 │ Claude Haiku     │ 빠름+저렴        │
+│ 수학                 │ o1 (OpenAI)      │ 추론 특화        │
+│ 긴 컨텍스트 분석     │ Gemini 1.5 Pro   │ 2M 토큰          │
+│ 실시간 대화          │ Haiku/Mini       │ 낮은 지연시간    │
+│ JSON 추출            │ GPT-4o Mini      │ 구조화 출력 우수 │
+└──────────────────────┴──────────────────┴──────────────────┘
+
+<span class="cmt">// 응답 시간 비교</span>
+Claude Haiku: ~<span class="num">1</span>초 (TTFT: <span class="num">0.3</span>초)
+GPT-4o Mini: ~<span class="num">1.5</span>초 (TTFT: <span class="num">0.5</span>초)
+Claude Opus: ~<span class="num">3</span>초 (TTFT: <span class="num">1</span>초)
+로컬 Llama 8B: ~<span class="num">5</span>초 (TTFT: <span class="num">2</span>초, GPU)
+
+TTFT = Time To First Token (스트리밍 시작)
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="routing-strategies">라우팅 전략</h2>
+
+<h3 id="complexity-based">복잡도 기반 라우팅</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> re
+<span class="kw">from</span> typing <span class="kw">import</span> Literal
+
+<span class="kw">class</span> <span class="type">ComplexityRouter</span>:
+    <span class="str">"""사용자 쿼리 복잡도 분석하여 적절한 모델 선택"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.simple_patterns = [
+            <span class="str">r'^(안녕|hi|hello|ㅎㅇ)'</span>,
+            <span class="str">r'^(뭐야|what|who)'</span>,
+            <span class="str">r'시간|날씨|weather'</span>,
+        ]
+        <span class="kw">self</span>.complex_keywords = [
+            <span class="str">'분석'</span>, <span class="str">'비교'</span>, <span class="str">'설명'</span>, <span class="str">'추론'</span>, <span class="str">'왜'</span>,
+            <span class="str">'analyze'</span>, <span class="str">'compare'</span>, <span class="str">'explain'</span>, <span class="str">'why'</span>
+        ]
+
+    <span class="kw">def</span> <span class="fn">classify</span>(<span class="kw">self</span>, query: <span class="type">str</span>) -&gt; Literal[<span class="str">'simple'</span>, <span class="str">'medium'</span>, <span class="str">'complex'</span>]:
+        query_lower = query.lower()
+
+        <span class="cmt"># 단순 패턴 매칭</span>
+        <span class="kw">for</span> pattern <span class="kw">in</span> <span class="kw">self</span>.simple_patterns:
+            <span class="kw">if</span> re.search(pattern, query_lower):
+                <span class="kw">return</span> <span class="str">'simple'</span>
+
+        <span class="cmt"># 길이 기반</span>
+        words = query.split()
+        <span class="kw">if</span> <span class="fn">len</span>(words) &lt; <span class="num">5</span>:
+            <span class="kw">return</span> <span class="str">'simple'</span>
+
+        <span class="cmt"># 복잡한 키워드</span>
+        <span class="kw">for</span> keyword <span class="kw">in</span> <span class="kw">self</span>.complex_keywords:
+            <span class="kw">if</span> keyword <span class="kw">in</span> query_lower:
+                <span class="kw">return</span> <span class="str">'complex'</span>
+
+        <span class="cmt"># 코드 블록 포함</span>
+        <span class="kw">if</span> <span class="str">'```'</span> <span class="kw">in</span> query <span class="kw">or</span> <span class="str">'def '</span> <span class="kw">in</span> query:
+            <span class="kw">return</span> <span class="str">'complex'</span>
+
+        <span class="cmt"># 긴 쿼리</span>
+        <span class="kw">if</span> <span class="fn">len</span>(words) &gt; <span class="num">50</span>:
+            <span class="kw">return</span> <span class="str">'complex'</span>
+
+        <span class="kw">return</span> <span class="str">'medium'</span>
+
+    <span class="kw">def</span> <span class="fn">select_model</span>(<span class="kw">self</span>, query: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+        complexity = <span class="kw">self</span>.classify(query)
+
+        models = {
+            <span class="str">'simple'</span>: <span class="str">'claude-haiku-3-5'</span>,      <span class="cmt"># 빠르고 저렴</span>
+            <span class="str">'medium'</span>: <span class="str">'gpt-4o-mini'</span>,          <span class="cmt"># 균형잡힘</span>
+            <span class="str">'complex'</span>: <span class="str">'claude-opus-4'</span>,       <span class="cmt"># 최고 품질</span>
+        }
+
+        <span class="kw">return</span> models[complexity]
+
+
+<span class="cmt"># 사용 예제</span>
+router = ComplexityRouter()
+
+queries = [
+    <span class="str">"안녕"</span>,  <span class="cmt"># simple</span>
+    <span class="str">"Python에서 리스트와 튜플의 차이는?"</span>,  <span class="cmt"># medium</span>
+    <span class="str">"다음 코드를 분석하고 시간 복잡도를 개선하는 방법을 제안해줘..."</span>,  <span class="cmt"># complex</span>
+]
+
+<span class="kw">for</span> q <span class="kw">in</span> queries:
+    model = router.select_model(q)
+    <span class="fn">print</span>(<span class="str">f"Query: {q[:30]}... → Model: {model}"</span>)
+</code></pre>
+</div>
+
+<h3 id="ml-based-routing">ML 기반 라우팅</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 임베딩 기반 분류 (더 정확)</span>
+
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> pickle
+
+<span class="kw">class</span> <span class="type">MLRouter</span>:
+    <span class="str">"""과거 데이터 학습하여 최적 모델 예측"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.client = OpenAI()
+        <span class="kw">self</span>.classifier = <span class="kw">None</span>
+        <span class="kw">self</span>.model_mapping = {
+            <span class="num">0</span>: <span class="str">'claude-haiku'</span>,
+            <span class="num">1</span>: <span class="str">'gpt-4o-mini'</span>,
+            <span class="num">2</span>: <span class="str">'claude-opus'</span>,
+        }
+
+    <span class="kw">def</span> <span class="fn">get_embedding</span>(<span class="kw">self</span>, text: <span class="type">str</span>) -&gt; np.ndarray:
+        <span class="str">"""텍스트를 벡터로 변환"""</span>
+        response = <span class="kw">self</span>.client.embeddings.create(
+            model=<span class="str">"text-embedding-3-small"</span>,
+            input=text
+        )
+        <span class="kw">return</span> np.array(response.data[<span class="num">0</span>].embedding)
+
+    <span class="kw">def</span> <span class="fn">train</span>(<span class="kw">self</span>, training_data: <span class="type">list</span>):
+        <span class="str">"""
+        training_data: [(query, best_model_idx), ...]
+        best_model_idx: 0=haiku, 1=mini, 2=opus
+        """</span>
+        X = []
+        y = []
+
+        <span class="kw">for</span> query, model_idx <span class="kw">in</span> training_data:
+            embedding = <span class="kw">self</span>.get_embedding(query)
+            X.append(embedding)
+            y.append(model_idx)
+
+        <span class="kw">self</span>.classifier = RandomForestClassifier(n_estimators=<span class="num">100</span>)
+        <span class="kw">self</span>.classifier.fit(X, y)
+
+        <span class="cmt"># 모델 저장</span>
+        <span class="kw">with</span> <span class="fn">open</span>(<span class="str">'router_model.pkl'</span>, <span class="str">'wb'</span>) <span class="kw">as</span> f:
+            pickle.dump(<span class="kw">self</span>.classifier, f)
+
+    <span class="kw">def</span> <span class="fn">load</span>(<span class="kw">self</span>):
+        <span class="str">"""저장된 모델 로드"""</span>
+        <span class="kw">with</span> <span class="fn">open</span>(<span class="str">'router_model.pkl'</span>, <span class="str">'rb'</span>) <span class="kw">as</span> f:
+            <span class="kw">self</span>.classifier = pickle.load(f)
+
+    <span class="kw">def</span> <span class="fn">route</span>(<span class="kw">self</span>, query: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+        <span class="str">"""쿼리에 최적 모델 반환"""</span>
+        embedding = <span class="kw">self</span>.get_embedding(query)
+        prediction = <span class="kw">self</span>.classifier.predict([embedding])[<span class="num">0</span>]
+        <span class="kw">return</span> <span class="kw">self</span>.model_mapping[prediction]
+
+
+<span class="cmt"># 학습 데이터 생성 (실제로는 사용자 피드백 수집)</span>
+training_data = [
+    (<span class="str">"안녕"</span>, <span class="num">0</span>),
+    (<span class="str">"파이썬 리스트 설명해줘"</span>, <span class="num">1</span>),
+    (<span class="str">"복잡한 분산 시스템 아키텍처 설계..."</span>, <span class="num">2</span>),
+    <span class="cmt"># ... 수백~수천 개</span>
+]
+
+router = MLRouter()
+router.train(training_data)
+
+<span class="cmt"># 실시간 라우팅</span>
+model = router.route(<span class="str">"Kubernetes 클러스터 최적화 방법은?"</span>)
+<span class="fn">print</span>(<span class="str">f"Selected model: {model}"</span>)
+</code></pre>
+</div>
+
+<h3 id="semantic-routing">시맨틱 라우팅</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 작업 유형별 전문 모델 라우팅</span>
+
+<span class="kw">from</span> semantic_router <span class="kw">import</span> Route, RouteLayer
+<span class="kw">from</span> semantic_router.encoders <span class="kw">import</span> OpenAIEncoder
+
+<span class="cmt"># 경로 정의</span>
+routes = [
+    Route(
+        name=<span class="str">"code"</span>,
+        utterances=[
+            <span class="str">"Python 코드 작성해줘"</span>,
+            <span class="str">"이 함수 디버깅해줘"</span>,
+            <span class="str">"알고리즘 구현"</span>,
+            <span class="str">"코드 리뷰"</span>,
+        ],
+        model=<span class="str">"claude-sonnet-4"</span>  <span class="cmt"># 코딩 특화</span>
+    ),
+    Route(
+        name=<span class="str">"translate"</span>,
+        utterances=[
+            <span class="str">"한국어로 번역"</span>,
+            <span class="str">"영어로 바꿔줘"</span>,
+            <span class="str">"일본어 번역"</span>,
+        ],
+        model=<span class="str">"gpt-4o"</span>  <span class="cmt"># 번역 우수</span>
+    ),
+    Route(
+        name=<span class="str">"summarize"</span>,
+        utterances=[
+            <span class="str">"요약해줘"</span>,
+            <span class="str">"핵심만 알려줘"</span>,
+            <span class="str">"간단히 설명"</span>,
+        ],
+        model=<span class="str">"claude-haiku"</span>  <span class="cmt"># 빠르고 저렴</span>
+    ),
+    Route(
+        name=<span class="str">"reasoning"</span>,
+        utterances=[
+            <span class="str">"수학 문제 풀이"</span>,
+            <span class="str">"논리적 추론"</span>,
+            <span class="str">"복잡한 분석"</span>,
+        ],
+        model=<span class="str">"o1"</span>  <span class="cmt"># 추론 특화</span>
+    ),
+]
+
+<span class="cmt"># 라우터 초기화</span>
+encoder = OpenAIEncoder()
+router_layer = RouteLayer(encoder=encoder, routes=routes)
+
+<span class="cmt"># 라우팅</span>
+<span class="kw">def</span> <span class="fn">smart_route</span>(query: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    route = router_layer(query)
+
+    <span class="kw">if</span> route.name:
+        <span class="kw">return</span> route.model
+    <span class="kw">else</span>:
+        <span class="cmt"># 매칭 실패 시 기본 모델</span>
+        <span class="kw">return</span> <span class="str">"gpt-4o-mini"</span>
+
+
+<span class="cmt"># 사용</span>
+queries = [
+    <span class="str">"FastAPI로 REST API 만들어줘"</span>,
+    <span class="str">"이 영문 계약서 한국어로 번역"</span>,
+    <span class="str">"5페이지 논문 핵심 3줄 요약"</span>,
+]
+
+<span class="kw">for</span> q <span class="kw">in</span> queries:
+    model = smart_route(q)
+    <span class="fn">print</span>(<span class="str">f"{q[:30]}... → {model}"</span>)
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="fallback">폴백 구현</h2>
+
+<h3 id="basic-fallback">기본 폴백 체인</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> openai <span class="kw">import</span> OpenAI, APIError, RateLimitError
+<span class="kw">from</span> anthropic <span class="kw">import</span> Anthropic, APIConnectionError
+<span class="kw">import</span> logging
+
+logger = logging.getLogger(__name__)
+
+<span class="kw">class</span> <span class="type">FallbackLLM</span>:
+    <span class="str">"""주 LLM 실패 시 자동으로 대체 LLM 사용"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.openai = OpenAI()
+        <span class="kw">self</span>.anthropic = Anthropic()
+
+        <span class="cmt"># 우선순위: OpenAI → Anthropic → 로컬</span>
+        <span class="kw">self</span>.providers = [
+            (<span class="str">'openai'</span>, <span class="kw">self</span>._openai_call),
+            (<span class="str">'anthropic'</span>, <span class="kw">self</span>._anthropic_call),
+            (<span class="str">'local'</span>, <span class="kw">self</span>._local_call),
+        ]
+
+    <span class="kw">def</span> <span class="fn">_openai_call</span>(<span class="kw">self</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        response = <span class="kw">self</span>.openai.chat.completions.create(
+            model=<span class="str">"gpt-4o"</span>,
+            messages=messages,
+            timeout=<span class="num">30</span>
+        )
+        <span class="kw">return</span> response.choices[<span class="num">0</span>].message.content
+
+    <span class="kw">def</span> <span class="fn">_anthropic_call</span>(<span class="kw">self</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        <span class="cmt"># OpenAI 형식을 Anthropic 형식으로 변환</span>
+        system = <span class="str">""</span>
+        user_messages = []
+
+        <span class="kw">for</span> msg <span class="kw">in</span> messages:
+            <span class="kw">if</span> msg[<span class="str">'role'</span>] == <span class="str">'system'</span>:
+                system = msg[<span class="str">'content'</span>]
+            <span class="kw">else</span>:
+                user_messages.append(msg)
+
+        response = <span class="kw">self</span>.anthropic.messages.create(
+            model=<span class="str">"claude-4-sonnet"</span>,
+            system=system,
+            messages=user_messages,
+            max_tokens=<span class="num">2000</span>,
+            timeout=<span class="num">30</span>
+        )
+        <span class="kw">return</span> response.content[<span class="num">0</span>].text
+
+    <span class="kw">def</span> <span class="fn">_local_call</span>(<span class="kw">self</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        <span class="cmt"># 로컬 Ollama 사용</span>
+        <span class="kw">import</span> ollama
+
+        response = ollama.chat(
+            model=<span class="str">'llama3.1:8b'</span>,
+            messages=messages
+        )
+        <span class="kw">return</span> response[<span class="str">'message'</span>][<span class="str">'content'</span>]
+
+    <span class="kw">def</span> <span class="fn">chat</span>(<span class="kw">self</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        <span class="str">"""폴백 체인으로 응답 생성"""</span>
+        last_error = <span class="kw">None</span>
+
+        <span class="kw">for</span> provider_name, provider_func <span class="kw">in</span> <span class="kw">self</span>.providers:
+            <span class="kw">try</span>:
+                logger.info(<span class="str">f"Trying {provider_name}..."</span>)
+                result = provider_func(messages)
+                logger.info(<span class="str">f"Success with {provider_name}"</span>)
+                <span class="kw">return</span> result
+
+            <span class="kw">except</span> RateLimitError <span class="kw">as</span> e:
+                logger.warning(<span class="str">f"{provider_name} rate limited: {e}"</span>)
+                last_error = e
+                <span class="kw">continue</span>
+
+            <span class="kw">except</span> APIConnectionError <span class="kw">as</span> e:
+                logger.warning(<span class="str">f"{provider_name} connection error: {e}"</span>)
+                last_error = e
+                <span class="kw">continue</span>
+
+            <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+                logger.error(<span class="str">f"{provider_name} failed: {e}"</span>)
+                last_error = e
+                <span class="kw">continue</span>
+
+        <span class="cmt"># 모든 제공자 실패</span>
+        <span class="kw">raise</span> <span class="type">Exception</span>(<span class="str">f"All providers failed. Last error: {last_error}"</span>)
+
+
+<span class="cmt"># 사용</span>
+llm = FallbackLLM()
+
+<span class="kw">try</span>:
+    response = llm.chat([
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Python의 GIL이란?"</span>}
+    ])
+    <span class="fn">print</span>(response)
+<span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="str">f"Failed: {e}"</span>)
+</code></pre>
+</div>
+
+<h3 id="retry-logic">재시도 로직</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> time
+<span class="kw">from</span> tenacity <span class="kw">import</span> (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type
+)
+
+<span class="kw">class</span> <span class="type">ResilientLLM</span>:
+    <span class="str">"""재시도 + 폴백 조합"""</span>
+
+    @retry(
+        stop=stop_after_attempt(<span class="num">3</span>),  <span class="cmt"># 최대 3회</span>
+        wait=wait_exponential(multiplier=<span class="num">1</span>, min=<span class="num">2</span>, max=<span class="num">10</span>),  <span class="cmt"># 2초, 4초, 8초</span>
+        retry=retry_if_exception_type(RateLimitError)  <span class="cmt"># Rate Limit만 재시도</span>
+    )
+    <span class="kw">def</span> <span class="fn">_call_with_retry</span>(<span class="kw">self</span>, func, *args, **kwargs):
+        <span class="kw">return</span> func(*args, **kwargs)
+
+    <span class="kw">def</span> <span class="fn">chat</span>(<span class="kw">self</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        <span class="cmt"># 1단계: OpenAI (재시도)</span>
+        <span class="kw">try</span>:
+            <span class="kw">return</span> <span class="kw">self</span>._call_with_retry(
+                openai_client.chat.completions.create,
+                model=<span class="str">"gpt-4o"</span>,
+                messages=messages
+            ).choices[<span class="num">0</span>].message.content
+        <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+            logger.warning(<span class="str">f"OpenAI failed after retries: {e}"</span>)
+
+        <span class="cmt"># 2단계: Anthropic (재시도)</span>
+        <span class="kw">try</span>:
+            <span class="kw">return</span> <span class="kw">self</span>._call_with_retry(
+                anthropic_client.messages.create,
+                model=<span class="str">"claude-4-sonnet"</span>,
+                messages=messages,
+                max_tokens=<span class="num">2000</span>
+            ).content[<span class="num">0</span>].text
+        <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+            logger.warning(<span class="str">f"Anthropic failed after retries: {e}"</span>)
+
+        <span class="cmt"># 3단계: 로컬 (항상 성공)</span>
+        <span class="kw">return</span> local_llm_call(messages)
+</code></pre>
+</div>
+
+<h3 id="circuit-breaker">Circuit Breaker 패턴</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 연속 실패 시 일시적으로 제공자 차단</span>
+
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime, timedelta
+
+<span class="kw">class</span> <span class="type">CircuitBreaker</span>:
+    <span class="str">"""제공자별 장애 감지 및 자동 차단"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, failure_threshold=<span class="num">5</span>, timeout=<span class="num">60</span>):
+        <span class="kw">self</span>.failure_threshold = failure_threshold
+        <span class="kw">self</span>.timeout = timeout  <span class="cmt"># 차단 시간 (초)</span>
+        <span class="kw">self</span>.failures = {}  <span class="cmt"># {provider: count}</span>
+        <span class="kw">self</span>.last_failure_time = {}
+        <span class="kw">self</span>.state = {}  <span class="cmt"># {provider: 'closed'|'open'|'half-open'}</span>
+
+    <span class="kw">def</span> <span class="fn">is_available</span>(<span class="kw">self</span>, provider: <span class="type">str</span>) -&gt; <span class="type">bool</span>:
+        <span class="str">"""제공자 사용 가능 여부"""</span>
+        state = <span class="kw">self</span>.state.get(provider, <span class="str">'closed'</span>)
+
+        <span class="kw">if</span> state == <span class="str">'closed'</span>:
+            <span class="kw">return</span> <span class="kw">True</span>
+
+        <span class="kw">if</span> state == <span class="str">'open'</span>:
+            <span class="cmt"># 타임아웃 후 half-open 전환</span>
+            last_failure = <span class="kw">self</span>.last_failure_time.get(provider)
+            <span class="kw">if</span> datetime.now() - last_failure &gt; timedelta(seconds=<span class="kw">self</span>.timeout):
+                <span class="kw">self</span>.state[provider] = <span class="str">'half-open'</span>
+                <span class="kw">return</span> <span class="kw">True</span>
+            <span class="kw">return</span> <span class="kw">False</span>
+
+        <span class="cmt"># half-open: 시험적으로 허용</span>
+        <span class="kw">return</span> <span class="kw">True</span>
+
+    <span class="kw">def</span> <span class="fn">record_success</span>(<span class="kw">self</span>, provider: <span class="type">str</span>):
+        <span class="str">"""성공 기록 → closed 상태로"""</span>
+        <span class="kw">self</span>.failures[provider] = <span class="num">0</span>
+        <span class="kw">self</span>.state[provider] = <span class="str">'closed'</span>
+
+    <span class="kw">def</span> <span class="fn">record_failure</span>(<span class="kw">self</span>, provider: <span class="type">str</span>):
+        <span class="str">"""실패 기록 → 임계값 초과 시 open"""</span>
+        <span class="kw">self</span>.failures[provider] = <span class="kw">self</span>.failures.get(provider, <span class="num">0</span>) + <span class="num">1</span>
+        <span class="kw">self</span>.last_failure_time[provider] = datetime.now()
+
+        <span class="kw">if</span> <span class="kw">self</span>.failures[provider] &gt;= <span class="kw">self</span>.failure_threshold:
+            <span class="kw">self</span>.state[provider] = <span class="str">'open'</span>
+            logger.error(<span class="str">f"Circuit breaker OPEN for {provider}"</span>)
+
+
+<span class="cmt"># 통합 예제</span>
+<span class="kw">class</span> <span class="type">SmartLLM</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.circuit_breaker = CircuitBreaker()
+        <span class="kw">self</span>.providers = [<span class="str">'openai'</span>, <span class="str">'anthropic'</span>, <span class="str">'local'</span>]
+
+    <span class="kw">def</span> <span class="fn">chat</span>(<span class="kw">self</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        <span class="kw">for</span> provider <span class="kw">in</span> <span class="kw">self</span>.providers:
+            <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>.circuit_breaker.is_available(provider):
+                logger.info(<span class="str">f"Skipping {provider} (circuit open)"</span>)
+                <span class="kw">continue</span>
+
+            <span class="kw">try</span>:
+                result = <span class="kw">self</span>._call_provider(provider, messages)
+                <span class="kw">self</span>.circuit_breaker.record_success(provider)
+                <span class="kw">return</span> result
+            <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+                <span class="kw">self</span>.circuit_breaker.record_failure(provider)
+                logger.warning(<span class="str">f"{provider} failed: {e}"</span>)
+
+        <span class="kw">raise</span> <span class="type">Exception</span>(<span class="str">"All providers unavailable"</span>)
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="load-balancing">로드 밸런싱</h2>
+
+<h3 id="round-robin">라운드 로빈</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> itertools
+<span class="kw">from</span> threading <span class="kw">import</span> Lock
+
+<span class="kw">class</span> <span class="type">LoadBalancedLLM</span>:
+    <span class="str">"""여러 계정/엔드포인트 간 요청 분산"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, api_keys: <span class="type">list</span>):
+        <span class="kw">self</span>.clients = [OpenAI(api_key=key) <span class="kw">for</span> key <span class="kw">in</span> api_keys]
+        <span class="kw">self</span>.iterator = itertools.cycle(<span class="fn">range</span>(<span class="fn">len</span>(<span class="kw">self</span>.clients)))
+        <span class="kw">self</span>.lock = Lock()
+
+    <span class="kw">def</span> <span class="fn">_get_next_client</span>(<span class="kw">self</span>) -&gt; OpenAI:
+        <span class="kw">with</span> <span class="kw">self</span>.lock:
+            idx = <span class="fn">next</span>(<span class="kw">self</span>.iterator)
+            <span class="kw">return</span> <span class="kw">self</span>.clients[idx]
+
+    <span class="kw">def</span> <span class="fn">chat</span>(<span class="kw">self</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        client = <span class="kw">self</span>._get_next_client()
+        response = client.chat.completions.create(
+            model=<span class="str">"gpt-4o"</span>,
+            messages=messages
+        )
+        <span class="kw">return</span> response.choices[<span class="num">0</span>].message.content
+
+
+<span class="cmt"># 사용: 3개 계정 순환</span>
+llm = LoadBalancedLLM([
+    <span class="str">"sk-proj-key1..."</span>,
+    <span class="str">"sk-proj-key2..."</span>,
+    <span class="str">"sk-proj-key3..."</span>,
+])
+
+<span class="cmt"># 각 요청이 다른 계정 사용 → Rate Limit 3배</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">100</span>):
+    response = llm.chat([{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">f"질문 {i}"</span>}])
+</code></pre>
+</div>
+
+<h3 id="weighted-balancing">가중 로드 밸런싱</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> random
+
+<span class="kw">class</span> <span class="type">WeightedLLM</span>:
+    <span class="str">"""성능/비용에 따라 가중치 부여"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.providers = [
+            {<span class="str">'name'</span>: <span class="str">'openai'</span>, <span class="str">'weight'</span>: <span class="num">50</span>, <span class="str">'func'</span>: <span class="kw">self</span>._openai},
+            {<span class="str">'name'</span>: <span class="str">'anthropic'</span>, <span class="str">'weight'</span>: <span class="num">30</span>, <span class="str">'func'</span>: <span class="kw">self</span>._anthropic},
+            {<span class="str">'name'</span>: <span class="str">'local'</span>, <span class="str">'weight'</span>: <span class="num">20</span>, <span class="str">'func'</span>: <span class="kw">self</span>._local},
+        ]
+        <span class="kw">self</span>.total_weight = <span class="fn">sum</span>(p[<span class="str">'weight'</span>] <span class="kw">for</span> p <span class="kw">in</span> <span class="kw">self</span>.providers)
+
+    <span class="kw">def</span> <span class="fn">_select_provider</span>(<span class="kw">self</span>):
+        rand = random.uniform(<span class="num">0</span>, <span class="kw">self</span>.total_weight)
+        cumulative = <span class="num">0</span>
+
+        <span class="kw">for</span> provider <span class="kw">in</span> <span class="kw">self</span>.providers:
+            cumulative += provider[<span class="str">'weight'</span>]
+            <span class="kw">if</span> rand &lt;= cumulative:
+                <span class="kw">return</span> provider
+
+        <span class="kw">return</span> <span class="kw">self</span>.providers[-<span class="num">1</span>]
+
+    <span class="kw">def</span> <span class="fn">chat</span>(<span class="kw">self</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        provider = <span class="kw">self</span>._select_provider()
+        <span class="kw">return</span> provider[<span class="str">'func'</span>](messages)
+
+
+<span class="cmt"># 통계: 100회 요청</span>
+<span class="cmt"># OpenAI: ~50회, Anthropic: ~30회, Local: ~20회</span>
+</code></pre>
+</div>
+
+<h3 id="least-latency">최소 지연시간 선택</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> asyncio
+<span class="kw">from</span> collections <span class="kw">import</span> deque
+
+<span class="kw">class</span> <span class="type">AdaptiveLLM</span>:
+    <span class="str">"""최근 응답 시간 기반 동적 선택"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, window_size=<span class="num">10</span>):
+        <span class="kw">self</span>.latencies = {
+            <span class="str">'openai'</span>: deque(maxlen=window_size),
+            <span class="str">'anthropic'</span>: deque(maxlen=window_size),
+        }
+
+    <span class="kw">def</span> <span class="fn">_avg_latency</span>(<span class="kw">self</span>, provider: <span class="type">str</span>) -&gt; <span class="type">float</span>:
+        <span class="kw">if</span> <span class="kw">not</span> <span class="kw">self</span>.latencies[provider]:
+            <span class="kw">return</span> <span class="num">0.0</span>  <span class="cmt"># 미지의 제공자 우선</span>
+        <span class="kw">return</span> <span class="fn">sum</span>(<span class="kw">self</span>.latencies[provider]) / <span class="fn">len</span>(<span class="kw">self</span>.latencies[provider])
+
+    <span class="kw">def</span> <span class="fn">chat</span>(<span class="kw">self</span>, messages: <span class="type">list</span>) -&gt; <span class="type">str</span>:
+        <span class="cmt"># 평균 지연시간이 낮은 제공자 선택</span>
+        provider = <span class="fn">min</span>(
+            <span class="kw">self</span>.latencies.keys(),
+            key=<span class="kw">lambda</span> p: <span class="kw">self</span>._avg_latency(p)
+        )
+
+        start = time.time()
+        <span class="kw">try</span>:
+            result = <span class="kw">self</span>._call_provider(provider, messages)
+            latency = time.time() - start
+            <span class="kw">self</span>.latencies[provider].append(latency)
+            <span class="kw">return</span> result
+        <span class="kw">except</span> <span class="type">Exception</span>:
+            <span class="cmt"># 실패 시 높은 지연시간 기록 (페널티)</span>
+            <span class="kw">self</span>.latencies[provider].append(<span class="num">999.0</span>)
+            <span class="kw">raise</span>
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="litellm">LiteLLM 활용</h2>
+
+<p>LiteLLM은 100+ LLM 제공자를 단일 인터페이스로 통합하는 오픈소스 프레임워크입니다.</p>
+
+<h3 id="litellm-install">설치 및 기본 사용</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>pip install litellm
+</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> litellm <span class="kw">import</span> completion
+<span class="kw">import</span> os
+
+<span class="cmt"># API 키 설정</span>
+os.environ[<span class="str">"OPENAI_API_KEY"</span>] = <span class="str">"..."</span>
+os.environ[<span class="str">"ANTHROPIC_API_KEY"</span>] = <span class="str">"..."</span>
+os.environ[<span class="str">"COHERE_API_KEY"</span>] = <span class="str">"..."</span>
+
+<span class="cmt"># 통일된 인터페이스</span>
+messages = [{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello!"</span>}]
+
+<span class="cmt"># OpenAI</span>
+response = completion(model=<span class="str">"gpt-4o"</span>, messages=messages)
+
+<span class="cmt"># Anthropic</span>
+response = completion(model=<span class="str">"claude-4-sonnet"</span>, messages=messages)
+
+<span class="cmt"># Google</span>
+response = completion(model=<span class="str">"gemini/gemini-1.5-pro"</span>, messages=messages)
+
+<span class="cmt"># Cohere</span>
+response = completion(model=<span class="str">"command-r-plus"</span>, messages=messages)
+
+<span class="cmt"># 로컬 (Ollama)</span>
+response = completion(model=<span class="str">"ollama/llama3.1:8b"</span>, messages=messages)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+
+<h3 id="litellm-routing">LiteLLM 라우팅</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> litellm <span class="kw">import</span> Router
+
+<span class="cmt"># 라우터 설정</span>
+router = Router(
+    model_list=[
+        {
+            <span class="str">"model_name"</span>: <span class="str">"gpt-4"</span>,
+            <span class="str">"litellm_params"</span>: {
+                <span class="str">"model"</span>: <span class="str">"gpt-4o"</span>,
+                <span class="str">"api_key"</span>: os.getenv(<span class="str">"OPENAI_API_KEY"</span>)
+            }
+        },
+        {
+            <span class="str">"model_name"</span>: <span class="str">"gpt-4"</span>,  <span class="cmt"># 동일 이름 (로드 밸런싱)</span>
+            <span class="str">"litellm_params"</span>: {
+                <span class="str">"model"</span>: <span class="str">"azure/gpt-4o"</span>,
+                <span class="str">"api_key"</span>: os.getenv(<span class="str">"AZURE_API_KEY"</span>),
+                <span class="str">"api_base"</span>: os.getenv(<span class="str">"AZURE_API_BASE"</span>)
+            }
+        },
+        {
+            <span class="str">"model_name"</span>: <span class="str">"claude"</span>,
+            <span class="str">"litellm_params"</span>: {
+                <span class="str">"model"</span>: <span class="str">"claude-4-sonnet"</span>,
+                <span class="str">"api_key"</span>: os.getenv(<span class="str">"ANTHROPIC_API_KEY"</span>)
+            }
+        }
+    ],
+    fallbacks=[
+        {<span class="str">"gpt-4"</span>: [<span class="str">"claude"</span>]},  <span class="cmt"># GPT-4 실패 시 Claude</span>
+    ],
+    context_window_fallbacks=[
+        {<span class="str">"gpt-4"</span>: [<span class="str">"claude"</span>]}  <span class="cmt"># 컨텍스트 초과 시</span>
+    ],
+    routing_strategy=<span class="str">"least-latency"</span>,  <span class="cmt"># 또는 "simple-shuffle", "usage-based"</span>
+)
+
+<span class="cmt"># 사용 (자동 로드 밸런싱 + 폴백)</span>
+response = router.completion(
+    model=<span class="str">"gpt-4"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Explain quantum entanglement"</span>}]
+)
+</code></pre>
+</div>
+
+<h3 id="litellm-config">설정 파일 기반</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">yaml</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># config.yaml</span>
+<span class="kw">model_list:</span>
+  - <span class="kw">model_name:</span> gpt-4
+    <span class="kw">litellm_params:</span>
+      <span class="kw">model:</span> gpt-4o
+      <span class="kw">api_key:</span> os.environ/OPENAI_API_KEY
+      <span class="kw">rpm:</span> <span class="num">10000</span>  <span class="cmt"># requests per minute</span>
+
+  - <span class="kw">model_name:</span> gpt-4
+    <span class="kw">litellm_params:</span>
+      <span class="kw">model:</span> azure/gpt-4o
+      <span class="kw">api_key:</span> os.environ/AZURE_API_KEY
+      <span class="kw">api_base:</span> https://my-azure.openai.azure.com
+      <span class="kw">rpm:</span> <span class="num">5000</span>
+
+  - <span class="kw">model_name:</span> claude
+    <span class="kw">litellm_params:</span>
+      <span class="kw">model:</span> claude-4-sonnet
+      <span class="kw">api_key:</span> os.environ/ANTHROPIC_API_KEY
+
+<span class="kw">router_settings:</span>
+  <span class="kw">routing_strategy:</span> usage-based-routing  <span class="cmt"># RPM 한도 고려</span>
+  <span class="kw">num_retries:</span> <span class="num">3</span>
+  <span class="kw">timeout:</span> <span class="num">30</span>
+  <span class="kw">fallbacks:</span>
+    - <span class="kw">gpt-4:</span> [claude]
+  <span class="kw">allowed_fails:</span> <span class="num">3</span>  <span class="cmt"># Circuit breaker</span>
+</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> litellm <span class="kw">import</span> Router
+
+<span class="cmt"># YAML 설정 로드</span>
+router = Router(config_file=<span class="str">"config.yaml"</span>)
+
+<span class="cmt"># 자동 로드 밸런싱, Rate Limit 관리, 폴백</span>
+response = router.completion(
+    model=<span class="str">"gpt-4"</span>,
+    messages=messages
+)
+</code></pre>
+</div>
+
+<h3 id="litellm-proxy">LiteLLM 프록시 서버</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 프록시 서버 시작 (OpenAI 호환 엔드포인트)</span>
+litellm --config config.yaml --port <span class="num">8000</span>
+
+<span class="cmt"># 또는 Docker</span>
+docker run -p <span class="num">8000</span>:<span class="num">8000</span> \
+  -v $(pwd)/config.yaml:/app/config.yaml \
+  ghcr.io/berriai/litellm:main \
+  --config /app/config.yaml
+</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 클라이언트: OpenAI SDK 그대로 사용</span>
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+client = OpenAI(
+    base_url=<span class="str">"http://localhost:8000"</span>,
+    api_key=<span class="str">"anything"</span>  <span class="cmt"># 프록시가 실제 키 관리</span>
+)
+
+<span class="cmt"># 프록시가 자동으로 최적 모델 선택 + 폴백</span>
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello"</span>}]
+)
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="portkey">Portkey 활용</h2>
+
+<p>Portkey는 엔터프라이즈급 LLM 게이트웨이로, 라우팅, 캐싱, 모니터링을 통합 제공합니다.</p>
+
+<h3 id="portkey-setup">설정</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">bash</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>pip install portkey-ai
+</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> portkey_ai <span class="kw">import</span> Portkey
+
+<span class="cmt"># Portkey 클라이언트 (가상 키 사용)</span>
+portkey = Portkey(
+    api_key=<span class="str">"YOUR_PORTKEY_API_KEY"</span>,  <span class="cmt"># Portkey 대시보드에서 발급</span>
+    virtual_key=<span class="str">"openai-virtual-key"</span>  <span class="cmt"># Portkey에 등록한 가상 키</span>
+)
+
+<span class="cmt"># OpenAI 형식으로 호출</span>
+response = portkey.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello Portkey!"</span>}]
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+
+<h3 id="portkey-config">Portkey Config (라우팅 + 폴백)</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> portkey_ai <span class="kw">import</span> Portkey, PortkeyConfig
+
+<span class="cmt"># JSON 설정</span>
+config = PortkeyConfig(
+    strategy={
+        <span class="str">"mode"</span>: <span class="str">"fallback"</span>,  <span class="cmt"># 또는 "loadbalance"</span>
+    },
+    targets=[
+        {
+            <span class="str">"virtual_key"</span>: <span class="str">"openai-key"</span>,
+            <span class="str">"override_params"</span>: {<span class="str">"model"</span>: <span class="str">"gpt-4o"</span>}
+        },
+        {
+            <span class="str">"virtual_key"</span>: <span class="str">"anthropic-key"</span>,
+            <span class="str">"override_params"</span>: {<span class="str">"model"</span>: <span class="str">"claude-4-sonnet"</span>}
+        },
+        {
+            <span class="str">"virtual_key"</span>: <span class="str">"google-key"</span>,
+            <span class="str">"override_params"</span>: {<span class="str">"model"</span>: <span class="str">"gemini-1.5-pro"</span>}
+        }
+    ]
+)
+
+portkey = Portkey(
+    api_key=<span class="str">"YOUR_PORTKEY_API_KEY"</span>,
+    config=config
+)
+
+<span class="cmt"># 자동 폴백: OpenAI → Anthropic → Google</span>
+response = portkey.chat.completions.create(
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Explain AI"</span>}]
+)
+</code></pre>
+</div>
+
+<h3 id="portkey-advanced">고급 기능</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 1. 가중 로드 밸런싱</span>
+config = PortkeyConfig(
+    strategy={<span class="str">"mode"</span>: <span class="str">"loadbalance"</span>},
+    targets=[
+        {<span class="str">"virtual_key"</span>: <span class="str">"openai-key"</span>, <span class="str">"weight"</span>: <span class="num">0.7</span>},  <span class="cmt"># 70%</span>
+        {<span class="str">"virtual_key"</span>: <span class="str">"anthropic-key"</span>, <span class="str">"weight"</span>: <span class="num">0.3</span>},  <span class="cmt"># 30%</span>
+    ]
+)
+
+<span class="cmt"># 2. 조건부 라우팅</span>
+config = PortkeyConfig(
+    strategy={<span class="str">"mode"</span>: <span class="str">"conditional"</span>},
+    targets=[
+        {
+            <span class="str">"virtual_key"</span>: <span class="str">"claude-key"</span>,
+            <span class="str">"condition"</span>: <span class="str">"request.messages[0].content.includes('코드')"</span>
+        },
+        {
+            <span class="str">"virtual_key"</span>: <span class="str">"gpt-key"</span>,
+            <span class="str">"condition"</span>: <span class="str">"default"</span>
+        }
+    ]
+)
+
+<span class="cmt"># 3. 캐싱 (동일 요청 재사용)</span>
+portkey = Portkey(
+    api_key=<span class="str">"..."</span>,
+    cache=<span class="str">"simple"</span>,  <span class="cmt"># 또는 "semantic"</span>
+    cache_ttl=<span class="num">3600</span>  <span class="cmt"># 1시간</span>
+)
+
+<span class="cmt"># 4. 재시도 설정</span>
+config = PortkeyConfig(
+    retry={
+        <span class="str">"attempts"</span>: <span class="num">3</span>,
+        <span class="str">"on_status_codes"</span>: [<span class="num">429</span>, <span class="num">500</span>, <span class="num">502</span>, <span class="num">503</span>]
+    }
+)
+
+<span class="cmt"># 5. 메타데이터 (분석용)</span>
+response = portkey.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=messages,
+    metadata={
+        <span class="str">"user_id"</span>: <span class="str">"user123"</span>,
+        <span class="str">"environment"</span>: <span class="str">"production"</span>,
+        <span class="str">"feature"</span>: <span class="str">"chat"</span>
+    }
+)
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="monitoring">모니터링 및 최적화</h2>
+
+<h3 id="metrics">주요 메트릭</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> time
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+<span class="kw">from</span> collections <span class="kw">import</span> defaultdict
+
+@dataclass
+<span class="kw">class</span> <span class="type">Metrics</span>:
+    provider: <span class="type">str</span>
+    latency: <span class="type">float</span>
+    tokens_in: <span class="type">int</span>
+    tokens_out: <span class="type">int</span>
+    cost: <span class="type">float</span>
+    success: <span class="type">bool</span>
+    error: <span class="type">str</span> = <span class="str">""</span>
+
+<span class="kw">class</span> <span class="type">MetricsCollector</span>:
+    <span class="str">"""LLM 호출 메트릭 수집"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.metrics = []
+        <span class="kw">self</span>.stats = defaultdict(<span class="kw">lambda</span>: {
+            <span class="str">'total_calls'</span>: <span class="num">0</span>,
+            <span class="str">'successes'</span>: <span class="num">0</span>,
+            <span class="str">'failures'</span>: <span class="num">0</span>,
+            <span class="str">'total_latency'</span>: <span class="num">0.0</span>,
+            <span class="str">'total_cost'</span>: <span class="num">0.0</span>,
+            <span class="str">'total_tokens'</span>: <span class="num">0</span>,
+        })
+
+    <span class="kw">def</span> <span class="fn">record</span>(<span class="kw">self</span>, metric: Metrics):
+        <span class="kw">self</span>.metrics.append(metric)
+
+        stats = <span class="kw">self</span>.stats[metric.provider]
+        stats[<span class="str">'total_calls'</span>] += <span class="num">1</span>
+        stats[<span class="str">'total_latency'</span>] += metric.latency
+        stats[<span class="str">'total_cost'</span>] += metric.cost
+        stats[<span class="str">'total_tokens'</span>] += metric.tokens_in + metric.tokens_out
+
+        <span class="kw">if</span> metric.success:
+            stats[<span class="str">'successes'</span>] += <span class="num">1</span>
+        <span class="kw">else</span>:
+            stats[<span class="str">'failures'</span>] += <span class="num">1</span>
+
+    <span class="kw">def</span> <span class="fn">report</span>(<span class="kw">self</span>):
+        <span class="fn">print</span>(<span class="str">"=== LLM Usage Report ==="</span>)
+        <span class="kw">for</span> provider, stats <span class="kw">in</span> <span class="kw">self</span>.stats.items():
+            calls = stats[<span class="str">'total_calls'</span>]
+            success_rate = stats[<span class="str">'successes'</span>] / calls * <span class="num">100</span>
+            avg_latency = stats[<span class="str">'total_latency'</span>] / calls
+
+            <span class="fn">print</span>(<span class="str">f"\n{provider}:"</span>)
+            <span class="fn">print</span>(<span class="str">f"  Calls: {calls}"</span>)
+            <span class="fn">print</span>(<span class="str">f"  Success Rate: {success_rate:.1f}%"</span>)
+            <span class="fn">print</span>(<span class="str">f"  Avg Latency: {avg_latency:.2f}s"</span>)
+            <span class="fn">print</span>(<span class="str">f"  Total Cost: ${stats['total_cost']:.2f}"</span>)
+            <span class="fn">print</span>(<span class="str">f"  Total Tokens: {stats['total_tokens']:,}"</span>)
+
+
+<span class="cmt"># 사용</span>
+collector = MetricsCollector()
+
+<span class="kw">def</span> <span class="fn">llm_call_with_metrics</span>(provider, func, *args, **kwargs):
+    start = time.time()
+
+    <span class="kw">try</span>:
+        response = func(*args, **kwargs)
+        latency = time.time() - start
+
+        metric = Metrics(
+            provider=provider,
+            latency=latency,
+            tokens_in=response.usage.prompt_tokens,
+            tokens_out=response.usage.completion_tokens,
+            cost=calculate_cost(provider, response.usage),
+            success=<span class="kw">True</span>
+        )
+        collector.record(metric)
+        <span class="kw">return</span> response
+
+    <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+        latency = time.time() - start
+        metric = Metrics(
+            provider=provider,
+            latency=latency,
+            tokens_in=<span class="num">0</span>,
+            tokens_out=<span class="num">0</span>,
+            cost=<span class="num">0.0</span>,
+            success=<span class="kw">False</span>,
+            error=<span class="fn">str</span>(e)
+        )
+        collector.record(metric)
+        <span class="kw">raise</span>
+
+<span class="cmt"># 주기적 리포트</span>
+<span class="kw">import</span> atexit
+atexit.register(collector.report)
+</code></pre>
+</div>
+
+<h3 id="cost-tracking">비용 추적</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 모델별 가격 (2026년 1월 기준)</span>
+PRICING = {
+    <span class="str">'gpt-4o'</span>: {<span class="str">'input'</span>: <span class="num">2.5</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">10</span> / <span class="num">1_000_000</span>},
+    <span class="str">'gpt-4o-mini'</span>: {<span class="str">'input'</span>: <span class="num">0.15</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">0.6</span> / <span class="num">1_000_000</span>},
+    <span class="str">'claude-4-opus'</span>: {<span class="str">'input'</span>: <span class="num">15</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">75</span> / <span class="num">1_000_000</span>},
+    <span class="str">'claude-4-sonnet'</span>: {<span class="str">'input'</span>: <span class="num">3</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">15</span> / <span class="num">1_000_000</span>},
+    <span class="str">'claude-haiku'</span>: {<span class="str">'input'</span>: <span class="num">0.25</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">1.25</span> / <span class="num">1_000_000</span>},
+}
+
+<span class="kw">def</span> <span class="fn">calculate_cost</span>(model: <span class="type">str</span>, usage) -&gt; <span class="type">float</span>:
+    <span class="str">"""토큰 사용량으로 비용 계산"""</span>
+    <span class="kw">if</span> model <span class="kw">not</span> <span class="kw">in</span> PRICING:
+        <span class="kw">return</span> <span class="num">0.0</span>
+
+    pricing = PRICING[model]
+    cost = (
+        usage.prompt_tokens * pricing[<span class="str">'input'</span>] +
+        usage.completion_tokens * pricing[<span class="str">'output'</span>]
+    )
+    <span class="kw">return</span> cost
+
+<span class="cmt"># 예산 제한</span>
+<span class="kw">class</span> <span class="type">BudgetLimiter</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, daily_budget: <span class="type">float</span>):
+        <span class="kw">self</span>.daily_budget = daily_budget
+        <span class="kw">self</span>.spent_today = <span class="num">0.0</span>
+        <span class="kw">self</span>.date = datetime.now().date()
+
+    <span class="kw">def</span> <span class="fn">check_budget</span>(<span class="kw">self</span>, estimated_cost: <span class="type">float</span>) -&gt; <span class="type">bool</span>:
+        <span class="cmt"># 날짜 변경 시 리셋</span>
+        today = datetime.now().date()
+        <span class="kw">if</span> today != <span class="kw">self</span>.date:
+            <span class="kw">self</span>.spent_today = <span class="num">0.0</span>
+            <span class="kw">self</span>.date = today
+
+        <span class="kw">if</span> <span class="kw">self</span>.spent_today + estimated_cost &gt; <span class="kw">self</span>.daily_budget:
+            <span class="kw">raise</span> <span class="type">Exception</span>(<span class="str">f"Daily budget ${self.daily_budget} exceeded"</span>)
+
+        <span class="kw">return</span> <span class="kw">True</span>
+
+    <span class="kw">def</span> <span class="fn">record_spend</span>(<span class="kw">self</span>, cost: <span class="type">float</span>):
+        <span class="kw">self</span>.spent_today += cost
+</code></pre>
+</div>
+
+</section>
+
+<section class="content-section">
+<h2 id="best-practices">모범 사례</h2>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">모범 사례</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 점진적 도입</span>
+• 단일 LLM으로 시작 → 안정화
+• 비용 분석 후 복잡도 기반 라우팅 추가
+• 폴백 체인 구축
+• 모니터링으로 효과 검증
+
+<span class="cmt">// 2. 실패 처리</span>
+• 재시도는 Rate Limit에만 적용
+• Connection Error는 즉시 폴백
+• Circuit Breaker로 장애 격리
+• 최종 폴백은 로컬 LLM 또는 에러 메시지
+
+<span class="cmt">// 3. 비용 최적화</span>
+• 단순 작업에 고가 모델 사용 금지
+• 캐싱으로 중복 호출 제거
+• 프롬프트 압축 (불필요한 컨텍스트 제거)
+• 예산 알림 설정
+
+<span class="cmt">// 4. 성능 최적화</span>
+• 응답 시간 중요 → Haiku, Mini 우선
+• 품질 중요 → Opus, o1 우선
+• 긴 컨텍스트 → Gemini, Claude
+• 코드 생성 → Claude Sonnet
+
+<span class="cmt">// 5. 모니터링</span>
+• 제공자별 성공률, 지연시간, 비용 추적
+• 이상 탐지 (급격한 비용 증가, 성공률 하락)
+• 사용자 피드백으로 라우팅 개선
+• A/B 테스트로 최적 전략 발견
+
+<span class="cmt">// 6. 보안</span>
+• API 키는 환경 변수 또는 비밀 관리 서비스
+• 프록시 서버로 키 노출 최소화
+• Rate Limiting으로 남용 방지
+• 로그에 민감 정보 제외
+
+<span class="cmt">// 7. 확장성</span>
+• 상태 비저장 설계 (수평 확장 가능)
+• 메트릭은 중앙 집중식 저장 (Prometheus, CloudWatch)
+• 비동기 처리로 처리량 증대
+• 큐 기반 아키텍처 (Celery, SQS)
+</code></pre>
+</div>
+
+</section>
+
+<div class="info-box tip">
+<strong>다음 단계</strong>
+<ul>
+<li><strong>API 모범 사례:</strong> 에러 처리, Rate Limiting, 캐싱, 보안</li>
+<li><strong>프롬프트 엔지니어링:</strong> 품질 향상으로 저렴한 모델로도 우수한 결과</li>
+<li><strong>RAG 시스템:</strong> 외부 지식 활용으로 환각 감소</li>
+</ul>
+</div>
+
+<nav class="page-nav"></nav>
+</main>
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

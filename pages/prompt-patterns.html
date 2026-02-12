@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="프롬프트 패턴 - Claude 문서">
+<meta property="og:description" content="재사용 가능한 프롬프트 패턴 모음과 실전 적용 가이드">
+<meta property="og:url" content="https://minzkn.com/claude/pages/prompt-patterns.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="재사용 가능한 프롬프트 패턴 모음과 실전 적용 가이드">
+<meta name="keywords" content="프롬프트 패턴, prompt patterns, 템플릿, 베스트 프랙티스">
+<meta name="author" content="MINZKN">
+<title>프롬프트 패턴 - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">프롬프트 패턴 (Prompt Patterns)</h1>
+  <p class="lead">
+    검증된 프롬프트 패턴을 활용하면 일관되게 고품질 결과를 얻을 수 있습니다.
+    이 페이지는 다양한 시나리오에 바로 적용할 수 있는 실전 패턴을 소개합니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="quick-start">패턴 가이드</h2>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎓 프롬프트 패턴이란?</div>
+    <p>
+      <strong>검증된 프롬프트 구조</strong>를 재사용하여 일관된 고품질 결과를 얻는 방법입니다.
+    </p>
+    <p style="margin-top: 1em;"><strong>6가지 핵심 패턴:</strong></p>
+    <ol>
+      <li><strong>역할 기반</strong> - "당신은 [전문가]입니다"</li>
+      <li><strong>구조화된 출력</strong> - JSON, 테이블, Markdown</li>
+      <li><strong>단계별 분해</strong> - "1단계, 2단계, ..."</li>
+      <li><strong>컨텍스트 제공</strong> - 배경 정보 명시</li>
+      <li><strong>Few-Shot</strong> - 예제 제공</li>
+      <li><strong>Chain-of-Thought</strong> - 사고 과정 표시</li>
+    </ol>
+    <p style="margin-top: 1em;">
+      💡 <strong>사용 팁</strong>: 여러 패턴을 조합하면 더 강력합니다!
+    </p>
+  </div>
+
+  <!-- Pattern Selection Guide -->
+  <figure style="margin: 2.5rem 0;">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400"
+         style="width:100%;max-width:800px;height:auto;display:block;margin:0 auto;">
+      <defs>
+        <marker id="pattern-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Title -->
+      <text x="400" y="25" text-anchor="middle" fill="var(--diagram-text)" font-size="15" font-weight="bold">
+        작업 유형별 패턴 선택 가이드
+      </text>
+
+      <!-- Row 1: Role & Structure -->
+      <rect x="50" y="50" width="180" height="80" rx="8"
+            fill="var(--accent-primary)" fill-opacity="0.2"
+            stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="140" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        🎭 역할 기반
+      </text>
+      <text x="140" y="95" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        전문 지식 필요 시
+      </text>
+      <text x="140" y="110" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        예: 법률 자문, 코드 리뷰
+      </text>
+
+      <rect x="250" y="50" width="180" height="80" rx="8"
+            fill="var(--info-bg-info)" stroke="var(--accent-info)" stroke-width="2"/>
+      <text x="340" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        📊 구조화된 출력
+      </text>
+      <text x="340" y="95" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        파싱 가능한 형식
+      </text>
+      <text x="340" y="110" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        예: JSON, CSV, Markdown
+      </text>
+
+      <rect x="450" y="50" width="180" height="80" rx="8"
+            fill="var(--info-bg-warning)" stroke="var(--accent-warning)" stroke-width="2"/>
+      <text x="540" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        📝 단계별 분해
+      </text>
+      <text x="540" y="95" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        복잡한 작업
+      </text>
+      <text x="540" y="110" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        예: 디버깅, 분석
+      </text>
+
+      <!-- Row 2: Context & Few-Shot & CoT -->
+      <rect x="50" y="160" width="180" height="80" rx="8"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="2"/>
+      <text x="140" y="185" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        📚 컨텍스트 제공
+      </text>
+      <text x="140" y="205" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        문서 기반 답변
+      </text>
+      <text x="140" y="220" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        예: 계약서 분석
+      </text>
+
+      <rect x="250" y="160" width="180" height="80" rx="8"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="2"/>
+      <text x="340" y="185" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        🎯 Few-Shot
+      </text>
+      <text x="340" y="205" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        패턴 학습
+      </text>
+      <text x="340" y="220" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        예: 스타일 복제
+      </text>
+
+      <rect x="450" y="160" width="180" height="80" rx="8"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="2"/>
+      <text x="540" y="185" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        🧠 Chain-of-Thought
+      </text>
+      <text x="540" y="205" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        복잡한 추론
+      </text>
+      <text x="540" y="220" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        예: 수학, 논리 문제
+      </text>
+
+      <!-- Pattern Combination Examples -->
+      <text x="400" y="275" text-anchor="middle" fill="var(--accent-primary)" font-size="13" font-weight="bold">
+        💪 강력한 조합 예시
+      </text>
+
+      <rect x="50" y="290" width="340" height="50" rx="6"
+            fill="var(--accent-glow)" stroke="var(--accent-primary)" stroke-width="1.5"/>
+      <text x="220" y="310" text-anchor="middle" fill="var(--diagram-text)" font-size="10">
+        🎭 역할 + 📊 구조화 + 📝 단계별
+      </text>
+      <text x="220" y="327" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        → 코드 리뷰 (전문가 관점 + JSON 출력 + 체계적 분석)
+      </text>
+
+      <rect x="410" y="290" width="340" height="50" rx="6"
+            fill="var(--accent-glow)" stroke="var(--accent-primary)" stroke-width="1.5"/>
+      <text x="580" y="310" text-anchor="middle" fill="var(--diagram-text)" font-size="10">
+        📚 컨텍스트 + 🎯 Few-Shot + 📊 구조화
+      </text>
+      <text x="580" y="327" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        → 문서 요약 (정보 기반 + 스타일 예시 + JSON)
+      </text>
+
+      <!-- Bottom tip -->
+      <rect x="50" y="360" width="700" height="30" rx="6"
+            fill="var(--info-bg-tip)" stroke="var(--accent-primary)" stroke-width="1.5"/>
+      <text x="400" y="380" text-anchor="middle" fill="var(--diagram-text)" font-size="10">
+        💡 복잡한 작업일수록 여러 패턴을 조합하세요 - 정확도가 크게 향상됩니다!
+      </text>
+    </svg>
+    <figcaption style="text-align: center; margin-top: 0.8rem; font-size: 0.95rem; color: var(--text-tertiary);">
+      그림 1: 작업 유형별 프롬프트 패턴 선택 가이드 및 강력한 조합 예시
+    </figcaption>
+  </figure>
+</section>
+
+<section class="content-section">
+  <h2 id="role-prompting">1. 역할 기반 패턴 (Role Prompting)</h2>
+  <p>
+    Claude에게 특정 전문가 역할을 부여하면 해당 도메인 지식과 어조로 응답합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">패턴 템플릿</span>
+    </div>
+    <pre><code>당신은 [전문 분야]의 [직책/역할]입니다.
+[경력/자격] 년의 경험이 있으며, [특기]를 전문으로 합니다.
+
+[작업 요청]</code></pre>
+  </div>
+
+  <h3 id="role-examples">실전 예시</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예시 1: 시니어 개발자</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>당신은 10년 경력의 시니어 백엔드 개발자입니다.
+Python, Django, PostgreSQL을 전문으로 하며, 대규모 서비스 아키텍처 설계 경험이 풍부합니다.
+
+다음 API 엔드포인트의 성능 문제를 분석하고 최적화 방안을 제시해주세요:
+[코드]</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예시 2: 법률 자문</span>
+    </div>
+    <pre><code>당신은 기업법 전문 변호사입니다.
+계약법, 지적재산권, M&A를 전문으로 하며, 다국적 기업 자문 경험이 있습니다.
+
+다음 계약서 초안의 법적 리스크를 검토해주세요:
+[계약서]</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="structured-output">2. 구조화된 출력 패턴</h2>
+  <p>
+    명확한 출력 형식을 지정하여 파싱하기 쉬운 결과를 얻을 수 있습니다.
+  </p>
+
+  <h3 id="json-output">JSON 출력</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">패턴 템플릿</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>다음 정보를 분석하고 JSON 형식으로 출력하세요.
+
+출력 형식:
+{
+  "필드1": "값",
+  "필드2": 123,
+  "필드3": ["항목1", "항목2"]
+}
+
+입력: [데이터]</code></pre>
+  </div>
+
+  <h3 id="table-output">테이블 출력</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">패턴 예시</span>
+    </div>
+    <pre><code>다음 제품들을 비교하고 Markdown 테이블로 출력하세요:
+
+| 제품명 | 가격 | 주요 기능 | 평점 |
+|--------|------|-----------|------|
+| ...    | ...  | ...       | ...  |
+
+제품 목록: [제품 정보]</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="step-by-step">3. 단계별 분해 패턴</h2>
+  <p>
+    복잡한 작업을 명시적인 단계로 나누면 정확도가 향상됩니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">패턴 템플릿</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>다음 작업을 단계별로 수행하세요:
+
+1단계: [첫 번째 단계]
+2단계: [두 번째 단계]
+3단계: [세 번째 단계]
+...
+
+각 단계의 결과를 명시하고, 최종 답변을 제시하세요.
+
+작업: [작업 설명]</code></pre>
+  </div>
+
+  <h3 id="step-example">실전 예시: 디버깅</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 디버깅 패턴</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>다음 Python 코드의 버그를 찾고 수정하세요. 단계별로 진행하세요:
+
+1단계: 코드를 읽고 예상 동작 파악
+2단계: 잠재적 오류 위치 식별
+3단계: 각 오류의 원인 분석
+4단계: 수정 방안 제시
+5단계: 수정된 코드 작성
+6단계: 테스트 케이스 제안
+
+코드:
+```python
+def calculate_average(numbers):
+    total = 0
+    for num in numbers:
+        total += num
+    return total / len(numbers)
+
+result = calculate_average([])
+print(result)
+```</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="context-stuffing">4. 컨텍스트 제공 패턴</h2>
+  <p>
+    필요한 배경 정보를 명확히 제공하여 환각(hallucination)을 줄입니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">패턴 템플릿</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>&lt;context&gt;
+[관련 배경 정보, 문서, 데이터]
+&lt;/context&gt;
+
+&lt;task&gt;
+위 컨텍스트를 기반으로 다음 질문에 답변하세요:
+[질문]
+&lt;/task&gt;
+
+&lt;constraints&gt;
+- 컨텍스트에 없는 정보는 추측하지 마세요
+- 불확실한 경우 명시하세요
+&lt;/constraints&gt;</code></pre>
+  </div>
+
+  <h3 id="context-example">실전 예시: FAQ 생성</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">문서 기반 FAQ 생성</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>&lt;product_manual&gt;
+[제품 매뉴얼 전문]
+&lt;/product_manual&gt;
+
+위 매뉴얼을 기반으로 고객이 자주 묻는 질문 10개와 답변을 작성하세요.
+
+형식:
+## Q1: [질문]
+**A:** [답변]
+
+## Q2: [질문]
+**A:** [답변]
+
+...
+
+규칙:
+- 매뉴얼에 명시된 내용만 참조
+- 각 답변 끝에 관련 페이지 번호 명시</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="comparative">5. 비교 분석 패턴</h2>
+  <p>
+    여러 옵션을 체계적으로 비교하여 의사결정을 지원합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">패턴 템플릿</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>다음 [대상들]을 [평가 기준]으로 비교 분석하세요:
+
+평가 기준:
+1. [기준 1]
+2. [기준 2]
+3. [기준 3]
+
+비교 대상:
+- [옵션 A]
+- [옵션 B]
+- [옵션 C]
+
+출력 형식:
+## 기준별 비교
+...
+
+## 종합 평가
+...
+
+## 추천
+[상황별 최적 선택]</code></pre>
+  </div>
+
+  <h3 id="compare-example">실전 예시: 기술 스택 선택</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">프레임워크 비교</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>다음 웹 프레임워크들을 비교하고 우리 프로젝트에 적합한 것을 추천하세요:
+
+프로젝트 요구사항:
+- 팀 규모: 5명 (주니어 2명 포함)
+- 예상 트래픽: 일 10만 요청
+- 주요 기능: REST API, 실시간 알림, 파일 업로드
+- 개발 기간: 3개월
+
+비교 대상:
+1. Django (Python)
+2. Express.js (Node.js)
+3. Spring Boot (Java)
+
+평가 기준:
+- 학습 곡선
+- 개발 속도
+- 성능
+- 생태계 (라이브러리, 커뮤니티)
+- 유지보수성</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="iterative">6. 반복 개선 패턴</h2>
+  <p>
+    초안을 생성한 후 피드백을 받아 개선하는 패턴입니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">패턴 템플릿</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="cmt"># 1차 요청</span>
+[작업] 초안을 작성하세요.
+
+<span class="cmt"># 2차 요청 (사용자 피드백 후)</span>
+다음 초안을 개선하세요:
+
+&lt;draft&gt;
+[Claude의 1차 응답]
+&lt;/draft&gt;
+
+&lt;feedback&gt;
+[사용자 피드백]
+&lt;/feedback&gt;
+
+개선 사항:
+- [개선 방향 1]
+- [개선 방향 2]</code></pre>
+  </div>
+
+  <h3 id="iterative-example">실전 예시: 마케팅 문구</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">1차 요청</span>
+    </div>
+    <pre><code>신제품 "CodeMaster AI" 런칭 이메일 제목을 5개 작성하세요.
+
+제품 특징:
+- AI 기반 코드 자동완성
+- 30개 언어 지원
+- 월 $9.99
+
+타겟: 주니어 개발자</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">2차 요청 (개선)</span>
+    </div>
+    <pre><code>다음 제목들을 더 임팩트 있게 개선하세요:
+
+&lt;draft&gt;
+1. "CodeMaster AI 출시: AI가 코드를 대신 작성합니다"
+2. "주니어 개발자를 위한 AI 코딩 어시스턴트"
+3. "월 $9.99로 30개 언어 지원"
+4. ...
+&lt;/draft&gt;
+
+&lt;feedback&gt;
+- 너무 직설적이고 지루함
+- 가격보다 가치에 집중
+- 감정적 연결 필요
+&lt;/feedback&gt;
+
+개선 방향:
+- 호기심 유발
+- 베네핏 강조 (기능 X)
+- 긴급성 추가</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="constraint-based">7. 제약 기반 패턴</h2>
+  <p>
+    명확한 제약사항을 제시하여 원하는 형태의 결과를 보장합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">패턴 템플릿</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>[작업 설명]
+
+제약사항:
+✅ 반드시 지킬 것:
+- [필수 요구사항 1]
+- [필수 요구사항 2]
+
+❌ 금지사항:
+- [하지 말아야 할 것 1]
+- [하지 말아야 할 것 2]
+
+📏 길이 제한:
+- 최소: [N]자
+- 최대: [M]자
+
+🎨 스타일:
+- [어조, 형식 등]</code></pre>
+  </div>
+
+  <h3 id="constraint-example">실전 예시: SNS 게시물</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Twitter 게시물 생성</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>다음 블로그 글을 Twitter 스레드(5개 트윗)로 변환하세요:
+
+[블로그 글 전문]
+
+제약사항:
+✅ 반드시 지킬 것:
+- 각 트윗은 280자 이하
+- 1번 트윗에 후킹 문구 필수
+- 5번 트윗에 CTA(행동 유도) 포함
+- 핵심 메시지 유지
+
+❌ 금지사항:
+- 이모지 과다 사용 (트윗당 최대 2개)
+- 해시태그 남발 (총 3개 이내)
+- 전문 용어 무분별 사용
+
+🎨 스타일:
+- 친근하지만 전문적
+- 짧은 문장
+- 액션 동사 사용</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="template-filling">8. 템플릿 채우기 패턴</h2>
+  <p>
+    미리 정의된 템플릿에 정보를 채워 넣는 방식입니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">패턴 템플릿</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>다음 정보를 바탕으로 템플릿을 완성하세요:
+
+&lt;template&gt;
+[템플릿 구조]
+&lt;/template&gt;
+
+&lt;data&gt;
+[원본 데이터]
+&lt;/data&gt;
+
+규칙:
+- 템플릿 구조는 변경하지 마세요
+- [...] 부분만 채우세요
+- 데이터에 없는 정보는 "정보 없음"으로 표시</code></pre>
+  </div>
+
+  <h3 id="template-example">실전 예시: 이력서 생성</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">이력서 템플릿</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>&lt;template&gt;
+# [이름]
+[직무] | [이메일] | [전화번호]
+
+## 경력 요약
+[3줄 요약]
+
+## 핵심 역량
+- [역량 1]
+- [역량 2]
+- [역량 3]
+
+## 경력
+### [회사명] | [직책] | [기간]
+- [주요 성과 1]
+- [주요 성과 2]
+
+## 학력
+[학교명] | [전공] | [졸업년도]
+
+## 프로젝트
+### [프로젝트명]
+- 설명: [프로젝트 설명]
+- 기술: [사용 기술]
+- 성과: [측정 가능한 성과]
+&lt;/template&gt;
+
+&lt;raw_data&gt;
+이름: 김개발
+5년 경력 백엔드 개발자
+Python, Django 주력
+ABC회사 2020-2023 시니어 개발자
+XYZ대학 컴퓨터공학과 2019년 졸업
+...
+&lt;/raw_data&gt;</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="persona">9. 페르소나 기반 패턴</h2>
+  <p>
+    타겟 사용자 페르소나를 명시하여 맞춤형 결과를 얻습니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">패턴 템플릿</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>&lt;persona&gt;
+이름: [가상 인물명]
+나이: [연령대]
+직업: [직업]
+기술 수준: [초급/중급/고급]
+목표: [달성하려는 목표]
+어려움: [현재 겪는 문제]
+&lt;/persona&gt;
+
+위 페르소나를 위해 [작업]을 수행하세요.</code></pre>
+  </div>
+
+  <h3 id="persona-example">실전 예시: 튜토리얼 작성</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">페르소나 기반 튜토리얼</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>&lt;persona&gt;
+이름: 민수 (가명)
+나이: 25세
+직업: 주니어 데이터 분석가 (경력 6개월)
+기술 수준: Python 기본 문법은 알지만 라이브러리 경험 부족
+목표: Pandas로 엑셀 데이터 분석 자동화
+어려움: DataFrame 개념이 어렵고, 에러 메시지 해석 못함
+학습 스타일: 예제 코드를 직접 실행하며 배우는 것 선호
+&lt;/persona&gt;
+
+위 페르소나를 위한 "Pandas DataFrame 기초" 튜토리얼을 작성하세요.
+
+요구사항:
+- 실행 가능한 코드 예제 포함
+- 각 단계마다 예상 출력 표시
+- 자주 발생하는 에러와 해결법 포함
+- 총 30분 이내 완료 가능한 분량</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="verification">10. 검증 패턴</h2>
+  <p>
+    Claude에게 자신의 답변을 검증하도록 요청합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">패턴 템플릿</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>[작업 수행]
+
+작업 완료 후, 다음을 자가 검증하세요:
+
+체크리스트:
+□ [검증 항목 1]
+□ [검증 항목 2]
+□ [검증 항목 3]
+
+검증 결과를 명시하고, 문제가 있다면 수정하세요.</code></pre>
+  </div>
+
+  <h3 id="verification-example">실전 예시: SQL 쿼리 검증</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">SQL 쿼리 작성 + 검증</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>다음 요구사항에 맞는 SQL 쿼리를 작성하세요:
+
+요구사항:
+- 테이블: orders, customers
+- 2024년 1월 주문 금액 상위 10명 고객
+- 고객명, 총 주문액, 주문 건수 출력
+- 총 주문액 내림차순 정렬
+
+쿼리 작성 후, 다음을 검증하세요:
+
+✅ 체크리스트:
+□ JOIN 조건이 올바른가?
+□ WHERE 조건이 정확한가?
+□ GROUP BY가 필요한가?
+□ 정렬 방향이 맞는가?
+□ 성능 최적화 (인덱스 활용)
+□ SQL 인젝션 취약점 없는가?
+
+검증 결과:
+[각 항목별 OK/문제점 명시]
+
+최종 쿼리:
+```sql
+...
+```</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="combining">패턴 조합하기</h2>
+  <p>
+    여러 패턴을 조합하면 더욱 강력한 프롬프트를 만들 수 있습니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">조합 예시: 역할 + 구조화 + 검증</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="cmt"># 역할</span>
+당신은 사이버 보안 전문가입니다.
+
+<span class="cmt"># 구조화된 출력</span>
+다음 코드의 보안 취약점을 분석하고 JSON으로 출력하세요:
+
+```python
+[코드]
+```
+
+출력 형식:
+{
+  "vulnerabilities": [
+    {
+      "severity": "HIGH|MEDIUM|LOW",
+      "type": "SQL Injection|XSS|...",
+      "location": "line X",
+      "description": "...",
+      "fix": "..."
+    }
+  ],
+  "overall_score": "A|B|C|D|F"
+}
+
+<span class="cmt"># 검증</span>
+출력 전 다음을 확인하세요:
+□ 모든 취약점을 발견했는가?
+□ severity 분류가 OWASP 기준에 맞는가?
+□ fix가 실제로 적용 가능한가?</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="tips">패턴 사용 팁</h2>
+
+  <h3 id="tips-1">1. 프롬프트 라이브러리 구축</h3>
+  <p>
+    자주 사용하는 패턴을 저장하고 재사용하세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 예시</span>
+    </div>
+    <pre><code><span class="cmt"># prompts.py</span>
+PATTERNS <span class="kw">=</span> {
+    <span class="str">"code_review"</span>: <span class="str">"""당신은 시니어 개발자입니다.
+다음 코드를 리뷰하고:
+1. 좋은 점
+2. 개선 사항
+3. 리팩토링 제안
+을 제시하세요.
+
+코드:
+{code}"""</span>,
+
+    <span class="str">"summarize"</span>: <span class="str">"""다음 문서를 {length} 이내로 요약하세요:
+{document}"""</span>
+}
+
+<span class="kw">def</span> <span class="fn">get_prompt</span>(pattern_name, <span class="kw">**</span>kwargs):
+    <span class="kw">return</span> PATTERNS[pattern_name].<span class="fn">format</span>(<span class="kw">**</span>kwargs)</code></pre>
+  </div>
+
+  <h3 id="tips-2">2. A/B 테스트</h3>
+  <p>
+    동일한 작업에 대해 다른 패턴을 시도하고 결과를 비교하세요.
+  </p>
+
+  <h3 id="tips-3">3. 점진적 개선</h3>
+  <p>
+    간단한 프롬프트에서 시작해 결과를 보며 제약사항을 추가하세요.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>프롬프트 패턴을 익혔다면 고급 기법들을 탐색하세요:</p>
+
+  <ul>
+    <li><a href="few-shot.html">Few-shot 학습</a> - 예제로 패턴 학습시키기</li>
+    <li><a href="chain-of-thought.html">Chain-of-Thought</a> - 단계별 추론 강화</li>
+    <li><a href="system-prompts.html">시스템 프롬프트</a> - 일관된 행동 정의</li>
+  </ul>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

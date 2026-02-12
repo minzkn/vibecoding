@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="Tool Use - Claude 문서">
+<meta property="og:description" content="Claude Tool Use (함수 호출) 기능으로 외부 도구와 API 통합하기">
+<meta property="og:url" content="https://minzkn.com/claude/pages/tool-use.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude Tool Use (함수 호출) 기능으로 외부 도구와 API 통합하기">
+<meta name="keywords" content="Claude, Tool Use, function calling, tools, 함수 호출, 도구, API">
+<meta name="author" content="MINZKN">
+<title>Tool Use - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">Tool Use (함수 호출)</h1>
+  <p class="lead">
+    Tool Use는 Claude가 외부 도구, API, 함수를 호출할 수 있게 해주는 강력한 기능입니다.
+    이를 통해 Claude는 정적인 지식을 넘어 실시간 데이터에 접근하고 액션을 수행할 수 있습니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Tool Use를 사용하면 Claude에게 사용 가능한 도구 목록을 제공하고, Claude가 필요할 때 적절한 도구를 선택하여 호출하도록 할 수 있습니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 주요 활용 사례</div>
+    <ul>
+      <li><strong>데이터베이스 쿼리</strong>: 실시간 데이터 조회</li>
+      <li><strong>API 호출</strong>: 날씨, 주식, 뉴스 등 외부 API 통합</li>
+      <li><strong>계산</strong>: 복잡한 수학 계산 수행</li>
+      <li><strong>파일 작업</strong>: 파일 읽기/쓰기</li>
+      <li><strong>액션 수행</strong>: 이메일 발송, 알림 전송 등</li>
+    </ul>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎓 처음 Tool Use를 사용하시나요?</div>
+    <p>
+      <strong>3단계로 시작하기:</strong>
+    </p>
+    <ol>
+      <li>도구를 JSON 스키마로 정의 (이름, 설명, 파라미터)</li>
+      <li><code>tools</code> 파라미터에 도구 목록 전달</li>
+      <li>응답에서 <code>tool_use</code> 블록 확인 후 함수 실행</li>
+    </ol>
+    <p style="margin-top: 0.5rem;">
+      아래 <a href="#example">전체 예제</a>에서 실제 코드를 확인하세요!
+    </p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="how-it-works">동작 방식</h2>
+  <p>Tool Use는 다음과 같은 흐름으로 동작합니다:</p>
+
+  <ol>
+    <li>사용 가능한 도구 목록을 <code>tools</code> 파라미터로 Claude에게 제공</li>
+    <li>사용자 요청을 처리하면서 Claude가 도구 사용 필요성 판단</li>
+    <li>Claude가 <code>tool_use</code> 응답 반환 (도구 이름 + 파라미터)</li>
+    <li>애플리케이션이 실제 도구 실행</li>
+    <li>실행 결과를 <code>tool_result</code>로 Claude에게 다시 전달</li>
+    <li>Claude가 결과를 바탕으로 최종 응답 생성</li>
+  </ol>
+
+  <!-- Tool Use Flow Diagram -->
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 520"
+         style="width:100%;max-width:750px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="tool-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Title -->
+      <text x="375" y="25" text-anchor="middle" fill="var(--accent-primary)" font-size="14" font-weight="bold">
+        Tool Use 호출 순환 플로우 (6단계)
+      </text>
+
+      <!-- Step 1: Provide Tools -->
+      <rect x="30" y="50" width="180" height="70" rx="8"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="120" y="70" text-anchor="middle" fill="var(--accent-primary)" font-size="18" font-weight="bold">1</text>
+      <text x="120" y="92" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        도구 목록 제공
+      </text>
+      <text x="120" y="108" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        tools: [{ name, description, ... }]
+      </text>
+
+      <!-- Arrow 1→2 -->
+      <line x1="210" y1="85" x2="280" y2="85"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tool-arrow)"/>
+      <text x="245" y="75" text-anchor="middle" fill="var(--text-secondary)" font-size="9">Request</text>
+
+      <!-- Step 2: Claude Decides -->
+      <rect x="280" y="50" width="180" height="70" rx="8"
+            fill="var(--accent-primary)" fill-opacity="0.2"
+            stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="370" y="70" text-anchor="middle" fill="var(--accent-primary)" font-size="18" font-weight="bold">2</text>
+      <text x="370" y="92" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        Claude가 판단
+      </text>
+      <text x="370" y="108" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        "도구 사용 필요한가?"
+      </text>
+
+      <!-- Arrow 2→3 -->
+      <line x1="460" y1="85" x2="530" y2="85"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tool-arrow)"/>
+      <text x="495" y="75" text-anchor="middle" fill="var(--text-secondary)" font-size="9">Yes</text>
+
+      <!-- Step 3: tool_use Response -->
+      <rect x="530" y="50" width="180" height="70" rx="8"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="620" y="70" text-anchor="middle" fill="var(--accent-primary)" font-size="18" font-weight="bold">3</text>
+      <text x="620" y="92" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        tool_use 반환
+      </text>
+      <text x="620" y="108" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        { name: "get_weather", input: {...} }
+      </text>
+
+      <!-- Arrow 3→4 (downward) -->
+      <line x1="620" y1="120" x2="620" y2="200"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tool-arrow)"/>
+      <text x="650" y="165" text-anchor="start" fill="var(--text-secondary)" font-size="9">
+        App
+      </text>
+      <text x="650" y="178" text-anchor="start" fill="var(--text-secondary)" font-size="9">
+        실행
+      </text>
+
+      <!-- Step 4: Execute Tool -->
+      <rect x="530" y="200" width="180" height="70" rx="8"
+            fill="var(--bg-secondary)" stroke="var(--accent-warning)" stroke-width="2"/>
+      <text x="620" y="220" text-anchor="middle" fill="var(--accent-warning)" font-size="18" font-weight="bold">4</text>
+      <text x="620" y="242" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        도구 실행
+      </text>
+      <text x="620" y="258" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        실제 API 호출 / DB 쿼리 / 계산
+      </text>
+
+      <!-- Arrow 4→5 (leftward) -->
+      <line x1="530" y1="235" x2="460" y2="235"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tool-arrow)"/>
+      <text x="495" y="225" text-anchor="middle" fill="var(--text-secondary)" font-size="9">Result</text>
+
+      <!-- Step 5: Send tool_result -->
+      <rect x="280" y="200" width="180" height="70" rx="8"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="370" y="220" text-anchor="middle" fill="var(--accent-primary)" font-size="18" font-weight="bold">5</text>
+      <text x="370" y="242" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        tool_result 전달
+      </text>
+      <text x="370" y="258" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        { type: "tool_result", content: "..." }
+      </text>
+
+      <!-- Arrow 5→6 (leftward) -->
+      <line x1="280" y1="235" x2="210" y2="235"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tool-arrow)"/>
+
+      <!-- Step 6: Final Response -->
+      <rect x="30" y="200" width="180" height="70" rx="8"
+            fill="var(--accent-primary)" fill-opacity="0.2"
+            stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="120" y="220" text-anchor="middle" fill="var(--accent-primary)" font-size="18" font-weight="bold">6</text>
+      <text x="120" y="242" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        최종 응답 생성
+      </text>
+      <text x="120" y="258" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        도구 결과 기반 답변
+      </text>
+
+      <!-- Loop Arrow (if more tools needed) -->
+      <path d="M 120 270 Q 120 320, 370 320 Q 620 320, 620 270"
+            stroke="var(--diagram-accent)" stroke-width="2" stroke-dasharray="5,3"
+            fill="none" marker-end="url(#tool-arrow)"/>
+      <text x="370" y="340" text-anchor="middle" fill="var(--diagram-accent)" font-size="10" font-style="italic">
+        필요시 추가 도구 호출 반복 (Multi-step)
+      </text>
+
+      <!-- Example Scenario -->
+      <rect x="50" y="370" width="650" height="130" rx="8"
+            fill="var(--info-bg-info)" stroke="var(--accent-info)" stroke-width="1.5"/>
+      <text x="375" y="395" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        💡 실제 예시: "서울 날씨 알려줘"
+      </text>
+
+      <!-- Example Steps -->
+      <text x="70" y="420" fill="var(--text-secondary)" font-size="9">
+        <tspan font-weight="bold" fill="var(--accent-primary)">1.</tspan> tools=[{ name:"get_weather", ... }] 제공
+      </text>
+      <text x="70" y="437" fill="var(--text-secondary)" font-size="9">
+        <tspan font-weight="bold" fill="var(--accent-primary)">2.</tspan> Claude: "날씨 정보 필요 → get_weather 호출하자"
+      </text>
+      <text x="70" y="454" fill="var(--text-secondary)" font-size="9">
+        <tspan font-weight="bold" fill="var(--accent-primary)">3.</tspan> tool_use: { name:"get_weather", input:{ city:"Seoul" } }
+      </text>
+      <text x="70" y="471" fill="var(--text-secondary)" font-size="9">
+        <tspan font-weight="bold" fill="var(--accent-warning)">4.</tspan> App: 실제 날씨 API 호출 → "맑음, 15°C"
+      </text>
+      <text x="70" y="488" fill="var(--text-secondary)" font-size="9">
+        <tspan font-weight="bold" fill="var(--accent-primary)">5.</tspan> tool_result: "맑음, 15°C" → Claude에게 전달
+      </text>
+      <text x="70" y="505" fill="var(--text-secondary)" font-size="9">
+        <tspan font-weight="bold" fill="var(--accent-primary)">6.</tspan> Claude: "서울은 현재 맑은 날씨이고 기온은 15도입니다."
+      </text>
+    </svg>
+    <p class="diagram-caption">그림 1: Tool Use 호출 순환 플로우 - 도구 제공부터 최종 응답까지</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="defining-tools">도구 정의</h2>
+  <p>도구는 JSON 스키마 형식으로 정의됩니다:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+      <button class="code-copy" aria-label="코드 복사">복사</button>
+    </div>
+    <pre><code>tools = [
+    {
+        <span class="str">"name"</span>: <span class="str">"get_weather"</span>,
+        <span class="str">"description"</span>: <span class="str">"특정 도시의 현재 날씨 정보를 가져옵니다."</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"city"</span>: {
+                    <span class="str">"type"</span>: <span class="str">"string"</span>,
+                    <span class="str">"description"</span>: <span class="str">"도시 이름 (예: Seoul)"</span>
+                },
+                <span class="str">"unit"</span>: {
+                    <span class="str">"type"</span>: <span class="str">"string"</span>,
+                    <span class="str">"enum"</span>: [<span class="str">"celsius"</span>, <span class="str">"fahrenheit"</span>],
+                    <span class="str">"description"</span>: <span class="str">"온도 단위"</span>
+                }
+            },
+            <span class="str">"required"</span>: [<span class="str">"city"</span>]
+        }
+    }
+]</code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 도구 정의 팁</div>
+    <ul>
+      <li><code>name</code>: 도구 이름 (함수명 스타일)</li>
+      <li><code>description</code>: 도구의 용도를 명확히 설명 (Claude가 이를 보고 판단)</li>
+      <li><code>input_schema</code>: JSON Schema 형식의 파라미터 정의</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="example">전체 예제</h2>
+  <p>날씨 조회 도구를 사용하는 완전한 예제:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+      <button class="code-copy" aria-label="코드 복사">복사</button>
+    </div>
+    <pre><code><span class="kw">import</span> anthropic
+
+client = anthropic.Anthropic(api_key=<span class="str">"your-api-key"</span>)
+
+<span class="cmt"># 1. 도구 정의</span>
+tools = [
+    {
+        <span class="str">"name"</span>: <span class="str">"get_weather"</span>,
+        <span class="str">"description"</span>: <span class="str">"특정 도시의 현재 날씨를 가져옵니다."</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"city"</span>: {
+                    <span class="str">"type"</span>: <span class="str">"string"</span>,
+                    <span class="str">"description"</span>: <span class="str">"도시 이름"</span>
+                }
+            },
+            <span class="str">"required"</span>: [<span class="str">"city"</span>]
+        }
+    }
+]
+
+<span class="cmt"># 2. 초기 요청</span>
+message = client.messages.create(
+    model=<span class="str">"claude-sonnet-4-5-20250929"</span>,
+    max_tokens=<span class="num">1024</span>,
+    tools=tools,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"서울의 날씨가 어때?"</span>}
+    ]
+)
+
+<span class="cmt"># 3. Tool use 확인</span>
+<span class="kw">if</span> message.stop_reason == <span class="str">"tool_use"</span>:
+    tool_use = <span class="fn">next</span>(block <span class="kw">for</span> block <span class="kw">in</span> message.content <span class="kw">if</span> block.type == <span class="str">"tool_use"</span>)
+
+    <span class="cmt"># 4. 실제 도구 실행 (예시)</span>
+    <span class="kw">def</span> <span class="fn">get_weather</span>(city):
+        <span class="cmt"># 실제로는 API 호출</span>
+        <span class="kw">return</span> {<span class="str">"temperature"</span>: <span class="num">15</span>, <span class="str">"condition"</span>: <span class="str">"맑음"</span>}
+
+    result = <span class="fn">get_weather</span>(tool_use.input[<span class="str">"city"</span>])
+
+    <span class="cmt"># 5. 결과를 Claude에게 전달</span>
+    final_message = client.messages.create(
+        model=<span class="str">"claude-sonnet-4-5-20250929"</span>,
+        max_tokens=<span class="num">1024</span>,
+        tools=tools,
+        messages=[
+            {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"서울의 날씨가 어때?"</span>},
+            {<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: message.content},
+            {
+                <span class="str">"role"</span>: <span class="str">"user"</span>,
+                <span class="str">"content"</span>: [
+                    {
+                        <span class="str">"type"</span>: <span class="str">"tool_result"</span>,
+                        <span class="str">"tool_use_id"</span>: tool_use.id,
+                        <span class="str">"content"</span>: <span class="fn">str</span>(result)
+                    }
+                ]
+            }
+        ]
+    )
+
+    <span class="fn">print</span>(final_message.content[<span class="num">0</span>].text)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="multiple-tools">다중 도구 사용</h2>
+  <p>여러 도구를 동시에 제공하면 Claude가 상황에 맞는 도구를 선택합니다:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+      <button class="code-copy" aria-label="코드 복사">복사</button>
+    </div>
+    <pre><code>tools = [
+    {
+        <span class="str">"name"</span>: <span class="str">"get_weather"</span>,
+        <span class="str">"description"</span>: <span class="str">"날씨 정보 조회"</span>,
+        <span class="str">"input_schema"</span>: {...}
+    },
+    {
+        <span class="str">"name"</span>: <span class="str">"search_database"</span>,
+        <span class="str">"description"</span>: <span class="str">"데이터베이스에서 정보 검색"</span>,
+        <span class="str">"input_schema"</span>: {...}
+    },
+    {
+        <span class="str">"name"</span>: <span class="str">"send_email"</span>,
+        <span class="str">"description"</span>: <span class="str">"이메일 전송"</span>,
+        <span class="str">"input_schema"</span>: {...}
+    }
+]</code></pre>
+  </div>
+
+  <p>Claude는 사용자 요청을 분석하여 가장 적절한 도구를 선택합니다.</p>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">✅ 권장사항</div>
+    <ul>
+      <li><strong>명확한 설명</strong>: 도구의 <code>description</code>을 상세히 작성하세요.</li>
+      <li><strong>파라미터 문서화</strong>: 각 파라미터의 용도를 명확히 설명하세요.</li>
+      <li><strong>에러 처리</strong>: 도구 실행 실패 시 의미 있는 에러 메시지를 반환하세요.</li>
+      <li><strong>보안</strong>: 민감한 작업은 추가 인증/검증을 구현하세요.</li>
+      <li><strong>타임아웃</strong>: 오래 걸리는 작업에는 타임아웃을 설정하세요.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="limitations">제한사항</h2>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 주의사항</div>
+    <ul>
+      <li>한 번에 최대 64개 도구까지 정의 가능</li>
+      <li>도구 이름은 <code>a-zA-Z0-9_-</code> 문자만 사용</li>
+      <li>Claude는 도구를 직접 실행하지 않음 (애플리케이션이 실행)</li>
+      <li>Tool Use 응답에는 추가 API 호출이 필요 (비용 고려)</li>
+    </ul>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

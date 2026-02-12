@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="코딩용 프롬프트 - Claude 문서">
+<meta property="og:description" content="Claude를 활용한 효과적인 코딩 프롬프트 작성 기법과 실전 예제">
+<meta property="og:url" content="https://minzkn.com/claude/pages/prompt-for-coding.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude를 활용한 효과적인 코딩 프롬프트 작성 기법과 실전 예제">
+<meta name="keywords" content="Claude, coding, prompt, programming, 프롬프트, 코딩, 프로그래밍">
+<meta name="author" content="MINZKN">
+<title>코딩용 프롬프트 - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">코딩용 프롬프트</h1>
+  <p class="lead">
+    Claude를 활용하여 고품질 코드를 생성하기 위한 특화된 프롬프트 작성 기법을 다룹니다.
+    명확한 요구사항, 컨텍스트 제공, 테스트 전략까지 실전에서 바로 사용할 수 있는 예제와 템플릿을 제공합니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="principles">코딩 프롬프트 기본 원칙</h2>
+
+  <div class="info-box tip">
+    <div class="info-box-title">핵심 원칙</div>
+    <p><strong>효과적인 코딩 프롬프트는 5가지 요소를 포함합니다:</strong></p>
+    <ol>
+      <li><strong>명확한 목적</strong> - 무엇을 만들려는지 구체적으로 기술</li>
+      <li><strong>기술 스택</strong> - 언어, 프레임워크, 라이브러리 명시</li>
+      <li><strong>입출력 명세</strong> - 함수 시그니처, 데이터 형식 정의</li>
+      <li><strong>제약사항</strong> - 성능, 메모리, 호환성 등 요구사항</li>
+      <li><strong>코드 스타일</strong> - 네이밍, 포맷팅, 주석 규칙</li>
+    </ol>
+  </div>
+
+  <h3 id="principle-clarity">1. 명확한 요구사항 작성</h3>
+
+  <p>모호한 요청은 원하지 않는 결과를 초래합니다. 구체적이고 측정 가능한 요구사항을 제시하세요.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:50%">❌ 나쁜 예</th>
+        <th style="width:50%">✅ 좋은 예</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          "파일을 읽는 함수 만들어줘"
+        </td>
+        <td>
+          "Python으로 CSV 파일을 읽어 pandas DataFrame으로 반환하는 함수를 작성해주세요.<br><br>
+          <strong>요구사항:</strong><br>
+          - 함수명: load_csv_data<br>
+          - 인자: file_path (str), encoding (str, default='utf-8')<br>
+          - 반환: pd.DataFrame<br>
+          - 에러 처리: FileNotFoundError, UnicodeDecodeError"
+        </td>
+      </tr>
+      <tr>
+        <td>
+          "API 만들어줘"
+        </td>
+        <td>
+          "FastAPI로 사용자 인증 API를 구현해주세요.<br><br>
+          <strong>엔드포인트:</strong><br>
+          - POST /api/auth/login<br>
+          - POST /api/auth/logout<br>
+          - GET /api/auth/me<br><br>
+          <strong>인증 방식:</strong> JWT Bearer Token<br>
+          <strong>데이터베이스:</strong> PostgreSQL (SQLAlchemy ORM)"
+        </td>
+      </tr>
+      <tr>
+        <td>
+          "알고리즘 최적화해줘"
+        </td>
+        <td>
+          "다음 정렬 알고리즘의 시간 복잡도를 O(n²)에서 O(n log n)으로 개선해주세요.<br><br>
+          <strong>제약사항:</strong><br>
+          - 추가 메모리 사용 최소화 (O(log n) 허용)<br>
+          - 안정 정렬(stable sort) 유지<br>
+          - Python 3.10+ 표준 라이브러리만 사용"
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="principle-context">2. 컨텍스트 제공</h3>
+
+  <p>코드가 사용될 환경과 목적을 명확히 제공하면 더 적합한 솔루션을 얻을 수 있습니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">좋은 프롬프트 예시</span>
+    </div>
+    <pre><code>Django REST Framework로 전자상거래 주문 관리 API를 개발 중입니다.
+
+<span class="cmt"># 현재 상황</span>
+- Django 4.2, DRF 3.14
+- PostgreSQL 데이터베이스
+- 동시 접속자 수: 평균 500명, 피크 2000명
+- 주문 데이터는 일 평균 1만 건 생성
+
+<span class="cmt"># 요청사항</span>
+Order 모델에 대한 ViewSet을 작성해주세요.
+
+<span class="cmt"># 요구사항</span>
+1. 주문 생성 시 재고 확인 및 차감 (트랜잭션 처리)
+2. 페이지네이션 (페이지당 20개)
+3. 필터링: 주문 상태, 날짜 범위, 사용자
+4. 권한: 본인 주문만 조회 가능 (관리자는 전체 조회)
+5. 주문 생성 후 Celery 태스크로 이메일 발송
+
+<span class="cmt"># 제약사항</span>
+- N+1 쿼리 문제 방지 (select_related, prefetch_related 활용)
+- 주문 생성 API 응답 시간 < 500ms</code></pre>
+  </div>
+
+  <h3 id="principle-stack">3. 기술 스택 명시</h3>
+
+  <p>버전까지 정확히 명시하면 호환성 문제를 예방할 수 있습니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">기술 스택 명시 템플릿</span>
+    </div>
+    <pre><code><span class="cmt"># 프로젝트 환경</span>
+- <span class="kw">언어</span>: TypeScript 5.3
+- <span class="kw">런타임</span>: Node.js 20.10 LTS
+- <span class="kw">프레임워크</span>: Next.js 14 (App Router)
+- <span class="kw">스타일링</span>: Tailwind CSS 3.4
+- <span class="kw">상태관리</span>: Zustand 4.4
+- <span class="kw">HTTP 클라이언트</span>: Axios 1.6
+- <span class="kw">테스트</span>: Vitest 1.0, Testing Library
+
+<span class="cmt"># 코드 규칙</span>
+- ESLint + Prettier (Airbnb 스타일)
+- React Server Components 우선 사용
+- Client Component는 "use client" 명시적 선언</code></pre>
+  </div>
+
+  <h3 id="principle-style">4. 코드 스타일 지정</h3>
+
+  <p>프로젝트의 일관성을 유지하려면 코딩 스타일을 명시해야 합니다.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:50%">스타일 요소</th>
+        <th style="width:50%">예시</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>네이밍 규칙</strong></td>
+        <td>
+          - 변수/함수: snake_case<br>
+          - 클래스: PascalCase<br>
+          - 상수: UPPER_SNAKE_CASE<br>
+          - Private 메서드: _leading_underscore
+        </td>
+      </tr>
+      <tr>
+        <td><strong>주석 스타일</strong></td>
+        <td>
+          - Docstring: Google 스타일<br>
+          - Type hints: Python 3.10+ 문법<br>
+          - 복잡한 로직에만 인라인 주석 추가
+        </td>
+      </tr>
+      <tr>
+        <td><strong>에러 처리</strong></td>
+        <td>
+          - 명시적 예외 처리 (bare except 금지)<br>
+          - 커스텀 예외 클래스 사용<br>
+          - 로깅: structlog 라이브러리
+        </td>
+      </tr>
+      <tr>
+        <td><strong>테스트</strong></td>
+        <td>
+          - 테스트 함수명: test_[기능]_[시나리오]_[예상결과]<br>
+          - Given-When-Then 패턴<br>
+          - Arrange-Act-Assert 주석
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="examples">실전 예제 20가지</h2>
+
+  <h3 id="example-data-processing">데이터 처리</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 1: CSV 데이터 정제</span>
+    </div>
+    <pre><code>Python pandas로 고객 데이터 정제 함수를 작성해주세요.
+
+<span class="cmt"># 입력 데이터</span>
+- CSV 파일: customers.csv
+- 컬럼: id, name, email, phone, registration_date, status
+
+<span class="cmt"># 정제 규칙</span>
+1. email: 소문자 변환, 공백 제거, 유효성 검증 (정규식)
+2. phone: 숫자만 추출, 10자리 또는 11자리 체크
+3. registration_date: 'YYYY-MM-DD' 형식으로 통일
+4. 중복 제거: email 기준
+5. 결측치 처리:
+   - name: 결측 시 행 제거
+   - phone: 결측 시 '미등록'으로 채움
+   - status: 결측 시 'active'로 채움
+
+<span class="cmt"># 출력</span>
+- 정제된 DataFrame 반환
+- 정제 통계 출력 (원본 행 수, 제거된 행 수, 수정된 행 수)
+
+<span class="cmt"># 성능 요구사항</span>
+- 100만 행 처리 시간 < 30초
+- 메모리 효율적 처리 (청크 단위 읽기)</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 2: JSON API 응답 파싱</span>
+    </div>
+    <pre><code>TypeScript로 GitHub API 응답을 파싱하는 타입 안전한 함수를 작성해주세요.
+
+<span class="cmt">// API 엔드포인트</span>
+GET https://api.github.com/repos/{owner}/{repo}
+
+<span class="cmt">// 요구사항</span>
+1. Zod 스키마로 응답 검증
+2. 필요한 필드만 추출:
+   - name, description, stargazers_count, forks_count
+   - owner.login, owner.avatar_url
+   - created_at, updated_at, pushed_at
+3. 날짜는 Date 객체로 변환
+4. 에러 처리:
+   - 네트워크 에러
+   - 응답 스키마 불일치
+   - Rate Limit 초과
+
+<span class="cmt">// 타입 정의</span>
+<span class="kw">interface</span> <span class="type">RepoInfo</span> {
+  name: <span class="type">string</span>;
+  description: <span class="type">string</span> | <span class="type">null</span>;
+  stars: <span class="type">number</span>;
+  forks: <span class="type">number</span>;
+  owner: {
+    username: <span class="type">string</span>;
+    avatarUrl: <span class="type">string</span>;
+  };
+  dates: {
+    created: <span class="type">Date</span>;
+    updated: <span class="type">Date</span>;
+    pushed: <span class="type">Date</span>;
+  };
+}</code></pre>
+  </div>
+
+  <h3 id="example-api">API 개발</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 3: RESTful API 엔드포인트</span>
+    </div>
+    <pre><code>Express.js + TypeScript로 블로그 포스트 CRUD API를 작성해주세요.
+
+<span class="cmt">// 기술 스택</span>
+- Express 4.18
+- TypeScript 5.3
+- Prisma ORM 5.7 (PostgreSQL)
+- JWT 인증 (jsonwebtoken)
+
+<span class="cmt">// 엔드포인트</span>
+POST   /api/posts          <span class="cmt">// 포스트 작성 (인증 필요)</span>
+GET    /api/posts          <span class="cmt">// 포스트 목록 (페이지네이션)</span>
+GET    /api/posts/:id      <span class="cmt">// 포스트 상세</span>
+PUT    /api/posts/:id      <span class="cmt">// 포스트 수정 (본인만 가능)</span>
+DELETE /api/posts/:id      <span class="cmt">// 포스트 삭제 (본인만 가능)</span>
+
+<span class="cmt">// 비즈니스 로직</span>
+1. 작성: 제목(1-200자), 본문(필수), 태그(선택, 최대 5개)
+2. 목록: 페이지당 20개, 최신순 정렬, 쿼리 파라미터 필터링
+   - tag: 태그로 필터링
+   - search: 제목/본문 검색
+   - author: 작성자 ID
+3. 수정: 부분 수정 지원 (PATCH 의미론)
+4. 삭제: soft delete (deletedAt 필드 사용)
+
+<span class="cmt">// 에러 응답 형식</span>
+{
+  <span class="str">"error"</span>: {
+    <span class="str">"code"</span>: <span class="str">"VALIDATION_ERROR"</span>,
+    <span class="str">"message"</span>: <span class="str">"제목은 1-200자여야 합니다"</span>,
+    <span class="str">"field"</span>: <span class="str">"title"</span>
+  }
+}</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 4: GraphQL 리졸버</span>
+    </div>
+    <pre><code>Apollo Server로 GraphQL 스키마와 리졸버를 작성해주세요.
+
+<span class="cmt"># 스키마</span>
+<span class="kw">type</span> <span class="type">User</span> {
+  id: <span class="type">ID!</span>
+  username: <span class="type">String!</span>
+  email: <span class="type">String!</span>
+  posts: [<span class="type">Post!</span>]!
+  createdAt: <span class="type">DateTime!</span>
+}
+
+<span class="kw">type</span> <span class="type">Post</span> {
+  id: <span class="type">ID!</span>
+  title: <span class="type">String!</span>
+  content: <span class="type">String!</span>
+  author: <span class="type">User!</span>
+  tags: [<span class="type">String!</span>]!
+  publishedAt: <span class="type">DateTime</span>
+}
+
+<span class="kw">type</span> <span class="type">Query</span> {
+  user(id: <span class="type">ID!</span>): <span class="type">User</span>
+  posts(limit: <span class="type">Int</span>, offset: <span class="type">Int</span>, tag: <span class="type">String</span>): [<span class="type">Post!</span>]!
+}
+
+<span class="kw">type</span> <span class="type">Mutation</span> {
+  createPost(input: <span class="type">CreatePostInput!</span>): <span class="type">Post!</span>
+}
+
+<span class="cmt"># 요구사항</span>
+1. DataLoader로 N+1 쿼리 문제 해결
+2. 인증: context에서 JWT 토큰 검증
+3. 에러 처리: Apollo Server Error 클래스 사용
+4. 페이지네이션: limit 기본값 20, 최대 100</code></pre>
+  </div>
+
+  <h3 id="example-frontend">프론트엔드</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 5: React 커스텀 훅</span>
+    </div>
+    <pre><code>React + TypeScript로 데이터 페칭 커스텀 훅을 작성해주세요.
+
+<span class="cmt">// 기능</span>
+- API 호출 상태 관리 (loading, error, data)
+- 자동 재시도 (exponential backoff)
+- 캐싱 (SWR 패턴)
+- 폴링 (선택적)
+- AbortController로 요청 취소
+
+<span class="cmt">// 사용 예시</span>
+<span class="kw">const</span> { data, error, isLoading, refetch } = <span class="fn">useFetch</span>&lt;<span class="type">User[]</span>&gt;({
+  url: <span class="str">'/api/users'</span>,
+  options: {
+    retry: <span class="num">3</span>,
+    retryDelay: <span class="num">1000</span>,
+    cache: <span class="kw">true</span>,
+    cacheTime: <span class="num">5</span> * <span class="num">60</span> * <span class="num">1000</span>, <span class="cmt">// 5분</span>
+    poll: <span class="num">10000</span>, <span class="cmt">// 10초마다 폴링</span>
+  },
+});
+
+<span class="cmt">// 타입 정의</span>
+<span class="kw">interface</span> <span class="type">UseFetchOptions</span> {
+  retry?: <span class="type">number</span>;
+  retryDelay?: <span class="type">number</span>;
+  cache?: <span class="type">boolean</span>;
+  cacheTime?: <span class="type">number</span>;
+  poll?: <span class="type">number</span>;
+  onSuccess?: (<span class="type">data</span>: <span class="type">any</span>) =&gt; <span class="type">void</span>;
+  onError?: (<span class="type">error</span>: <span class="type">Error</span>) =&gt; <span class="type">void</span>;
+}
+
+<span class="cmt">// 요구사항</span>
+- 컴포넌트 언마운트 시 진행 중인 요청 취소
+- 캐시는 메모리 기반, LRU 정책 (최대 50개)
+- 에러 재시도는 지수 백오프 (1초 → 2초 → 4초)</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 6: Vue 컴포저블</span>
+    </div>
+    <pre><code>Vue 3 Composition API로 폼 유효성 검증 컴포저블을 작성해주세요.
+
+<span class="cmt">// 사용 예시</span>
+<span class="kw">const</span> { values, errors, validate, reset } = <span class="fn">useForm</span>({
+  initialValues: {
+    email: <span class="str">''</span>,
+    password: <span class="str">''</span>,
+  },
+  validators: {
+    email: [
+      <span class="fn">required</span>(<span class="str">'이메일을 입력하세요'</span>),
+      <span class="fn">email</span>(<span class="str">'유효한 이메일을 입력하세요'</span>),
+    ],
+    password: [
+      <span class="fn">required</span>(<span class="str">'비밀번호를 입력하세요'</span>),
+      <span class="fn">minLength</span>(<span class="num">8</span>, <span class="str">'8자 이상 입력하세요'</span>),
+    ],
+  },
+});
+
+<span class="cmt">// 기능</span>
+1. 실시간 유효성 검증 (debounce 300ms)
+2. 제출 시 전체 필드 검증
+3. 필드별 에러 메시지
+4. 터치 상태 관리 (blur 시 에러 표시)
+5. 비동기 검증 지원 (예: 이메일 중복 확인)
+
+<span class="cmt">// 내장 밸리데이터</span>
+- required, email, minLength, maxLength
+- pattern (정규식), custom (사용자 정의)
+
+<span class="cmt">// 타입 안전성</span>
+- TypeScript 제네릭으로 폼 데이터 타입 추론
+- 밸리데이터 함수 타입 정의</code></pre>
+  </div>
+
+  <h3 id="example-algorithms">알고리즘</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 7: 최적화된 검색 알고리즘</span>
+    </div>
+    <pre><code>Python으로 대용량 텍스트에서 패턴 검색 알고리즘을 구현해주세요.
+
+<span class="cmt"># 알고리즘</span>
+Boyer-Moore 알고리즘 또는 KMP 알고리즘 사용
+
+<span class="cmt"># 요구사항</span>
+1. 대소문자 구분 옵션
+2. 전체 일치 / 부분 일치 모드
+3. 모든 매칭 위치 반환
+4. 유니코드 지원
+
+<span class="cmt"># 함수 시그니처</span>
+<span class="kw">def</span> <span class="fn">search_pattern</span>(
+    text: <span class="type">str</span>,
+    pattern: <span class="type">str</span>,
+    case_sensitive: <span class="type">bool</span> = <span class="kw">True</span>,
+    whole_word: <span class="type">bool</span> = <span class="kw">False</span>
+) -&gt; <span class="type">List</span>[<span class="type">int</span>]:
+    <span class="str">"""패턴 매칭 위치 리스트 반환"""</span>
+    <span class="kw">pass</span>
+
+<span class="cmt"># 성능 목표</span>
+- 10MB 텍스트 파일에서 100자 패턴 검색 < 1초
+- 시간 복잡도: O(n + m) where n=text length, m=pattern length
+- 공간 복잡도: O(m)
+
+<span class="cmt"># 테스트 케이스 포함</span>
+- 빈 문자열 처리
+- 패턴이 텍스트보다 긴 경우
+- 중복 패턴
+- 유니코드 문자 (한글, 이모지)</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 8: 캐싱 시스템</span>
+    </div>
+    <pre><code>TypeScript로 LRU (Least Recently Used) 캐시를 구현해주세요.
+
+<span class="cmt">// 요구사항</span>
+1. 제네릭 타입 지원
+2. O(1) get/put 연산
+3. TTL (Time To Live) 지원
+4. 메모리 제한 (바이트 단위)
+5. 통계 정보 (hit rate, miss rate)
+
+<span class="cmt">// 인터페이스</span>
+<span class="kw">interface</span> <span class="type">CacheOptions</span> {
+  maxSize: <span class="type">number</span>;        <span class="cmt">// 최대 항목 수</span>
+  maxMemory?: <span class="type">number</span>;     <span class="cmt">// 최대 메모리 (bytes)</span>
+  ttl?: <span class="type">number</span>;           <span class="cmt">// 기본 TTL (ms)</span>
+}
+
+<span class="kw">class</span> <span class="type">LRUCache</span>&lt;<span class="type">K</span>, <span class="type">V</span>&gt; {
+  <span class="fn">constructor</span>(options: <span class="type">CacheOptions</span>);
+  <span class="fn">get</span>(key: <span class="type">K</span>): <span class="type">V</span> | <span class="kw">undefined</span>;
+  <span class="fn">set</span>(key: <span class="type">K</span>, value: <span class="type">V</span>, ttl?: <span class="type">number</span>): <span class="type">void</span>;
+  <span class="fn">delete</span>(key: <span class="type">K</span>): <span class="type">boolean</span>;
+  <span class="fn">clear</span>(): <span class="type">void</span>;
+  <span class="fn">getStats</span>(): <span class="type">CacheStats</span>;
+}
+
+<span class="cmt">// 구현 힌트</span>
+- 내부 자료구조: Map + Doubly Linked List
+- TTL 체크: get 시점에 만료 확인
+- 메모리 계산: JSON.stringify(value).length 근사치 사용</code></pre>
+  </div>
+
+  <h3 id="example-testing">테스트</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 9: 유닛 테스트</span>
+    </div>
+    <pre><code>pytest로 비동기 함수 테스트 코드를 작성해주세요.
+
+<span class="cmt"># 테스트 대상 함수</span>
+<span class="kw">async def</span> <span class="fn">fetch_user_data</span>(user_id: <span class="type">int</span>) -&gt; <span class="type">Dict</span>:
+    <span class="str">"""외부 API에서 사용자 데이터 조회"""</span>
+    <span class="kw">pass</span>
+
+<span class="cmt"># 테스트 요구사항</span>
+1. httpx.AsyncClient 모킹 (respx 라이브러리)
+2. 성공 케이스: 정상 응답 검증
+3. 실패 케이스:
+   - 네트워크 에러 (httpx.NetworkError)
+   - 타임아웃 (httpx.TimeoutException)
+   - 404 응답
+   - 500 응답
+4. 재시도 로직 검증 (3회 재시도)
+5. 캐싱 동작 검증
+
+<span class="cmt"># 테스트 구조</span>
+- Arrange-Act-Assert 패턴
+- Fixture로 공통 설정 분리
+- parametrize로 여러 입력값 테스트
+- 비동기 테스트: pytest-asyncio 사용
+
+<span class="cmt"># 커버리지 목표</span>
+- Line coverage: 100%
+- Branch coverage: 95% 이상</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 10: E2E 테스트</span>
+    </div>
+    <pre><code>Playwright로 로그인 플로우 E2E 테스트를 작성해주세요.
+
+<span class="cmt">// 테스트 시나리오</span>
+1. 로그인 페이지 접속
+2. 이메일/비밀번호 입력
+3. "로그인" 버튼 클릭
+4. 대시보드로 리다이렉트 확인
+5. 사용자 이름 표시 확인
+
+<span class="cmt">// 요구사항</span>
+- Page Object Model 패턴 사용
+- 환경변수로 테스트 계정 관리
+- 스크린샷 캡처 (실패 시)
+- 테스트 격리 (각 테스트 전 로그아웃)
+- 모바일 뷰포트 테스트 포함
+
+<span class="cmt">// Page Object 클래스</span>
+<span class="kw">class</span> <span class="type">LoginPage</span> {
+  <span class="kw">constructor</span>(<span class="kw">private</span> page: <span class="type">Page</span>) {}
+
+  <span class="kw">async</span> <span class="fn">goto</span>() { ... }
+  <span class="kw">async</span> <span class="fn">login</span>(email: <span class="type">string</span>, password: <span class="type">string</span>) { ... }
+  <span class="kw">async</span> <span class="fn">getErrorMessage</span>(): <span class="type">Promise</span>&lt;<span class="type">string</span>&gt; { ... }
+}
+
+<span class="cmt">// 에러 케이스</span>
+- 잘못된 이메일 형식
+- 잘못된 비밀번호
+- 빈 필드 제출
+- 네트워크 오류 시뮬레이션</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="templates">프롬프트 템플릿 10가지</h2>
+
+  <h3 id="template-1">템플릿 1: 함수 구현</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>[언어]로 [기능]을 구현하는 함수를 작성해주세요.
+
+<span class="cmt"># 함수 시그니처</span>
+<span class="kw">def</span> <span class="fn">function_name</span>(param1: <span class="type">Type1</span>, param2: <span class="type">Type2</span>) -&gt; <span class="type">ReturnType</span>:
+    <span class="str">"""함수 설명"""</span>
+    <span class="kw">pass</span>
+
+<span class="cmt"># 요구사항</span>
+1. [요구사항 1]
+2. [요구사항 2]
+3. [요구사항 3]
+
+<span class="cmt"># 제약사항</span>
+- [제약사항 1]
+- [제약사항 2]
+
+<span class="cmt"># 예제 입출력</span>
+입력: [예제 입력]
+출력: [예제 출력]
+
+<span class="cmt"># 에러 처리</span>
+- [예외 상황 1]: [처리 방법]
+- [예외 상황 2]: [처리 방법]</code></pre>
+  </div>
+
+  <h3 id="template-2">템플릿 2: 클래스 설계</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>[언어]로 [개념/엔티티]를 표현하는 클래스를 작성해주세요.
+
+<span class="cmt"># 책임 (Responsibility)</span>
+이 클래스는 [주요 책임]을 담당합니다.
+
+<span class="cmt"># 속성 (Attributes)</span>
+- [속성1]: [타입] - [설명]
+- [속성2]: [타입] - [설명]
+
+<span class="cmt"># 메서드 (Methods)</span>
+- [메서드1]: [설명]
+- [메서드2]: [설명]
+
+<span class="cmt"># 설계 원칙</span>
+- SOLID 원칙 준수
+- [특정 디자인 패턴] 적용
+- 불변성/가변성 여부
+
+<span class="cmt"># 사용 예시</span>
+[코드 예시]</code></pre>
+  </div>
+
+  <h3 id="template-3">템플릿 3: API 엔드포인트</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>[프레임워크]로 [리소스] [작업] API를 작성해주세요.
+
+<span class="cmt"># HTTP 메서드 및 경로</span>
+[METHOD] /api/[resource]/[path]
+
+<span class="cmt"># 요청 (Request)</span>
+Headers:
+  - Authorization: Bearer [token]
+  - Content-Type: application/json
+
+Body:
+{
+  <span class="str">"field1"</span>: <span class="str">"value1"</span>,
+  <span class="str">"field2"</span>: <span class="str">"value2"</span>
+}
+
+<span class="cmt"># 응답 (Response)</span>
+Success (200):
+{
+  <span class="str">"data"</span>: { ... },
+  <span class="str">"message"</span>: <span class="str">"success"</span>
+}
+
+Error (4xx/5xx):
+{
+  <span class="str">"error"</span>: {
+    <span class="str">"code"</span>: <span class="str">"ERROR_CODE"</span>,
+    <span class="str">"message"</span>: <span class="str">"에러 메시지"</span>
+  }
+}
+
+<span class="cmt"># 비즈니스 로직</span>
+1. [검증 규칙]
+2. [처리 단계]
+3. [부수 효과]
+
+<span class="cmt"># 권한</span>
+- 필요 역할: [role]
+- 리소스 소유권 확인: [예/아니오]</code></pre>
+  </div>
+
+  <h3 id="template-4">템플릿 4: 리팩토링</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>다음 코드를 [목표]를 위해 리팩토링해주세요.
+
+<span class="cmt"># 현재 코드</span>
+[기존 코드]
+
+<span class="cmt"># 문제점</span>
+1. [문제점 1]
+2. [문제점 2]
+
+<span class="cmt"># 리팩토링 목표</span>
+- [목표 1]: [측정 가능한 기준]
+- [목표 2]: [측정 가능한 기준]
+
+<span class="cmt"># 제약사항</span>
+- 기존 API/인터페이스 유지
+- 하위 호환성 보장
+- [추가 제약사항]
+
+<span class="cmt"># 적용할 패턴/원칙</span>
+- [디자인 패턴 또는 리팩토링 기법]</code></pre>
+  </div>
+
+  <h3 id="template-5">템플릿 5: 디버깅</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>다음 코드의 버그를 찾아 수정해주세요.
+
+<span class="cmt"># 문제 코드</span>
+[버그가 있는 코드]
+
+<span class="cmt"># 증상</span>
+- 예상 동작: [기대하는 결과]
+- 실제 동작: [실제 발생하는 결과]
+- 에러 메시지: [에러 메시지 또는 "없음"]
+
+<span class="cmt"># 재현 방법</span>
+1. [단계 1]
+2. [단계 2]
+3. [단계 3]
+
+<span class="cmt"># 환경</span>
+- [언어/프레임워크] 버전: [버전]
+- OS: [운영체제]
+- 기타 의존성: [관련 라이브러리]
+
+<span class="cmt"># 요청사항</span>
+1. 버그 원인 설명
+2. 수정된 코드
+3. 재발 방지 방법 (테스트, 코드 리뷰 포인트 등)</code></pre>
+  </div>
+
+  <h3 id="template-6">템플릿 6: 성능 최적화</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>다음 코드의 성능을 최적화해주세요.
+
+<span class="cmt"># 현재 코드</span>
+[최적화 대상 코드]
+
+<span class="cmt"># 성능 문제</span>
+- 현재 성능: [측정값] (예: 10초, 1000 QPS)
+- 목표 성능: [목표값]
+- 병목 지점: [프로파일링 결과 또는 추정]
+
+<span class="cmt"># 최적화 제약사항</span>
+- 메모리 제한: [제한사항]
+- 정확도 유지: [필수/근사 허용]
+- 코드 복잡도: [유지보수성 고려사항]
+
+<span class="cmt"># 최적화 방향</span>
+- 알고리즘 개선 (시간 복잡도 감소)
+- 데이터 구조 변경
+- 캐싱 전략
+- 병렬 처리
+- [기타 방향]
+
+<span class="cmt"># 벤치마크 방법</span>
+[성능 측정 코드 또는 방법]</code></pre>
+  </div>
+
+  <h3 id="template-7">템플릿 7: 데이터베이스 쿼리</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>[데이터베이스/ORM]로 [작업]을 수행하는 쿼리를 작성해주세요.
+
+<span class="cmt"># 스키마</span>
+<span class="kw">Table</span>: users
+  - id: <span class="type">INTEGER</span> <span class="kw">PRIMARY KEY</span>
+  - username: <span class="type">VARCHAR</span>(<span class="num">50</span>)
+  - created_at: <span class="type">TIMESTAMP</span>
+
+<span class="kw">Table</span>: posts
+  - id: <span class="type">INTEGER</span> <span class="kw">PRIMARY KEY</span>
+  - user_id: <span class="type">INTEGER</span> <span class="kw">FOREIGN KEY</span>
+  - title: <span class="type">VARCHAR</span>(<span class="num">200</span>)
+  - created_at: <span class="type">TIMESTAMP</span>
+
+<span class="cmt"># 요구사항</span>
+[구체적인 쿼리 요구사항]
+
+<span class="cmt"># 조건</span>
+- 필터: [조건]
+- 정렬: [정렬 기준]
+- 페이지네이션: [있음/없음]
+- 집계: [필요한 집계 함수]
+
+<span class="cmt"># 성능 고려사항</span>
+- N+1 쿼리 방지
+- 인덱스 활용
+- 실행 계획 (EXPLAIN) 포함
+- 예상 데이터 크기: [행 수]</code></pre>
+  </div>
+
+  <h3 id="template-8">템플릿 8: 테스트 코드</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>[테스트 프레임워크]로 [대상]에 대한 테스트 코드를 작성해주세요.
+
+<span class="cmt"># 테스트 대상</span>
+[함수/클래스/API 코드]
+
+<span class="cmt"># 테스트 케이스</span>
+1. Happy Path:
+   - [정상 동작 시나리오]
+
+2. Edge Cases:
+   - [경계값 테스트]
+
+3. Error Cases:
+   - [예외 상황]
+
+<span class="cmt"># 테스트 구조</span>
+- Arrange: [초기 설정]
+- Act: [실행]
+- Assert: [검증]
+
+<span class="cmt"># 모킹</span>
+- [모킹 대상]: [모킹 방법]
+
+<span class="cmt"># 커버리지 목표</span>
+- Line coverage: [목표 %]
+- Branch coverage: [목표 %]</code></pre>
+  </div>
+
+  <h3 id="template-9">템플릿 9: 비동기 처리</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>[언어/프레임워크]로 [비동기 작업]을 구현해주세요.
+
+<span class="cmt"># 작업 내용</span>
+[구체적인 비동기 작업 설명]
+
+<span class="cmt"># 동시성 모델</span>
+- async/await
+- Promise/Future
+- Callback
+- [기타 모델]
+
+<span class="cmt"># 에러 처리</span>
+- 재시도 전략: [exponential backoff 등]
+- 타임아웃: [시간 제한]
+- 실패 시 폴백: [대체 동작]
+
+<span class="cmt"># 동시 실행</span>
+- 병렬 실행: [여러 작업 동시 실행]
+- 순차 실행: [의존성 있는 작업]
+- 동시성 제한: [최대 N개]
+
+<span class="cmt"># 취소 처리</span>
+- AbortController/CancellationToken 사용
+- 정리 작업 (cleanup)</code></pre>
+  </div>
+
+  <h3 id="template-10">템플릿 10: 통합</h3>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">템플릿</span>
+    </div>
+    <pre><code>[서비스/라이브러리]를 [프로젝트]에 통합하는 코드를 작성해주세요.
+
+<span class="cmt"># 통합 대상</span>
+- 서비스: [외부 서비스명] (예: Stripe, SendGrid)
+- SDK/라이브러리: [이름 및 버전]
+
+<span class="cmt"># 통합 목표</span>
+[통합을 통해 달성하려는 기능]
+
+<span class="cmt"># 요구사항</span>
+1. 인증: [API 키, OAuth 등]
+2. 환경별 설정: [dev/staging/prod]
+3. 에러 처리: [재시도, 로깅, 알림]
+4. 레이트 리밋 대응: [제한 초과 시 처리]
+
+<span class="cmt"># 설정 관리</span>
+- 환경 변수로 민감 정보 관리
+- 설정 파일 구조
+
+<span class="cmt"># 테스트</span>
+- 모킹을 통한 유닛 테스트
+- 샌드박스 환경 통합 테스트</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="advanced-techniques">고급 기법</h2>
+
+  <h3 id="technique-iterative">단계별 리팩토링</h3>
+
+  <p>복잡한 코드 개선은 한 번에 하지 말고 단계별로 요청하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">단계별 프롬프트 예시</span>
+    </div>
+    <pre><code><span class="cmt">## 1단계: 가독성 개선</span>
+다음 코드의 가독성을 개선해주세요:
+- 변수명을 의미 있게 변경
+- 매직 넘버를 상수로 추출
+- 복잡한 조건문을 함수로 분리
+
+[코드]
+
+<span class="cmt">## 2단계: 성능 최적화</span>
+1단계에서 개선된 코드의 성능을 최적화해주세요:
+- O(n²) → O(n log n) 알고리즘 개선
+- 불필요한 루프 제거
+- 메모이제이션 적용
+
+<span class="cmt">## 3단계: 테스트 추가</span>
+최종 코드에 대한 유닛 테스트를 작성해주세요:
+- 엣지 케이스 포함
+- 100% 브랜치 커버리지 목표</code></pre>
+  </div>
+
+  <h3 id="technique-constraints">제약 조건 기반 설계</h3>
+
+  <p>제약사항을 명확히 하면 최적의 솔루션을 얻을 수 있습니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">제약 조건 명시 예시</span>
+    </div>
+    <pre><code>이미지 업로드 기능을 구현해주세요.
+
+<span class="cmt"># 기능 제약사항</span>
+- 최대 파일 크기: 10MB
+- 지원 형식: JPEG, PNG, WebP
+- 최대 동시 업로드: 5개
+- 업로드 진행률 표시 필수
+
+<span class="cmt"># 기술 제약사항</span>
+- 프론트엔드: React 18, TypeScript
+- 백엔드: AWS S3 직접 업로드 (presigned URL)
+- 브라우저: Chrome/Firefox/Safari 최신 2버전
+
+<span class="cmt"># 성능 제약사항</span>
+- 10MB 파일 업로드 시간 < 30초 (일반 인터넷 속도)
+- 썸네일 생성: 서버사이드 (Lambda)
+- 이미지 최적화: 자동 WebP 변환
+
+<span class="cmt"># 보안 제약사항</span>
+- 파일 타입 검증 (MIME type + 매직 바이트)
+- 악성 파일 스캔 (ClamAV)
+- CORS 설정
+- presigned URL 유효시간: 15분</code></pre>
+  </div>
+
+  <h3 id="technique-examples">예제 기반 학습</h3>
+
+  <p>입출력 예제를 제공하면 정확도가 크게 향상됩니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 기반 프롬프트</span>
+    </div>
+    <pre><code>날짜 범위를 파싱하는 함수를 작성해주세요.
+
+<span class="cmt"># 예제 1</span>
+입력: <span class="str">"2024-01-01 to 2024-01-31"</span>
+출력: { start: <span class="kw">new</span> <span class="fn">Date</span>(<span class="str">"2024-01-01"</span>), end: <span class="kw">new</span> <span class="fn">Date</span>(<span class="str">"2024-01-31"</span>) }
+
+<span class="cmt"># 예제 2</span>
+입력: <span class="str">"last 7 days"</span>
+출력: { start: <span class="str">"7일 전 날짜"</span>, end: <span class="str">"오늘 날짜"</span> }
+
+<span class="cmt"># 예제 3</span>
+입력: <span class="str">"this month"</span>
+출력: { start: <span class="str">"이번 달 1일"</span>, end: <span class="str">"이번 달 마지막 날"</span> }
+
+<span class="cmt"># 예제 4 (에러)</span>
+입력: <span class="str">"invalid date"</span>
+출력: <span class="kw">throw new</span> <span class="fn">Error</span>(<span class="str">"Invalid date range format"</span>)
+
+<span class="cmt"># 지원할 형식</span>
+- "YYYY-MM-DD to YYYY-MM-DD"
+- "last N days/weeks/months"
+- "this week/month/year"
+- "yesterday/today/tomorrow"</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">베스트 프랙티스</h2>
+
+  <div class="info-box tip">
+    <div class="info-box-title">코딩 프롬프트 체크리스트</div>
+    <p><strong>프롬프트 작성 전 확인하세요:</strong></p>
+    <ul>
+      <li>✅ 언어와 버전을 명시했는가?</li>
+      <li>✅ 함수/클래스 시그니처를 정의했는가?</li>
+      <li>✅ 입출력 예제를 제공했는가?</li>
+      <li>✅ 에러 처리 방법을 명시했는가?</li>
+      <li>✅ 성능 요구사항을 정량화했는가?</li>
+      <li>✅ 코드 스타일을 지정했는가?</li>
+      <li>✅ 테스트가 필요한 경우 테스트 요청을 포함했는가?</li>
+    </ul>
+  </div>
+
+  <h3 id="practice-versioning">버전 명시</h3>
+
+  <p>라이브러리 버전에 따라 API가 다르므로 정확한 버전을 명시하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">나쁜 예</span>
+    </div>
+    <pre><code>"React로 컴포넌트 만들어줘"</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">좋은 예</span>
+    </div>
+    <pre><code>"React 18.2 함수형 컴포넌트로 만들어줘 (Hooks 사용)"</code></pre>
+  </div>
+
+  <h3 id="practice-naming">네이밍 규칙</h3>
+
+  <p>프로젝트의 네이밍 컨벤션을 명시하면 일관성 있는 코드를 얻을 수 있습니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">네이밍 규칙 예시</span>
+    </div>
+    <pre><code><span class="cmt"># Python 프로젝트</span>
+- 모듈/패키지: lowercase_with_underscores
+- 클래스: PascalCase
+- 함수/변수: snake_case
+- 상수: UPPER_SNAKE_CASE
+- Private: _leading_underscore
+
+<span class="cmt"># TypeScript 프로젝트</span>
+- 파일명: kebab-case.ts
+- 컴포넌트: PascalCase
+- 함수/변수: camelCase
+- 상수: UPPER_SNAKE_CASE
+- 타입/인터페이스: PascalCase
+- Enum: PascalCase (값은 UPPER_SNAKE_CASE)</code></pre>
+  </div>
+
+  <h3 id="practice-error">에러 처리</h3>
+
+  <p>에러 처리 전략을 명확히 하세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">에러 처리 프롬프트</span>
+    </div>
+    <pre><code>파일 업로드 함수에 다음 에러 처리를 적용해주세요:
+
+<span class="cmt"># 에러 타입별 처리</span>
+1. <span class="type">FileNotFoundError</span>: 사용자에게 "파일을 찾을 수 없습니다" 메시지
+2. <span class="type">FileSizeExceeded</span>: "파일 크기는 10MB를 초과할 수 없습니다"
+3. <span class="type">InvalidFileType</span>: "지원하지 않는 파일 형식입니다"
+4. <span class="type">NetworkError</span>: 3회 재시도 (1초, 2초, 4초 대기)
+5. <span class="type">UnknownError</span>: 로그 기록 후 일반 에러 메시지
+
+<span class="cmt"># 로깅</span>
+- 모든 에러는 structlog로 기록
+- 에러 레벨: ERROR
+- 포함 정보: user_id, file_name, error_type, stack_trace
+
+<span class="cmt"># 사용자 피드백</span>
+- 에러 메시지는 한국어
+- 기술적 세부사항은 숨김
+- 해결 방법 제시 (가능한 경우)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="common-mistakes">흔한 실수</h2>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:50%">❌ 실수</th>
+        <th style="width:50%">✅ 올바른 방법</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <strong>막연한 요청</strong><br>
+          "좋은 코드 작성해줘"
+        </td>
+        <td>
+          <strong>측정 가능한 기준 제시</strong><br>
+          "PEP 8 준수, 순환 복잡도 < 10, 테스트 커버리지 > 90%"
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>컨텍스트 생략</strong><br>
+          "이 함수 최적화해줘"
+        </td>
+        <td>
+          <strong>사용 환경 명시</strong><br>
+          "초당 1000회 호출되는 API 핸들러, 응답시간 < 100ms 목표"
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>한 번에 너무 많이</strong><br>
+          "CRUD + 인증 + 페이지네이션 + 캐싱 + 테스트 다 만들어줘"
+        </td>
+        <td>
+          <strong>단계별 요청</strong><br>
+          "먼저 기본 CRUD부터 만들어주세요. 이후 인증을 추가하겠습니다."
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>암묵적 가정</strong><br>
+          "정렬 함수 만들어줘"
+        </td>
+        <td>
+          <strong>명시적 명세</strong><br>
+          "오름차순 정렬, 안정 정렬, 숫자 배열 입력, in-place 금지"
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <strong>예제 없음</strong><br>
+          "날짜 포맷팅 함수 만들어줘"
+        </td>
+        <td>
+          <strong>입출력 예시 제공</strong><br>
+          "2024-01-15 → '2024년 1월 15일' 형식으로 변환"
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">학습 경로</div>
+    <p><strong>코딩 프롬프트를 마스터한 후:</strong></p>
+    <ol>
+      <li><a href="prompt-optimization.html">프롬프트 최적화</a> - 토큰 절약, 정확도 향상</li>
+      <li><a href="vibe-coding-patterns.html">Vibe Coding 패턴</a> - 실전 워크플로우</li>
+      <li><a href="prompt-patterns.html">프롬프트 패턴</a> - 고급 패턴 학습</li>
+      <li><a href="tool-use.html">Tool Use</a> - 함수 호출, 외부 도구 통합</li>
+    </ol>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+
+<footer class="site-footer"></footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

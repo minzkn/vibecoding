@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Ollama 고급 활용 - Modelfile, 커스텀 모델, RAG, 에이전트">
+<meta property="og:description" content="Modelfile 작성, 커스텀 모델 생성, RAG 파이프라인, 에이전트 구현, 성능 최적화, 프로덕션 배포">
+<meta property="og:url" content="https://minzkn.com/claude/pages/ollama-advanced.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Ollama 고급 가이드. Modelfile, 커스텀 모델, RAG, 에이전트, 프로덕션 배포.">
+<meta name="keywords" content="ollama 고급, modelfile, custom model, rag, agent, production, 최적화">
+<meta name="author" content="MINZKN">
+<title>Ollama 고급 활용 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Ollama 고급 활용</h1>
+<p class="lead">Modelfile 작성, 커스텀 모델 생성, RAG 파이프라인, 에이전트 구현, 프로덕션 배포</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">🎯 이 문서에서 배울 내용</div>
+  <ol>
+    <li><strong>Modelfile</strong> - 모델 동작을 완전히 커스터마이징</li>
+    <li><strong>커스텀 모델</strong> - 특정 도메인에 특화된 모델 생성</li>
+    <li><strong>RAG 파이프라인</strong> - 문서 기반 질의응답 시스템</li>
+    <li><strong>에이전트</strong> - 도구를 사용하는 자율 AI</li>
+    <li><strong>성능 최적화</strong> - 속도와 품질 개선</li>
+    <li><strong>프로덕션 배포</strong> - 실제 서비스 운영</li>
+  </ol>
+</div>
+
+<section class="content-section">
+  <h2 id="modelfile">Modelfile 작성</h2>
+
+  <p>
+    <strong>Modelfile</strong>은 Dockerfile과 유사하게, Ollama 모델의 동작을 정의하는 설정 파일입니다.
+    시스템 프롬프트, 파라미터, 템플릿 등을 커스터마이징할 수 있습니다.
+  </p>
+
+  <h3 id="modelfile-basics">기본 구조</h3>
+
+  <pre><code><span class="cmt"># Modelfile 예시</span>
+<span class="kw">FROM</span> llama3.2
+
+<span class="cmt"># 시스템 프롬프트</span>
+<span class="kw">SYSTEM</span> <span class="str">"""당신은 파이썬 전문가입니다.
+모든 답변은 PEP 8 스타일 가이드를 따르고,
+타입 힌트와 docstring을 포함해야 합니다."""</span>
+
+<span class="cmt"># 파라미터 설정</span>
+<span class="kw">PARAMETER</span> temperature 0.7
+<span class="kw">PARAMETER</span> top_p 0.9
+<span class="kw">PARAMETER</span> top_k 40
+
+<span class="cmt"># 메시지 템플릿</span>
+<span class="kw">TEMPLATE</span> <span class="str">"""{{ .System }}
+
+User: {{ .Prompt }}
+Assistant:"""</span></code></pre>
+
+  <h3 id="modelfile-commands">Modelfile 명령어</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>명령어</th>
+        <th>설명</th>
+        <th>예시</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>FROM</code></td>
+        <td>베이스 모델 지정</td>
+        <td><code>FROM llama3.2</code></td>
+      </tr>
+      <tr>
+        <td><code>SYSTEM</code></td>
+        <td>시스템 프롬프트</td>
+        <td><code>SYSTEM "당신은 전문가입니다"</code></td>
+      </tr>
+      <tr>
+        <td><code>PARAMETER</code></td>
+        <td>모델 파라미터</td>
+        <td><code>PARAMETER temperature 0.8</code></td>
+      </tr>
+      <tr>
+        <td><code>TEMPLATE</code></td>
+        <td>메시지 템플릿</td>
+        <td><code>TEMPLATE "{{ .Prompt }}"</code></td>
+      </tr>
+      <tr>
+        <td><code>MESSAGE</code></td>
+        <td>대화 히스토리</td>
+        <td><code>MESSAGE user "안녕"</code></td>
+      </tr>
+      <tr>
+        <td><code>ADAPTER</code></td>
+        <td>LoRA 어댑터</td>
+        <td><code>ADAPTER ./adapter.bin</code></td>
+      </tr>
+      <tr>
+        <td><code>LICENSE</code></td>
+        <td>라이선스 정보</td>
+        <td><code>LICENSE "MIT"</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="modelfile-parameters">파라미터 설정</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>파라미터</th>
+        <th>기본값</th>
+        <th>범위</th>
+        <th>효과</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>temperature</code></td>
+        <td>0.8</td>
+        <td>0.0 ~ 2.0</td>
+        <td>높을수록 창의적, 낮을수록 일관적</td>
+      </tr>
+      <tr>
+        <td><code>top_p</code></td>
+        <td>0.9</td>
+        <td>0.0 ~ 1.0</td>
+        <td>누적 확률 임계값 (nucleus sampling)</td>
+      </tr>
+      <tr>
+        <td><code>top_k</code></td>
+        <td>40</td>
+        <td>1 ~ 100</td>
+        <td>상위 K개 토큰만 선택</td>
+      </tr>
+      <tr>
+        <td><code>num_ctx</code></td>
+        <td>2048</td>
+        <td>512 ~ 8192</td>
+        <td>컨텍스트 윈도우 크기 (토큰)</td>
+      </tr>
+      <tr>
+        <td><code>num_predict</code></td>
+        <td>128</td>
+        <td>-1 ~ 2048</td>
+        <td>생성할 최대 토큰 수 (-1 = 무제한)</td>
+      </tr>
+      <tr>
+        <td><code>repeat_penalty</code></td>
+        <td>1.1</td>
+        <td>1.0 ~ 2.0</td>
+        <td>반복 억제 (높을수록 덜 반복)</td>
+      </tr>
+      <tr>
+        <td><code>stop</code></td>
+        <td>-</td>
+        <td>문자열</td>
+        <td>생성 중단 시퀀스</td>
+      </tr>
+      <tr>
+        <td><code>seed</code></td>
+        <td>-1</td>
+        <td>정수</td>
+        <td>난수 시드 (재현성)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="modelfile-examples">실전 예제</h3>
+
+  <h4>1. 코드 리뷰 모델</h4>
+
+  <pre><code><span class="cmt"># Modelfile.codereview</span>
+<span class="kw">FROM</span> codellama:13b
+
+<span class="kw">SYSTEM</span> <span class="str">"""당신은 시니어 소프트웨어 엔지니어입니다.
+코드를 리뷰할 때 다음 관점에서 분석하세요:
+
+1. 버그 및 논리 오류
+2. 성능 최적화 기회
+3. 보안 취약점
+4. 코드 가독성 및 유지보수성
+5. 테스트 커버리지
+
+리뷰는 건설적이고 구체적인 개선 제안을 포함하세요."""</span>
+
+<span class="kw">PARAMETER</span> temperature 0.3
+<span class="kw">PARAMETER</span> top_p 0.95
+<span class="kw">PARAMETER</span> num_ctx 4096
+
+<span class="kw">TEMPLATE</span> <span class="str">"""{{ .System }}
+
+코드:
+```
+{{ .Prompt }}
+```
+
+리뷰:"""</span></code></pre>
+
+  <pre><code><span class="cmt"># 모델 생성</span>
+ollama create codereview -f Modelfile.codereview
+
+<span class="cmt"># 사용</span>
+ollama run codereview <span class="str">"def calc(a,b): return a/b"</span></code></pre>
+
+  <h4>2. JSON 출력 모델</h4>
+
+  <pre><code><span class="cmt"># Modelfile.json</span>
+<span class="kw">FROM</span> llama3.2
+
+<span class="kw">SYSTEM</span> <span class="str">"""당신은 JSON 생성 전문가입니다.
+모든 응답은 유효한 JSON 형식이어야 합니다.
+추가 설명이나 텍스트 없이 JSON만 출력하세요."""</span>
+
+<span class="kw">PARAMETER</span> temperature 0.1
+<span class="kw">PARAMETER</span> stop <span class="str">"```"</span>
+
+<span class="kw">TEMPLATE</span> <span class="str">"""{{ .System }}
+
+요청: {{ .Prompt }}
+
+JSON:
+```json"""</span></code></pre>
+
+  <pre><code>ollama create json-generator -f Modelfile.json
+
+ollama run json-generator <span class="str">"사용자 프로필 스키마를 만들어줘 (name, email, age)"</span>
+<span class="cmt"># 출력:</span>
+{
+  <span class="str">"name"</span>: <span class="str">"string"</span>,
+  <span class="str">"email"</span>: <span class="str">"string"</span>,
+  <span class="str">"age"</span>: <span class="str">"number"</span>
+}</code></pre>
+
+  <h4>3. 한국어 특화 모델</h4>
+
+  <pre><code><span class="cmt"># Modelfile.korean</span>
+<span class="kw">FROM</span> llama3.2
+
+<span class="kw">SYSTEM</span> <span class="str">"""당신은 한국어 전문 AI 어시스턴트입니다.
+모든 답변은 존댓말을 사용하고, 자연스러운 한국어로 작성하세요.
+외래어나 영어 표현은 최소화하고, 한글 우선으로 설명하세요."""</span>
+
+<span class="kw">PARAMETER</span> temperature 0.7
+<span class="kw">PARAMETER</span> repeat_penalty 1.2
+
+<span class="kw">MESSAGE</span> user <span class="str">"안녕하세요"</span>
+<span class="kw">MESSAGE</span> assistant <span class="str">"안녕하세요! 무엇을 도와드릴까요?"</span></code></pre>
+
+  <h4>4. SQL 생성 모델</h4>
+
+  <pre><code><span class="cmt"># Modelfile.sql</span>
+<span class="kw">FROM</span> codellama:7b
+
+<span class="kw">SYSTEM</span> <span class="str">"""당신은 SQL 전문가입니다.
+자연어 질문을 PostgreSQL 쿼리로 변환하세요.
+
+규칙:
+- 표준 SQL 문법 사용
+- 주석으로 쿼리 설명 추가
+- 인덱스 활용 고려
+- SQL 인젝션 방지"""</span>
+
+<span class="kw">PARAMETER</span> temperature 0.2
+<span class="kw">PARAMETER</span> top_p 0.95
+
+<span class="kw">TEMPLATE</span> <span class="str">"""{{ .System }}
+
+스키마:
+- users (id, name, email, created_at)
+- orders (id, user_id, amount, status, created_at)
+- products (id, name, price, stock)
+
+질문: {{ .Prompt }}
+
+SQL:
+```sql"""</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="custom-models">커스텀 모델 생성</h2>
+
+  <h3 id="gguf-import">GGUF 모델 가져오기</h3>
+
+  <p>
+    Hugging Face에서 GGUF 포맷 모델을 다운로드하여 Ollama에서 사용할 수 있습니다.
+  </p>
+
+  <pre><code><span class="cmt"># 1. Hugging Face에서 GGUF 파일 다운로드</span>
+<span class="cmt"># 예: TheBloke의 모델들</span>
+wget https://huggingface.co/TheBloke/Llama-2-13B-GGUF/resolve/main/llama-2-13b.Q4_K_M.gguf
+
+<span class="cmt"># 2. Modelfile 작성</span>
+cat &gt; Modelfile.custom &lt;&lt;EOF
+<span class="kw">FROM</span> ./llama-2-13b.Q4_K_M.gguf
+
+<span class="kw">SYSTEM</span> <span class="str">"당신은 도움이 되는 AI 어시스턴트입니다."</span>
+
+<span class="kw">PARAMETER</span> temperature 0.8
+EOF
+
+<span class="cmt"># 3. Ollama 모델 생성</span>
+ollama create my-llama2-13b -f Modelfile.custom
+
+<span class="cmt"># 4. 사용</span>
+ollama run my-llama2-13b</code></pre>
+
+  <h3 id="lora-adapter">LoRA 어댑터 적용</h3>
+
+  <p>
+    <strong>LoRA</strong> (Low-Rank Adaptation)는 모델의 일부만 파인튜닝하여
+    특정 작업에 특화시키는 효율적인 방법입니다.
+  </p>
+
+  <pre><code><span class="cmt"># 1. LoRA 어댑터 학습 (외부 도구 사용)</span>
+<span class="cmt"># 예: llama.cpp의 finetune 기능</span>
+
+<span class="cmt"># 2. Modelfile에 어댑터 추가</span>
+cat &gt; Modelfile.lora &lt;&lt;EOF
+<span class="kw">FROM</span> llama3.2
+
+<span class="kw">ADAPTER</span> ./my-lora-adapter.bin
+
+<span class="kw">SYSTEM</span> <span class="str">"당신은 의료 전문 AI입니다."</span>
+
+<span class="kw">PARAMETER</span> temperature 0.5
+EOF
+
+<span class="cmt"># 3. 모델 생성</span>
+ollama create medical-llama -f Modelfile.lora</code></pre>
+
+  <h3 id="multi-shot">Few-Shot 학습 모델</h3>
+
+  <pre><code><span class="cmt"># Modelfile.fewshot</span>
+<span class="kw">FROM</span> llama3.2
+
+<span class="kw">SYSTEM</span> <span class="str">"당신은 감성 분석 전문가입니다. 텍스트의 감정을 positive/negative/neutral로 분류하세요."</span>
+
+<span class="cmt"># Few-shot 예제 추가</span>
+<span class="kw">MESSAGE</span> user <span class="str">"이 영화 정말 최고예요!"</span>
+<span class="kw">MESSAGE</span> assistant <span class="str">"positive"</span>
+
+<span class="kw">MESSAGE</span> user <span class="str">"돈 아까워요. 시간 낭비였어요."</span>
+<span class="kw">MESSAGE</span> assistant <span class="str">"negative"</span>
+
+<span class="kw">MESSAGE</span> user <span class="str">"그냥 평범한 영화였어요."</span>
+<span class="kw">MESSAGE</span> assistant <span class="str">"neutral"</span>
+
+<span class="kw">PARAMETER</span> temperature 0.3</code></pre>
+
+  <pre><code>ollama create sentiment-analyzer -f Modelfile.fewshot
+
+ollama run sentiment-analyzer <span class="str">"기대 이상이었어요. 강추합니다!"</span>
+<span class="cmt"># positive</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="rag-pipeline">RAG 파이프라인 구축</h2>
+
+  <p>
+    <strong>RAG</strong> (Retrieval-Augmented Generation)는 외부 문서를 검색하여
+    LLM의 응답을 보강하는 기법입니다. 환각(hallucination)을 줄이고 최신 정보를 제공합니다.
+  </p>
+
+  <h3 id="rag-architecture">RAG 아키텍처</h3>
+
+  <svg viewBox="0 0 800 500" class="diagram" role="img" aria-label="RAG 파이프라인">
+    <defs>
+      <marker id="arrowhead-rag" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--svg-arrow)" />
+      </marker>
+    </defs>
+
+    <!-- User Query -->
+    <rect x="50" y="50" width="120" height="60" fill="var(--svg-box)" stroke="var(--svg-border)" stroke-width="2" rx="8"/>
+    <text x="110" y="85" fill="var(--svg-text)" text-anchor="middle" font-size="14" font-weight="bold">사용자 질문</text>
+
+    <!-- Embedding -->
+    <rect x="50" y="160" width="120" height="60" fill="var(--svg-highlight)" stroke="var(--svg-accent)" stroke-width="2" rx="8"/>
+    <text x="110" y="195" fill="var(--svg-text)" text-anchor="middle" font-size="14" font-weight="bold">임베딩 생성</text>
+
+    <!-- Vector DB -->
+    <rect x="250" y="160" width="150" height="60" fill="var(--svg-box)" stroke="var(--svg-border)" stroke-width="2" rx="8"/>
+    <text x="325" y="185" fill="var(--svg-text)" text-anchor="middle" font-size="14" font-weight="bold">벡터 DB 검색</text>
+    <text x="325" y="205" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="11">(Chroma, FAISS)</text>
+
+    <!-- Retrieved Docs -->
+    <rect x="250" y="270" width="150" height="60" fill="var(--svg-box)" stroke="var(--svg-border)" stroke-width="2" rx="8"/>
+    <text x="325" y="295" fill="var(--svg-text)" text-anchor="middle" font-size="14" font-weight="bold">관련 문서</text>
+    <text x="325" y="315" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="11">Top K 문서</text>
+
+    <!-- LLM -->
+    <rect x="480" y="160" width="150" height="170" fill="var(--svg-highlight)" stroke="var(--svg-accent)" stroke-width="2" rx="8"/>
+    <text x="555" y="190" fill="var(--svg-text)" text-anchor="middle" font-size="14" font-weight="bold">LLM (Ollama)</text>
+    <text x="555" y="220" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="12">질문 + 컨텍스트</text>
+    <text x="555" y="240" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="12">→</text>
+    <text x="555" y="260" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="12">답변 생성</text>
+
+    <!-- Response -->
+    <rect x="680" y="210" width="100" height="60" fill="var(--svg-box)" stroke="var(--svg-border)" stroke-width="2" rx="8"/>
+    <text x="730" y="245" fill="var(--svg-text)" text-anchor="middle" font-size="14" font-weight="bold">응답</text>
+
+    <!-- Arrows -->
+    <line x1="110" y1="110" x2="110" y2="160" stroke="var(--svg-arrow)" stroke-width="2" marker-end="url(#arrowhead-rag)"/>
+    <line x1="170" y1="190" x2="250" y2="190" stroke="var(--svg-arrow)" stroke-width="2" marker-end="url(#arrowhead-rag)"/>
+    <line x1="325" y1="220" x2="325" y2="270" stroke="var(--svg-arrow)" stroke-width="2" marker-end="url(#arrowhead-rag)"/>
+    <line x1="400" y1="300" x2="480" y2="245" stroke="var(--svg-arrow)" stroke-width="2" marker-end="url(#arrowhead-rag)"/>
+    <line x1="630" y1="240" x2="680" y2="240" stroke="var(--svg-arrow)" stroke-width="2" marker-end="url(#arrowhead-rag)"/>
+
+    <!-- Document Store -->
+    <rect x="250" y="380" width="150" height="60" fill="var(--svg-section)" stroke="var(--svg-border)" stroke-width="2" rx="8"/>
+    <text x="325" y="405" fill="var(--svg-text)" text-anchor="middle" font-size="12" font-weight="bold">문서 저장소</text>
+    <text x="325" y="425" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="10">PDF, DOCX, TXT</text>
+    <line x1="325" y1="380" x2="325" y2="330" stroke="var(--svg-arrow)" stroke-width="2" stroke-dasharray="5,5"/>
+  </svg>
+
+  <h3 id="rag-simple">간단한 RAG 구현 (Python)</h3>
+
+  <pre><code><span class="kw">import</span> requests
+<span class="kw">from</span> typing <span class="kw">import</span> List
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">class</span> <span class="type">SimpleRAG</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, documents: List[<span class="type">str</span>]):
+        <span class="kw">self</span>.documents = documents
+        <span class="kw">self</span>.embeddings = [<span class="kw">self</span>._embed(doc) <span class="kw">for</span> doc <span class="kw">in</span> documents]
+
+    <span class="kw">def</span> <span class="fn">_embed</span>(<span class="kw">self</span>, text: <span class="type">str</span>) -&gt; List[<span class="type">float</span>]:
+        <span class="str">"""Ollama 임베딩 API 사용"""</span>
+        response = requests.post(
+            <span class="str">'http://localhost:11434/api/embeddings'</span>,
+            json={<span class="str">'model'</span>: <span class="str">'nomic-embed-text'</span>, <span class="str">'prompt'</span>: text}
+        )
+        <span class="kw">return</span> response.json()[<span class="str">'embedding'</span>]
+
+    <span class="kw">def</span> <span class="fn">_cosine_similarity</span>(<span class="kw">self</span>, a: List[<span class="type">float</span>], b: List[<span class="type">float</span>]) -&gt; <span class="type">float</span>:
+        <span class="str">"""코사인 유사도 계산"""</span>
+        a = np.array(a)
+        b = np.array(b)
+        <span class="kw">return</span> np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
+    <span class="kw">def</span> <span class="fn">retrieve</span>(<span class="kw">self</span>, query: <span class="type">str</span>, k: <span class="type">int</span> = <span class="num">3</span>) -&gt; List[<span class="type">str</span>]:
+        <span class="str">"""가장 관련 있는 문서 K개 검색"""</span>
+        query_emb = <span class="kw">self</span>._embed(query)
+
+        <span class="cmt"># 유사도 계산</span>
+        scores = [
+            <span class="kw">self</span>._cosine_similarity(query_emb, doc_emb)
+            <span class="kw">for</span> doc_emb <span class="kw">in</span> <span class="kw">self</span>.embeddings
+        ]
+
+        <span class="cmt"># 상위 K개 인덱스</span>
+        top_indices = np.argsort(scores)[-k:][::-<span class="num">1</span>]
+
+        <span class="kw">return</span> [<span class="kw">self</span>.documents[i] <span class="kw">for</span> i <span class="kw">in</span> top_indices]
+
+    <span class="kw">def</span> <span class="fn">generate</span>(<span class="kw">self</span>, query: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+        <span class="str">"""RAG 응답 생성"""</span>
+        <span class="cmt"># 1. 관련 문서 검색</span>
+        context_docs = <span class="kw">self</span>.retrieve(query, k=<span class="num">3</span>)
+        context = <span class="str">"\n\n"</span>.join(context_docs)
+
+        <span class="cmt"># 2. 프롬프트 구성</span>
+        prompt = <span class="str">f"""다음 컨텍스트를 바탕으로 질문에 답변하세요.
+
+컨텍스트:
+{context}
+
+질문: {query}
+
+답변:"""</span>
+
+        <span class="cmt"># 3. LLM 호출</span>
+        response = requests.post(
+            <span class="str">'http://localhost:11434/api/generate'</span>,
+            json={
+                <span class="str">'model'</span>: <span class="str">'llama3.2'</span>,
+                <span class="str">'prompt'</span>: prompt,
+                <span class="str">'stream'</span>: <span class="kw">False</span>
+            }
+        )
+
+        <span class="kw">return</span> response.json()[<span class="str">'response'</span>]
+
+
+<span class="cmt"># 사용 예시</span>
+documents = [
+    <span class="str">"FastAPI는 Python 웹 프레임워크입니다. 빠르고 현대적입니다."</span>,
+    <span class="str">"Flask는 마이크로 웹 프레임워크로 간단하고 유연합니다."</span>,
+    <span class="str">"Django는 풀스택 프레임워크로 admin 패널을 제공합니다."</span>,
+]
+
+rag = SimpleRAG(documents)
+answer = rag.generate(<span class="str">"FastAPI의 특징은?"</span>)
+<span class="kw">print</span>(answer)</code></pre>
+
+  <h3 id="rag-chromadb">ChromaDB를 사용한 프로덕션 RAG</h3>
+
+  <pre><code><span class="kw">from</span> langchain_community.vectorstores <span class="kw">import</span> Chroma
+<span class="kw">from</span> langchain_community.embeddings <span class="kw">import</span> OllamaEmbeddings
+<span class="kw">from</span> langchain_community.llms <span class="kw">import</span> Ollama
+<span class="kw">from</span> langchain.text_splitter <span class="kw">import</span> RecursiveCharacterTextSplitter
+<span class="kw">from</span> langchain.chains <span class="kw">import</span> RetrievalQA
+<span class="kw">from</span> langchain_community.document_loaders <span class="kw">import</span> DirectoryLoader, PyPDFLoader
+
+<span class="kw">class</span> <span class="type">ProductionRAG</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, docs_dir: <span class="type">str</span>, persist_dir: <span class="type">str</span> = <span class="str">"./chroma_db"</span>):
+        <span class="kw">self</span>.embeddings = OllamaEmbeddings(model=<span class="str">"nomic-embed-text"</span>)
+        <span class="kw">self</span>.llm = Ollama(model=<span class="str">"llama3.2"</span>, temperature=<span class="num">0.3</span>)
+        <span class="kw">self</span>.persist_dir = persist_dir
+
+        <span class="cmt"># 문서 로드 및 벡터 DB 생성</span>
+        <span class="kw">self</span>.vectorstore = <span class="kw">self</span>._build_vectorstore(docs_dir)
+        <span class="kw">self</span>.qa_chain = <span class="kw">self</span>._create_qa_chain()
+
+    <span class="kw">def</span> <span class="fn">_build_vectorstore</span>(<span class="kw">self</span>, docs_dir: <span class="type">str</span>):
+        <span class="str">"""문서 로드 및 벡터 DB 생성"""</span>
+        <span class="cmt"># PDF 로더</span>
+        loader = DirectoryLoader(
+            docs_dir,
+            glob=<span class="str">"**/*.pdf"</span>,
+            loader_cls=PyPDFLoader
+        )
+        documents = loader.load()
+
+        <span class="cmt"># 텍스트 분할</span>
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=<span class="num">1000</span>,
+            chunk_overlap=<span class="num">200</span>,
+            length_function=len
+        )
+        chunks = text_splitter.split_documents(documents)
+
+        <span class="cmt"># 벡터 DB 생성</span>
+        vectorstore = Chroma.from_documents(
+            documents=chunks,
+            embedding=<span class="kw">self</span>.embeddings,
+            persist_directory=<span class="kw">self</span>.persist_dir
+        )
+
+        <span class="kw">return</span> vectorstore
+
+    <span class="kw">def</span> <span class="fn">_create_qa_chain</span>(<span class="kw">self</span>):
+        <span class="str">"""QA 체인 생성"""</span>
+        <span class="kw">return</span> RetrievalQA.from_chain_type(
+            llm=<span class="kw">self</span>.llm,
+            chain_type=<span class="str">"stuff"</span>,
+            retriever=<span class="kw">self</span>.vectorstore.as_retriever(
+                search_type=<span class="str">"similarity"</span>,
+                search_kwargs={<span class="str">"k"</span>: <span class="num">5</span>}
+            ),
+            return_source_documents=<span class="kw">True</span>
+        )
+
+    <span class="kw">def</span> <span class="fn">query</span>(<span class="kw">self</span>, question: <span class="type">str</span>):
+        <span class="str">"""질문하고 답변 받기"""</span>
+        result = <span class="kw">self</span>.qa_chain.invoke({<span class="str">"query"</span>: question})
+
+        <span class="kw">print</span>(<span class="str">f"질문: {question}"</span>)
+        <span class="kw">print</span>(<span class="str">f"답변: {result['result']}"</span>)
+        <span class="kw">print</span>(<span class="str">f"\n출처 문서 {len(result['source_documents'])}개:"</span>)
+
+        <span class="kw">for</span> i, doc <span class="kw">in</span> enumerate(result[<span class="str">'source_documents'</span>], <span class="num">1</span>):
+            <span class="kw">print</span>(<span class="str">f"  {i}. {doc.metadata.get('source', 'Unknown')}"</span>)
+
+        <span class="kw">return</span> result
+
+
+<span class="cmt"># 사용</span>
+rag = ProductionRAG(<span class="str">"./company_docs"</span>)
+rag.query(<span class="str">"회사의 휴가 정책은 무엇인가요?"</span>)</code></pre>
+
+  <h3 id="rag-optimization">RAG 최적화 기법</h3>
+
+  <h4>1. 하이브리드 검색 (키워드 + 벡터)</h4>
+
+  <pre><code><span class="kw">from</span> langchain.retrievers <span class="kw">import</span> EnsembleRetriever
+<span class="kw">from</span> langchain_community.retrievers <span class="kw">import</span> BM25Retriever
+
+<span class="cmt"># BM25 (키워드 검색)</span>
+bm25_retriever = BM25Retriever.from_documents(documents)
+bm25_retriever.k = <span class="num">3</span>
+
+<span class="cmt"># 벡터 검색</span>
+vector_retriever = vectorstore.as_retriever(search_kwargs={<span class="str">"k"</span>: <span class="num">3</span>})
+
+<span class="cmt"># 앙상블 (하이브리드)</span>
+ensemble_retriever = EnsembleRetriever(
+    retrievers=[bm25_retriever, vector_retriever],
+    weights=[<span class="num">0.4</span>, <span class="num">0.6</span>]  <span class="cmt"># 벡터 검색 60% 가중치</span>
+)</code></pre>
+
+  <h4>2. Reranking (재순위화)</h4>
+
+  <pre><code><span class="kw">from</span> langchain.retrievers <span class="kw">import</span> ContextualCompressionRetriever
+<span class="kw">from</span> langchain.retrievers.document_compressors <span class="kw">import</span> LLMChainExtractor
+
+<span class="cmt"># LLM으로 관련성 재평가</span>
+compressor = LLMChainExtractor.from_llm(llm)
+
+compression_retriever = ContextualCompressionRetriever(
+    base_compressor=compressor,
+    base_retriever=vector_retriever
+)
+
+<span class="cmt"># 더 정확한 문서 검색</span>
+compressed_docs = compression_retriever.get_relevant_documents(<span class="str">"질문"</span>)</code></pre>
+
+  <h4>3. Parent Document Retriever</h4>
+
+  <pre><code><span class="kw">from</span> langchain.retrievers <span class="kw">import</span> ParentDocumentRetriever
+<span class="kw">from</span> langchain.storage <span class="kw">import</span> InMemoryStore
+
+<span class="cmt"># 작은 청크로 검색, 큰 청크로 컨텍스트 제공</span>
+parent_splitter = RecursiveCharacterTextSplitter(chunk_size=<span class="num">2000</span>)
+child_splitter = RecursiveCharacterTextSplitter(chunk_size=<span class="num">400</span>)
+
+store = InMemoryStore()
+
+retriever = ParentDocumentRetriever(
+    vectorstore=vectorstore,
+    docstore=store,
+    child_splitter=child_splitter,
+    parent_splitter=parent_splitter
+)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="agents">에이전트 구현</h2>
+
+  <p>
+    <strong>에이전트</strong>는 도구(Tools)를 사용하여 복잡한 작업을 자율적으로 수행하는 AI 시스템입니다.
+  </p>
+
+  <h3 id="agent-simple">간단한 에이전트</h3>
+
+  <pre><code><span class="kw">from</span> langchain.agents <span class="kw">import</span> initialize_agent, Tool, AgentType
+<span class="kw">from</span> langchain_community.llms <span class="kw">import</span> Ollama
+<span class="kw">import</span> requests
+
+<span class="cmt"># 도구 정의</span>
+<span class="kw">def</span> <span class="fn">search_wikipedia</span>(query: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    <span class="str">"""위키피디아 검색"""</span>
+    url = <span class="str">f"https://en.wikipedia.org/api/rest_v1/page/summary/{query}"</span>
+    response = requests.get(url)
+    <span class="kw">if</span> response.status_code == <span class="num">200</span>:
+        <span class="kw">return</span> response.json().get(<span class="str">"extract"</span>, <span class="str">"No results"</span>)
+    <span class="kw">return</span> <span class="str">"Error"</span>
+
+<span class="kw">def</span> <span class="fn">calculate</span>(expression: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    <span class="str">"""수학 계산"""</span>
+    <span class="kw">try</span>:
+        <span class="kw">return</span> str(eval(expression))
+    <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+        <span class="kw">return</span> <span class="str">f"Error: {e}"</span>
+
+<span class="kw">def</span> <span class="fn">get_weather</span>(city: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    <span class="str">"""날씨 정보 (가짜 데이터)"""</span>
+    <span class="kw">import</span> random
+    temp = random.randint(<span class="num">15</span>, <span class="num">30</span>)
+    <span class="kw">return</span> <span class="str">f"{city}의 현재 온도는 {temp}°C입니다."</span>
+
+<span class="cmt"># 도구 리스트</span>
+tools = [
+    Tool(
+        name=<span class="str">"Wikipedia"</span>,
+        func=search_wikipedia,
+        description=<span class="str">"위키피디아에서 정보를 검색할 때 사용. 입력: 검색어"</span>
+    ),
+    Tool(
+        name=<span class="str">"Calculator"</span>,
+        func=calculate,
+        description=<span class="str">"수학 계산. 입력: 파이썬 표현식 (예: '2+2', '10*5')"</span>
+    ),
+    Tool(
+        name=<span class="str">"Weather"</span>,
+        func=get_weather,
+        description=<span class="str">"도시의 날씨 정보. 입력: 도시 이름"</span>
+    )
+]
+
+<span class="cmt"># LLM 및 에이전트 초기화</span>
+llm = Ollama(model=<span class="str">"llama3.2"</span>, temperature=<span class="num">0</span>)
+agent = initialize_agent(
+    tools,
+    llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=<span class="kw">True</span>,
+    max_iterations=<span class="num">5</span>
+)
+
+<span class="cmt"># 실행</span>
+result = agent.run(<span class="str">"서울의 날씨를 알려주고, 화씨로 변환해줘"</span>)
+<span class="kw">print</span>(result)</code></pre>
+
+  <h3 id="agent-custom">커스텀 도구 에이전트</h3>
+
+  <pre><code><span class="kw">from</span> langchain.tools <span class="kw">import</span> BaseTool
+<span class="kw">from</span> pydantic <span class="kw">import</span> Field
+
+<span class="kw">class</span> <span class="type">FileReadTool</span>(BaseTool):
+    name = <span class="str">"file_reader"</span>
+    description = <span class="str">"파일 내용을 읽는 도구. 입력: 파일 경로"</span>
+
+    <span class="kw">def</span> <span class="fn">_run</span>(<span class="kw">self</span>, file_path: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+        <span class="kw">try</span>:
+            <span class="kw">with</span> open(file_path, <span class="str">'r'</span>) <span class="kw">as</span> f:
+                <span class="kw">return</span> f.read()
+        <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+            <span class="kw">return</span> <span class="str">f"Error: {e}"</span>
+
+    <span class="kw">async</span> <span class="kw">def</span> <span class="fn">_arun</span>(<span class="kw">self</span>, file_path: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+        <span class="kw">raise</span> NotImplementedError(<span class="str">"Async not supported"</span>)
+
+
+<span class="kw">class</span> <span class="type">DatabaseQueryTool</span>(BaseTool):
+    name = <span class="str">"database_query"</span>
+    description = <span class="str">"SQLite DB 쿼리 실행. 입력: SQL 쿼리"</span>
+    db_path: <span class="type">str</span> = Field(default=<span class="str">"./data.db"</span>)
+
+    <span class="kw">def</span> <span class="fn">_run</span>(<span class="kw">self</span>, query: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+        <span class="kw">import</span> sqlite3
+        <span class="kw">try</span>:
+            conn = sqlite3.connect(<span class="kw">self</span>.db_path)
+            cursor = conn.cursor()
+            cursor.execute(query)
+            results = cursor.fetchall()
+            conn.close()
+            <span class="kw">return</span> str(results)
+        <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+            <span class="kw">return</span> <span class="str">f"Error: {e}"</span>
+
+
+<span class="cmt"># 사용</span>
+tools = [FileReadTool(), DatabaseQueryTool(db_path=<span class="str">"./users.db"</span>)]
+agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION)</code></pre>
+
+  <h3 id="agent-conversational">대화형 에이전트</h3>
+
+  <pre><code><span class="kw">from</span> langchain.agents <span class="kw">import</span> AgentType
+<span class="kw">from</span> langchain.memory <span class="kw">import</span> ConversationBufferMemory
+
+<span class="cmt"># 대화 메모리</span>
+memory = ConversationBufferMemory(
+    memory_key=<span class="str">"chat_history"</span>,
+    return_messages=<span class="kw">True</span>
+)
+
+<span class="cmt"># 대화형 에이전트</span>
+agent = initialize_agent(
+    tools,
+    llm,
+    agent=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
+    memory=memory,
+    verbose=<span class="kw">True</span>
+)
+
+<span class="cmt"># 대화</span>
+agent.run(<span class="str">"서울의 날씨를 알려줘"</span>)
+agent.run(<span class="str">"거기 인구는 얼마야?"</span>)  <span class="cmt"># "거기" = 서울 (메모리 유지)</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="optimization">성능 최적화</h2>
+
+  <h3 id="opt-model-selection">모델 선택 최적화</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>작업</th>
+        <th>추천 모델</th>
+        <th>이유</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>코드 생성</td>
+        <td>CodeLlama 13B, Qwen2.5-Coder 14B</td>
+        <td>코드 특화, 높은 정확도</td>
+      </tr>
+      <tr>
+        <td>일반 대화</td>
+        <td>Llama 3.2 7B, Mistral 7B</td>
+        <td>균형잡힌 성능/속도</td>
+      </tr>
+      <tr>
+        <td>빠른 자동완성</td>
+        <td>Starcoder2 3B, Phi-3 Mini</td>
+        <td>작고 빠름</td>
+      </tr>
+      <tr>
+        <td>임베딩</td>
+        <td>nomic-embed-text</td>
+        <td>빠르고 정확</td>
+      </tr>
+      <tr>
+        <td>요약</td>
+        <td>Llama 3.2 3B</td>
+        <td>빠르고 효율적</td>
+      </tr>
+      <tr>
+        <td>복잡한 추론</td>
+        <td>Llama 3.1 70B, Mixtral 8x22B</td>
+        <td>최고 성능 (GPU 필수)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="opt-context">컨텍스트 윈도우 최적화</h3>
+
+  <pre><code><span class="cmt"># Modelfile에서 설정</span>
+<span class="kw">PARAMETER</span> num_ctx 8192    <span class="cmt"># 기본 2048 → 8192로 증가</span>
+<span class="kw">PARAMETER</span> num_predict 512  <span class="cmt"># 응답 길이 제한</span>
+
+<span class="cmt"># API 호출 시</span>
+requests.post(<span class="str">'http://localhost:11434/api/generate'</span>, json={
+    <span class="str">'model'</span>: <span class="str">'llama3.2'</span>,
+    <span class="str">'prompt'</span>: prompt,
+    <span class="str">'options'</span>: {
+        <span class="str">'num_ctx'</span>: <span class="num">8192</span>,
+        <span class="str">'num_predict'</span>: <span class="num">512</span>
+    }
+})</code></pre>
+
+  <h3 id="opt-batch">배치 처리</h3>
+
+  <pre><code><span class="kw">import</span> asyncio
+<span class="kw">import</span> aiohttp
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">generate_async</span>(session, prompt):
+    <span class="kw">async</span> <span class="kw">with</span> session.post(
+        <span class="str">'http://localhost:11434/api/generate'</span>,
+        json={<span class="str">'model'</span>: <span class="str">'llama3.2'</span>, <span class="str">'prompt'</span>: prompt, <span class="str">'stream'</span>: <span class="kw">False</span>}
+    ) <span class="kw">as</span> response:
+        data = <span class="kw">await</span> response.json()
+        <span class="kw">return</span> data[<span class="str">'response'</span>]
+
+<span class="kw">async</span> <span class="kw">def</span> <span class="fn">batch_generate</span>(prompts):
+    <span class="kw">async</span> <span class="kw">with</span> aiohttp.ClientSession() <span class="kw">as</span> session:
+        tasks = [generate_async(session, p) <span class="kw">for</span> p <span class="kw">in</span> prompts]
+        <span class="kw">return</span> <span class="kw">await</span> asyncio.gather(*tasks)
+
+<span class="cmt"># 사용</span>
+prompts = [<span class="str">f"숫자 {i}를 설명해줘"</span> <span class="kw">for</span> i <span class="kw">in</span> range(<span class="num">10</span>)]
+results = asyncio.run(batch_generate(prompts))</code></pre>
+
+  <h3 id="opt-caching">응답 캐싱</h3>
+
+  <pre><code><span class="kw">from</span> functools <span class="kw">import</span> lru_cache
+<span class="kw">import</span> hashlib
+
+<span class="kw">class</span> <span class="type">CachedOllama</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, model: <span class="type">str</span>):
+        <span class="kw">self</span>.model = model
+        <span class="kw">self</span>.cache = {}
+
+    <span class="kw">def</span> <span class="fn">_hash_prompt</span>(<span class="kw">self</span>, prompt: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+        <span class="kw">return</span> hashlib.md5(prompt.encode()).hexdigest()
+
+    <span class="kw">def</span> <span class="fn">generate</span>(<span class="kw">self</span>, prompt: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+        cache_key = <span class="kw">self</span>._hash_prompt(prompt)
+
+        <span class="cmt"># 캐시 확인</span>
+        <span class="kw">if</span> cache_key <span class="kw">in</span> <span class="kw">self</span>.cache:
+            <span class="kw">print</span>(<span class="str">"Cache hit!"</span>)
+            <span class="kw">return</span> <span class="kw">self</span>.cache[cache_key]
+
+        <span class="cmt"># 생성</span>
+        response = requests.post(
+            <span class="str">'http://localhost:11434/api/generate'</span>,
+            json={<span class="str">'model'</span>: <span class="kw">self</span>.model, <span class="str">'prompt'</span>: prompt, <span class="str">'stream'</span>: <span class="kw">False</span>}
+        )
+        result = response.json()[<span class="str">'response'</span>]
+
+        <span class="cmt"># 캐시 저장</span>
+        <span class="kw">self</span>.cache[cache_key] = result
+        <span class="kw">return</span> result
+
+
+ollama = CachedOllama(<span class="str">"llama3.2"</span>)
+ollama.generate(<span class="str">"안녕"</span>)  <span class="cmt"># LLM 호출</span>
+ollama.generate(<span class="str">"안녕"</span>)  <span class="cmt"># 캐시 사용 (즉시 반환)</span></code></pre>
+
+  <h3 id="opt-gpu">GPU 활용 최적화</h3>
+
+  <pre><code><span class="cmt"># 환경 변수로 GPU 레이어 수 조정</span>
+<span class="kw">export</span> OLLAMA_NUM_GPU=<span class="num">99</span>  <span class="cmt"># 모든 레이어를 GPU에</span>
+<span class="kw">export</span> OLLAMA_NUM_GPU=<span class="num">20</span>  <span class="cmt"># 일부만 GPU (하이브리드)</span>
+
+<span class="cmt"># 다중 GPU 사용</span>
+<span class="kw">export</span> CUDA_VISIBLE_DEVICES=0,1  <span class="cmt"># GPU 0, 1 사용</span>
+
+<span class="cmt"># VRAM 사용량 모니터링</span>
+watch -n 1 nvidia-smi</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="production">프로덕션 배포</h2>
+
+  <h3 id="prod-docker">Docker 프로덕션 배포</h3>
+
+  <pre><code><span class="cmt"># Dockerfile</span>
+<span class="kw">FROM</span> ollama/ollama:latest
+
+<span class="cmt"># 모델 미리 다운로드</span>
+<span class="kw">RUN</span> ollama serve &amp; sleep 5 &amp;&amp; \
+    ollama pull llama3.2 &amp;&amp; \
+    ollama pull nomic-embed-text &amp;&amp; \
+    pkill ollama
+
+<span class="cmt"># 환경 변수</span>
+<span class="kw">ENV</span> OLLAMA_HOST=0.0.0.0:11434
+<span class="kw">ENV</span> OLLAMA_KEEP_ALIVE=24h
+<span class="kw">ENV</span> OLLAMA_NUM_PARALLEL=4
+
+<span class="kw">EXPOSE</span> 11434
+
+<span class="kw">CMD</span> [<span class="str">"ollama"</span>, <span class="str">"serve"</span>]</code></pre>
+
+  <pre><code><span class="cmt"># 빌드 및 실행</span>
+docker build -t my-ollama .
+docker run -d -p 11434:11434 --gpus all --name ollama-prod my-ollama</code></pre>
+
+  <h3 id="prod-kubernetes">Kubernetes 배포</h3>
+
+  <pre><code><span class="cmt"># ollama-deployment.yaml</span>
+<span class="kw">apiVersion</span>: apps/v1
+<span class="kw">kind</span>: Deployment
+<span class="kw">metadata</span>:
+  <span class="kw">name</span>: ollama
+<span class="kw">spec</span>:
+  <span class="kw">replicas</span>: 2
+  <span class="kw">selector</span>:
+    <span class="kw">matchLabels</span>:
+      <span class="kw">app</span>: ollama
+  <span class="kw">template</span>:
+    <span class="kw">metadata</span>:
+      <span class="kw">labels</span>:
+        <span class="kw">app</span>: ollama
+    <span class="kw">spec</span>:
+      <span class="kw">containers</span>:
+      - <span class="kw">name</span>: ollama
+        <span class="kw">image</span>: ollama/ollama:latest
+        <span class="kw">ports</span>:
+        - <span class="kw">containerPort</span>: 11434
+        <span class="kw">env</span>:
+        - <span class="kw">name</span>: OLLAMA_HOST
+          <span class="kw">value</span>: <span class="str">"0.0.0.0:11434"</span>
+        <span class="kw">resources</span>:
+          <span class="kw">limits</span>:
+            <span class="kw">nvidia.com/gpu</span>: 1
+            <span class="kw">memory</span>: <span class="str">"16Gi"</span>
+          <span class="kw">requests</span>:
+            <span class="kw">memory</span>: <span class="str">"8Gi"</span>
+        <span class="kw">volumeMounts</span>:
+        - <span class="kw">name</span>: ollama-data
+          <span class="kw">mountPath</span>: /root/.ollama
+      <span class="kw">volumes</span>:
+      - <span class="kw">name</span>: ollama-data
+        <span class="kw">persistentVolumeClaim</span>:
+          <span class="kw">claimName</span>: ollama-pvc
+---
+<span class="kw">apiVersion</span>: v1
+<span class="kw">kind</span>: Service
+<span class="kw">metadata</span>:
+  <span class="kw">name</span>: ollama
+<span class="kw">spec</span>:
+  <span class="kw">selector</span>:
+    <span class="kw">app</span>: ollama
+  <span class="kw">ports</span>:
+  - <span class="kw">protocol</span>: TCP
+    <span class="kw">port</span>: 11434
+    <span class="kw">targetPort</span>: 11434
+  <span class="kw">type</span>: LoadBalancer</code></pre>
+
+  <h3 id="prod-nginx">NGINX 리버스 프록시</h3>
+
+  <pre><code><span class="cmt"># nginx.conf</span>
+upstream ollama_backend {
+    server 127.0.0.1:11434;
+    keepalive 32;
+}
+
+server {
+    listen 80;
+    server_name ollama.example.com;
+
+    <span class="cmt"># HTTPS 리다이렉트</span>
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name ollama.example.com;
+
+    ssl_certificate /etc/ssl/certs/ollama.crt;
+    ssl_certificate_key /etc/ssl/private/ollama.key;
+
+    <span class="cmt"># 타임아웃 설정 (긴 응답 대비)</span>
+    proxy_read_timeout 300s;
+    proxy_connect_timeout 75s;
+
+    location / {
+        proxy_pass http://ollama_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        <span class="cmt"># Rate limiting</span>
+        limit_req zone=ollama_limit burst=10 nodelay;
+    }
+}
+
+<span class="cmt"># Rate limit zone</span>
+limit_req_zone $binary_remote_addr zone=ollama_limit:10m rate=10r/s;</code></pre>
+
+  <h3 id="prod-monitoring">모니터링</h3>
+
+  <pre><code><span class="cmt"># Prometheus 메트릭 수집 (Python 예시)</span>
+<span class="kw">from</span> prometheus_client <span class="kw">import</span> Counter, Histogram, start_http_server
+<span class="kw">import</span> time
+
+<span class="cmt"># 메트릭 정의</span>
+request_count = Counter(<span class="str">'ollama_requests_total'</span>, <span class="str">'Total requests'</span>)
+response_time = Histogram(<span class="str">'ollama_response_seconds'</span>, <span class="str">'Response time'</span>)
+
+<span class="kw">def</span> <span class="fn">generate_with_metrics</span>(prompt):
+    request_count.inc()
+    start = time.time()
+
+    <span class="cmt"># Ollama 호출</span>
+    response = requests.post(<span class="str">'http://localhost:11434/api/generate'</span>, json={
+        <span class="str">'model'</span>: <span class="str">'llama3.2'</span>,
+        <span class="str">'prompt'</span>: prompt,
+        <span class="str">'stream'</span>: <span class="kw">False</span>
+    })
+
+    duration = time.time() - start
+    response_time.observe(duration)
+
+    <span class="kw">return</span> response.json()[<span class="str">'response'</span>]
+
+<span class="cmt"># Prometheus 서버 시작 (포트 8000)</span>
+start_http_server(<span class="num">8000</span>)</code></pre>
+
+  <h3 id="prod-load-balancing">로드 밸런싱</h3>
+
+  <pre><code><span class="cmt"># Python 라운드 로빈 로드 밸런서</span>
+<span class="kw">import</span> requests
+<span class="kw">from</span> itertools <span class="kw">import</span> cycle
+
+<span class="kw">class</span> <span class="type">OllamaLoadBalancer</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, servers: list):
+        <span class="kw">self</span>.servers = cycle(servers)
+
+    <span class="kw">def</span> <span class="fn">generate</span>(<span class="kw">self</span>, prompt: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+        server = next(<span class="kw">self</span>.servers)
+        response = requests.post(
+            <span class="str">f'{server}/api/generate'</span>,
+            json={<span class="str">'model'</span>: <span class="str">'llama3.2'</span>, <span class="str">'prompt'</span>: prompt, <span class="str">'stream'</span>: <span class="kw">False</span>}
+        )
+        <span class="kw">return</span> response.json()[<span class="str">'response'</span>]
+
+
+lb = OllamaLoadBalancer([
+    <span class="str">'http://ollama1:11434'</span>,
+    <span class="str">'http://ollama2:11434'</span>,
+    <span class="str">'http://ollama3:11434'</span>
+])
+
+result = lb.generate(<span class="str">"안녕"</span>)  <span class="cmt"># 자동으로 서버 분산</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">베스트 프랙티스</h2>
+
+  <h3 id="bp-security">보안</h3>
+
+  <ul>
+    <li><strong>인증 추가</strong>: NGINX에서 Basic Auth 또는 JWT 검증</li>
+    <li><strong>Rate Limiting</strong>: 남용 방지 (NGINX limit_req)</li>
+    <li><strong>HTTPS</strong>: 모든 통신 암호화</li>
+    <li><strong>방화벽</strong>: 포트 11434를 외부에 직접 노출하지 말 것</li>
+    <li><strong>입력 검증</strong>: 프롬프트 인젝션 방지</li>
+  </ul>
+
+  <h3 id="bp-prompt">프롬프트 엔지니어링</h3>
+
+  <ul>
+    <li><strong>구체적으로</strong>: 모호한 지시 대신 명확한 요구사항</li>
+    <li><strong>예시 제공</strong>: Few-shot learning (2-3개 예제)</li>
+    <li><strong>포맷 지정</strong>: JSON, Markdown 등 출력 형식 명시</li>
+    <li><strong>단계별 지시</strong>: "먼저 A를 하고, 그 다음 B를 해"</li>
+    <li><strong>역할 부여</strong>: "당신은 X 전문가입니다"</li>
+  </ul>
+
+  <h3 id="bp-error-handling">에러 처리</h3>
+
+  <pre><code><span class="kw">import</span> requests
+<span class="kw">from</span> tenacity <span class="kw">import</span> retry, stop_after_attempt, wait_exponential
+
+<span class="pp">@retry</span>(
+    stop=stop_after_attempt(<span class="num">3</span>),
+    wait=wait_exponential(multiplier=<span class="num">1</span>, min=<span class="num">2</span>, max=<span class="num">10</span>)
+)
+<span class="kw">def</span> <span class="fn">generate_with_retry</span>(prompt: <span class="type">str</span>) -&gt; <span class="type">str</span>:
+    <span class="kw">try</span>:
+        response = requests.post(
+            <span class="str">'http://localhost:11434/api/generate'</span>,
+            json={<span class="str">'model'</span>: <span class="str">'llama3.2'</span>, <span class="str">'prompt'</span>: prompt, <span class="str">'stream'</span>: <span class="kw">False</span>},
+            timeout=<span class="num">30</span>
+        )
+        response.raise_for_status()
+        <span class="kw">return</span> response.json()[<span class="str">'response'</span>]
+    <span class="kw">except</span> requests.exceptions.Timeout:
+        <span class="kw">print</span>(<span class="str">"Timeout, retrying..."</span>)
+        <span class="kw">raise</span>
+    <span class="kw">except</span> requests.exceptions.HTTPError <span class="kw">as</span> e:
+        <span class="kw">print</span>(<span class="str">f"HTTP error: {e}"</span>)
+        <span class="kw">raise</span></code></pre>
+
+  <h3 id="bp-testing">테스트</h3>
+
+  <pre><code><span class="kw">import</span> pytest
+
+<span class="kw">def</span> <span class="fn">test_ollama_connection</span>():
+    <span class="str">"""Ollama 서버 연결 테스트"""</span>
+    response = requests.get(<span class="str">'http://localhost:11434/api/tags'</span>)
+    <span class="kw">assert</span> response.status_code == <span class="num">200</span>
+
+<span class="kw">def</span> <span class="fn">test_model_generation</span>():
+    <span class="str">"""모델 생성 테스트"""</span>
+    result = generate_with_retry(<span class="str">"2+2는?"</span>)
+    <span class="kw">assert</span> <span class="str">"4"</span> <span class="kw">in</span> result
+
+<span class="kw">def</span> <span class="fn">test_rag_retrieval</span>():
+    <span class="str">"""RAG 검색 테스트"""</span>
+    rag = SimpleRAG([<span class="str">"Python is a programming language"</span>])
+    docs = rag.retrieve(<span class="str">"What is Python?"</span>)
+    <span class="kw">assert</span> len(docs) &gt; <span class="num">0</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <p>고급 활용법을 마스터했습니다! 이제 문제 해결 방법을 배워봅시다.</p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📚 계속 학습하기</div>
+    <ol>
+      <li><a href="ollama-troubleshooting.html">트러블슈팅</a> - 일반적인 문제 해결</li>
+      <li><a href="ollama-integration.html">도구 연동</a> - Continue, Aider 설정</li>
+      <li><a href="ollama-models.html">모델 선택</a> - 용도별 최적 모델</li>
+    </ol>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🚀 실전 프로젝트</div>
+    <ul>
+      <li><strong>회사 문서 RAG</strong>: 내부 문서 기반 Q&A 챗봇 (프라이버시 보장)</li>
+      <li><strong>코드 리뷰 봇</strong>: Git 커밋 자동 리뷰 (Modelfile 커스터마이징)</li>
+      <li><strong>다국어 번역 API</strong>: Ollama + FastAPI 프로덕션 배포</li>
+      <li><strong>AI 에이전트</strong>: 자동화 워크플로우 (Slack, Jira 통합)</li>
+    </ul>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

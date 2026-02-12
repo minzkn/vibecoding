@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenAI API 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<meta name="description" content="OpenAI API 개요, GPT-4o, o1, SDK 사용법, Function Calling, Vision, 비용 관리">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">OpenAI API 가이드</h1>
+<p class="lead">OpenAI API는 ChatGPT를 구동하는 GPT 모델을 프로그래밍 방식으로 사용할 수 있게 해주는 RESTful API입니다. GPT-4o, o1 등 최신 모델과 다양한 기능을 제공하여 강력한 AI 애플리케이션을 구축할 수 있습니다.</p>
+
+<div class="info-box tip">
+<strong>핵심 포인트</strong>
+<ul>
+<li>GPT-4o: 멀티모달, 빠른 속도, 합리적 가격</li>
+<li>o1: 고급 추론 모델, 복잡한 문제 해결</li>
+<li>Python/Node.js SDK 공식 지원</li>
+<li>Function Calling, Vision, Audio 등 다양한 기능</li>
+<li>배치 API로 50% 비용 절감</li>
+</ul>
+</div>
+
+<section class="content-section">
+<h2 id="overview">OpenAI API 개요</h2>
+
+<h3 id="models">모델 라인업</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">모델</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>GPT-4 시리즈:
+┌──────────────────┬──────────┬──────────┬────────────────────┐
+│ 모델             │ 입력     │ 출력     │ 특징               │
+├──────────────────┼──────────┼──────────┼────────────────────┤
+│ gpt-4o           │ $2.50/1M │ $10/1M   │ 멀티모달, 빠름     │
+│ gpt-4o-mini      │ $0.15/1M │ $0.60/1M │ 저렴, 빠름         │
+│ gpt-4-turbo      │ $10/1M   │ $30/1M   │ 범용, 안정적       │
+│ gpt-4            │ $30/1M   │ $60/1M   │ 레거시             │
+└──────────────────┴──────────┴──────────┴────────────────────┘
+
+추론 모델 (o 시리즈):
+┌──────────────────┬──────────┬──────────┬────────────────────┐
+│ o1               │ $15/1M   │ $60/1M   │ 고급 추론          │
+│ o1-mini          │ $3/1M    │ $12/1M   │ 빠른 추론          │
+└──────────────────┴──────────┴──────────┴────────────────────┘
+
+GPT-3.5:
+┌──────────────────┬──────────┬──────────┬────────────────────┐
+│ gpt-3.5-turbo    │ $0.50/1M │ $1.50/1M │ 저렴, 빠름         │
+└──────────────────┴──────────┴──────────┴────────────────────┘
+
+컨텍스트 윈도우:
+• GPT-4o: 128K tokens
+• o1: 200K tokens
+• GPT-3.5-turbo: 16K tokens
+</code></pre>
+</div>
+
+<h3 id="capabilities">주요 기능</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">기능</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// Chat Completions (대화형 AI)</span>
+• 다중 턴 대화
+• 시스템 메시지로 행동 제어
+• 스트리밍 지원
+
+<span class="cmt">// Function Calling</span>
+• 외부 API/함수 호출
+• 구조화된 데이터 추출
+• 병렬 함수 호출 지원
+
+<span class="cmt">// Vision (이미지 입력)</span>
+• 이미지 분석 및 설명
+• OCR, 차트 해석
+• URL 또는 Base64 지원
+
+<span class="cmt">// Audio</span>
+• 음성 입력 (Whisper API)
+• 텍스트→음성 (TTS API)
+• 다국어 지원
+
+<span class="cmt">// JSON Mode</span>
+• 항상 유효한 JSON 반환
+• 구조화된 데이터 추출
+
+<span class="cmt">// 배치 API</span>
+• 비동기 대량 처리
+• 50% 비용 절감
+• 24시간 이내 완료
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="getting-started">시작하기</h2>
+
+<h3 id="api-key">API 키 발급</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">절차</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>1. OpenAI 플랫폼 접속
+   https://platform.openai.com
+
+2. 계정 생성 또는 로그인
+
+3. API Keys 메뉴 (왼쪽 사이드바)
+
+4. "Create new secret key" 클릭
+
+5. 키 이름 입력 (선택사항)
+
+6. 생성된 키 복사 (한 번만 표시)
+   sk-proj-...
+
+7. 안전하게 보관
+</code></pre>
+</div>
+
+<div class="info-box note">
+<strong>신규 가입 크레딧</strong>
+<ul>
+<li>신규 가입 시 $5 크레딧 제공 (3개월 유효)</li>
+<li>결제 수단 등록 후 추가 크레딧 사용 가능</li>
+<li>사용량 제한(Rate Limit)은 티어에 따라 다름</li>
+</ul>
+</div>
+
+<h3 id="quick-start">빠른 시작</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 설치</span>
+$ pip install openai
+
+<span class="cmt"># 사용</span>
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+client = OpenAI(api_key=<span class="str">"sk-proj-..."</span>)
+
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}
+    ]
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Node.js</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 설치</span>
+$ npm install openai
+
+<span class="cmt">// 사용</span>
+<span class="kw">import</span> OpenAI <span class="kw">from</span> <span class="str">'openai'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="type">OpenAI</span>({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+<span class="kw">const</span> response = <span class="kw">await</span> client.chat.completions.create({
+  model: <span class="str">'gpt-4o'</span>,
+  messages: [
+    { role: <span class="str">'user'</span>, content: <span class="str">'안녕하세요!'</span> }
+  ],
+});
+
+console.log(response.choices[<span class="num">0</span>].message.content);
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="chat-completions">Chat Completions API</h2>
+
+<h3 id="basic-usage">기본 사용법</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+client = OpenAI()
+
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"system"</span>,
+            <span class="str">"content"</span>: <span class="str">"당신은 도움이 되는 AI 어시스턴트입니다."</span>
+        },
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="str">"Python으로 퀵소트를 구현해줘."</span>
+        }
+    ],
+    temperature=<span class="num">0.7</span>,  <span class="cmt"># 0.0 ~ 2.0</span>
+    max_tokens=<span class="num">1000</span>,
+    top_p=<span class="num">1.0</span>,
+    frequency_penalty=<span class="num">0.0</span>,  <span class="cmt"># -2.0 ~ 2.0</span>
+    presence_penalty=<span class="num">0.0</span>,   <span class="cmt"># -2.0 ~ 2.0</span>
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+
+<span class="cmt"># 토큰 사용량 확인</span>
+<span class="fn">print</span>(<span class="str">f"\n입력: <span class="macro">{response.usage.prompt_tokens}</span>"</span>)
+<span class="fn">print</span>(<span class="str">f"출력: <span class="macro">{response.usage.completion_tokens}</span>"</span>)
+<span class="fn">print</span>(<span class="str">f"총합: <span class="macro">{response.usage.total_tokens}</span>"</span>)
+</code></pre>
+</div>
+
+<h3 id="multi-turn">다중 턴 대화</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+client = OpenAI()
+
+messages = [
+    {<span class="str">"role"</span>: <span class="str">"system"</span>, <span class="str">"content"</span>: <span class="str">"당신은 친절한 선생님입니다."</span>},
+]
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    user_input = input(<span class="str">"You: "</span>)
+    <span class="kw">if</span> user_input.lower() == <span class="str">"exit"</span>:
+        <span class="kw">break</span>
+
+    messages.append({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: user_input})
+
+    response = client.chat.completions.create(
+        model=<span class="str">"gpt-4o"</span>,
+        messages=messages
+    )
+
+    assistant_message = response.choices[<span class="num">0</span>].message.content
+    <span class="fn">print</span>(<span class="str">f"Assistant: <span class="macro">{assistant_message}</span>\n"</span>)
+
+    messages.append({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: assistant_message})
+</code></pre>
+</div>
+
+<h3 id="json-mode">JSON Mode</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> json
+
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"system"</span>,
+            <span class="str">"content"</span>: <span class="str">"당신은 데이터를 JSON 형식으로 추출하는 도구입니다."</span>
+        },
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="str">"""다음 텍스트에서 이름, 나이, 직업을 JSON으로 추출해주세요:
+"철수는 28살이고 소프트웨어 엔지니어입니다."
+
+JSON 형식으로만 답변하세요."""</span>
+        }
+    ],
+    response_format={<span class="str">"type"</span>: <span class="str">"json_object"</span>}  <span class="cmt"># JSON 모드 활성화</span>
+)
+
+data = json.loads(response.choices[<span class="num">0</span>].message.content)
+<span class="fn">print</span>(data)
+<span class="cmt"># {'name': '철수', 'age': 28, 'job': '소프트웨어 엔지니어'}</span>
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="streaming">스트리밍</h2>
+
+<h3 id="streaming-basic">기본 스트리밍</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+client = OpenAI()
+
+stream = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"긴 이야기를 들려줘."</span>}],
+    stream=<span class="kw">True</span>
+)
+
+<span class="kw">for</span> chunk <span class="kw">in</span> stream:
+    <span class="kw">if</span> chunk.choices[<span class="num">0</span>].delta.content <span class="kw">is</span> <span class="kw">not</span> <span class="kw">None</span>:
+        <span class="fn">print</span>(chunk.choices[<span class="num">0</span>].delta.content, end=<span class="str">""</span>, flush=<span class="kw">True</span>)
+
+<span class="fn">print</span>()
+</code></pre>
+</div>
+
+<h3 id="streaming-node">Node.js 스트리밍</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">TypeScript</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">const</span> stream = <span class="kw">await</span> client.chat.completions.create({
+  model: <span class="str">'gpt-4o'</span>,
+  messages: [{ role: <span class="str">'user'</span>, content: <span class="str">'긴 이야기를 들려줘.'</span> }],
+  stream: <span class="kw">true</span>,
+});
+
+<span class="kw">for await</span> (<span class="kw">const</span> chunk <span class="kw">of</span> stream) {
+  <span class="kw">const</span> content = chunk.choices[<span class="num">0</span>]?.delta?.content || <span class="str">''</span>;
+  process.stdout.write(content);
+}
+
+console.log();
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="function-calling">Function Calling</h2>
+
+<h3 id="function-definition">함수 정의</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> json
+
+tools = [
+    {
+        <span class="str">"type"</span>: <span class="str">"function"</span>,
+        <span class="str">"function"</span>: {
+            <span class="str">"name"</span>: <span class="str">"get_weather"</span>,
+            <span class="str">"description"</span>: <span class="str">"특정 위치의 날씨를 가져옵니다"</span>,
+            <span class="str">"parameters"</span>: {
+                <span class="str">"type"</span>: <span class="str">"object"</span>,
+                <span class="str">"properties"</span>: {
+                    <span class="str">"location"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"description"</span>: <span class="str">"도시 이름 (예: Seoul)"</span>
+                    },
+                    <span class="str">"unit"</span>: {
+                        <span class="str">"type"</span>: <span class="str">"string"</span>,
+                        <span class="str">"enum"</span>: [<span class="str">"celsius"</span>, <span class="str">"fahrenheit"</span>]
+                    }
+                },
+                <span class="str">"required"</span>: [<span class="str">"location"</span>]
+            }
+        }
+    }
+]
+
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"서울 날씨 알려줘"</span>}],
+    tools=tools,
+    tool_choice=<span class="str">"auto"</span>  <span class="cmt"># "auto", "none", {"type": "function", "function": {"name": "..."}}</span>
+)
+
+<span class="fn">print</span>(json.dumps(response.model_dump(), indent=<span class="num">2</span>, ensure_ascii=<span class="kw">False</span>))
+</code></pre>
+</div>
+
+<h3 id="function-execution">함수 실행 루프</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> json
+
+<span class="kw">def</span> <span class="fn">get_weather</span>(location: str, unit: str = <span class="str">"celsius"</span>):
+    <span class="cmt"># 실제 API 호출 대신 더미 데이터</span>
+    <span class="kw">return</span> json.dumps({
+        <span class="str">"location"</span>: location,
+        <span class="str">"temperature"</span>: <span class="num">22</span>,
+        <span class="str">"unit"</span>: unit,
+        <span class="str">"forecast"</span>: <span class="str">"맑음"</span>
+    })
+
+messages = [{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"서울과 부산의 날씨를 비교해줘"</span>}]
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    response = client.chat.completions.create(
+        model=<span class="str">"gpt-4o"</span>,
+        messages=messages,
+        tools=tools
+    )
+
+    choice = response.choices[<span class="num">0</span>]
+
+    <span class="kw">if</span> choice.finish_reason == <span class="str">"tool_calls"</span>:
+        messages.append(choice.message)
+
+        <span class="kw">for</span> tool_call <span class="kw">in</span> choice.message.tool_calls:
+            function_name = tool_call.function.name
+            arguments = json.loads(tool_call.function.arguments)
+
+            <span class="fn">print</span>(<span class="str">f"Calling <span class="macro">{function_name}</span> with <span class="macro">{arguments}</span>"</span>)
+
+            <span class="kw">if</span> function_name == <span class="str">"get_weather"</span>:
+                result = get_weather(**arguments)
+
+            messages.append({
+                <span class="str">"role"</span>: <span class="str">"tool"</span>,
+                <span class="str">"tool_call_id"</span>: tool_call.id,
+                <span class="str">"name"</span>: function_name,
+                <span class="str">"content"</span>: result
+            })
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(choice.message.content)
+        <span class="kw">break</span>
+</code></pre>
+</div>
+
+<h3 id="parallel-functions">병렬 함수 호출</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># GPT-4o는 여러 함수를 동시에 호출 가능</span>
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{
+        <span class="str">"role"</span>: <span class="str">"user"</span>,
+        <span class="str">"content"</span>: <span class="str">"서울, 부산, 제주의 날씨를 알려줘"</span>
+    }],
+    tools=tools
+)
+
+<span class="cmt"># response.choices[0].message.tool_calls에 3개의 함수 호출이 포함됨</span>
+<span class="kw">for</span> tool_call <span class="kw">in</span> response.choices[<span class="num">0</span>].message.tool_calls:
+    <span class="fn">print</span>(<span class="str">f"Function: <span class="macro">{tool_call.function.name}</span>"</span>)
+    <span class="fn">print</span>(<span class="str">f"Arguments: <span class="macro">{tool_call.function.arguments}</span>"</span>)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="vision">Vision (이미지 입력)</h2>
+
+<h3 id="image-url">URL 이미지</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: [
+                {<span class="str">"type"</span>: <span class="str">"text"</span>, <span class="str">"text"</span>: <span class="str">"이 이미지에 무엇이 있나요?"</span>},
+                {
+                    <span class="str">"type"</span>: <span class="str">"image_url"</span>,
+                    <span class="str">"image_url"</span>: {
+                        <span class="str">"url"</span>: <span class="str">"https://example.com/image.jpg"</span>,
+                        <span class="str">"detail"</span>: <span class="str">"high"</span>  <span class="cmt"># "low", "high", "auto"</span>
+                    }
+                }
+            ]
+        }
+    ]
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+
+<h3 id="image-base64">Base64 이미지</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> base64
+
+<span class="kw">def</span> <span class="fn">encode_image</span>(image_path):
+    <span class="kw">with</span> open(image_path, <span class="str">"rb"</span>) <span class="kw">as</span> f:
+        <span class="kw">return</span> base64.b64encode(f.read()).decode(<span class="str">"utf-8"</span>)
+
+image_base64 = encode_image(<span class="str">"chart.png"</span>)
+
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: [
+                {<span class="str">"type"</span>: <span class="str">"text"</span>, <span class="str">"text"</span>: <span class="str">"이 차트를 분석해주세요."</span>},
+                {
+                    <span class="str">"type"</span>: <span class="str">"image_url"</span>,
+                    <span class="str">"image_url"</span>: {
+                        <span class="str">"url"</span>: <span class="str">f"data:image/png;base64,<span class="macro">{image_base64}</span>"</span>
+                    }
+                }
+            ]
+        }
+    ]
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="o1-models">o1 추론 모델</h2>
+
+<h3 id="o1-usage">o1 사용법</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># o1 모델은 특별한 사용 방식</span>
+response = client.chat.completions.create(
+    model=<span class="str">"o1"</span>,  <span class="cmt"># 또는 "o1-mini"</span>
+    messages=[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="str">"""다음 수학 문제를 풀어주세요:
+
+한 농부가 닭과 토끼를 키우고 있습니다.
+머리가 총 20개이고, 다리가 총 56개일 때,
+닭과 토끼는 각각 몇 마리일까요?"""</span>
+        }
+    ]
+    <span class="cmt"># 주의: o1은 temperature, top_p, system message 미지원</span>
+    <span class="cmt"># 주의: o1은 스트리밍 미지원</span>
+)
+
+<span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
+</code></pre>
+</div>
+
+<div class="info-box note">
+<strong>o1 모델 특징</strong>
+<ul>
+<li>내부적으로 Chain-of-Thought 추론 수행</li>
+<li>복잡한 수학, 과학, 프로그래밍 문제에 강함</li>
+<li>system 메시지 대신 user 메시지에 지시사항 포함</li>
+<li>temperature, top_p 등 샘플링 파라미터 미지원</li>
+<li>스트리밍, Function Calling 미지원</li>
+<li>응답 시간이 GPT-4o보다 길 수 있음</li>
+</ul>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="batch-api">배치 API</h2>
+
+<h3 id="batch-creation">배치 생성</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">import</span> json
+
+<span class="cmt"># 1. 배치 요청 파일 생성 (JSONL)</span>
+batch_requests = [
+    {
+        <span class="str">"custom_id"</span>: <span class="str">"request-1"</span>,
+        <span class="str">"method"</span>: <span class="str">"POST"</span>,
+        <span class="str">"url"</span>: <span class="str">"/v1/chat/completions"</span>,
+        <span class="str">"body"</span>: {
+            <span class="str">"model"</span>: <span class="str">"gpt-4o"</span>,
+            <span class="str">"messages"</span>: [{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요"</span>}]
+        }
+    },
+    {
+        <span class="str">"custom_id"</span>: <span class="str">"request-2"</span>,
+        <span class="str">"method"</span>: <span class="str">"POST"</span>,
+        <span class="str">"url"</span>: <span class="str">"/v1/chat/completions"</span>,
+        <span class="str">"body"</span>: {
+            <span class="str">"model"</span>: <span class="str">"gpt-4o"</span>,
+            <span class="str">"messages"</span>: [{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"날씨 어때?"</span>}]
+        }
+    }
+]
+
+<span class="kw">with</span> open(<span class="str">"batch_input.jsonl"</span>, <span class="str">"w"</span>) <span class="kw">as</span> f:
+    <span class="kw">for</span> req <span class="kw">in</span> batch_requests:
+        f.write(json.dumps(req) + <span class="str">"\n"</span>)
+
+<span class="cmt"># 2. 파일 업로드</span>
+batch_file = client.files.create(
+    file=open(<span class="str">"batch_input.jsonl"</span>, <span class="str">"rb"</span>),
+    purpose=<span class="str">"batch"</span>
+)
+
+<span class="cmt"># 3. 배치 생성</span>
+batch = client.batches.create(
+    input_file_id=batch_file.id,
+    endpoint=<span class="str">"/v1/chat/completions"</span>,
+    completion_window=<span class="str">"24h"</span>
+)
+
+<span class="fn">print</span>(<span class="str">f"Batch ID: <span class="macro">{batch.id}</span>"</span>)
+<span class="fn">print</span>(<span class="str">f"Status: <span class="macro">{batch.status}</span>"</span>)  <span class="cmt"># validating, in_progress, completed, failed</span>
+</code></pre>
+</div>
+
+<h3 id="batch-retrieval">배치 결과 가져오기</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt"># 배치 상태 확인</span>
+batch = client.batches.retrieve(batch.id)
+<span class="fn">print</span>(<span class="str">f"Status: <span class="macro">{batch.status}</span>"</span>)
+
+<span class="kw">if</span> batch.status == <span class="str">"completed"</span>:
+    <span class="cmt"># 결과 파일 다운로드</span>
+    result_file_id = batch.output_file_id
+    result = client.files.content(result_file_id)
+
+    <span class="cmt"># 결과 파싱</span>
+    <span class="kw">for</span> line <span class="kw">in</span> result.text.strip().split(<span class="str">"\n"</span>):
+        result_obj = json.loads(line)
+        custom_id = result_obj[<span class="str">"custom_id"</span>]
+        response = result_obj[<span class="str">"response"</span>][<span class="str">"body"</span>][<span class="str">"choices"</span>][<span class="num">0</span>][<span class="str">"message"</span>][<span class="str">"content"</span>]
+
+        <span class="fn">print</span>(<span class="str">f"<span class="macro">{custom_id}</span>: <span class="macro">{response}</span>"</span>)
+</code></pre>
+</div>
+
+<div class="info-box tip">
+<strong>배치 API 장점</strong>
+<ul>
+<li>50% 비용 절감 (일반 API 대비)</li>
+<li>대량 처리에 적합</li>
+<li>24시간 이내 완료</li>
+<li>Rate Limit에 영향 없음</li>
+</ul>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="cost-management">비용 관리</h2>
+
+<h3 id="pricing-overview">가격 개요</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">가격</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code>실시간 API:
+┌──────────────────┬──────────┬──────────┬──────────────┐
+│ 모델             │ 입력     │ 출력     │ 비용(예시)   │
+├──────────────────┼──────────┼──────────┼──────────────┤
+│ gpt-4o           │ $2.50/1M │ $10/1M   │ $0.0125      │
+│ gpt-4o-mini      │ $0.15/1M │ $0.60/1M │ $0.0008      │
+│ o1               │ $15/1M   │ $60/1M   │ $0.0750      │
+│ gpt-3.5-turbo    │ $0.50/1M │ $1.50/1M │ $0.0025      │
+└──────────────────┴──────────┴──────────┴──────────────┘
+예시: 2K input + 500 output
+
+배치 API (50% 할인):
+┌──────────────────┬──────────┬──────────┐
+│ gpt-4o           │ $1.25/1M │ $5/1M    │
+│ gpt-4o-mini      │ $0.075/1M│ $0.30/1M │
+└──────────────────┴──────────┴──────────┘
+</code></pre>
+</div>
+
+<h3 id="cost-tracking">비용 추적</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">Python</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="kw">class</span> <span class="type">CostTracker</span>:
+    PRICING = {
+        <span class="str">"gpt-4o"</span>: (<span class="num">2.50</span>, <span class="num">10.0</span>),
+        <span class="str">"gpt-4o-mini"</span>: (<span class="num">0.15</span>, <span class="num">0.60</span>),
+        <span class="str">"o1"</span>: (<span class="num">15.0</span>, <span class="num">60.0</span>),
+        <span class="str">"gpt-3.5-turbo"</span>: (<span class="num">0.50</span>, <span class="num">1.50</span>),
+    }
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.total_cost = <span class="num">0.0</span>
+
+    <span class="kw">def</span> <span class="fn">track</span>(<span class="kw">self</span>, response):
+        model = response.model
+        input_tokens = response.usage.prompt_tokens
+        output_tokens = response.usage.completion_tokens
+
+        input_price, output_price = <span class="kw">self</span>.PRICING.get(model, (<span class="num">0</span>, <span class="num">0</span>))
+        cost = (input_tokens * input_price + output_tokens * output_price) / <span class="num">1_000_000</span>
+
+        <span class="kw">self</span>.total_cost += cost
+
+        <span class="fn">print</span>(<span class="str">f"Request cost: ${cost:.6f}"</span>)
+        <span class="fn">print</span>(<span class="str">f"Total cost: ${<span class="macro">self.total_cost</span>:.6f}"</span>)
+
+        <span class="kw">return</span> cost
+
+<span class="cmt"># 사용</span>
+tracker = CostTracker()
+
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕"</span>}]
+)
+
+tracker.track(response)
+</code></pre>
+</div>
+
+<h3 id="cost-optimization">비용 최적화 팁</h3>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">최적화</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 올바른 모델 선택</span>
+간단한 작업 → gpt-4o-mini
+일반 작업 → gpt-4o
+복잡한 추론 → o1
+
+<span class="cmt">// 2. 배치 API 활용</span>
+대량 처리 시 50% 절감
+
+<span class="cmt">// 3. max_tokens 제한</span>
+response = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    max_tokens=<span class="num">500</span>,  <span class="cmt"># 출력 제한</span>
+    ...
+)
+
+<span class="cmt">// 4. 불필요한 컨텍스트 제거</span>
+• 오래된 대화 내역 삭제
+• 요약 후 긴 컨텍스트 제거
+
+<span class="cmt">// 5. 사용량 제한 설정</span>
+OpenAI 대시보드에서 월간 예산 제한 설정
+
+<span class="cmt">// 6. Semantic Caching (외부)</span>
+동일/유사 쿼리 캐싱 (Redis, Pinecone 등)
+</code></pre>
+</div>
+</section>
+
+<section class="content-section">
+<h2 id="best-practices">모범 사례</h2>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">권장사항</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 1. 에러 처리</span>
+<span class="kw">from</span> openai <span class="kw">import</span> OpenAI, APIError, RateLimitError
+<span class="kw">import</span> time
+
+<span class="kw">def</span> <span class="fn">call_with_retry</span>(client, **kwargs):
+    max_retries = <span class="num">3</span>
+    <span class="kw">for</span> i <span class="kw">in</span> range(max_retries):
+        <span class="kw">try</span>:
+            <span class="kw">return</span> client.chat.completions.create(**kwargs)
+        <span class="kw">except</span> RateLimitError:
+            <span class="kw">if</span> i < max_retries - <span class="num">1</span>:
+                time.sleep(<span class="num">2</span> ** i)  <span class="cmt"># 지수 백오프</span>
+            <span class="kw">else</span>:
+                <span class="kw">raise</span>
+        <span class="kw">except</span> APIError <span class="kw">as</span> e:
+            <span class="fn">print</span>(<span class="str">f"API Error: <span class="macro">{e}</span>"</span>)
+            <span class="kw">raise</span>
+
+<span class="cmt">// 2. 타임아웃 설정</span>
+client = OpenAI(timeout=<span class="num">30.0</span>)  <span class="cmt"># 30초</span>
+
+<span class="cmt">// 3. API 키 보안</span>
+<span class="kw">import</span> os
+api_key = os.getenv(<span class="str">"OPENAI_API_KEY"</span>)
+
+<span class="cmt">// 4. 프롬프트 최적화</span>
+• 명확하고 구체적인 지시
+• Few-shot 예시 활용
+• 출력 형식 명시
+
+<span class="cmt">// 5. 모니터링</span>
+• 사용량 대시보드 정기 확인
+• 비정상 패턴 감지
+• 예산 알림 설정
+</code></pre>
+</div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

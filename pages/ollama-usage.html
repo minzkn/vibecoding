@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Ollama 사용법 완벽 가이드 - CLI 명령어, API 사용, 파라미터 튜닝, 멀티모달 처리">
+<meta name="keywords" content="Ollama, 사용법, CLI, API, REST, 파라미터, 스트리밍, 대화">
+<title>Ollama 사용법 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+<header class="site-header"></header>
+<nav class="side-nav"></nav>
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Ollama 사용법</h1>
+<p class="lead">Ollama의 CLI 명령어, REST API, 파라미터 설정 등 실전 사용 방법을 상세히 다룹니다.</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 빠른 시작</div>
+  <ol>
+    <li><code>ollama pull llama3.2</code> - 모델 다운로드</li>
+    <li><code>ollama run llama3.2</code> - 대화형 실행</li>
+    <li><code>ollama list</code> - 설치된 모델 확인</li>
+    <li>API로 프로그래밍 방식 접근</li>
+    <li>파라미터로 출력 품질 조정</li>
+  </ol>
+</div>
+
+<section class="content-section">
+  <h2 id="cli-basics">CLI 기본 명령어</h2>
+
+  <p>Ollama CLI는 모델 관리와 실행을 위한 간단하고 직관적인 인터페이스를 제공합니다.</p>
+
+  <h3 id="pull">모델 다운로드 (pull)</h3>
+
+  <pre><code><span class="cmt"># 기본 사용법</span>
+ollama pull &lt;모델명&gt;
+
+<span class="cmt"># 예제</span>
+ollama pull llama3.2          <span class="cmt"># 최신 버전 (latest 태그)</span>
+ollama pull llama3.2:7b       <span class="cmt"># 특정 크기</span>
+ollama pull llama3.2:7b-instruct-q4_0  <span class="cmt"># 특정 양자화</span>
+
+<span class="cmt"># 다운로드 진행 상황</span>
+pulling manifest
+pulling 8eeb52dfb3bb... 100% ▕████████████████▏ 4.7 GB
+pulling 73b313b5552d... 100% ▕████████████████▏  11 KB
+pulling 0ba8f0e314b4... 100% ▕████████████████▏  12 KB
+pulling 56bb8bd477a5... 100% ▕████████████████▏  96 B
+pulling 1a4c3c319823... 100% ▕████████████████▏ 487 B
+verifying sha256 digest
+writing manifest
+success</code></pre>
+
+  <h3 id="run">모델 실행 (run)</h3>
+
+  <p><code>run</code> 명령어는 모델을 실행하고 대화형 세션을 시작합니다.</p>
+
+  <pre><code><span class="cmt"># 대화형 모드</span>
+ollama run llama3.2
+
+<span class="cmt"># 출력 예시</span>
+<span class="str">&gt;&gt;&gt; 안녕하세요?</span>
+안녕하세요! 무엇을 도와드릴까요?
+
+<span class="str">&gt;&gt;&gt; 파이썬으로 피보나치 수열 함수를 작성해줘</span>
+물론입니다. 재귀와 메모이제이션을 사용한 효율적인 구현입니다:
+
+<span class="kw">def</span> <span class="fn">fibonacci</span>(n, memo={}):
+    <span class="kw">if</span> n <span class="kw">in</span> memo:
+        <span class="kw">return</span> memo[n]
+    <span class="kw">if</span> n &lt;= <span class="num">1</span>:
+        <span class="kw">return</span> n
+    memo[n] = fibonacci(n<span class="num">-1</span>, memo) + fibonacci(n<span class="num">-2</span>, memo)
+    <span class="kw">return</span> memo[n]
+
+<span class="str">&gt;&gt;&gt; /bye</span>
+<span class="cmt"># 대화 종료</span></code></pre>
+
+  <h3 id="single-prompt">단일 프롬프트 실행</h3>
+
+  <p>대화형 모드 없이 즉시 응답을 받고 종료합니다.</p>
+
+  <pre><code><span class="cmt"># 인라인 프롬프트</span>
+ollama run llama3.2 <span class="str">"Explain quantum computing in one sentence"</span>
+
+<span class="cmt"># 파일에서 프롬프트 읽기</span>
+ollama run llama3.2 &lt; prompt.txt
+
+<span class="cmt"># 출력을 파일로 저장</span>
+ollama run llama3.2 <span class="str">"Write a haiku about coding"</span> &gt; haiku.txt
+
+<span class="cmt"># 파이프라인에서 사용</span>
+<span class="fn">cat</span> document.txt | ollama run llama3.2 <span class="str">"Summarize this text"</span></code></pre>
+
+  <h3 id="list">설치된 모델 확인 (list)</h3>
+
+  <pre><code><span class="cmt"># 모든 로컬 모델 나열</span>
+ollama list
+
+<span class="cmt"># 출력 예시</span>
+NAME                          ID              SIZE      MODIFIED
+llama3.2:latest               a80c4f17acd5    4.7 GB    3 minutes ago
+mistral:7b-instruct           2ae6f6dd7a3d    4.1 GB    2 days ago
+codellama:7b                  8fdf8f752f6e    3.8 GB    1 week ago
+phi3:mini                     64c1188f2485    2.3 GB    2 weeks ago</code></pre>
+
+  <h3 id="show">모델 정보 확인 (show)</h3>
+
+  <pre><code><span class="cmt"># 모델 상세 정보</span>
+ollama show llama3.2
+
+<span class="cmt"># 출력 예시</span>
+  Model
+    architecture        llama
+    parameters          7.2B
+    context length      131072
+    embedding length    4096
+    quantization        Q4_0
+
+  Parameters
+    stop    "&lt;|start_header_id|&gt;"
+    stop    "&lt;|end_header_id|&gt;"
+    stop    "&lt;|eot_id|&gt;"
+
+  License
+    LLAMA 3.2 COMMUNITY LICENSE AGREEMENT
+
+  System
+    You are a helpful assistant.
+
+<span class="cmt"># Modelfile 출력</span>
+ollama show --modelfile llama3.2
+
+FROM /path/to/model/weights
+TEMPLATE <span class="str">"""{{ .System }}
+{{ .Prompt }}"""</span>
+PARAMETER stop <span class="str">"&lt;|start_header_id|&gt;"</span>
+SYSTEM <span class="str">"You are a helpful assistant."</span></code></pre>
+
+  <h3 id="rm">모델 삭제 (rm)</h3>
+
+  <pre><code><span class="cmt"># 모델 제거</span>
+ollama rm llama3.2:7b-instruct-q4_0
+
+<span class="cmt"># 여러 모델 한 번에 제거</span>
+ollama rm model1 model2 model3
+
+<span class="cmt"># 확인 메시지</span>
+deleted <span class="str">'llama3.2:7b-instruct-q4_0'</span></code></pre>
+
+  <h3 id="ps">실행 중인 모델 확인 (ps)</h3>
+
+  <pre><code><span class="cmt"># 현재 실행 중인 모델</span>
+ollama ps
+
+<span class="cmt"># 출력 예시</span>
+NAME              ID              SIZE      PROCESSOR    UNTIL
+llama3.2:latest   a80c4f17acd5    7.4 GB    100% GPU     4 minutes from now
+
+<span class="cmt"># 설명</span>
+<span class="cmt"># - SIZE: 메모리에 로드된 크기</span>
+<span class="cmt"># - PROCESSOR: GPU 또는 CPU 사용률</span>
+<span class="cmt"># - UNTIL: 언로드 예정 시간 (idle timeout)</span></code></pre>
+
+  <h3 id="cp">모델 복사 (cp)</h3>
+
+  <pre><code><span class="cmt"># 모델을 새 이름으로 복사</span>
+ollama cp llama3.2:latest my-custom-llama
+
+<span class="cmt"># 사용 사례: 커스텀 버전 관리</span>
+ollama cp llama3.2 llama3.2-backup
+<span class="cmt"># 이후 llama3.2를 커스터마이징하고 원본은 백업으로 유지</span></code></pre>
+
+  <h3 id="create">커스텀 모델 생성 (create)</h3>
+
+  <pre><code><span class="cmt"># Modelfile을 사용해 새 모델 생성</span>
+ollama create my-model -f Modelfile
+
+<span class="cmt"># Modelfile 예시</span>
+FROM llama3.2:7b
+
+<span class="cmt"># 시스템 프롬프트 커스터마이징</span>
+SYSTEM <span class="str">"""당신은 한국어 전문 AI 어시스턴트입니다.
+항상 정중하고 상세하게 답변합니다."""</span>
+
+<span class="cmt"># 파라미터 조정</span>
+PARAMETER temperature <span class="num">0.8</span>
+PARAMETER top_p <span class="num">0.9</span></code></pre>
+
+  <h3 id="serve">서버 모드 (serve)</h3>
+
+  <pre><code><span class="cmt"># Ollama API 서버 시작 (보통 자동 시작됨)</span>
+ollama serve
+
+<span class="cmt"># 기본 포트: 11434</span>
+<span class="cmt"># 환경 변수로 포트 변경</span>
+OLLAMA_HOST=<span class="num">0.0.0.0</span>:<span class="num">8080</span> ollama serve
+
+<span class="cmt"># 로그 확인</span>
+time=2024-01-15T10:30:45.123+09:00 level=INFO source=server.go:123 msg=<span class="str">"Listening on 127.0.0.1:11434"</span></code></pre>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 CLI 팁</div>
+    <ul>
+      <li>대화 중 <code>/bye</code> 입력으로 종료</li>
+      <li><code>/set parameter value</code>로 실행 중 파라미터 변경</li>
+      <li><code>/show</code>로 현재 설정 확인</li>
+      <li><code>/load &lt;filepath&gt;</code>로 파일 내용을 컨텍스트에 추가</li>
+      <li><kbd>Ctrl+D</kbd>로 대화 종료</li>
+    </ul>
+  </div>
+
+  <h3 id="cli-workflow">일반적인 CLI 워크플로우</h3>
+
+  <svg viewBox="0 0 800 450" style="max-width: 100%; height: auto; background: var(--code-bg); border-radius: 8px; padding: 20px;">
+    <defs>
+      <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--accent-primary)" />
+      </marker>
+    </defs>
+
+    <!-- Steps -->
+    <rect x="50" y="50" width="180" height="60" rx="8" fill="var(--accent-primary)" stroke="none"/>
+    <text x="140" y="75" text-anchor="middle" fill="var(--bg-primary)" font-weight="bold" font-size="14">1. ollama pull</text>
+    <text x="140" y="95" text-anchor="middle" fill="var(--bg-primary)" font-size="12">모델 다운로드</text>
+
+    <path d="M 230 80 L 280 80" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <rect x="280" y="50" width="180" height="60" rx="8" fill="var(--accent-secondary)" stroke="none"/>
+    <text x="370" y="75" text-anchor="middle" fill="var(--text-primary)" font-weight="bold" font-size="14">2. ollama list</text>
+    <text x="370" y="95" text-anchor="middle" fill="var(--text-secondary)" font-size="12">설치 확인</text>
+
+    <path d="M 460 80 L 510 80" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <rect x="510" y="50" width="180" height="60" rx="8" fill="var(--info-bg)" stroke="none"/>
+    <text x="600" y="75" text-anchor="middle" fill="var(--text-primary)" font-weight="bold" font-size="14">3. ollama run</text>
+    <text x="600" y="95" text-anchor="middle" fill="var(--text-secondary)" font-size="12">실행</text>
+
+    <path d="M 600 110 L 600 160" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <rect x="510" y="160" width="180" height="60" rx="8" fill="var(--success-bg)" stroke="none"/>
+    <text x="600" y="185" text-anchor="middle" fill="var(--text-primary)" font-weight="bold" font-size="14">4. 대화/작업</text>
+    <text x="600" y="205" text-anchor="middle" fill="var(--text-secondary)" font-size="12">프롬프트 입력</text>
+
+    <path d="M 510 190 L 280 190" stroke="var(--text-tertiary)" stroke-width="2" stroke-dasharray="5,5"/>
+    <text x="395" y="180" text-anchor="middle" fill="var(--text-tertiary)" font-size="11">만족스럽지 않으면</text>
+
+    <rect x="280" y="160" width="180" height="60" rx="8" fill="var(--bg-tertiary)" stroke="var(--border-primary)" stroke-width="2"/>
+    <text x="370" y="185" text-anchor="middle" fill="var(--text-secondary)" font-weight="bold" font-size="14">다른 모델 시도</text>
+    <text x="370" y="205" text-anchor="middle" fill="var(--text-tertiary)" font-size="12">ollama pull</text>
+
+    <path d="M 370 220 L 370 260" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <rect x="280" y="260" width="180" height="60" rx="8" fill="var(--warning-bg)" stroke="none"/>
+    <text x="370" y="285" text-anchor="middle" fill="var(--text-primary)" font-weight="bold" font-size="14">5. 최적화</text>
+    <text x="370" y="305" text-anchor="middle" fill="var(--text-secondary)" font-size="12">파라미터 조정</text>
+
+    <path d="M 370 320 L 370 360" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrow)"/>
+
+    <rect x="280" y="360" width="180" height="60" rx="8" fill="var(--accent-primary)" stroke="none"/>
+    <text x="370" y="385" text-anchor="middle" fill="var(--bg-primary)" font-weight="bold" font-size="14">6. 통합</text>
+    <text x="370" y="405" text-anchor="middle" fill="var(--bg-primary)" font-size="12">API로 앱 연동</text>
+
+    <!-- Optional: cleanup -->
+    <rect x="50" y="260" width="180" height="60" rx="8" fill="var(--bg-tertiary)" stroke="var(--border-primary)" stroke-width="1" stroke-dasharray="5,5"/>
+    <text x="140" y="285" text-anchor="middle" fill="var(--text-tertiary)" font-weight="bold" font-size="14">ollama rm</text>
+    <text x="140" y="305" text-anchor="middle" fill="var(--text-tertiary)" font-size="12">불필요 모델 삭제</text>
+  </svg>
+</section>
+
+<section class="content-section">
+  <h2 id="api-usage">REST API 사용법</h2>
+
+  <p>Ollama는 HTTP REST API를 제공하여 프로그래밍 방식으로 모델과 상호작용할 수 있습니다.</p>
+
+  <h3 id="api-endpoints">주요 API 엔드포인트</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>엔드포인트</th>
+        <th>메서드</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>/api/generate</code></td>
+        <td>POST</td>
+        <td>텍스트 생성 (단일 프롬프트)</td>
+      </tr>
+      <tr>
+        <td><code>/api/chat</code></td>
+        <td>POST</td>
+        <td>채팅 대화 (멀티턴)</td>
+      </tr>
+      <tr>
+        <td><code>/api/embeddings</code></td>
+        <td>POST</td>
+        <td>텍스트 임베딩 생성</td>
+      </tr>
+      <tr>
+        <td><code>/api/tags</code></td>
+        <td>GET</td>
+        <td>로컬 모델 목록</td>
+      </tr>
+      <tr>
+        <td><code>/api/show</code></td>
+        <td>POST</td>
+        <td>모델 정보 조회</td>
+      </tr>
+      <tr>
+        <td><code>/api/pull</code></td>
+        <td>POST</td>
+        <td>모델 다운로드</td>
+      </tr>
+      <tr>
+        <td><code>/api/push</code></td>
+        <td>POST</td>
+        <td>모델 업로드</td>
+      </tr>
+      <tr>
+        <td><code>/api/delete</code></td>
+        <td>DELETE</td>
+        <td>모델 삭제</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="generate-api">텍스트 생성 API (/api/generate)</h3>
+
+  <h4>기본 사용</h4>
+
+  <pre><code><span class="cmt"># curl 사용</span>
+curl http://localhost:<span class="num">11434</span>/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "Why is the sky blue?"
+}'</span>
+
+<span class="cmt"># 응답 (스트리밍)</span>
+{<span class="str">"model"</span>:<span class="str">"llama3.2"</span>,<span class="str">"created_at"</span>:<span class="str">"2024-01-15T10:30:45Z"</span>,<span class="str">"response"</span>:<span class="str">"The"</span>,<span class="str">"done"</span>:<span class="kw">false</span>}
+{<span class="str">"model"</span>:<span class="str">"llama3.2"</span>,<span class="str">"created_at"</span>:<span class="str">"2024-01-15T10:30:45Z"</span>,<span class="str">"response"</span>:<span class="str">" sky"</span>,<span class="str">"done"</span>:<span class="kw">false</span>}
+{<span class="str">"model"</span>:<span class="str">"llama3.2"</span>,<span class="str">"created_at"</span>:<span class="str">"2024-01-15T10:30:45Z"</span>,<span class="str">"response"</span>:<span class="str">" appears"</span>,<span class="str">"done"</span>:<span class="kw">false</span>}
+...
+{<span class="str">"model"</span>:<span class="str">"llama3.2"</span>,<span class="str">"done"</span>:<span class="kw">true</span>,<span class="str">"total_duration"</span>:<span class="num">2500000000</span>,<span class="str">"prompt_eval_count"</span>:<span class="num">10</span>}</code></pre>
+
+  <h4>스트리밍 비활성화</h4>
+
+  <pre><code>curl http://localhost:<span class="num">11434</span>/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "Why is the sky blue?",
+  "stream": false
+}'</span>
+
+<span class="cmt"># 응답 (전체 텍스트 한 번에)</span>
+{
+  <span class="str">"model"</span>: <span class="str">"llama3.2"</span>,
+  <span class="str">"created_at"</span>: <span class="str">"2024-01-15T10:30:45Z"</span>,
+  <span class="str">"response"</span>: <span class="str">"The sky appears blue because of a phenomenon..."</span>,
+  <span class="str">"done"</span>: <span class="kw">true</span>,
+  <span class="str">"total_duration"</span>: <span class="num">2500000000</span>,
+  <span class="str">"load_duration"</span>: <span class="num">500000000</span>,
+  <span class="str">"prompt_eval_count"</span>: <span class="num">10</span>,
+  <span class="str">"prompt_eval_duration"</span>: <span class="num">800000000</span>,
+  <span class="str">"eval_count"</span>: <span class="num">50</span>,
+  <span class="str">"eval_duration"</span>: <span class="num">1200000000</span>
+}</code></pre>
+
+  <h3 id="chat-api">채팅 API (/api/chat)</h3>
+
+  <p>멀티턴 대화를 위한 API입니다. 대화 히스토리를 유지하려면 이전 메시지를 포함해야 합니다.</p>
+
+  <pre><code>curl http://localhost:<span class="num">11434</span>/api/chat -d <span class="str">'{
+  "model": "llama3.2",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant specializing in Python."
+    },
+    {
+      "role": "user",
+      "content": "How do I read a CSV file in Python?"
+    }
+  ]
+}'</span>
+
+<span class="cmt"># 두 번째 메시지 (컨텍스트 유지)</span>
+curl http://localhost:<span class="num">11434</span>/api/chat -d <span class="str">'{
+  "model": "llama3.2",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant specializing in Python."
+    },
+    {
+      "role": "user",
+      "content": "How do I read a CSV file in Python?"
+    },
+    {
+      "role": "assistant",
+      "content": "You can use the csv module or pandas..."
+    },
+    {
+      "role": "user",
+      "content": "Can you show me a pandas example?"
+    }
+  ]
+}'</span></code></pre>
+
+  <h3 id="python-api">Python API 예제</h3>
+
+  <h4>requests 라이브러리 사용</h4>
+
+  <pre><code><span class="kw">import</span> requests
+<span class="kw">import</span> json
+
+<span class="kw">def</span> <span class="fn">generate_text</span>(prompt, model=<span class="str">"llama3.2"</span>, stream=<span class="kw">True</span>):
+    url = <span class="str">"http://localhost:11434/api/generate"</span>
+    payload = {
+        <span class="str">"model"</span>: model,
+        <span class="str">"prompt"</span>: prompt,
+        <span class="str">"stream"</span>: stream
+    }
+
+    response = requests.post(url, json=payload, stream=stream)
+
+    <span class="kw">if</span> stream:
+        <span class="cmt"># 스트리밍 응답 처리</span>
+        full_response = <span class="str">""</span>
+        <span class="kw">for</span> line <span class="kw">in</span> response.iter_lines():
+            <span class="kw">if</span> line:
+                data = json.loads(line)
+                <span class="kw">if</span> <span class="kw">not</span> data.get(<span class="str">"done"</span>):
+                    chunk = data.get(<span class="str">"response"</span>, <span class="str">""</span>)
+                    full_response += chunk
+                    <span class="fn">print</span>(chunk, end=<span class="str">""</span>, flush=<span class="kw">True</span>)
+        <span class="fn">print</span>()  <span class="cmt"># 줄바꿈</span>
+        <span class="kw">return</span> full_response
+    <span class="kw">else</span>:
+        <span class="cmt"># 비스트리밍 응답</span>
+        data = response.json()
+        <span class="kw">return</span> data.get(<span class="str">"response"</span>, <span class="str">""</span>)
+
+<span class="cmt"># 사용 예시</span>
+result = generate_text(<span class="str">"Explain machine learning in simple terms"</span>)
+<span class="fn">print</span>(result)</code></pre>
+
+  <h4>채팅 기능 구현</h4>
+
+  <pre><code><span class="kw">class</span> <span class="type">OllamaChat</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, model=<span class="str">"llama3.2"</span>, system_prompt=<span class="kw">None</span>):
+        <span class="kw">self</span>.model = model
+        <span class="kw">self</span>.messages = []
+        <span class="kw">self</span>.url = <span class="str">"http://localhost:11434/api/chat"</span>
+
+        <span class="kw">if</span> system_prompt:
+            <span class="kw">self</span>.messages.append({
+                <span class="str">"role"</span>: <span class="str">"system"</span>,
+                <span class="str">"content"</span>: system_prompt
+            })
+
+    <span class="kw">def</span> <span class="fn">send</span>(<span class="kw">self</span>, user_message):
+        <span class="cmt"># 사용자 메시지 추가</span>
+        <span class="kw">self</span>.messages.append({
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: user_message
+        })
+
+        <span class="cmt"># API 호출</span>
+        payload = {
+            <span class="str">"model"</span>: <span class="kw">self</span>.model,
+            <span class="str">"messages"</span>: <span class="kw">self</span>.messages,
+            <span class="str">"stream"</span>: <span class="kw">False</span>
+        }
+
+        response = requests.post(<span class="kw">self</span>.url, json=payload)
+        data = response.json()
+
+        <span class="cmt"># 어시스턴트 응답 저장</span>
+        assistant_message = data[<span class="str">"message"</span>][<span class="str">"content"</span>]
+        <span class="kw">self</span>.messages.append({
+            <span class="str">"role"</span>: <span class="str">"assistant"</span>,
+            <span class="str">"content"</span>: assistant_message
+        })
+
+        <span class="kw">return</span> assistant_message
+
+    <span class="kw">def</span> <span class="fn">reset</span>(<span class="kw">self</span>):
+        <span class="cmt"># 대화 히스토리 초기화</span>
+        system_msg = [m <span class="kw">for</span> m <span class="kw">in</span> <span class="kw">self</span>.messages <span class="kw">if</span> m[<span class="str">"role"</span>] == <span class="str">"system"</span>]
+        <span class="kw">self</span>.messages = system_msg
+
+<span class="cmt"># 사용 예시</span>
+chat = OllamaChat(
+    model=<span class="str">"llama3.2"</span>,
+    system_prompt=<span class="str">"You are a helpful coding assistant."</span>
+)
+
+<span class="fn">print</span>(chat.send(<span class="str">"How do I sort a list in Python?"</span>))
+<span class="fn">print</span>(chat.send(<span class="str">"What about in reverse order?"</span>))
+<span class="fn">print</span>(chat.send(<span class="str">"Can I sort by a custom key?"</span>))</code></pre>
+
+  <h3 id="javascript-api">JavaScript/Node.js API 예제</h3>
+
+  <pre><code><span class="cmt">// fetch API 사용</span>
+<span class="kw">async function</span> <span class="fn">generateText</span>(prompt, model = <span class="str">'llama3.2'</span>) {
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'http://localhost:11434/api/generate'</span>, {
+    method: <span class="str">'POST'</span>,
+    headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+    body: JSON.<span class="fn">stringify</span>({
+      model,
+      prompt,
+      stream: <span class="kw">false</span>
+    })
+  });
+
+  <span class="kw">const</span> data = <span class="kw">await</span> response.<span class="fn">json</span>();
+  <span class="kw">return</span> data.response;
+}
+
+<span class="cmt">// 스트리밍 처리</span>
+<span class="kw">async function</span> <span class="fn">streamText</span>(prompt, model = <span class="str">'llama3.2'</span>) {
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'http://localhost:11434/api/generate'</span>, {
+    method: <span class="str">'POST'</span>,
+    headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+    body: JSON.<span class="fn">stringify</span>({ model, prompt, stream: <span class="kw">true</span> })
+  });
+
+  <span class="kw">const</span> reader = response.body.<span class="fn">getReader</span>();
+  <span class="kw">const</span> decoder = <span class="kw">new</span> <span class="type">TextDecoder</span>();
+
+  <span class="kw">while</span> (<span class="kw">true</span>) {
+    <span class="kw">const</span> { done, value } = <span class="kw">await</span> reader.<span class="fn">read</span>();
+    <span class="kw">if</span> (done) <span class="kw">break</span>;
+
+    <span class="kw">const</span> text = decoder.<span class="fn">decode</span>(value);
+    <span class="kw">const</span> lines = text.<span class="fn">split</span>(<span class="str">'\n'</span>).<span class="fn">filter</span>(line =&gt; line.<span class="fn">trim</span>());
+
+    <span class="kw">for</span> (<span class="kw">const</span> line <span class="kw">of</span> lines) {
+      <span class="kw">const</span> data = JSON.<span class="fn">parse</span>(line);
+      <span class="kw">if</span> (!data.done) {
+        process.stdout.<span class="fn">write</span>(data.response);
+      }
+    }
+  }
+  console.<span class="fn">log</span>();
+}
+
+<span class="cmt">// 사용</span>
+<span class="kw">await</span> <span class="fn">streamText</span>(<span class="str">'Write a haiku about programming'</span>);</code></pre>
+
+  <h3 id="embeddings-api">임베딩 API</h3>
+
+  <pre><code><span class="cmt"># 임베딩 생성</span>
+curl http://localhost:<span class="num">11434</span>/api/embeddings -d <span class="str">'{
+  "model": "nomic-embed-text",
+  "prompt": "The quick brown fox jumps over the lazy dog"
+}'</span>
+
+<span class="cmt"># 응답</span>
+{
+  <span class="str">"embedding"</span>: [<span class="num">0.123</span>, <span class="num">-0.456</span>, <span class="num">0.789</span>, ...]  <span class="cmt">// 768차원</span>
+}
+
+<span class="cmt"># Python 예제</span>
+<span class="kw">def</span> <span class="fn">get_embedding</span>(text, model=<span class="str">"nomic-embed-text"</span>):
+    response = requests.post(
+        <span class="str">"http://localhost:11434/api/embeddings"</span>,
+        json={<span class="str">"model"</span>: model, <span class="str">"prompt"</span>: text}
+    )
+    <span class="kw">return</span> response.json()[<span class="str">"embedding"</span>]
+
+<span class="cmt"># 코사인 유사도 계산</span>
+<span class="kw">from</span> numpy <span class="kw">import</span> dot
+<span class="kw">from</span> numpy.linalg <span class="kw">import</span> norm
+
+<span class="kw">def</span> <span class="fn">cosine_similarity</span>(a, b):
+    <span class="kw">return</span> dot(a, b) / (norm(a) * norm(b))
+
+emb1 = get_embedding(<span class="str">"I love programming"</span>)
+emb2 = get_embedding(<span class="str">"I enjoy coding"</span>)
+emb3 = get_embedding(<span class="str">"The weather is nice"</span>)
+
+<span class="fn">print</span>(cosine_similarity(emb1, emb2))  <span class="cmt"># 높은 유사도</span>
+<span class="fn">print</span>(cosine_similarity(emb1, emb3))  <span class="cmt"># 낮은 유사도</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="parameters">파라미터 설정</h2>
+
+  <p>Ollama는 다양한 파라미터를 통해 모델의 출력을 세밀하게 조정할 수 있습니다.</p>
+
+  <h3 id="parameter-list">주요 파라미터</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>파라미터</th>
+        <th>기본값</th>
+        <th>범위</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>temperature</code></td>
+        <td>0.8</td>
+        <td>0.0 - 2.0</td>
+        <td>창의성 vs 일관성</td>
+      </tr>
+      <tr>
+        <td><code>top_p</code></td>
+        <td>0.9</td>
+        <td>0.0 - 1.0</td>
+        <td>누적 확률 샘플링</td>
+      </tr>
+      <tr>
+        <td><code>top_k</code></td>
+        <td>40</td>
+        <td>1 - 100</td>
+        <td>상위 k개 토큰만 고려</td>
+      </tr>
+      <tr>
+        <td><code>num_ctx</code></td>
+        <td>2048</td>
+        <td>128 - 128000</td>
+        <td>컨텍스트 윈도우 크기</td>
+      </tr>
+      <tr>
+        <td><code>num_predict</code></td>
+        <td>-1</td>
+        <td>-1 or 1+</td>
+        <td>최대 생성 토큰 수</td>
+      </tr>
+      <tr>
+        <td><code>repeat_penalty</code></td>
+        <td>1.1</td>
+        <td>0.0 - 2.0</td>
+        <td>반복 억제 강도</td>
+      </tr>
+      <tr>
+        <td><code>seed</code></td>
+        <td>0</td>
+        <td>-</td>
+        <td>재현 가능한 출력</td>
+      </tr>
+      <tr>
+        <td><code>stop</code></td>
+        <td>[]</td>
+        <td>-</td>
+        <td>생성 중단 문자열</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="temperature">Temperature (온도)</h3>
+
+  <p>가장 중요한 파라미터로, 출력의 무작위성을 조절합니다.</p>
+
+  <pre><code><span class="cmt"># 낮은 temperature (0.1-0.3): 결정론적, 일관적</span>
+curl http://localhost:<span class="num">11434</span>/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "Complete the phrase: To be or not to be",
+  "options": {
+    "temperature": 0.1
+  }
+}'</span>
+<span class="cmt"># 출력: "that is the question" (매우 일관적)</span>
+
+<span class="cmt"># 높은 temperature (1.5-2.0): 창의적, 다양함</span>
+curl http://localhost:<span class="num">11434</span>/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "Complete the phrase: To be or not to be",
+  "options": {
+    "temperature": 1.8
+  }
+}'</span>
+<span class="cmt"># 출력: "a butterfly in the moonlight" (창의적이지만 예측 불가)</span></code></pre>
+
+  <svg viewBox="0 0 800 300" style="max-width: 100%; height: auto; background: var(--code-bg); border-radius: 8px; padding: 20px;">
+    <!-- Temperature spectrum -->
+    <defs>
+      <linearGradient id="tempGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:var(--info-bg);stop-opacity:1" />
+        <stop offset="50%" style="stop-color:var(--success-bg);stop-opacity:1" />
+        <stop offset="100%" style="stop-color:var(--warning-bg);stop-opacity:1" />
+      </linearGradient>
+    </defs>
+
+    <rect x="100" y="100" width="600" height="50" rx="5" fill="url(#tempGradient)" stroke="var(--border-primary)" stroke-width="2"/>
+
+    <!-- Labels -->
+    <text x="100" y="90" fill="var(--text-primary)" font-size="14" font-weight="bold">0.0</text>
+    <text x="395" y="90" text-anchor="middle" fill="var(--text-primary)" font-size="14" font-weight="bold">0.8 (기본)</text>
+    <text x="690" y="90" text-anchor="end" fill="var(--text-primary)" font-size="14" font-weight="bold">2.0</text>
+
+    <!-- Use cases -->
+    <text x="150" y="180" fill="var(--info-fg)" font-size="13" font-weight="bold">결정론적</text>
+    <text x="150" y="200" fill="var(--text-secondary)" font-size="11">• 코드 생성</text>
+    <text x="150" y="215" fill="var(--text-secondary)" font-size="11">• 정확한 답변</text>
+    <text x="150" y="230" fill="var(--text-secondary)" font-size="11">• 번역</text>
+
+    <text x="400" y="180" text-anchor="middle" fill="var(--success-fg)" font-weight="bold" font-size="13">균형</text>
+    <text x="400" y="200" text-anchor="middle" fill="var(--text-secondary)" font-size="11">• 일반 대화</text>
+    <text x="400" y="215" text-anchor="middle" fill="var(--text-secondary)" font-size="11">• 질의응답</text>
+
+    <text x="650" y="180" text-anchor="end" fill="var(--warning-fg)" font-weight="bold" font-size="13">창의적</text>
+    <text x="650" y="200" text-anchor="end" fill="var(--text-secondary)" font-size="11">• 브레인스토밍</text>
+    <text x="650" y="215" text-anchor="end" fill="var(--text-secondary)" font-size="11">• 스토리 생성</text>
+    <text x="650" y="230" text-anchor="end" fill="var(--text-secondary)" font-size="11">• 시/음악</text>
+
+    <!-- Markers -->
+    <circle cx="100" cy="125" r="5" fill="var(--info-fg)"/>
+    <circle cx="400" cy="125" r="5" fill="var(--success-fg)"/>
+    <circle cx="700" cy="125" r="5" fill="var(--warning-fg)"/>
+  </svg>
+
+  <h3 id="top-p-k">Top-p와 Top-k</h3>
+
+  <p>두 파라미터 모두 샘플링을 제한하여 출력 품질을 조절합니다.</p>
+
+  <pre><code><span class="cmt"># Top-p (nucleus sampling)</span>
+<span class="cmt"># 누적 확률이 p에 도달할 때까지의 토큰만 고려</span>
+{
+  <span class="str">"options"</span>: {
+    <span class="str">"top_p"</span>: <span class="num">0.9</span>  <span class="cmt">// 상위 90% 확률 토큰만</span>
+  }
+}
+
+<span class="cmt"># Top-k</span>
+<span class="cmt"># 확률 상위 k개 토큰만 고려</span>
+{
+  <span class="str">"options"</span>: {
+    <span class="str">"top_k"</span>: <span class="num">40</span>  <span class="cmt">// 상위 40개 토큰만</span>
+  }
+}
+
+<span class="cmt"># 조합 사용 (권장)</span>
+{
+  <span class="str">"options"</span>: {
+    <span class="str">"temperature"</span>: <span class="num">0.7</span>,
+    <span class="str">"top_p"</span>: <span class="num">0.9</span>,
+    <span class="str">"top_k"</span>: <span class="num">40</span>
+  }
+}</code></pre>
+
+  <h3 id="context">컨텍스트 길이 (num_ctx)</h3>
+
+  <p>모델이 한 번에 처리할 수 있는 토큰 수를 설정합니다.</p>
+
+  <pre><code><span class="cmt"># 긴 문서 처리</span>
+{
+  <span class="str">"model"</span>: <span class="str">"llama3.2"</span>,
+  <span class="str">"prompt"</span>: <span class="str">"Summarize this long document: ..."</span>,
+  <span class="str">"options"</span>: {
+    <span class="str">"num_ctx"</span>: <span class="num">8192</span>  <span class="cmt">// 기본 2048보다 큼</span>
+  }
+}
+
+<span class="cmt"># 주의: 더 큰 컨텍스트는 더 많은 메모리와 시간 필요</span>
+<span class="cmt"># Llama 3.2는 최대 128K 토큰 지원</span></code></pre>
+
+  <h3 id="seed">시드 (재현성)</h3>
+
+  <pre><code><span class="cmt"># 같은 시드 = 같은 출력</span>
+{
+  <span class="str">"model"</span>: <span class="str">"llama3.2"</span>,
+  <span class="str">"prompt"</span>: <span class="str">"Generate a random story"</span>,
+  <span class="str">"options"</span>: {
+    <span class="str">"seed"</span>: <span class="num">42</span>,
+    <span class="str">"temperature"</span>: <span class="num">0.8</span>
+  }
+}
+
+<span class="cmt"># 테스트, 디버깅, 벤치마크에 유용</span></code></pre>
+
+  <h3 id="parameter-presets">사용 사례별 파라미터 프리셋</h3>
+
+  <pre><code><span class="cmt"># 1. 코드 생성 (정확성 우선)</span>
+CODE_GENERATION = {
+    <span class="str">"temperature"</span>: <span class="num">0.2</span>,
+    <span class="str">"top_p"</span>: <span class="num">0.95</span>,
+    <span class="str">"top_k"</span>: <span class="num">40</span>,
+    <span class="str">"repeat_penalty"</span>: <span class="num">1.1</span>
+}
+
+<span class="cmt"># 2. 창의적 글쓰기</span>
+CREATIVE_WRITING = {
+    <span class="str">"temperature"</span>: <span class="num">1.2</span>,
+    <span class="str">"top_p"</span>: <span class="num">0.95</span>,
+    <span class="str">"top_k"</span>: <span class="num">50</span>,
+    <span class="str">"repeat_penalty"</span>: <span class="num">1.2</span>
+}
+
+<span class="cmt"># 3. 정확한 답변 (QA)</span>
+FACTUAL_QA = {
+    <span class="str">"temperature"</span>: <span class="num">0.1</span>,
+    <span class="str">"top_p"</span>: <span class="num">0.9</span>,
+    <span class="str">"top_k"</span>: <span class="num">30</span>,
+    <span class="str">"num_predict"</span>: <span class="num">256</span>
+}
+
+<span class="cmt"># 4. 일반 대화</span>
+CONVERSATIONAL = {
+    <span class="str">"temperature"</span>: <span class="num">0.8</span>,
+    <span class="str">"top_p"</span>: <span class="num">0.9</span>,
+    <span class="str">"top_k"</span>: <span class="num">40</span>
+}
+
+<span class="cmt"># 5. 번역</span>
+TRANSLATION = {
+    <span class="str">"temperature"</span>: <span class="num">0.3</span>,
+    <span class="str">"top_p"</span>: <span class="num">0.9</span>,
+    <span class="str">"repeat_penalty"</span>: <span class="num">1.0</span>
+}</code></pre>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 파라미터 주의사항</div>
+    <ul>
+      <li><code>temperature=0</code>은 완전 결정론적이지만 반복적일 수 있음</li>
+      <li><code>top_p</code>와 <code>top_k</code>를 함께 사용하면 더 제한적</li>
+      <li><code>num_ctx</code> 증가는 메모리 사용량을 크게 늘림</li>
+      <li><code>repeat_penalty</code>가 너무 높으면 비문법적 출력 가능</li>
+      <li>각 모델마다 최적 파라미터가 다를 수 있음</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="streaming">스트리밍 응답 처리</h2>
+
+  <p>스트리밍은 토큰이 생성되는 즉시 받아볼 수 있어 사용자 경험이 향상됩니다.</p>
+
+  <h3 id="streaming-python">Python 스트리밍</h3>
+
+  <pre><code><span class="kw">import</span> requests
+<span class="kw">import</span> json
+
+<span class="kw">def</span> <span class="fn">stream_response</span>(prompt, model=<span class="str">"llama3.2"</span>):
+    url = <span class="str">"http://localhost:11434/api/generate"</span>
+    payload = {
+        <span class="str">"model"</span>: model,
+        <span class="str">"prompt"</span>: prompt,
+        <span class="str">"stream"</span>: <span class="kw">True</span>
+    }
+
+    <span class="kw">with</span> requests.post(url, json=payload, stream=<span class="kw">True</span>) <span class="kw">as</span> response:
+        <span class="kw">for</span> line <span class="kw">in</span> response.iter_lines():
+            <span class="kw">if</span> line:
+                data = json.loads(line)
+
+                <span class="cmt"># 생성된 텍스트 출력</span>
+                <span class="kw">if</span> <span class="kw">not</span> data.get(<span class="str">"done"</span>, <span class="kw">False</span>):
+                    <span class="fn">print</span>(data.get(<span class="str">"response"</span>, <span class="str">""</span>), end=<span class="str">""</span>, flush=<span class="kw">True</span>)
+                <span class="kw">else</span>:
+                    <span class="cmt"># 완료 정보</span>
+                    <span class="fn">print</span>(<span class="str">"\n\n--- Stats ---"</span>)
+                    <span class="fn">print</span>(<span class="str">f"Total duration: <span class="num">{data.get('total_duration', 0) / 1e9:.2f}</span>s"</span>)
+                    <span class="fn">print</span>(<span class="str">f"Tokens generated: <span class="num">{data.get('eval_count', 0)}</span>"</span>)
+                    <span class="fn">print</span>(<span class="str">f"Speed: <span class="num">{data.get('eval_count', 0) / (data.get('eval_duration', 1) / 1e9):.1f}</span> tokens/s"</span>)
+
+<span class="cmt"># 사용</span>
+stream_response(<span class="str">"Write a short story about a robot"</span>)</code></pre>
+
+  <h3 id="streaming-js">JavaScript 스트리밍 (브라우저)</h3>
+
+  <pre><code><span class="kw">async function</span> <span class="fn">streamToDOM</span>(prompt, elementId) {
+  <span class="kw">const</span> element = document.<span class="fn">getElementById</span>(elementId);
+  element.textContent = <span class="str">''</span>;
+
+  <span class="kw">const</span> response = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'http://localhost:11434/api/generate'</span>, {
+    method: <span class="str">'POST'</span>,
+    headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+    body: JSON.<span class="fn">stringify</span>({
+      model: <span class="str">'llama3.2'</span>,
+      prompt,
+      stream: <span class="kw">true</span>
+    })
+  });
+
+  <span class="kw">const</span> reader = response.body.<span class="fn">getReader</span>();
+  <span class="kw">const</span> decoder = <span class="kw">new</span> <span class="type">TextDecoder</span>();
+
+  <span class="kw">while</span> (<span class="kw">true</span>) {
+    <span class="kw">const</span> { done, value } = <span class="kw">await</span> reader.<span class="fn">read</span>();
+    <span class="kw">if</span> (done) <span class="kw">break</span>;
+
+    <span class="kw">const</span> text = decoder.<span class="fn">decode</span>(value);
+    <span class="kw">const</span> lines = text.<span class="fn">split</span>(<span class="str">'\n'</span>).<span class="fn">filter</span>(l =&gt; l.<span class="fn">trim</span>());
+
+    <span class="kw">for</span> (<span class="kw">const</span> line <span class="kw">of</span> lines) {
+      <span class="kw">const</span> data = JSON.<span class="fn">parse</span>(line);
+      <span class="kw">if</span> (!data.done) {
+        element.textContent += data.response;
+        <span class="cmt">// 자동 스크롤</span>
+        element.<span class="fn">scrollIntoView</span>({ behavior: <span class="str">'smooth'</span>, block: <span class="str">'end'</span> });
+      }
+    }
+  }
+}
+
+<span class="cmt">// 사용</span>
+<span class="fn">streamToDOM</span>(<span class="str">'Explain async/await'</span>, <span class="str">'output'</span>);</code></pre>
+
+  <h3 id="streaming-sse">Server-Sent Events (SSE) 패턴</h3>
+
+  <pre><code><span class="cmt"># Express.js 서버 예제</span>
+<span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> fetch = <span class="fn">require</span>(<span class="str">'node-fetch'</span>);
+<span class="kw">const</span> app = <span class="fn">express</span>();
+
+app.<span class="fn">get</span>(<span class="str">'/stream'</span>, <span class="kw">async</span> (req, res) =&gt; {
+  <span class="kw">const</span> prompt = req.query.prompt;
+
+  res.<span class="fn">setHeader</span>(<span class="str">'Content-Type'</span>, <span class="str">'text/event-stream'</span>);
+  res.<span class="fn">setHeader</span>(<span class="str">'Cache-Control'</span>, <span class="str">'no-cache'</span>);
+  res.<span class="fn">setHeader</span>(<span class="str">'Connection'</span>, <span class="str">'keep-alive'</span>);
+
+  <span class="kw">const</span> ollamaRes = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'http://localhost:11434/api/generate'</span>, {
+    method: <span class="str">'POST'</span>,
+    headers: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+    body: JSON.<span class="fn">stringify</span>({
+      model: <span class="str">'llama3.2'</span>,
+      prompt,
+      stream: <span class="kw">true</span>
+    })
+  });
+
+  <span class="kw">const</span> reader = ollamaRes.body.<span class="fn">getReader</span>();
+  <span class="kw">const</span> decoder = <span class="kw">new</span> <span class="type">TextDecoder</span>();
+
+  <span class="kw">while</span> (<span class="kw">true</span>) {
+    <span class="kw">const</span> { done, value } = <span class="kw">await</span> reader.<span class="fn">read</span>();
+    <span class="kw">if</span> (done) {
+      res.<span class="fn">write</span>(<span class="str">'data: [DONE]\n\n'</span>);
+      res.<span class="fn">end</span>();
+      <span class="kw">break</span>;
+    }
+
+    <span class="kw">const</span> text = decoder.<span class="fn">decode</span>(value);
+    <span class="kw">const</span> lines = text.<span class="fn">split</span>(<span class="str">'\n'</span>).<span class="fn">filter</span>(l =&gt; l.<span class="fn">trim</span>());
+
+    <span class="kw">for</span> (<span class="kw">const</span> line <span class="kw">of</span> lines) {
+      res.<span class="fn">write</span>(<span class="str">`data: <span class="num">${line}</span>\n\n`</span>);
+    }
+  }
+});
+
+app.<span class="fn">listen</span>(<span class="num">3000</span>);</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="multimodal">멀티모달 (이미지) 처리</h2>
+
+  <p>Ollama는 LLaVA, Bakllava, Llama 3.2 Vision 등 멀티모달 모델을 지원합니다.</p>
+
+  <h3 id="vision-cli">CLI에서 이미지 사용</h3>
+
+  <pre><code><span class="cmt"># 이미지 파일과 함께 프롬프트</span>
+ollama run llava <span class="str">"What's in this image?"</span> /path/to/image.jpg
+
+<span class="cmt"># 여러 이미지</span>
+ollama run llava <span class="str">"Compare these images"</span> image1.jpg image2.jpg
+
+<span class="cmt"># 대화형 모드에서</span>
+ollama run llava
+<span class="str">&gt;&gt;&gt; Describe this image /path/to/photo.png</span>
+This image shows a beautiful sunset over a mountain landscape...
+
+<span class="str">&gt;&gt;&gt; What colors do you see? /path/to/photo.png</span>
+The dominant colors are orange, pink, and purple in the sky...</code></pre>
+
+  <h3 id="vision-api">API로 이미지 전송</h3>
+
+  <pre><code><span class="cmt"># Base64 인코딩 필요</span>
+<span class="kw">import</span> base64
+<span class="kw">import</span> requests
+
+<span class="kw">def</span> <span class="fn">analyze_image</span>(image_path, prompt):
+    <span class="cmt"># 이미지를 base64로 인코딩</span>
+    <span class="kw">with</span> <span class="fn">open</span>(image_path, <span class="str">"rb"</span>) <span class="kw">as</span> img_file:
+        image_data = base64.b64encode(img_file.read()).decode(<span class="str">'utf-8'</span>)
+
+    <span class="cmt"># API 호출</span>
+    response = requests.post(
+        <span class="str">"http://localhost:11434/api/generate"</span>,
+        json={
+            <span class="str">"model"</span>: <span class="str">"llava"</span>,
+            <span class="str">"prompt"</span>: prompt,
+            <span class="str">"images"</span>: [image_data],
+            <span class="str">"stream"</span>: <span class="kw">False</span>
+        }
+    )
+
+    <span class="kw">return</span> response.json()[<span class="str">"response"</span>]
+
+<span class="cmt"># 사용 예시</span>
+result = analyze_image(
+    <span class="str">"screenshot.png"</span>,
+    <span class="str">"What UI elements are visible in this screenshot?"</span>
+)
+<span class="fn">print</span>(result)</code></pre>
+
+  <h3 id="vision-usecases">비전 모델 활용 사례</h3>
+
+  <pre><code><span class="cmt"># 1. OCR (텍스트 추출)</span>
+analyze_image(<span class="str">"document.jpg"</span>, <span class="str">"Extract all text from this image"</span>)
+
+<span class="cmt"># 2. 이미지 설명</span>
+analyze_image(<span class="str">"photo.jpg"</span>, <span class="str">"Describe this image in detail"</span>)
+
+<span class="cmt"># 3. 객체 감지</span>
+analyze_image(<span class="str">"scene.jpg"</span>, <span class="str">"List all objects you can see"</span>)
+
+<span class="cmt"># 4. 다이어그램 분석</span>
+analyze_image(<span class="str">"flowchart.png"</span>, <span class="str">"Explain this flowchart step by step"</span>)
+
+<span class="cmt"># 5. 코드 스크린샷</span>
+analyze_image(<span class="str">"code.png"</span>, <span class="str">"What does this code do? Find any bugs."</span>)
+
+<span class="cmt"># 6. UI/UX 분석</span>
+analyze_image(<span class="str">"website.png"</span>, <span class="str">"Critique this web design"</span>)
+
+<span class="cmt"># 7. 차트/그래프 해석</span>
+analyze_image(<span class="str">"chart.png"</span>, <span class="str">"Summarize the trends in this chart"</span>)</code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 비전 모델 팁</div>
+    <ul>
+      <li>고해상도 이미지는 자동으로 리사이즈됨</li>
+      <li>복잡한 이미지는 더 큰 모델(13B+) 사용 권장</li>
+      <li>명확하고 구체적인 프롬프트 사용</li>
+      <li>OCR은 인쇄된 텍스트에서 가장 잘 작동</li>
+      <li>여러 각도/버전의 이미지로 테스트</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="conversation">멀티턴 대화 구현</h2>
+
+  <p>대화 히스토리를 유지하면서 연속적인 대화를 구현하는 방법입니다.</p>
+
+  <h3 id="conversation-class">대화 관리 클래스</h3>
+
+  <pre><code><span class="kw">import</span> requests
+<span class="kw">from</span> typing <span class="kw">import</span> List, Dict
+
+<span class="kw">class</span> <span class="type">Conversation</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(
+        <span class="kw">self</span>,
+        model: <span class="type">str</span> = <span class="str">"llama3.2"</span>,
+        system_prompt: <span class="type">str</span> = <span class="kw">None</span>,
+        api_url: <span class="type">str</span> = <span class="str">"http://localhost:11434/api/chat"</span>
+    ):
+        <span class="kw">self</span>.model = model
+        <span class="kw">self</span>.api_url = api_url
+        <span class="kw">self</span>.messages: List[Dict] = []
+
+        <span class="kw">if</span> system_prompt:
+            <span class="kw">self</span>.messages.append({
+                <span class="str">"role"</span>: <span class="str">"system"</span>,
+                <span class="str">"content"</span>: system_prompt
+            })
+
+    <span class="kw">def</span> <span class="fn">send</span>(<span class="kw">self</span>, message: <span class="type">str</span>, stream: <span class="type">bool</span> = <span class="kw">False</span>) -&gt; <span class="type">str</span>:
+        <span class="cmt">"""메시지 전송 및 응답 받기"""</span>
+        <span class="kw">self</span>.messages.append({
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: message
+        })
+
+        response = requests.post(
+            <span class="kw">self</span>.api_url,
+            json={
+                <span class="str">"model"</span>: <span class="kw">self</span>.model,
+                <span class="str">"messages"</span>: <span class="kw">self</span>.messages,
+                <span class="str">"stream"</span>: stream
+            },
+            stream=stream
+        )
+
+        <span class="kw">if</span> stream:
+            <span class="kw">return</span> <span class="kw">self</span>._handle_stream(response)
+        <span class="kw">else</span>:
+            data = response.json()
+            assistant_msg = data[<span class="str">"message"</span>][<span class="str">"content"</span>]
+            <span class="kw">self</span>.messages.append({
+                <span class="str">"role"</span>: <span class="str">"assistant"</span>,
+                <span class="str">"content"</span>: assistant_msg
+            })
+            <span class="kw">return</span> assistant_msg
+
+    <span class="kw">def</span> <span class="fn">_handle_stream</span>(<span class="kw">self</span>, response):
+        <span class="cmt">"""스트리밍 응답 처리"""</span>
+        full_response = <span class="str">""</span>
+        <span class="kw">for</span> line <span class="kw">in</span> response.iter_lines():
+            <span class="kw">if</span> line:
+                <span class="kw">import</span> json
+                data = json.loads(line)
+                <span class="kw">if</span> <span class="kw">not</span> data.get(<span class="str">"done"</span>):
+                    chunk = data.get(<span class="str">"message"</span>, {}).get(<span class="str">"content"</span>, <span class="str">""</span>)
+                    full_response += chunk
+                    <span class="fn">print</span>(chunk, end=<span class="str">""</span>, flush=<span class="kw">True</span>)
+        <span class="fn">print</span>()
+        <span class="kw">self</span>.messages.append({
+            <span class="str">"role"</span>: <span class="str">"assistant"</span>,
+            <span class="str">"content"</span>: full_response
+        })
+        <span class="kw">return</span> full_response
+
+    <span class="kw">def</span> <span class="fn">get_history</span>(<span class="kw">self</span>) -&gt; List[Dict]:
+        <span class="cmt">"""대화 히스토리 반환"""</span>
+        <span class="kw">return</span> <span class="kw">self</span>.messages.copy()
+
+    <span class="kw">def</span> <span class="fn">clear</span>(<span class="kw">self</span>):
+        <span class="cmt">"""대화 초기화 (시스템 메시지 유지)"""</span>
+        system_msgs = [m <span class="kw">for</span> m <span class="kw">in</span> <span class="kw">self</span>.messages <span class="kw">if</span> m[<span class="str">"role"</span>] == <span class="str">"system"</span>]
+        <span class="kw">self</span>.messages = system_msgs
+
+    <span class="kw">def</span> <span class="fn">save</span>(<span class="kw">self</span>, filepath: <span class="type">str</span>):
+        <span class="cmt">"""대화 저장"""</span>
+        <span class="kw">import</span> json
+        <span class="kw">with</span> <span class="fn">open</span>(filepath, <span class="str">"w"</span>) <span class="kw">as</span> f:
+            json.dump({
+                <span class="str">"model"</span>: <span class="kw">self</span>.model,
+                <span class="str">"messages"</span>: <span class="kw">self</span>.messages
+            }, f, indent=<span class="num">2</span>)
+
+    <span class="str">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">load</span>(<span class="type">cls</span>, filepath: <span class="type">str</span>):
+        <span class="cmt">"""저장된 대화 불러오기"""</span>
+        <span class="kw">import</span> json
+        <span class="kw">with</span> <span class="fn">open</span>(filepath) <span class="kw">as</span> f:
+            data = json.load(f)
+        conv = <span class="type">cls</span>(model=data[<span class="str">"model"</span>])
+        conv.messages = data[<span class="str">"messages"</span>]
+        <span class="kw">return</span> conv
+
+<span class="cmt"># 사용 예시</span>
+conv = Conversation(
+    model=<span class="str">"llama3.2"</span>,
+    system_prompt=<span class="str">"You are a helpful Python programming tutor."</span>
+)
+
+<span class="fn">print</span>(conv.send(<span class="str">"How do I create a class in Python?"</span>))
+<span class="fn">print</span>(conv.send(<span class="str">"Can you show me an example?"</span>))
+<span class="fn">print</span>(conv.send(<span class="str">"What about inheritance?"</span>))
+
+<span class="cmt"># 대화 저장</span>
+conv.save(<span class="str">"chat_history.json"</span>)
+
+<span class="cmt"># 나중에 불러오기</span>
+conv2 = Conversation.load(<span class="str">"chat_history.json"</span>)
+<span class="fn">print</span>(conv2.send(<span class="str">"Can you explain polymorphism?"</span>))</code></pre>
+
+  <h3 id="conversation-repl">간단한 REPL 구현</h3>
+
+  <pre><code><span class="kw">def</span> <span class="fn">chat_repl</span>(model=<span class="str">"llama3.2"</span>):
+    <span class="str">"""간단한 대화형 인터페이스"""</span>
+    conv = Conversation(model)
+
+    <span class="fn">print</span>(<span class="str">f"Chatting with <span class="num">{model}</span>. Type 'exit' to quit, 'clear' to reset."</span>)
+    <span class="fn">print</span>(<span class="str">"="</span> * <span class="num">60</span>)
+
+    <span class="kw">while</span> <span class="kw">True</span>:
+        <span class="kw">try</span>:
+            user_input = <span class="fn">input</span>(<span class="str">"\n👤 You: "</span>).<span class="fn">strip</span>()
+
+            <span class="kw">if</span> <span class="kw">not</span> user_input:
+                <span class="kw">continue</span>
+
+            <span class="kw">if</span> user_input.lower() == <span class="str">"exit"</span>:
+                <span class="fn">print</span>(<span class="str">"Goodbye!"</span>)
+                <span class="kw">break</span>
+
+            <span class="kw">if</span> user_input.lower() == <span class="str">"clear"</span>:
+                conv.clear()
+                <span class="fn">print</span>(<span class="str">"✓ Conversation cleared"</span>)
+                <span class="kw">continue</span>
+
+            <span class="fn">print</span>(<span class="str">"\n🤖 Assistant: "</span>, end=<span class="str">""</span>)
+            conv.send(user_input, stream=<span class="kw">True</span>)
+
+        <span class="kw">except</span> <span class="type">KeyboardInterrupt</span>:
+            <span class="fn">print</span>(<span class="str">"\n\nInterrupted. Goodbye!"</span>)
+            <span class="kw">break</span>
+        <span class="kw">except</span> <span class="type">Exception</span> <span class="kw">as</span> e:
+            <span class="fn">print</span>(<span class="str">f"\n❌ Error: <span class="num">{e}</span>"</span>)
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    chat_repl()</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="advanced-cli">고급 CLI 기능</h2>
+
+  <h3 id="keep-alive">모델 언로드 제어 (keep_alive)</h3>
+
+  <pre><code><span class="cmt"># 기본적으로 5분 후 자동 언로드</span>
+<span class="cmt"># 유지 시간 변경</span>
+curl http://localhost:<span class="num">11434</span>/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "Hello",
+  "keep_alive": "10m"
+}'</span>
+
+<span class="cmt"># 영구 유지 (서버 재시작 전까지)</span>
+curl http://localhost:<span class="num">11434</span>/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "Hello",
+  "keep_alive": -1
+}'</span>
+
+<span class="cmt"># 즉시 언로드</span>
+curl http://localhost:<span class="num">11434</span>/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "Hello",
+  "keep_alive": 0
+}'</span></code></pre>
+
+  <h3 id="format">출력 형식 지정 (format)</h3>
+
+  <pre><code><span class="cmt"># JSON 형식 강제</span>
+curl http://localhost:<span class="num">11434</span>/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "List 3 programming languages with their year of creation",
+  "format": "json"
+}'</span>
+
+<span class="cmt"># 출력 예시:</span>
+{
+  <span class="str">"languages"</span>: [
+    {<span class="str">"name"</span>: <span class="str">"Python"</span>, <span class="str">"year"</span>: <span class="num">1991</span>},
+    {<span class="str">"name"</span>: <span class="str">"JavaScript"</span>, <span class="str">"year"</span>: <span class="num">1995</span>},
+    {<span class="str">"name"</span>: <span class="str">"Rust"</span>, <span class="str">"year"</span>: <span class="num">2010</span>}
+  ]
+}</code></pre>
+
+  <h3 id="raw-mode">Raw 모드</h3>
+
+  <pre><code><span class="cmt"># 템플릿 처리 없이 직접 모델에 전달</span>
+curl http://localhost:<span class="num">11434</span>/api/generate -d <span class="str">'{
+  "model": "llama3.2",
+  "prompt": "&lt;|start_header_id|&gt;user&lt;|end_header_id|&gt;\n\nHello&lt;|eot_id|&gt;",
+  "raw": true
+}'</span></code></pre>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 고급 기능 활용</div>
+    <ul>
+      <li><code>keep_alive</code>: 빈번한 요청 시 메모리에 유지하여 속도 향상</li>
+      <li><code>format: "json"</code>: 구조화된 데이터 추출 시 유용</li>
+      <li><code>raw: true</code>: 특수한 프롬프트 형식 테스트 시 사용</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+
+  <h3 id="error-handling">에러 처리</h3>
+
+  <pre><code><span class="kw">import</span> requests
+<span class="kw">from</span> requests.exceptions <span class="kw">import</span> RequestException, Timeout
+
+<span class="kw">def</span> <span class="fn">safe_generate</span>(prompt, model=<span class="str">"llama3.2"</span>, max_retries=<span class="num">3</span>):
+    <span class="kw">for</span> attempt <span class="kw">in</span> <span class="fn">range</span>(max_retries):
+        <span class="kw">try</span>:
+            response = requests.post(
+                <span class="str">"http://localhost:11434/api/generate"</span>,
+                json={<span class="str">"model"</span>: model, <span class="str">"prompt"</span>: prompt, <span class="str">"stream"</span>: <span class="kw">False</span>},
+                timeout=<span class="num">60</span>  <span class="cmt"># 60초 타임아웃</span>
+            )
+            response.raise_for_status()
+            <span class="kw">return</span> response.json()[<span class="str">"response"</span>]
+
+        <span class="kw">except</span> <span class="type">Timeout</span>:
+            <span class="fn">print</span>(<span class="str">f"Timeout on attempt <span class="num">{attempt + 1}</span>"</span>)
+            <span class="kw">if</span> attempt == max_retries - <span class="num">1</span>:
+                <span class="kw">raise</span>
+
+        <span class="kw">except</span> <span class="type">RequestException</span> <span class="kw">as</span> e:
+            <span class="fn">print</span>(<span class="str">f"Error: <span class="num">{e}</span>"</span>)
+            <span class="kw">if</span> attempt == max_retries - <span class="num">1</span>:
+                <span class="kw">raise</span>
+
+        <span class="kw">except</span> <span class="type">KeyError</span>:
+            <span class="fn">print</span>(<span class="str">"Invalid response format"</span>)
+            <span class="kw">raise</span></code></pre>
+
+  <h3 id="performance">성능 최적화</h3>
+
+  <ul>
+    <li><strong>배치 처리</strong>: 여러 요청을 병렬로 처리</li>
+    <li><strong>캐싱</strong>: 동일 프롬프트 결과 캐시</li>
+    <li><strong>연결 재사용</strong>: <code>requests.Session()</code> 사용</li>
+    <li><strong>적절한 타임아웃</strong>: 긴 응답 예상 시 타임아웃 증가</li>
+  </ul>
+
+  <pre><code><span class="kw">from</span> concurrent.futures <span class="kw">import</span> ThreadPoolExecutor
+<span class="kw">import</span> requests
+
+<span class="cmt"># 연결 재사용</span>
+session = requests.Session()
+
+<span class="kw">def</span> <span class="fn">generate_parallel</span>(prompts, model=<span class="str">"llama3.2"</span>):
+    <span class="kw">def</span> <span class="fn">_generate</span>(prompt):
+        response = session.post(
+            <span class="str">"http://localhost:11434/api/generate"</span>,
+            json={<span class="str">"model"</span>: model, <span class="str">"prompt"</span>: prompt, <span class="str">"stream"</span>: <span class="kw">False</span>}
+        )
+        <span class="kw">return</span> response.json()[<span class="str">"response"</span>]
+
+    <span class="kw">with</span> ThreadPoolExecutor(max_workers=<span class="num">4</span>) <span class="kw">as</span> executor:
+        results = <span class="fn">list</span>(executor.map(_generate, prompts))
+
+    <span class="kw">return</span> results
+
+<span class="cmt"># 사용</span>
+prompts = [
+    <span class="str">"Summarize quantum computing"</span>,
+    <span class="str">"Explain blockchain"</span>,
+    <span class="str">"What is AI?"</span>
+]
+results = generate_parallel(prompts)</code></pre>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

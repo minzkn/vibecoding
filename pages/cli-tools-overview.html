@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="AI CLI 도구 생태계 - 모든 도구를 한눈에 비교">
+<meta property="og:description" content="Claude CLI, Aider, Continue, Cursor 등 주요 AI CLI 도구를 비교하고 선택 가이드를 제공합니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/cli-tools-overview.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="모든 주요 AI CLI 도구를 비교하고, 사용 사례별 선택 가이드를 제공합니다.">
+<meta name="keywords" content="ai cli tools, claude cli, aider, continue, cursor, 도구 비교, vibe coding">
+<meta name="author" content="MINZKN">
+<title>AI CLI 도구 생태계 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">AI CLI 도구 생태계</h1>
+<p class="lead">모든 주요 AI CLI 도구를 한눈에 비교하고, 여러분에게 맞는 도구를 선택하세요.</p>
+
+<!-- Quick Start Info-box -->
+<div class="info-box tip">
+  <div class="info-box-title">🎯 빠른 선택 가이드</div>
+  <p><strong>어떤 도구를 선택해야 할까요?</strong></p>
+  <ul>
+    <li><strong>Claude API 있음</strong> → <a href="claude-cli.html">Claude CLI</a> (최고 품질)</li>
+    <li><strong>무료로 시작</strong> → <a href="aider.html">Aider</a> + <a href="ollama-intro.html">Ollama</a></li>
+    <li><strong>VS Code 사용자</strong> → <a href="continue.html">Continue.dev</a> (에디터 통합)</li>
+    <li><strong>올인원 선호</strong> → <a href="cursor.html">Cursor</a> (전용 IDE)</li>
+    <li><strong>GitHub 중심</strong> → <a href="github-copilot.html">GitHub Copilot</a></li>
+  </ul>
+</div>
+
+<!-- Section 1: AI CLI 도구란? -->
+<section class="content-section">
+  <h2 id="what-are-cli-tools">AI CLI 도구란?</h2>
+
+  <p>
+    <strong>AI CLI (Command Line Interface) 도구</strong>는 터미널 또는 코드 에디터에서
+    자연어 명령을 통해 AI가 코드를 작성하도록 돕는 프로그램입니다.
+    Vibe Coding의 핵심 인터페이스이며, 개발자와 LLM을 연결하는 다리 역할을 합니다.
+  </p>
+
+  <h3 id="how-they-work">작동 원리</h3>
+
+  <!-- CLI Tools Architecture Diagram -->
+  <div class="diagram-container">
+    <svg viewBox="0 0 720 400" width="720" height="400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="cto-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Title -->
+      <text x="360" y="25" text-anchor="middle" font-size="15" font-weight="bold" fill="var(--diagram-text)">AI CLI 도구 아키텍처</text>
+
+      <!-- Layer 1: Developer -->
+      <rect x="250" y="60" width="220" height="60" rx="8" class="box-accent" opacity="0.8"/>
+      <text x="360" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">개발자 (You)</text>
+      <text x="360" y="103" text-anchor="middle" font-size="10" fill="var(--diagram-text)">"TODO 앱 만들어줘"</text>
+
+      <line x1="360" y1="120" x2="360" y2="145" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cto-arrow)"/>
+
+      <!-- Layer 2: CLI Tool -->
+      <rect x="250" y="145" width="220" height="70" rx="8" class="box"/>
+      <text x="360" y="170" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">AI CLI 도구</text>
+      <text x="360" y="187" text-anchor="middle" font-size="9" fill="var(--diagram-text)">• 프롬프트 전처리</text>
+      <text x="360" y="202" text-anchor="middle" font-size="9" fill="var(--diagram-text)">• 컨텍스트 관리 (파일, Git 등)</text>
+
+      <line x1="360" y1="215" x2="360" y2="240" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cto-arrow)"/>
+
+      <!-- Layer 3: LLM API -->
+      <rect x="250" y="240" width="220" height="60" rx="8" class="box"/>
+      <text x="360" y="265" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">LLM (Claude, GPT, etc.)</text>
+      <text x="360" y="283" text-anchor="middle" font-size="10" fill="var(--diagram-text)">코드 생성 및 추론</text>
+
+      <line x1="360" y1="300" x2="360" y2="325" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cto-arrow)"/>
+
+      <!-- Layer 4: Output -->
+      <rect x="250" y="325" width="220" height="60" rx="8" class="box-accent" opacity="0.8"/>
+      <text x="360" y="350" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">생성된 코드</text>
+      <text x="360" y="368" text-anchor="middle" font-size="10" fill="var(--diagram-text)">파일 생성/수정, 실행</text>
+
+      <!-- Side annotations -->
+      <text x="50" y="90" font-size="10" fill="var(--text-secondary)">입력</text>
+      <text x="50" y="180" font-size="10" fill="var(--text-secondary)">변환</text>
+      <text x="50" y="270" font-size="10" fill="var(--text-secondary)">처리</text>
+      <text x="50" y="355" font-size="10" fill="var(--text-secondary)">출력</text>
+
+      <!-- Features (Right side) -->
+      <rect x="490" y="145" width="210" height="160" rx="6" class="box" opacity="0.3"/>
+      <text x="595" y="165" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">CLI 도구 핵심 기능</text>
+      <text x="500" y="185" font-size="9" fill="var(--diagram-text)">✓ 프로젝트 컨텍스트 분석</text>
+      <text x="500" y="200" font-size="9" fill="var(--diagram-text)">✓ Git 통합 (diff, commit)</text>
+      <text x="500" y="215" font-size="9" fill="var(--diagram-text)">✓ 멀티파일 편집</text>
+      <text x="500" y="230" font-size="9" fill="var(--diagram-text)">✓ 대화 히스토리 관리</text>
+      <text x="500" y="245" font-size="9" fill="var(--diagram-text)">✓ 에러 자동 수정</text>
+      <text x="500" y="260" font-size="9" fill="var(--diagram-text)">✓ 테스트 실행</text>
+      <text x="500" y="275" font-size="9" fill="var(--diagram-text)">✓ 코드 검색/리팩토링</text>
+      <text x="500" y="290" font-size="9" fill="var(--diagram-text)">✓ MCP 서버 연동</text>
+    </svg>
+    <p class="diagram-caption">그림 1: AI CLI 도구는 개발자와 LLM 사이에서 컨텍스트를 관리하고 코드를 생성합니다</p>
+  </div>
+
+  <h3 id="why-use-cli-tools">왜 AI CLI 도구를 사용하나요?</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 일반 ChatGPT vs AI CLI 도구</div>
+    <table>
+      <thead>
+        <tr>
+          <th>기능</th>
+          <th>ChatGPT 웹</th>
+          <th>AI CLI 도구</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>프로젝트 컨텍스트</strong></td>
+          <td>❌ 수동으로 복사/붙여넣기</td>
+          <td>✅ 자동으로 전체 프로젝트 분석</td>
+        </tr>
+        <tr>
+          <td><strong>파일 수정</strong></td>
+          <td>❌ 코드 복사 후 수동 편집</td>
+          <td>✅ 파일 직접 생성/수정</td>
+        </tr>
+        <tr>
+          <td><strong>Git 통합</strong></td>
+          <td>❌ 별도 작업</td>
+          <td>✅ 자동 커밋, diff 확인</td>
+        </tr>
+        <tr>
+          <td><strong>멀티파일 편집</strong></td>
+          <td>❌ 한 번에 하나만</td>
+          <td>✅ 여러 파일 동시 편집</td>
+        </tr>
+        <tr>
+          <td><strong>에러 처리</strong></td>
+          <td>❌ 에러 복사 → 요청 → 수정</td>
+          <td>✅ 자동 에러 감지 및 수정</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Section 2: 주요 CLI 도구 소개 -->
+<section class="content-section">
+  <h2 id="major-tools">주요 AI CLI 도구</h2>
+
+  <p>
+    2024-2026년 현재 가장 인기 있는 AI CLI 도구 6가지를 소개합니다:
+  </p>
+
+  <!-- Tool 1: Claude CLI -->
+  <h3 id="tool-claude-cli">1. Claude CLI (Claude Code)</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🏆 공식 도구, 최고 품질</div>
+    <p>
+      Anthropic이 공식 제공하는 CLI 도구로, Claude API와 완벽히 통합됩니다.
+      2024년 말 출시 이후 빠르게 성장 중입니다.
+    </p>
+  </div>
+
+  <p><strong>주요 특징:</strong></p>
+  <ul>
+    <li><strong>공식 지원</strong>: Anthropic 직접 개발 및 유지보수</li>
+    <li><strong>최신 모델</strong>: Claude 4.6 Opus, 4.5 Sonnet 즉시 지원</li>
+    <li><strong>프로젝트 컨텍스트</strong>: <code>.claude/</code> 디렉토리로 설정 관리</li>
+    <li><strong>MCP 통합</strong>: Model Context Protocol 네이티브 지원</li>
+    <li><strong>스트리밍 응답</strong>: 실시간 코드 생성 확인</li>
+  </ul>
+
+  <p><strong>설치:</strong></p>
+  <pre><code><span class="cmt"># npx로 설치 없이 실행</span>
+npx claude
+
+<span class="cmt"># 또는 전역 설치</span>
+npm install -g @anthropic-ai/claude-cli</code></pre>
+
+  <p><strong>장점:</strong></p>
+  <ul>
+    <li>✅ Claude 최신 기능 우선 지원</li>
+    <li>✅ 안정적이고 빠른 성능</li>
+    <li>✅ 훌륭한 문서와 커뮤니티</li>
+  </ul>
+
+  <p><strong>단점:</strong></p>
+  <ul>
+    <li>❌ Claude API 키 필수 (무료 크레딧 후 유료)</li>
+    <li>❌ 다른 LLM 연동 불가 (Claude 전용)</li>
+  </ul>
+
+  <p><strong>추천 대상:</strong> Claude API 사용자, 최고 품질 원하는 사람</p>
+  <p><a href="claude-cli.html">📖 Claude CLI 완전 가이드 →</a></p>
+
+  <hr>
+
+  <!-- Tool 2: Aider -->
+  <h3 id="tool-aider">2. Aider</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🔧 Git 통합, 오픈소스</div>
+    <p>
+      Git 워크플로우에 최적화된 AI 코딩 도구입니다. 오픈소스이며, 다양한 LLM을 지원합니다.
+    </p>
+  </div>
+
+  <p><strong>주요 특징:</strong></p>
+  <ul>
+    <li><strong>Git 네이티브</strong>: 자동 커밋, diff 생성, 브랜치 관리</li>
+    <li><strong>다중 LLM</strong>: Claude, GPT-4, Gemini, Ollama 모두 지원</li>
+    <li><strong>스마트 편집</strong>: 파일 전체가 아닌 변경된 부분만 수정</li>
+    <li><strong>무료 오픈소스</strong>: MIT 라이선스</li>
+    <li><strong>Python 기반</strong>: 쉬운 설치 및 커스터마이징</li>
+  </ul>
+
+  <p><strong>설치:</strong></p>
+  <pre><code><span class="cmt"># pip로 설치</span>
+pip install aider-chat
+
+<span class="cmt"># 실행</span>
+aider</code></pre>
+
+  <p><strong>장점:</strong></p>
+  <ul>
+    <li>✅ Git 워크플로우 완벽 통합</li>
+    <li>✅ 다양한 LLM 선택 가능</li>
+    <li>✅ 완전 무료 (Ollama와 함께 사용 시)</li>
+    <li>✅ 활발한 커뮤니티</li>
+  </ul>
+
+  <p><strong>단점:</strong></p>
+  <ul>
+    <li>❌ Python 환경 필요</li>
+    <li>❌ Claude CLI보다 덜 세련된 UX</li>
+  </ul>
+
+  <p><strong>추천 대상:</strong> Git 중심 개발자, 오픈소스 선호, 다중 LLM 사용</p>
+  <p><a href="aider.html">📖 Aider CLI 완전 가이드 →</a></p>
+
+  <hr>
+
+  <!-- Tool 3: Continue.dev -->
+  <h3 id="tool-continue">3. Continue.dev</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎨 VS Code 확장, 에디터 통합</div>
+    <p>
+      VS Code와 JetBrains IDE에 직접 통합되는 AI 코딩 어시스턴트입니다.
+      자동완성과 채팅 인터페이스를 모두 제공합니다.
+    </p>
+  </div>
+
+  <p><strong>주요 특징:</strong></p>
+  <ul>
+    <li><strong>에디터 통합</strong>: VS Code/JetBrains 내부에서 작동</li>
+    <li><strong>자동완성</strong>: Tab으로 코드 제안 수락 (Copilot 스타일)</li>
+    <li><strong>채팅 패널</strong>: 사이드바에서 AI와 대화</li>
+    <li><strong>다중 LLM</strong>: Claude, GPT, Ollama 등 지원</li>
+    <li><strong>컨텍스트 인식</strong>: 현재 파일 및 선택 영역 자동 인식</li>
+  </ul>
+
+  <p><strong>설치:</strong></p>
+  <pre><code><span class="cmt"># VS Code 확장 마켓플레이스에서 설치</span>
+1. VS Code 열기
+2. Extensions (Ctrl+Shift+X)
+3. "Continue" 검색
+4. Install 클릭</code></pre>
+
+  <p><strong>장점:</strong></p>
+  <ul>
+    <li>✅ 에디터에서 벗어나지 않음</li>
+    <li>✅ 자동완성 + 채팅 둘 다 제공</li>
+    <li>✅ 쉬운 설정 (GUI)</li>
+    <li>✅ 무료 오픈소스</li>
+  </ul>
+
+  <p><strong>단점:</strong></p>
+  <ul>
+    <li>❌ VS Code/JetBrains 전용 (터미널 단독 사용 불가)</li>
+    <li>❌ Git 통합은 Aider보다 약함</li>
+  </ul>
+
+  <p><strong>추천 대상:</strong> VS Code 주사용자, 에디터 통합 선호</p>
+  <p><a href="continue.html">📖 Continue.dev 완전 가이드 →</a></p>
+
+  <hr>
+
+  <!-- Tool 4: Cursor -->
+  <h3 id="tool-cursor">4. Cursor</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🖥️ 전용 IDE, 올인원</div>
+    <p>
+      VS Code 포크 기반의 AI 네이티브 IDE입니다. AI 기능이 에디터에 깊숙이 통합되어 있습니다.
+    </p>
+  </div>
+
+  <p><strong>주요 특징:</strong></p>
+  <ul>
+    <li><strong>AI 네이티브</strong>: 처음부터 AI를 위해 설계된 IDE</li>
+    <li><strong>Cmd+K</strong>: 인라인 편집 (코드 블록 선택 → 요청)</li>
+    <li><strong>채팅 패널</strong>: 코드베이스 전체 이해</li>
+    <li><strong>Copilot++</strong>: 강력한 자동완성</li>
+    <li><strong>VS Code 호환</strong>: 모든 확장 사용 가능</li>
+  </ul>
+
+  <p><strong>설치:</strong></p>
+  <pre><code><span class="cmt"># 공식 사이트에서 다운로드</span>
+https://cursor.sh
+
+<span class="cmt"># macOS</span>
+brew install --cask cursor
+
+<span class="cmt"># Windows: 설치 파일 다운로드</span></code></pre>
+
+  <p><strong>장점:</strong></p>
+  <ul>
+    <li>✅ 가장 통합된 AI 경험</li>
+    <li>✅ 빠르고 직관적인 UX</li>
+    <li>✅ VS Code 확장 모두 호환</li>
+    <li>✅ 프라이버시 모드 (로컬 처리)</li>
+  </ul>
+
+  <p><strong>단점:</strong></p>
+  <ul>
+    <li>❌ 유료 ($20/월, 무료 티어 제한적)</li>
+    <li>❌ 별도 IDE 설치 필요</li>
+    <li>❌ 오픈소스 아님</li>
+  </ul>
+
+  <p><strong>추천 대상:</strong> 올인원 솔루션 선호, 프리미엄 경험 원하는 사람</p>
+  <p><a href="cursor.html">📖 Cursor IDE 완전 가이드 →</a></p>
+
+  <hr>
+
+  <!-- Tool 5: GitHub Copilot CLI -->
+  <h3 id="tool-copilot">5. GitHub Copilot CLI</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🐙 GitHub 통합, 쉘 명령어</div>
+    <p>
+      GitHub Copilot의 CLI 버전으로, 쉘 명령어 제안에 특화되어 있습니다.
+    </p>
+  </div>
+
+  <p><strong>주요 특징:</strong></p>
+  <ul>
+    <li><strong>쉘 명령어</strong>: 자연어로 명령어 생성 (<code>??</code> 또는 <code>gh copilot</code>)</li>
+    <li><strong>Git 명령어</strong>: 복잡한 git 명령 자동 생성</li>
+    <li><strong>GitHub 통합</strong>: Issues, PR과 연동</li>
+    <li><strong>코드 설명</strong>: 명령어 실행 전 설명 제공</li>
+  </ul>
+
+  <p><strong>설치:</strong></p>
+  <pre><code><span class="cmt"># GitHub CLI 설치 (먼저)</span>
+brew install gh
+
+<span class="cmt"># Copilot 확장 설치</span>
+gh extension install github/gh-copilot
+
+<span class="cmt"># 사용</span>
+gh copilot suggest "find all python files modified in last week"</code></pre>
+
+  <p><strong>장점:</strong></p>
+  <ul>
+    <li>✅ 쉘 명령어 생성에 최적화</li>
+    <li>✅ GitHub 생태계 통합</li>
+    <li>✅ 명령어 실행 전 설명</li>
+  </ul>
+
+  <p><strong>단점:</strong></p>
+  <ul>
+    <li>❌ 코드 편집 기능 제한적</li>
+    <li>❌ GitHub Copilot 구독 필요 ($10/월)</li>
+    <li>❌ 프로젝트 컨텍스트 관리 약함</li>
+  </ul>
+
+  <p><strong>추천 대상:</strong> GitHub 중심 개발자, 쉘 명령어 도움 필요</p>
+  <p><a href="github-copilot.html">📖 GitHub Copilot CLI 가이드 →</a></p>
+
+  <hr>
+
+  <!-- Tool 6: Cline (formerly Claude Dev) -->
+  <h3 id="tool-cline">6. Cline</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🤖 자율 에이전트, VS Code 확장</div>
+    <p>
+      VS Code에서 작동하는 자율 AI 에이전트입니다. 복잡한 작업을 여러 단계로 나누어 실행합니다.
+    </p>
+  </div>
+
+  <p><strong>주요 특징:</strong></p>
+  <ul>
+    <li><strong>자율 에이전트</strong>: 단일 명령으로 복잡한 작업 완수</li>
+    <li><strong>멀티스텝 실행</strong>: 파일 분석 → 코드 작성 → 테스트 → 디버깅</li>
+    <li><strong>브라우저 통합</strong>: 웹 검색, 문서 확인 가능</li>
+    <li><strong>MCP 지원</strong>: Model Context Protocol 연동</li>
+  </ul>
+
+  <p><strong>설치:</strong></p>
+  <pre><code><span class="cmt"># VS Code 확장 마켓플레이스</span>
+1. VS Code Extensions
+2. "Cline" 검색
+3. Install</code></pre>
+
+  <p><strong>장점:</strong></p>
+  <ul>
+    <li>✅ 복잡한 작업 자동화</li>
+    <li>✅ 브라우저 통합 (정보 검색)</li>
+    <li>✅ 오픈소스 무료</li>
+  </ul>
+
+  <p><strong>단점:</strong></p>
+  <ul>
+    <li>❌ 자율 에이전트로 인한 예상 외 동작</li>
+    <li>❌ 토큰 소비 많음</li>
+    <li>❌ 비교적 신규 도구 (안정성)</li>
+  </ul>
+
+  <p><strong>추천 대상:</strong> 자율 에이전트 실험, 복잡한 작업 자동화</p>
+  <p><a href="cline.html">📖 Cline 완전 가이드 →</a></p>
+</section>
+
+<!-- Section 3: 비교표 -->
+<section class="content-section">
+  <h2 id="comparison">도구 상세 비교</h2>
+
+  <h3 id="comparison-table">기능 비교표</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>타입</th>
+        <th>LLM 지원</th>
+        <th>가격</th>
+        <th>오픈소스</th>
+        <th>Git 통합</th>
+        <th>자동완성</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong><a href="claude-cli.html">Claude CLI</a></strong></td>
+        <td>CLI</td>
+        <td>Claude만</td>
+        <td>API 종량제</td>
+        <td>❌</td>
+        <td>⭐⭐⭐</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td><strong><a href="aider.html">Aider</a></strong></td>
+        <td>CLI</td>
+        <td>다중 LLM</td>
+        <td>무료</td>
+        <td>✅ MIT</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td><strong><a href="continue.html">Continue.dev</a></strong></td>
+        <td>VS Code</td>
+        <td>다중 LLM</td>
+        <td>무료</td>
+        <td>✅ Apache</td>
+        <td>⭐⭐</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong><a href="cursor.html">Cursor</a></strong></td>
+        <td>IDE</td>
+        <td>다중 LLM</td>
+        <td>$20/월</td>
+        <td>❌</td>
+        <td>⭐⭐⭐</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong><a href="github-copilot.html">Copilot CLI</a></strong></td>
+        <td>CLI</td>
+        <td>GPT-4</td>
+        <td>$10/월</td>
+        <td>❌</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td><strong><a href="cline.html">Cline</a></strong></td>
+        <td>VS Code</td>
+        <td>다중 LLM</td>
+        <td>무료</td>
+        <td>✅ Apache</td>
+        <td>⭐⭐⭐</td>
+        <td>❌</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="feature-matrix">기능 매트릭스</h3>
+
+  <!-- Feature Matrix Diagram -->
+  <div class="diagram-container">
+    <svg viewBox="0 0 760 380" width="760" height="380" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad-high" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:var(--accent-primary);stop-opacity:0.8" />
+          <stop offset="100%" style="stop-color:var(--accent-primary);stop-opacity:0.3" />
+        </linearGradient>
+        <linearGradient id="grad-mid" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:var(--accent-secondary);stop-opacity:0.8" />
+          <stop offset="100%" style="stop-color:var(--accent-secondary);stop-opacity:0.3" />
+        </linearGradient>
+      </defs>
+
+      <!-- Title -->
+      <text x="380" y="25" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--diagram-text)">기능별 점수 (5점 만점)</text>
+
+      <!-- Y-axis labels (Tools) -->
+      <text x="10" y="80" font-size="10" fill="var(--diagram-text)">Claude CLI</text>
+      <text x="10" y="130" font-size="10" fill="var(--diagram-text)">Aider</text>
+      <text x="10" y="180" font-size="10" fill="var(--diagram-text)">Continue.dev</text>
+      <text x="10" y="230" font-size="10" fill="var(--diagram-text)">Cursor</text>
+      <text x="10" y="280" font-size="10" fill="var(--diagram-text)">Copilot CLI</text>
+      <text x="10" y="330" font-size="10" fill="var(--diagram-text)">Cline</text>
+
+      <!-- X-axis -->
+      <line x1="120" y1="50" x2="120" y2="350" stroke="var(--text-secondary)" stroke-width="1"/>
+      <text x="130" y="45" font-size="9" fill="var(--text-secondary)">0</text>
+      <text x="320" y="45" font-size="9" fill="var(--text-secondary)">2.5</text>
+      <text x="520" y="45" font-size="9" fill="var(--text-secondary)">5.0</text>
+
+      <!-- Claude CLI bars -->
+      <rect x="120" y="60" width="360" height="15" fill="url(#grad-high)"/>
+      <text x="490" y="72" font-size="9" fill="var(--diagram-text)">4.5 코드 품질</text>
+      <rect x="120" y="75" width="240" height="15" fill="url(#grad-mid)"/>
+      <text x="370" y="87" font-size="9" fill="var(--diagram-text)">3.0 Git</text>
+
+      <!-- Aider bars -->
+      <rect x="120" y="110" width="320" height="15" fill="url(#grad-high)"/>
+      <text x="450" y="122" font-size="9" fill="var(--diagram-text)">4.0 코드 품질</text>
+      <rect x="120" y="125" width="400" height="15" fill="url(#grad-mid)"/>
+      <text x="530" y="137" font-size="9" fill="var(--diagram-text)">5.0 Git</text>
+
+      <!-- Continue.dev bars -->
+      <rect x="120" y="160" width="280" height="15" fill="url(#grad-high)"/>
+      <text x="410" y="172" font-size="9" fill="var(--diagram-text)">3.5 코드 품질</text>
+      <rect x="120" y="175" width="320" height="15" fill="url(#grad-mid)"/>
+      <text x="450" y="187" font-size="9" fill="var(--diagram-text)">4.0 에디터 통합</text>
+
+      <!-- Cursor bars -->
+      <rect x="120" y="210" width="360" height="15" fill="url(#grad-high)"/>
+      <text x="490" y="222" font-size="9" fill="var(--diagram-text)">4.5 코드 품질</text>
+      <rect x="120" y="225" width="400" height="15" fill="url(#grad-mid)"/>
+      <text x="530" y="237" font-size="9" fill="var(--diagram-text)">5.0 UX</text>
+
+      <!-- Copilot CLI bars -->
+      <rect x="120" y="260" width="240" height="15" fill="url(#grad-high)"/>
+      <text x="370" y="272" font-size="9" fill="var(--diagram-text)">3.0 코드 품질</text>
+      <rect x="120" y="275" width="360" height="15" fill="url(#grad-mid)"/>
+      <text x="490" y="287" font-size="9" fill="var(--diagram-text)">4.5 쉘 명령어</text>
+
+      <!-- Cline bars -->
+      <rect x="120" y="310" width="280" height="15" fill="url(#grad-high)"/>
+      <text x="410" y="322" font-size="9" fill="var(--diagram-text)">3.5 코드 품질</text>
+      <rect x="120" y="325" width="320" height="15" fill="url(#grad-mid)"/>
+      <text x="450" y="337" font-size="9" fill="var(--diagram-text)">4.0 자율성</text>
+    </svg>
+    <p class="diagram-caption">그림 2: 각 도구의 강점 비교 - Claude CLI와 Cursor가 코드 품질에서 우수, Aider는 Git 통합 최고</p>
+  </div>
+</section>
+
+<!-- Section 4: 선택 가이드 -->
+<section class="content-section">
+  <h2 id="selection-guide">선택 가이드</h2>
+
+  <p>
+    사용 사례, 예산, 선호도에 따라 최적의 도구를 선택하세요:
+  </p>
+
+  <h3 id="by-use-case">사용 사례별 추천</h3>
+
+  <h4>🎯 프로토타이핑 & 빠른 개발</h4>
+  <p><strong>추천:</strong> <a href="claude-cli.html">Claude CLI</a> 또는 <a href="cursor.html">Cursor</a></p>
+  <p>
+    Claude CLI는 최고 품질의 코드를 빠르게 생성하며, Cursor는 IDE 통합으로 즉각적인 편집이 가능합니다.
+  </p>
+
+  <h4>🔀 Git 중심 워크플로우</h4>
+  <p><strong>추천:</strong> <a href="aider.html">Aider</a></p>
+  <p>
+    자동 커밋, diff 생성, 브랜치 관리 등 Git 기능이 가장 강력합니다.
+    팀 협업 프로젝트에 최적입니다.
+  </p>
+
+  <h4>💻 VS Code에서 벗어나지 않기</h4>
+  <p><strong>추천:</strong> <a href="continue.html">Continue.dev</a></p>
+  <p>
+    에디터 내부에서 모든 작업을 수행할 수 있으며, 자동완성과 채팅을 모두 제공합니다.
+  </p>
+
+  <h4>🌐 쉘 명령어 도움</h4>
+  <p><strong>추천:</strong> <a href="github-copilot.html">GitHub Copilot CLI</a></p>
+  <p>
+    복잡한 bash, git 명령어를 자연어로 생성합니다. DevOps 작업에 유용합니다.
+  </p>
+
+  <h4>🤖 자율 에이전트 실험</h4>
+  <p><strong>추천:</strong> <a href="cline.html">Cline</a></p>
+  <p>
+    복잡한 작업을 단일 명령으로 처리하는 자율 에이전트를 경험할 수 있습니다.
+  </p>
+
+  <h3 id="by-budget">예산별 추천</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>예산</th>
+        <th>추천 조합</th>
+        <th>월 비용</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>완전 무료</strong></td>
+        <td><a href="aider.html">Aider</a> + <a href="ollama-intro.html">Ollama</a></td>
+        <td>$0</td>
+      </tr>
+      <tr>
+        <td><strong>저예산</strong></td>
+        <td><a href="claude-cli.html">Claude CLI</a> (API 종량제)</td>
+        <td>$5-20</td>
+      </tr>
+      <tr>
+        <td><strong>중간</strong></td>
+        <td><a href="github-copilot.html">Copilot CLI</a> or <a href="cursor.html">Cursor</a></td>
+        <td>$10-20</td>
+      </tr>
+      <tr>
+        <td><strong>고급</strong></td>
+        <td><a href="cursor.html">Cursor Pro</a> + <a href="claude-cli.html">Claude CLI</a></td>
+        <td>$40+</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 비용 절감 팁</div>
+    <ul>
+      <li><strong>Ollama 활용</strong>: 로컬 LLM으로 완전 무료 사용</li>
+      <li><strong>다중 LLM 전환</strong>: 간단한 작업은 Haiku, 복잡한 작업은 Opus</li>
+      <li><strong>캐싱 활용</strong>: Claude의 Prompt Caching으로 토큰 90% 절약</li>
+      <li><strong>배치 작업</strong>: 여러 작업을 한 번에 요청하여 컨텍스트 재사용</li>
+    </ul>
+    <p><a href="monitoring-costs.html">비용 모니터링 및 최적화 →</a></p>
+  </div>
+
+  <h3 id="by-skill-level">기술 수준별 추천</h3>
+
+  <h4>🌱 초보자</h4>
+  <p><strong>추천:</strong> <a href="cursor.html">Cursor</a> (GUI, 직관적) 또는 <a href="claude-cli.html">Claude CLI</a> (간단한 명령어)</p>
+  <p>
+    설정이 간단하고, 문서가 잘 되어 있으며, 커뮤니티가 활발합니다.
+  </p>
+
+  <h4>🌿 중급자</h4>
+  <p><strong>추천:</strong> <a href="aider.html">Aider</a> (Git 통합) 또는 <a href="continue.html">Continue.dev</a> (에디터 통합)</p>
+  <p>
+    Git 워크플로우를 이해하고, 다양한 LLM을 실험하고 싶은 개발자에게 적합합니다.
+  </p>
+
+  <h4>🌳 고급자</h4>
+  <p><strong>추천:</strong> 여러 도구 조합 사용</p>
+  <p>
+    예: Cursor (메인 개발) + Aider (Git 작업) + Claude CLI (API 스크립트)
+  </p>
+</section>
+
+<!-- Section 5: 설치 퀵 가이드 -->
+<section class="content-section">
+  <h2 id="installation">설치 퀵 가이드</h2>
+
+  <p>
+    각 도구의 한 줄 설치 명령어:
+  </p>
+
+  <h3 id="install-claude-cli">Claude CLI</h3>
+  <pre><code><span class="cmt"># npx로 설치 없이 실행</span>
+npx claude
+
+<span class="cmt"># 또는 전역 설치</span>
+npm install -g @anthropic-ai/claude-cli
+
+<span class="cmt"># API 키 설정</span>
+export ANTHROPIC_API_KEY=your-key-here</code></pre>
+  <p><a href="quickstart-claude-cli.html">📖 Claude CLI 빠른 시작 →</a></p>
+
+  <h3 id="install-aider">Aider</h3>
+  <pre><code><span class="cmt"># pip로 설치</span>
+pip install aider-chat
+
+<span class="cmt"># 실행</span>
+aider
+
+<span class="cmt"># Ollama와 함께 사용 (무료)</span>
+aider --model ollama/llama2</code></pre>
+  <p><a href="aider.html">📖 Aider 완전 가이드 →</a></p>
+
+  <h3 id="install-continue">Continue.dev</h3>
+  <pre><code><span class="cmt"># VS Code 확장 마켓플레이스</span>
+1. VS Code 열기
+2. Extensions (Ctrl+Shift+X)
+3. "Continue" 검색
+4. Install 클릭
+
+<span class="cmt"># 설정: Ctrl+Shift+P > "Continue: Open Config"</span></code></pre>
+  <p><a href="continue.html">📖 Continue.dev 완전 가이드 →</a></p>
+
+  <h3 id="install-cursor">Cursor</h3>
+  <pre><code><span class="cmt"># macOS</span>
+brew install --cask cursor
+
+<span class="cmt"># Windows/Linux: 공식 사이트 다운로드</span>
+https://cursor.sh</code></pre>
+  <p><a href="cursor.html">📖 Cursor IDE 완전 가이드 →</a></p>
+
+  <h3 id="install-copilot">GitHub Copilot CLI</h3>
+  <pre><code><span class="cmt"># GitHub CLI 설치</span>
+brew install gh
+
+<span class="cmt"># Copilot 확장 설치</span>
+gh extension install github/gh-copilot
+
+<span class="cmt"># 로그인</span>
+gh auth login</code></pre>
+  <p><a href="github-copilot.html">📖 Copilot CLI 완전 가이드 →</a></p>
+
+  <h3 id="install-cline">Cline</h3>
+  <pre><code><span class="cmt"># VS Code 확장 마켓플레이스</span>
+1. VS Code Extensions
+2. "Cline" 검색
+3. Install</code></pre>
+  <p><a href="cline.html">📖 Cline 완전 가이드 →</a></p>
+</section>
+
+<!-- Summary & Next Steps -->
+<section class="content-section">
+  <h2 id="summary">요약 및 다음 단계</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">📝 핵심 요약</div>
+    <ul>
+      <li><strong>6가지 주요 도구</strong>: Claude CLI, Aider, Continue, Cursor, Copilot CLI, Cline</li>
+      <li><strong>최고 품질</strong>: Claude CLI, Cursor</li>
+      <li><strong>Git 통합</strong>: Aider</li>
+      <li><strong>에디터 통합</strong>: Continue.dev, Cline</li>
+      <li><strong>무료 조합</strong>: Aider + Ollama</li>
+      <li><strong>올인원</strong>: Cursor (유료)</li>
+    </ul>
+  </div>
+
+  <h3 id="next-actions">다음 단계</h3>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>🚀 바로 시작</h3>
+      <p><a href="quickstart-claude-cli.html">Claude CLI 5분 시작</a> 또는 <a href="quickstart-local.html">Ollama 로컬 시작</a></p>
+    </div>
+    <div class="doc-card">
+      <h3>📊 상세 비교</h3>
+      <p><a href="cli-comparison.html">CLI 도구 상세 비교</a>에서 더 깊은 분석 확인</p>
+    </div>
+    <div class="doc-card">
+      <h3>💡 모범 사례</h3>
+      <p><a href="cli-best-practices.html">CLI 모범 사례</a>에서 실전 노하우 배우기</p>
+    </div>
+    <div class="doc-card">
+      <h3>🦙 로컬 LLM</h3>
+      <p><a href="ollama-intro.html">Ollama</a>로 완전 무료 Vibe Coding</p>
+    </div>
+  </div>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== Inline TOC (Aside) ===== -->
+<aside class="inline-toc">
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

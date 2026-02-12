@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="학습 경로 가이드 - 초급부터 고급까지">
+<meta property="og:description" content="Vibe Coding을 체계적으로 배우는 단계별 학습 경로. 초급, 중급, 고급 로드맵 제공.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/learning-path.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Vibe Coding 학습 경로 가이드. 초급부터 고급까지 체계적인 로드맵을 제공합니다.">
+<meta name="keywords" content="learning path, 학습경로, 로드맵, vibe coding, 초급, 중급, 고급">
+<meta name="author" content="MINZKN">
+<title>학습 경로 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">학습 경로 가이드</h1>
+<p class="lead">Vibe Coding을 체계적으로 배우는 단계별 로드맵. 초급부터 고급까지, 여러분의 속도에 맞춰 성장하세요.</p>
+
+<!-- Quick Start Info-box -->
+<div class="info-box tip">
+  <div class="info-box-title">🗺️ 학습 경로 개요</div>
+  <ol>
+    <li><strong>초급 (1-2주)</strong>: 개념 이해 + 기본 도구 사용</li>
+    <li><strong>중급 (2-4주)</strong>: 다양한 도구 + 프롬프트 최적화</li>
+    <li><strong>고급 (4주+)</strong>: MCP, 다중 LLM, 자동화</li>
+  </ol>
+  <p><strong>목표:</strong> 독립적으로 복잡한 프로젝트를 AI와 협업하여 완성</p>
+</div>
+
+<!-- Section 1: 학습 경로 개요 -->
+<section class="content-section">
+  <h2 id="overview">학습 경로 개요</h2>
+
+  <p>
+    Vibe Coding은 단순히 도구를 배우는 것이 아니라, <strong>AI와 협업하는 새로운 사고방식</strong>을 익히는 과정입니다.
+    이 가이드는 여러분이 효과적으로 학습할 수 있도록 검증된 경로를 제시합니다.
+  </p>
+
+  <!-- Learning Path Diagram -->
+  <div class="diagram-container">
+    <svg viewBox="0 0 720 400" width="720" height="400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="lp-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Title -->
+      <text x="360" y="25" text-anchor="middle" font-size="15" font-weight="bold" fill="var(--diagram-text)">Vibe Coding 학습 경로</text>
+
+      <!-- Phase 1: 초급 -->
+      <rect x="50" y="60" width="200" height="100" rx="8" class="box-accent" opacity="0.8"/>
+      <text x="150" y="85" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">1. 초급 (1-2주)</text>
+      <text x="150" y="103" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• Vibe Coding 개념</text>
+      <text x="150" y="118" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• CLI 도구 1개 선택</text>
+      <text x="150" y="133" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• 간단한 프로젝트 3개</text>
+      <text x="150" y="148" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• 프롬프트 기본</text>
+
+      <line x1="250" y1="110" x2="290" y2="110" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#lp-arrow)"/>
+
+      <!-- Phase 2: 중급 -->
+      <rect x="290" y="60" width="200" height="100" rx="8" class="box"/>
+      <text x="390" y="85" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">2. 중급 (2-4주)</text>
+      <text x="390" y="103" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• 다양한 CLI 도구</text>
+      <text x="390" y="118" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• Ollama 로컬 LLM</text>
+      <text x="390" y="133" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• 복잡한 프로젝트</text>
+      <text x="390" y="148" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• 프롬프트 최적화</text>
+
+      <line x1="490" y1="110" x2="530" y2="110" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#lp-arrow)"/>
+
+      <!-- Phase 3: 고급 -->
+      <rect x="530" y="60" width="160" height="100" rx="8" class="box-accent" opacity="0.8"/>
+      <text x="610" y="85" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">3. 고급 (4주+)</text>
+      <text x="610" y="103" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• MCP 통합</text>
+      <text x="610" y="118" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• 다중 LLM</text>
+      <text x="610" y="133" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• CI/CD 자동화</text>
+      <text x="610" y="148" text-anchor="middle" font-size="10" fill="var(--diagram-text)">• 커스텀 도구</text>
+
+      <!-- Skill Levels -->
+      <text x="150" y="190" text-anchor="middle" font-size="11" fill="var(--text-secondary)">Level: ⭐</text>
+      <text x="390" y="190" text-anchor="middle" font-size="11" fill="var(--text-secondary)">Level: ⭐⭐</text>
+      <text x="610" y="190" text-anchor="middle" font-size="11" fill="var(--text-secondary)">Level: ⭐⭐⭐</text>
+
+      <!-- Projects Count -->
+      <rect x="50" y="230" width="200" height="50" rx="6" class="box" opacity="0.5"/>
+      <text x="150" y="250" text-anchor="middle" font-size="10" fill="var(--diagram-text)">프로젝트 수</text>
+      <text x="150" y="265" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">3-5개</text>
+
+      <rect x="290" y="230" width="200" height="50" rx="6" class="box" opacity="0.5"/>
+      <text x="390" y="250" text-anchor="middle" font-size="10" fill="var(--diagram-text)">프로젝트 수</text>
+      <text x="390" y="265" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">5-10개</text>
+
+      <rect x="530" y="230" width="160" height="50" rx="6" class="box" opacity="0.5"/>
+      <text x="610" y="250" text-anchor="middle" font-size="10" fill="var(--diagram-text)">프로젝트 수</text>
+      <text x="610" y="265" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">10+개</text>
+
+      <!-- Bottom Timeline -->
+      <line x1="50" y1="320" x2="690" y2="320" stroke="var(--text-secondary)" stroke-width="2"/>
+      <circle cx="150" cy="320" r="6" fill="var(--accent-primary)"/>
+      <circle cx="390" cy="320" r="6" fill="var(--accent-secondary)"/>
+      <circle cx="610" cy="320" r="6" fill="var(--accent-primary)"/>
+
+      <text x="150" y="345" text-anchor="middle" font-size="10" fill="var(--text-secondary)">Week 1-2</text>
+      <text x="390" y="345" text-anchor="middle" font-size="10" fill="var(--text-secondary)">Week 3-6</text>
+      <text x="610" y="345" text-anchor="middle" font-size="10" fill="var(--text-secondary)">Week 7+</text>
+    </svg>
+    <p class="diagram-caption">그림 1: Vibe Coding 학습 경로 - 3단계로 체계적으로 성장</p>
+  </div>
+
+  <h3 id="time-commitment">시간 투자 가이드</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>단계</th>
+        <th>주당 시간</th>
+        <th>총 기간</th>
+        <th>달성 목표</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>초급</strong></td>
+        <td>3-5시간</td>
+        <td>1-2주</td>
+        <td>간단한 앱 독립 제작</td>
+      </tr>
+      <tr>
+        <td><strong>중급</strong></td>
+        <td>5-8시간</td>
+        <td>2-4주</td>
+        <td>복잡한 프로젝트 완성</td>
+      </tr>
+      <tr>
+        <td><strong>고급</strong></td>
+        <td>8-10시간</td>
+        <td>4주+</td>
+        <td>상용 수준 앱 개발</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 학습 팁</div>
+    <ul>
+      <li><strong>꾸준히</strong>: 하루 30분이라도 매일 하는 것이 주말에 3시간보다 효과적</li>
+      <li><strong>실습 중심</strong>: 이론 20%, 실습 80% 비율 유지</li>
+      <li><strong>프로젝트 기반</strong>: 튜토리얼만 보지 말고 실제 프로젝트 만들기</li>
+      <li><strong>커뮤니티 활용</strong>: 막힐 때 Discord, Reddit에서 질문하기</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Section 2: 초급 (1-2주) -->
+<section class="content-section">
+  <h2 id="beginner">초급 (1-2주) ⭐</h2>
+
+  <p>
+    Vibe Coding의 기본을 다지는 단계입니다. <strong>하나의 CLI 도구</strong>에 집중하고,
+    <strong>간단한 프로젝트 3개</strong>를 완성하는 것이 목표입니다.
+  </p>
+
+  <h3 id="beginner-week1">Week 1: 개념 이해 및 첫 프로젝트</h3>
+
+  <h4>Day 1-2: 기초 학습 (3-4시간)</h4>
+  <ol>
+    <li><a href="getting-started.html">Vibe Coding이란?</a> 완독 (30분)</li>
+    <li><a href="cli-tools-overview.html">AI CLI 도구 생태계</a> 읽고 도구 선택 (30분)</li>
+    <li><a href="quickstart-claude-cli.html">Claude CLI 시작</a> 또는 <a href="quickstart-local.html">Ollama 시작</a> (1시간)</li>
+    <li>첫 번째 프로젝트: Hello World (1시간)</li>
+  </ol>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 첫 프로젝트: Hello World 웹 페이지</div>
+    <p><strong>목표:</strong> HTML/CSS/JS로 인터랙티브 인사말 페이지</p>
+    <p><strong>기능:</strong></p>
+    <ul>
+      <li>입력 필드에 이름 입력</li>
+      <li>버튼 클릭 → 인사말 표시</li>
+      <li>CSS 애니메이션 효과</li>
+    </ul>
+    <p><strong>학습 포인트:</strong> AI 명령, 파일 생성, 브라우저 테스트</p>
+  </div>
+
+  <h4>Day 3-4: 프롬프트 기본 (2-3시간)</h4>
+  <ol>
+    <li><a href="prompt-basics.html">프롬프트 기본</a> 학습 (1시간)</li>
+    <li>두 번째 프로젝트: 계산기 앱 (2시간)</li>
+  </ol>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 두 번째 프로젝트: 계산기</div>
+    <p><strong>목표:</strong> 사칙연산 계산기</p>
+    <p><strong>기능:</strong></p>
+    <ul>
+      <li>숫자 버튼 + 연산자 버튼</li>
+      <li>결과 표시</li>
+      <li>Clear 버튼</li>
+      <li>키보드 입력 지원</li>
+    </ul>
+    <p><strong>학습 포인트:</strong> 이벤트 처리, 상태 관리, 프롬프트 구체화</p>
+  </div>
+
+  <h4>Day 5-7: TODO 앱 완성 (3-4시간)</h4>
+  <ol>
+    <li>세 번째 프로젝트: TODO 앱 (3시간)</li>
+    <li>코드 리뷰 및 이해 (1시간)</li>
+  </ol>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 세 번째 프로젝트: TODO 앱</div>
+    <p><strong>목표:</strong> 완전한 CRUD 기능의 TODO 앱</p>
+    <p><strong>기능:</strong></p>
+    <ul>
+      <li>할 일 추가/삭제/완료</li>
+      <li>localStorage 영구 저장</li>
+      <li>필터링 (전체/미완료/완료)</li>
+      <li>반응형 디자인</li>
+    </ul>
+    <p><strong>학습 포인트:</strong> 데이터 영속성, 배열 조작, CSS 반응형</p>
+  </div>
+
+  <h3 id="beginner-checklist">초급 체크리스트</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">✅ 초급 달성 기준</div>
+    <p>다음 항목을 모두 완료했다면 중급으로 진급하세요:</p>
+    <ul>
+      <li>✅ AI CLI 도구 1개를 능숙하게 사용</li>
+      <li>✅ 간단한 웹 앱 3개 이상 제작</li>
+      <li>✅ 프롬프트 기본 원칙 이해</li>
+      <li>✅ HTML/CSS/JavaScript 기본 구조 이해</li>
+      <li>✅ localStorage, 이벤트 처리 사용 가능</li>
+      <li>✅ AI가 생성한 코드를 읽고 수정 가능</li>
+    </ul>
+  </div>
+
+  <h3 id="beginner-resources">초급 추천 자료</h3>
+
+  <ul>
+    <li><a href="getting-started.html">Vibe Coding이란?</a></li>
+    <li><a href="quickstart-claude-cli.html">Claude CLI 5분 시작</a></li>
+    <li><a href="quickstart-local.html">Ollama 로컬 시작</a></li>
+    <li><a href="prompt-basics.html">프롬프트 기본</a></li>
+    <li><a href="claude-cli.html">Claude CLI 완전 가이드</a></li>
+  </ul>
+</section>
+
+<!-- Section 3: 중급 (2-4주) -->
+<section class="content-section">
+  <h2 id="intermediate">중급 (2-4주) ⭐⭐</h2>
+
+  <p>
+    다양한 도구와 기술을 익히고, 복잡한 프로젝트를 완성하는 단계입니다.
+    <strong>최소 2개 이상의 CLI 도구</strong>를 사용하고, <strong>5-10개 프로젝트</strong>를 완성합니다.
+  </p>
+
+  <h3 id="intermediate-week3">Week 3-4: 도구 다양화 및 로컬 LLM</h3>
+
+  <h4>Day 1-3: 다른 CLI 도구 배우기 (4-5시간)</h4>
+  <ol>
+    <li><a href="cli-comparison.html">CLI 도구 비교</a> 읽고 2번째 도구 선택 (1시간)</li>
+    <li>Ollama 설치 및 로컬 LLM 실행 (1시간)</li>
+    <li><a href="aider.html">Aider</a> 또는 <a href="continue.html">Continue.dev</a> 학습 (2시간)</li>
+  </ol>
+
+  <h4>Day 4-7: API 연동 프로젝트 (6-8시간)</h4>
+  <ol>
+    <li>날씨 앱 (OpenWeather API 연동)</li>
+    <li>영화 검색 앱 (TMDB API 연동)</li>
+    <li>GitHub 프로필 뷰어 (GitHub API 연동)</li>
+  </ol>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 중급 프로젝트: 날씨 앱</div>
+    <p><strong>목표:</strong> 실시간 날씨 정보 표시</p>
+    <p><strong>기능:</strong></p>
+    <ul>
+      <li>현재 위치 기반 날씨</li>
+      <li>도시 검색 기능</li>
+      <li>5일 예보</li>
+      <li>날씨 아이콘 및 애니메이션</li>
+    </ul>
+    <p><strong>학습 포인트:</strong> fetch API, async/await, Geolocation API, 외부 API 연동</p>
+  </div>
+
+  <h3 id="intermediate-week5">Week 5-6: 복잡한 프로젝트 및 프롬프트 최적화</h3>
+
+  <h4>Day 1-3: React/Vue 프로젝트 (5-6시간)</h4>
+  <ol>
+    <li>React TODO 앱 (상태 관리 with useState/useEffect)</li>
+    <li>Vue.js 블로그 (컴포넌트 구조)</li>
+  </ol>
+
+  <h4>Day 4-7: 백엔드 프로젝트 (6-8시간)</h4>
+  <ol>
+    <li>Express.js REST API (CRUD 기능)</li>
+    <li>데이터베이스 연동 (MongoDB 또는 PostgreSQL)</li>
+    <li>인증 시스템 (JWT)</li>
+  </ol>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 중급 프로젝트: 블로그 플랫폼</div>
+    <p><strong>목표:</strong> Full-stack 블로그</p>
+    <p><strong>기능:</strong></p>
+    <ul>
+      <li>사용자 인증 (가입/로그인)</li>
+      <li>게시글 CRUD</li>
+      <li>댓글 기능</li>
+      <li>Markdown 지원</li>
+      <li>이미지 업로드</li>
+    </ul>
+    <p><strong>학습 포인트:</strong> Frontend + Backend 통합, 데이터베이스, 인증, 파일 업로드</p>
+  </div>
+
+  <h3 id="intermediate-checklist">중급 체크리스트</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">✅ 중급 달성 기준</div>
+    <ul>
+      <li>✅ AI CLI 도구 2개 이상 능숙하게 사용</li>
+      <li>✅ Ollama 로컬 LLM 활용</li>
+      <li>✅ 외부 API 연동 프로젝트 3개 이상</li>
+      <li>✅ React 또는 Vue 프로젝트 1개 이상</li>
+      <li>✅ 백엔드 API 서버 구축 경험</li>
+      <li>✅ 데이터베이스 사용 (MongoDB/PostgreSQL)</li>
+      <li>✅ 프롬프트 최적화로 토큰 50% 절감</li>
+      <li>✅ Git으로 버전 관리</li>
+    </ul>
+  </div>
+
+  <h3 id="intermediate-resources">중급 추천 자료</h3>
+
+  <ul>
+    <li><a href="cli-comparison.html">CLI 도구 비교</a></li>
+    <li><a href="ollama-intro.html">Ollama란?</a></li>
+    <li><a href="ollama-integration.html">Ollama 연동</a></li>
+    <li><a href="prompt-for-coding.html">코딩용 프롬프트</a></li>
+    <li><a href="prompt-optimization.html">프롬프트 최적화</a></li>
+    <li><a href="api-key-management.html">API 키 관리</a></li>
+  </ul>
+</section>
+
+<!-- Section 4: 고급 (4주+) -->
+<section class="content-section">
+  <h2 id="advanced">고급 (4주+) ⭐⭐⭐</h2>
+
+  <p>
+    MCP 통합, 다중 LLM 전환, CI/CD 자동화 등 고급 주제를 다룹니다.
+    <strong>상용 수준의 복잡한 프로젝트</strong>를 완성하고, <strong>커스텀 도구</strong>를 만들 수 있습니다.
+  </p>
+
+  <h3 id="advanced-topics">고급 주제</h3>
+
+  <h4>1. MCP (Model Context Protocol) 통합</h4>
+  <ul>
+    <li><a href="mcp-intro.html">MCP 개념 이해</a></li>
+    <li><a href="mcp-servers.html">MCP 서버 개발</a> (Python/TypeScript)</li>
+    <li><a href="mcp-examples.html">MCP 실전 예제</a> (파일 시스템, DB, API)</li>
+    <li>커스텀 MCP 서버로 외부 도구 통합</li>
+  </ul>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 고급 프로젝트: MCP 서버</div>
+    <p><strong>목표:</strong> 사내 시스템 연동 MCP 서버</p>
+    <p><strong>기능:</strong></p>
+    <ul>
+      <li>Jira API 연동 (이슈 생성/조회)</li>
+      <li>Slack 알림 전송</li>
+      <li>내부 데이터베이스 쿼리</li>
+      <li>CI/CD 파이프라인 트리거</li>
+    </ul>
+    <p><strong>학습 포인트:</strong> MCP 프로토콜, API 통합, 보안, 에러 처리</p>
+  </div>
+
+  <h4>2. 다중 LLM 전환 전략</h4>
+  <ul>
+    <li><a href="llm-landscape.html">LLM 생태계 개요</a></li>
+    <li><a href="api-switching.html">다중 LLM 전환</a></li>
+    <li><a href="api-abstraction.html">LiteLLM, Portkey 사용</a></li>
+    <li>비용 최적화: 간단한 작업 → Haiku, 복잡한 작업 → Opus</li>
+  </ul>
+
+  <h4>3. CI/CD 및 자동화</h4>
+  <ul>
+    <li><a href="ci-cd-llm.html">CI/CD와 LLM 통합</a></li>
+    <li>GitHub Actions으로 자동 코드 리뷰</li>
+    <li>테스트 자동 생성 및 실행</li>
+    <li>문서 자동 생성</li>
+  </ul>
+
+  <h4>4. 커스텀 도구 개발</h4>
+  <ul>
+    <li>회사/팀 전용 CLI 도구 개발</li>
+    <li>프로젝트 템플릿 자동 생성</li>
+    <li>코드 스타일 가이드 자동 적용</li>
+  </ul>
+
+  <h3 id="advanced-projects">고급 프로젝트 예시</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>프로젝트</th>
+        <th>기술 스택</th>
+        <th>예상 시간</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>전자상거래 플랫폼</strong></td>
+        <td>React + Node.js + PostgreSQL + Stripe</td>
+        <td>40시간</td>
+      </tr>
+      <tr>
+        <td><strong>실시간 채팅 앱</strong></td>
+        <td>Vue + WebSocket + Redis + MongoDB</td>
+        <td>30시간</td>
+      </tr>
+      <tr>
+        <td><strong>SNS 플랫폼</strong></td>
+        <td>Next.js + Prisma + S3 + OAuth</td>
+        <td>50시간</td>
+      </tr>
+      <tr>
+        <td><strong>AI 대시보드</strong></td>
+        <td>React + FastAPI + Ollama + Chart.js</td>
+        <td>35시간</td>
+      </tr>
+      <tr>
+        <td><strong>커스텀 CMS</strong></td>
+        <td>Svelte + Strapi + PostgreSQL</td>
+        <td>45시간</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="advanced-checklist">고급 체크리스트</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">✅ 고급 달성 기준</div>
+    <ul>
+      <li>✅ MCP 서버 개발 경험</li>
+      <li>✅ 다중 LLM 전환 전략 수립</li>
+      <li>✅ CI/CD 파이프라인 구축</li>
+      <li>✅ 상용 수준 Full-stack 앱 1개 이상</li>
+      <li>✅ 성능 최적화 (캐싱, lazy loading 등)</li>
+      <li>✅ 보안 best practices 적용</li>
+      <li>✅ 테스트 자동화 (unit, integration)</li>
+      <li>✅ 문서 자동 생성</li>
+      <li>✅ 커스텀 도구/스크립트 개발</li>
+    </ul>
+  </div>
+
+  <h3 id="advanced-resources">고급 추천 자료</h3>
+
+  <ul>
+    <li><a href="mcp-intro.html">MCP (Model Context Protocol)</a></li>
+    <li><a href="api-switching.html">다중 LLM 전환</a></li>
+    <li><a href="ci-cd-llm.html">CI/CD & LLM</a></li>
+    <li><a href="vibe-coding-patterns.html">Vibe Coding 디자인 패턴</a></li>
+    <li><a href="monitoring-costs.html">비용 모니터링</a></li>
+    <li><a href="ollama-advanced.html">Ollama 고급 활용</a></li>
+  </ul>
+</section>
+
+<!-- Section 5: 학습 방법론 -->
+<section class="content-section">
+  <h2 id="methodology">효과적인 학습 방법론</h2>
+
+  <h3 id="learning-tips">학습 팁 10가지</h3>
+
+  <ol>
+    <li><strong>프로젝트 기반 학습</strong>: 이론만 보지 말고 실제 프로젝트를 만들어보세요</li>
+    <li><strong>점진적 난이도</strong>: 쉬운 것부터 시작해서 점점 어려운 것으로</li>
+    <li><strong>코드 이해</strong>: AI가 생성한 코드를 반드시 읽고 이해하세요</li>
+    <li><strong>변형 실습</strong>: 같은 프로젝트를 다른 방식으로 다시 만들어보세요</li>
+    <li><strong>에러 경험</strong>: 의도적으로 에러를 만들고 AI와 함께 디버깅하세요</li>
+    <li><strong>커뮤니티 활용</strong>: Discord, Reddit에서 질문하고 답변하세요</li>
+    <li><strong>블로그 작성</strong>: 배운 내용을 블로그에 정리하세요</li>
+    <li><strong>오픈소스 기여</strong>: GitHub에서 작은 버그 수정부터 시작하세요</li>
+    <li><strong>페어 프로그래밍</strong>: 다른 사람과 함께 AI를 활용해보세요</li>
+    <li><strong>주기적 복습</strong>: 1주일마다 지난 프로젝트를 다시 보세요</li>
+  </ol>
+
+  <h3 id="common-mistakes">피해야 할 실수</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 흔한 실수</div>
+    <ul>
+      <li>❌ <strong>복붙만 하기</strong>: 코드를 이해하지 않고 복사만</li>
+      <li>❌ <strong>튜토리얼 지옥</strong>: 이론만 보고 실습은 안 함</li>
+      <li>❌ <strong>도구 수집</strong>: 너무 많은 도구를 배우려다 하나도 못 함</li>
+      <li>❌ <strong>완벽주의</strong>: 완벽하게 이해하려다 진도가 안 나감</li>
+      <li>❌ <strong>고립 학습</strong>: 혼자만 하다가 막혀서 포기</li>
+      <li>❌ <strong>프로젝트 미완성</strong>: 80% 만들고 새로운 것 시작</li>
+    </ul>
+  </div>
+
+  <h3 id="motivation">동기 유지 전략</h3>
+
+  <ul>
+    <li><strong>작은 승리 축하</strong>: 작은 기능 하나 완성해도 축하하세요</li>
+    <li><strong>진행 상황 기록</strong>: 매일 무엇을 배웠는지 기록하세요</li>
+    <li><strong>목표 시각화</strong>: 만들고 싶은 앱의 목록을 적어두세요</li>
+    <li><strong>학습 동료</strong>: 함께 배우는 친구를 찾으세요</li>
+    <li><strong>휴식 중요</strong>: 막히면 잠시 쉬고 돌아오세요</li>
+  </ul>
+</section>
+
+<!-- Section 6: 다음 단계 -->
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <p>
+    학습 경로를 이해했다면, 이제 실제로 시작할 차례입니다!
+  </p>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>🚀 바로 시작</h3>
+      <p>초급 Day 1부터 시작하세요</p>
+      <a href="quickstart-claude-cli.html" class="card-link">Claude CLI 시작 →</a><br>
+      <a href="quickstart-local.html" class="card-link">Ollama 시작 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>📚 기본 다지기</h3>
+      <p>프롬프트 엔지니어링 배우기</p>
+      <a href="prompt-basics.html" class="card-link">프롬프트 기본 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔧 도구 비교</h3>
+      <p>내게 맞는 CLI 도구 찾기</p>
+      <a href="cli-comparison.html" class="card-link">도구 비교 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>💬 커뮤니티</h3>
+      <p>질문하고 도움 받기</p>
+      <a href="resources.html" class="card-link">리소스 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Summary -->
+<section class="content-section">
+  <h2 id="summary">요약</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">📝 핵심 요약</div>
+    <ul>
+      <li><strong>3단계 학습 경로</strong>: 초급 (1-2주) → 중급 (2-4주) → 고급 (4주+)</li>
+      <li><strong>초급</strong>: 1개 CLI 도구, 3개 간단한 프로젝트, 프롬프트 기본</li>
+      <li><strong>중급</strong>: 2개 이상 CLI 도구, 5-10개 복잡한 프로젝트, Ollama, API 연동</li>
+      <li><strong>고급</strong>: MCP, 다중 LLM, CI/CD, 상용 수준 앱, 커스텀 도구</li>
+      <li><strong>학습 방법</strong>: 프로젝트 기반, 꾸준히, 커뮤니티 활용</li>
+      <li><strong>피할 것</strong>: 복붙만 하기, 튜토리얼 지옥, 완벽주의</li>
+    </ul>
+  </div>
+
+  <p>
+    지금 바로 <a href="quickstart-claude-cli.html">Claude CLI 5분 시작</a> 또는
+    <a href="quickstart-local.html">Ollama 로컬 시작</a>으로 여정을 시작하세요!
+  </p>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== Inline TOC (Aside) ===== -->
+<aside class="inline-toc">
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

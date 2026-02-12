@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="GitHub Copilot CLI 완전 가이드">
+<meta property="og:description" content="GitHub Copilot CLI 완전 가이드. 터미널에서 AI로 명령어 생성, 코드 설명, Git 도우미.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/github-copilot.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="GitHub Copilot CLI 완전 가이드. 터미널 AI 어시스턴트의 모든 기능과 활용법을 배웁니다.">
+<meta name="keywords" content="github copilot, cli, terminal, ai, git, commands">
+<meta name="author" content="MINZKN">
+<title>GitHub Copilot CLI 완전 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">GitHub Copilot CLI 완전 가이드</h1>
+<p class="lead">터미널에서 AI의 도움을 받는 명령어 생성 도구. Git, 쉘 명령어, 시스템 관리를 AI로 자동화.</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 빠른 시작</div>
+  <pre><code><span class="cmt"># 설치 (GitHub CLI 필요)</span>
+gh extension install github/gh-copilot
+
+<span class="cmt"># 사용</span>
+gh copilot suggest "파일 찾기 명령어"
+gh copilot explain "git rebase -i HEAD~3"
+
+<span class="cmt"># 또는 짧은 별칭</span>
+alias ghcs='gh copilot suggest'
+alias ghce='gh copilot explain'</code></pre>
+</div>
+
+<!-- Section 1: 소개 -->
+<section class="content-section">
+  <h2 id="introduction">소개</h2>
+
+  <p>
+    <strong>GitHub Copilot CLI</strong>는 터미널에서 사용하는 AI 어시스턴트입니다.
+    복잡한 쉘 명령어를 자연어로 설명하면 AI가 정확한 명령어를 생성해주고,
+    어려운 명령어의 의미를 쉽게 설명해줍니다.
+  </p>
+
+  <h3 id="what-is-it">무엇을 하는 도구인가?</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>기능</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>명령어 생성</strong></td>
+        <td>자연어 → 쉘 명령어</td>
+      </tr>
+      <tr>
+        <td><strong>명령어 설명</strong></td>
+        <td>복잡한 명령어 → 쉬운 설명</td>
+      </tr>
+      <tr>
+        <td><strong>Git 도우미</strong></td>
+        <td>Git 명령어 생성 및 설명</td>
+      </tr>
+      <tr>
+        <td><strong>시스템 관리</strong></td>
+        <td>서버 관리, 파일 조작 명령어</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="why-use">왜 사용해야 하나?</h3>
+
+  <ul>
+    <li><strong>생산성</strong>: 명령어 검색 시간 단축</li>
+    <li><strong>학습</strong>: 명령어를 사용하며 배움</li>
+    <li><strong>정확성</strong>: 실수 방지 (AI가 검증)</li>
+    <li><strong>접근성</strong>: 터미널 초보자도 쉽게 사용</li>
+    <li><strong>GitHub 통합</strong>: GitHub CLI와 완벽 통합</li>
+  </ul>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 제한사항</div>
+    <ul>
+      <li>GitHub Copilot 구독 필요 ($10/월)</li>
+      <li>코드 편집 기능 없음 (명령어 생성만)</li>
+      <li>인터넷 연결 필수</li>
+      <li>일부 명령어는 플랫폼 특정적</li>
+    </ul>
+  </div>
+</section>
+
+<!-- Section 2: 설치 -->
+<section class="content-section">
+  <h2 id="installation">설치</h2>
+
+  <h3 id="prerequisites">사전 요구사항</h3>
+
+  <ol>
+    <li><strong>GitHub Copilot 구독</strong> ($10/월 또는 학생 무료)</li>
+    <li><strong>GitHub CLI (gh)</strong> 설치</li>
+  </ol>
+
+  <h3 id="install-gh-cli">1. GitHub CLI 설치</h3>
+
+  <h4>macOS</h4>
+  <pre><code>brew install gh</code></pre>
+
+  <h4>Windows</h4>
+  <pre><code>winget install --id GitHub.cli</code></pre>
+
+  <h4>Linux (Ubuntu/Debian)</h4>
+  <pre><code>sudo apt install gh</code></pre>
+
+  <h4>설치 확인</h4>
+  <pre><code>gh --version
+<span class="cmt"># gh version 2.40.0 (2024-01-15)</span></code></pre>
+
+  <h3 id="install-copilot">2. Copilot CLI 확장 설치</h3>
+
+  <pre><code><span class="cmt"># Copilot 확장 설치</span>
+gh extension install github/gh-copilot
+
+<span class="cmt"># 설치 확인</span>
+gh copilot --version
+
+<span class="cmt"># 인증 (GitHub 로그인)</span>
+gh auth login</code></pre>
+
+  <h3 id="setup-aliases">3. 별칭 설정 (선택사항)</h3>
+
+  <p>더 짧은 명령어로 사용하기 위해 별칭을 설정합니다.</p>
+
+  <pre><code><span class="cmt"># ~/.bashrc 또는 ~/.zshrc에 추가</span>
+alias ghcs='gh copilot suggest'
+alias ghce='gh copilot explain'
+
+<span class="cmt"># 적용</span>
+source ~/.zshrc
+
+<span class="cmt"># 사용</span>
+ghcs "파일 찾기"
+ghce "git rebase -i"</code></pre>
+</section>
+
+<!-- Section 3: 기본 사용법 -->
+<section class="content-section">
+  <h2 id="basic-usage">기본 사용법</h2>
+
+  <h3 id="suggest">gh copilot suggest (명령어 생성)</h3>
+
+  <p>
+    자연어로 원하는 작업을 설명하면 AI가 적절한 쉘 명령어를 생성합니다.
+  </p>
+
+  <h4>기본 구조</h4>
+  <pre><code>gh copilot suggest "<span class="str">하고 싶은 작업</span>"</code></pre>
+
+  <h4>예시: 파일 찾기</h4>
+  <pre><code>$ gh copilot suggest "최근 7일 내 수정된 Python 파일 찾기"
+
+<span class="fn">Suggestion:</span>
+
+find . -name "*.py" -mtime -7
+
+<span class="fn">Explanation:</span>
+- find . : 현재 디렉토리부터 검색
+- -name "*.py" : .py로 끝나는 파일
+- -mtime -7 : 최근 7일 이내 수정
+
+<span class="str">Run this command? (Y/n/revise)</span></code></pre>
+
+  <h4>예시: Git 작업</h4>
+  <pre><code>$ gh copilot suggest "마지막 3개 커밋 취소하고 변경사항 유지"
+
+<span class="fn">Suggestion:</span>
+
+git reset --soft HEAD~3
+
+<span class="fn">Explanation:</span>
+HEAD~3까지 커밋을 되돌리지만 변경사항은 staged 상태로 유지
+
+<span class="str">Run this command? (Y/n/revise)</span></code></pre>
+
+  <h4>예시: 시스템 관리</h4>
+  <pre><code>$ gh copilot suggest "80번 포트 사용 중인 프로세스 찾아서 종료"
+
+<span class="fn">Suggestion:</span>
+
+sudo lsof -t -i:80 | xargs kill -9
+
+<span class="fn">Explanation:</span>
+- lsof -t -i:80 : 80번 포트 사용 프로세스 ID 출력
+- xargs kill -9 : 해당 프로세스 강제 종료
+
+<span class="str">Run this command? (Y/n/revise)</span></code></pre>
+
+  <h3 id="explain">gh copilot explain (명령어 설명)</h3>
+
+  <p>
+    복잡한 명령어의 의미를 쉬운 한국어로 설명해줍니다.
+  </p>
+
+  <h4>기본 구조</h4>
+  <pre><code>gh copilot explain "<span class="str">복잡한 명령어</span>"</code></pre>
+
+  <h4>예시: Git 명령어</h4>
+  <pre><code>$ gh copilot explain "git rebase -i HEAD~3"
+
+<span class="fn">Explanation:</span>
+
+이 명령어는 마지막 3개 커밋에 대한 대화형 리베이스를 시작합니다.
+
+<span class="fn">각 부분의 의미:</span>
+- git rebase : 커밋 히스토리를 재작성
+- -i : interactive (대화형 모드)
+- HEAD~3 : 현재로부터 3개 이전 커밋
+
+<span class="fn">사용 시나리오:</span>
+- 커밋 메시지 수정
+- 여러 커밋 합치기 (squash)
+- 커밋 순서 변경
+- 특정 커밋 제거
+
+<span class="fn">주의사항:</span>
+이미 푸시한 커밋을 리베이스하면 force push가 필요합니다.</code></pre>
+
+  <h4>예시: 복잡한 파이프라인</h4>
+  <pre><code>$ gh copilot explain "ps aux | grep node | awk '{print $2}' | xargs kill"
+
+<span class="fn">Explanation:</span>
+
+이 명령어는 모든 Node.js 프로세스를 찾아서 종료합니다.
+
+<span class="fn">파이프라인 분석:</span>
+
+1. ps aux
+   → 모든 실행 중인 프로세스 목록 출력
+
+2. | grep node
+   → "node"가 포함된 줄만 필터링
+
+3. | awk '{print $2}'
+   → 두 번째 필드(프로세스 ID)만 추출
+
+4. | xargs kill
+   → 추출된 PID들에 kill 명령 실행
+
+<span class="fn">더 안전한 대안:</span>
+kill 대신 kill -15 (SIGTERM) 사용 권장</code></pre>
+
+  <h3 id="interactive">대화형 모드</h3>
+
+  <p>
+    명령어 실행 후 <code>revise</code>를 선택하면 AI와 대화하며 명령어를 개선할 수 있습니다.
+  </p>
+
+  <pre><code>$ gh copilot suggest "파일 찾기"
+
+<span class="fn">Suggestion:</span> find . -name "*"
+
+<span class="str">Run this command? (Y/n/revise)</span> revise
+
+<span class="str">💬 You:</span> "Python 파일만 찾고 싶어. 그리고 최근 7일 이내."
+
+<span class="fn">Revised Suggestion:</span>
+
+find . -name "*.py" -mtime -7
+
+<span class="str">Run this command? (Y/n/revise)</span> Y
+
+<span class="cmt"># 명령어 실행됨</span></code></pre>
+</section>
+
+<!-- Section 4: 실전 활용 -->
+<section class="content-section">
+  <h2 id="real-world-usage">실전 활용</h2>
+
+  <h3 id="git-workflows">Git 워크플로우</h3>
+
+  <h4>커밋 정리</h4>
+  <pre><code>$ ghcs "마지막 5개 커밋을 1개로 합치기"
+→ git rebase -i HEAD~5
+
+$ ghcs "특정 파일의 변경 히스토리 보기"
+→ git log --follow -p -- filename.js
+
+$ ghcs "마지막 커밋 메시지 수정"
+→ git commit --amend -m "new message"</code></pre>
+
+  <h4>브랜치 관리</h4>
+  <pre><code>$ ghcs "병합된 브랜치 모두 삭제"
+→ git branch --merged | grep -v "\*" | xargs -n 1 git branch -d
+
+$ ghcs "원격 브랜치와 동기화"
+→ git fetch --prune</code></pre>
+
+  <h4>변경사항 검토</h4>
+  <pre><code>$ ghcs "특정 작성자의 최근 커밋 보기"
+→ git log --author="John" --since="1 week ago" --oneline
+
+$ ghcs "특정 단어가 포함된 커밋 찾기"
+→ git log --all --grep="bugfix"</code></pre>
+
+  <h3 id="file-operations">파일 조작</h3>
+
+  <h4>검색 및 필터링</h4>
+  <pre><code>$ ghcs "1GB 이상 파일 찾기"
+→ find . -type f -size +1G
+
+$ ghcs "빈 디렉토리 찾아서 삭제"
+→ find . -type d -empty -delete
+
+$ ghcs "특정 문자열 포함 파일 찾기"
+→ grep -r "TODO" --include="*.js"</code></pre>
+
+  <h4>일괄 작업</h4>
+  <pre><code>$ ghcs "모든 .log 파일 압축"
+→ find . -name "*.log" -exec gzip {} \;
+
+$ ghcs "특정 확장자 파일 이름 변경"
+→ find . -name "*.txt" -exec bash -c 'mv "$0" "${0%.txt}.md"' {} \;</code></pre>
+
+  <h3 id="system-admin">시스템 관리</h3>
+
+  <h4>프로세스 관리</h4>
+  <pre><code>$ ghcs "메모리 사용량 상위 10개 프로세스"
+→ ps aux --sort=-%mem | head -n 11
+
+$ ghcs "좀비 프로세스 찾기"
+→ ps aux | grep 'Z'</code></pre>
+
+  <h4>네트워크</h4>
+  <pre><code>$ ghcs "열린 포트 확인"
+→ netstat -tuln | grep LISTEN
+
+$ ghcs "특정 도메인 DNS 조회"
+→ nslookup example.com</code></pre>
+
+  <h4>디스크 관리</h4>
+  <pre><code>$ ghcs "디렉토리 크기 확인 (큰 순서)"
+→ du -sh * | sort -hr
+
+$ ghcs "중복 파일 찾기"
+→ fdupes -r .</code></pre>
+
+  <h3 id="docker-k8s">Docker & Kubernetes</h3>
+
+  <h4>Docker</h4>
+  <pre><code>$ ghcs "실행 중인 컨테이너 모두 중지"
+→ docker stop $(docker ps -q)
+
+$ ghcs "사용하지 않는 이미지 삭제"
+→ docker image prune -a
+
+$ ghcs "컨테이너 로그 실시간 보기"
+→ docker logs -f container_name</code></pre>
+
+  <h4>Kubernetes</h4>
+  <pre><code>$ ghcs "특정 네임스페이스의 Pod 재시작"
+→ kubectl rollout restart deployment/myapp -n production
+
+$ ghcs "실패한 Pod 찾기"
+→ kubectl get pods --all-namespaces | grep -v Running</code></pre>
+</section>
+
+<!-- Section 5: 고급 활용 -->
+<section class="content-section">
+  <h2 id="advanced-usage">고급 활용</h2>
+
+  <h3 id="chaining">명령어 체이닝</h3>
+
+  <p>
+    복잡한 파이프라인도 자연어로 요청할 수 있습니다.
+  </p>
+
+  <pre><code>$ ghcs "Node.js 프로세스 중 메모리 사용량 높은 순서로 3개 출력"
+
+<span class="fn">Suggestion:</span>
+
+ps aux | grep node | sort -k4 -r | head -n 3
+
+<span class="cmt"># 또는</span>
+
+$ ghcs "JSON 파일에서 특정 필드 추출해서 정렬"
+
+<span class="fn">Suggestion:</span>
+
+jq '.users[] | .name' data.json | sort</code></pre>
+
+  <h3 id="platform-specific">플랫폼별 명령어</h3>
+
+  <p>
+    AI가 자동으로 OS를 감지하여 적절한 명령어를 생성합니다.
+  </p>
+
+  <pre><code><span class="cmt"># macOS</span>
+$ ghcs "클립보드 내용 파일로 저장"
+→ pbpaste > clipboard.txt
+
+<span class="cmt"># Linux</span>
+$ ghcs "클립보드 내용 파일로 저장"
+→ xclip -o > clipboard.txt
+
+<span class="cmt"># Windows (PowerShell)</span>
+$ ghcs "클립보드 내용 파일로 저장"
+→ Get-Clipboard | Out-File clipboard.txt</code></pre>
+
+  <h3 id="scripting">스크립트 작성 보조</h3>
+
+  <pre><code>$ ghcs "Bash 스크립트로 디렉토리 백업 자동화"
+
+<span class="fn">Suggestion:</span>
+
+#!/bin/bash
+SOURCE="/path/to/source"
+DEST="/path/to/backup"
+DATE=$(date +%Y%m%d)
+tar -czf "$DEST/backup-$DATE.tar.gz" "$SOURCE"
+
+<span class="cmt"># 파일로 저장 후 실행 권한 부여</span></code></pre>
+
+  <h3 id="debugging-commands">명령어 디버깅</h3>
+
+  <pre><code><span class="cmt"># 에러가 나는 명령어 분석</span>
+$ ghce "tar -xzf archive.tar.gz | grep error"
+
+<span class="fn">Explanation:</span>
+이 명령어는 작동하지 않습니다. tar는 표준 출력에 아무것도 출력하지 않으므로
+grep으로 파이프할 내용이 없습니다.
+
+<span class="fn">올바른 방법:</span>
+tar -xzf archive.tar.gz --verbose | grep error
+
+또는 압축 해제 후 에러 확인:
+tar -xzf archive.tar.gz && echo "Success" || echo "Error"</code></pre>
+</section>
+
+<!-- Section 6: 비교 -->
+<section class="content-section">
+  <h2 id="comparison">다른 도구와 비교</h2>
+
+  <h3 id="vs-claude-cli">vs Claude CLI</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>GitHub Copilot CLI</th>
+        <th>Claude CLI</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>목적</strong></td>
+        <td>터미널 명령어 생성</td>
+        <td>코드 생성 및 프로젝트 관리</td>
+      </tr>
+      <tr>
+        <td><strong>코드 편집</strong></td>
+        <td>❌</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong>파일 생성</strong></td>
+        <td>❌</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong>명령어 생성</strong></td>
+        <td>✅ (핵심 기능)</td>
+        <td>제한적</td>
+      </tr>
+      <tr>
+        <td><strong>가격</strong></td>
+        <td>$10/월</td>
+        <td>종량제</td>
+      </tr>
+      <tr>
+        <td><strong>사용 편의성</strong></td>
+        <td>매우 간단</td>
+        <td>복잡 (강력)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="vs-cursor">vs Cursor/Continue</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>GitHub Copilot CLI</th>
+        <th>Cursor/Continue</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>환경</strong></td>
+        <td>터미널</td>
+        <td>IDE (VS Code)</td>
+      </tr>
+      <tr>
+        <td><strong>코드 편집</strong></td>
+        <td>❌</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong>시스템 명령어</strong></td>
+        <td>✅</td>
+        <td>제한적</td>
+      </tr>
+      <tr>
+        <td><strong>학습 곡선</strong></td>
+        <td>낮음</td>
+        <td>중간</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="when-to-use">언제 사용해야 하나?</h3>
+
+  <h4>GitHub Copilot CLI 추천</h4>
+  <ul>
+    <li>터미널에서 주로 작업</li>
+    <li>쉘 스크립트 작성</li>
+    <li>시스템 관리 작업</li>
+    <li>Git 명령어 학습 중</li>
+    <li>명령어 검색 시간 단축</li>
+  </ul>
+
+  <h4>다른 도구 추천</h4>
+  <ul>
+    <li><strong>코드 작성</strong> → Claude CLI, Cursor</li>
+    <li><strong>프로젝트 관리</strong> → Claude CLI, Aider</li>
+    <li><strong>무료 사용</strong> → Continue + Ollama</li>
+    <li><strong>멀티파일 편집</strong> → Cursor Composer</li>
+  </ul>
+</section>
+
+<!-- Section 7: 팁과 트릭 -->
+<section class="content-section">
+  <h2 id="tips">팁과 트릭</h2>
+
+  <h3 id="productivity-tips">생산성 팁</h3>
+
+  <h4>1. 별칭 활용</h4>
+  <pre><code><span class="cmt"># ~/.zshrc 또는 ~/.bashrc</span>
+alias ghcs='gh copilot suggest'
+alias ghce='gh copilot explain'
+
+<span class="cmt"># 더 짧게</span>
+alias gcs='gh copilot suggest'
+alias gce='gh copilot explain'</code></pre>
+
+  <h4>2. 히스토리 활용</h4>
+  <pre><code><span class="cmt"># 마지막 명령어 설명</span>
+ghce "$(history -1 | awk '{$1=""; print $0}')"
+
+<span class="cmt"># 별칭으로 등록</span>
+alias explain-last='ghce "$(history -1 | awk '"'"'{$1=""; print $0}'"'"')"'</code></pre>
+
+  <h4>3. 명령어 라이브러리</h4>
+  <pre><code><span class="cmt"># 자주 사용하는 명령어 저장</span>
+mkdir -p ~/.copilot-commands
+
+<span class="cmt"># 예시 파일</span>
+cat > ~/.copilot-commands/git.txt << 'EOF'
+마지막 3개 커밋 합치기
+특정 파일의 변경 히스토리
+병합된 브랜치 삭제
+EOF
+
+<span class="cmt"># 검색 함수</span>
+function copilot-search() {
+  grep -r "$1" ~/.copilot-commands/
+}</code></pre>
+
+  <h4>4. 파이프라인 디버깅</h4>
+  <pre><code><span class="cmt"># 각 단계별로 테스트</span>
+$ ps aux | head
+$ ps aux | grep node | head
+$ ps aux | grep node | awk '{print $2}' | head
+
+<span class="cmt"># AI에게 검증 요청</span>
+$ ghce "ps aux | grep node | awk '{print $2}' | xargs kill"</code></pre>
+
+  <h3 id="learning-strategies">학습 전략</h3>
+
+  <ol>
+    <li><strong>생성 → 설명 패턴</strong>
+      <pre><code><span class="cmt"># 명령어 생성</span>
+ghcs "복잡한 작업"
+
+<span class="cmt"># 생성된 명령어 이해</span>
+ghce "생성된 명령어"</code></pre>
+    </li>
+    <li><strong>점진적 복잡도</strong>
+      <pre><code><span class="cmt"># 간단한 것부터</span>
+ghcs "파일 찾기"
+
+<span class="cmt"># 조건 추가</span>
+ghcs "Python 파일 찾기"
+
+<span class="cmt"># 더 복잡하게</span>
+ghcs "최근 7일 내 수정된 Python 파일 찾기"</code></pre>
+    </li>
+    <li><strong>에러 학습</strong>
+      <pre><code><span class="cmt"># 에러가 나면 AI에게 물어보기</span>
+ghce "에러 난 명령어"
+ghcs "에러를 수정한 명령어"</code></pre>
+    </li>
+  </ol>
+
+  <h3 id="best-practices">모범 사례</h3>
+
+  <ul>
+    <li><strong>명확한 요청</strong>: "파일 찾기" → "최근 7일 내 수정된 Python 파일 찾기"</li>
+    <li><strong>검증 후 실행</strong>: AI 제안을 항상 검토한 후 실행</li>
+    <li><strong>위험한 명령어 주의</strong>: rm -rf, kill -9 등은 신중히</li>
+    <li><strong>플랫폼 명시</strong>: "macOS에서..." 또는 "Linux에서..."</li>
+    <li><strong>학습 도구로 활용</strong>: 설명 기능으로 명령어 이해</li>
+  </ul>
+</section>
+
+<!-- Section 8: 제한사항 -->
+<section class="content-section">
+  <h2 id="limitations">제한사항 및 주의사항</h2>
+
+  <h3 id="what-it-cannot-do">할 수 없는 것</h3>
+
+  <ul>
+    <li><strong>코드 파일 편집</strong>: 명령어 생성만 가능 (파일 수정 불가)</li>
+    <li><strong>프로젝트 컨텍스트</strong>: 현재 디렉토리 구조 이해 제한적</li>
+    <li><strong>대화형 명령어</strong>: vim, nano 등 대화형 도구 사용법 제한</li>
+    <li><strong>GUI 프로그램</strong>: 그래픽 애플리케이션 조작 불가</li>
+    <li><strong>실시간 피드백</strong>: 명령어 실행 중 오류 감지 불가</li>
+  </ul>
+
+  <h3 id="safety">안전성 고려사항</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 위험한 명령어</div>
+    <p>AI가 생성한 명령어라도 다음은 특히 주의:</p>
+    <ul>
+      <li><code>rm -rf /</code> - 전체 파일 시스템 삭제</li>
+      <li><code>chmod -R 777</code> - 보안 권한 문제</li>
+      <li><code>kill -9 -1</code> - 모든 프로세스 종료</li>
+      <li><code>dd if=/dev/zero</code> - 디스크 덮어쓰기</li>
+    </ul>
+    <p>항상 생성된 명령어를 검토하고 이해한 후 실행하세요!</p>
+  </div>
+
+  <h3 id="cost">비용</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>플랜</th>
+        <th>가격</th>
+        <th>포함 내용</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>개인</strong></td>
+        <td>$10/월</td>
+        <td>CLI + IDE Copilot</td>
+      </tr>
+      <tr>
+        <td><strong>학생</strong></td>
+        <td>무료</td>
+        <td>GitHub Student Pack</td>
+      </tr>
+      <tr>
+        <td><strong>팀</strong></td>
+        <td>$19/월/인</td>
+        <td>조직 관리 포함</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>참고:</strong> GitHub Copilot CLI는 IDE Copilot 구독에 포함되어 있습니다.</p>
+</section>
+
+<!-- Section 9: 트러블슈팅 -->
+<section class="content-section">
+  <h2 id="troubleshooting">트러블슈팅</h2>
+
+  <h3 id="common-issues">일반적인 문제</h3>
+
+  <h4>❌ "gh: command not found"</h4>
+  <p><strong>원인:</strong> GitHub CLI 미설치</p>
+  <p><strong>해결:</strong></p>
+  <pre><code>brew install gh  <span class="cmt"># macOS</span>
+sudo apt install gh  <span class="cmt"># Linux</span></code></pre>
+
+  <h4>❌ "extension not found"</h4>
+  <p><strong>원인:</strong> Copilot 확장 미설치</p>
+  <p><strong>해결:</strong></p>
+  <pre><code>gh extension install github/gh-copilot</code></pre>
+
+  <h4>❌ "authentication required"</h4>
+  <p><strong>원인:</strong> GitHub 로그인 필요</p>
+  <p><strong>해결:</strong></p>
+  <pre><code>gh auth login
+<span class="cmt"># 브라우저에서 인증 완료</span></code></pre>
+
+  <h4>❌ "subscription required"</h4>
+  <p><strong>원인:</strong> Copilot 구독 없음</p>
+  <p><strong>해결:</strong></p>
+  <ul>
+    <li>https://github.com/features/copilot 에서 구독</li>
+    <li>또는 GitHub Student Pack 신청</li>
+  </ul>
+
+  <h4>❌ 명령어가 플랫폼에 맞지 않음</h4>
+  <p><strong>해결:</strong></p>
+  <pre><code><span class="cmt"># 플랫폼 명시</span>
+ghcs "macOS에서 클립보드 내용 저장"
+ghcs "Linux에서 메모리 사용량 확인"</code></pre>
+</section>
+
+<!-- Section 10: 요약 -->
+<section class="content-section">
+  <h2 id="summary">요약</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">📝 핵심 요약</div>
+    <ul>
+      <li><strong>목적</strong>: 터미널 명령어 생성 및 설명</li>
+      <li><strong>설치</strong>: <code>gh extension install github/gh-copilot</code></li>
+      <li><strong>주요 명령어</strong>: <code>gh copilot suggest</code>, <code>gh copilot explain</code></li>
+      <li><strong>가격</strong>: $10/월 (GitHub Copilot 구독 포함)</li>
+      <li><strong>장점</strong>: 간단, 빠름, 학습 도구로 우수</li>
+      <li><strong>단점</strong>: 코드 편집 불가, 구독 필요</li>
+      <li><strong>추천 대상</strong>: 터미널 작업이 많은 개발자, 시스템 관리자</li>
+    </ul>
+  </div>
+
+  <h3 id="use-cases">추천 사용 사례</h3>
+
+  <ol>
+    <li><strong>Git 학습</strong>: 복잡한 Git 명령어 생성 및 이해</li>
+    <li><strong>시스템 관리</strong>: 서버 관리 명령어 빠르게 생성</li>
+    <li><strong>스크립트 작성</strong>: Bash/Python 스크립트 작성 보조</li>
+    <li><strong>명령어 디버깅</strong>: 에러 나는 명령어 분석</li>
+    <li><strong>생산성 향상</strong>: 명령어 검색 시간 단축</li>
+  </ol>
+
+  <h3 id="next-learning">다음 학습</h3>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>💻 Claude CLI</h3>
+      <p>코드 생성 및 프로젝트 관리</p>
+      <a href="claude-cli.html" class="card-link">배우기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔄 Continue.dev</h3>
+      <p>IDE 내 AI 어시스턴트</p>
+      <a href="continue.html" class="card-link">비교하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🔧 Cursor IDE</h3>
+      <p>AI 네이티브 에디터</p>
+      <a href="cursor.html" class="card-link">비교하기 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>⚙️ CLI 모범 사례</h3>
+      <p>효과적인 도구 활용</p>
+      <a href="cli-best-practices.html" class="card-link">마스터하기 →</a>
+    </div>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

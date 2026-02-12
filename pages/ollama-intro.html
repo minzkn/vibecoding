@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Ollama란? - 로컬 LLM 실행 플랫폼">
+<meta property="og:description" content="Ollama의 개념, 장점, 아키텍처를 이해하고 로컬 LLM 실행의 필요성을 배웁니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/ollama-intro.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Ollama 완전 가이드. 로컬 LLM 실행 플랫폼의 개념과 장점을 배웁니다.">
+<meta name="keywords" content="ollama, 로컬 llm, local model, llama, mistral, 오픈소스">
+<meta name="author" content="MINZKN">
+<title>Ollama란? - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<nav class="breadcrumb"></nav>
+
+<h1 id="top">Ollama란?</h1>
+<p class="lead">로컬에서 대규모 언어 모델(LLM)을 쉽게 실행하는 오픈소스 플랫폼</p>
+
+<div class="info-box tip">
+  <div class="info-box-title">🎓 처음 시작하시나요?</div>
+  <p><strong>Ollama 3단계 시작:</strong></p>
+  <ol>
+    <li>Ollama 설치 (1분) - <code>curl -fsSL https://ollama.com/install.sh | sh</code></li>
+    <li>모델 다운로드 (5분) - <code>ollama pull llama3.2</code></li>
+    <li>첫 대화 시작 - <code>ollama run llama3.2</code></li>
+  </ol>
+  <p>이제 <strong>완전히 무료</strong>로, <strong>인터넷 없이도</strong> AI 코딩을 시작할 수 있습니다!</p>
+</div>
+
+<section class="content-section">
+  <h2 id="what-is-ollama">Ollama란 무엇인가?</h2>
+
+  <p>
+    <strong>Ollama</strong>는 대규모 언어 모델(LLM)을 로컬 컴퓨터에서 쉽게 실행할 수 있게 해주는 오픈소스 플랫폼입니다.
+    Docker와 유사한 방식으로, 복잡한 AI 모델을 간단한 명령어로 다운로드하고 실행할 수 있습니다.
+  </p>
+
+  <h3 id="core-concept">핵심 개념</h3>
+
+  <p><strong>Ollama = Docker for AI Models</strong></p>
+
+  <ul>
+    <li><strong>컨테이너화</strong>: 각 LLM을 독립적인 패키지로 관리</li>
+    <li><strong>간단한 CLI</strong>: <code>ollama pull</code>, <code>ollama run</code> 등 직관적 명령어</li>
+    <li><strong>모델 레지스트리</strong>: Docker Hub처럼 ollama.com에서 모델 검색 및 다운로드</li>
+    <li><strong>로컬 실행</strong>: 인터넷 연결 없이도 AI 모델 사용 가능</li>
+    <li><strong>REST API</strong>: HTTP API로 다른 앱과 쉽게 통합</li>
+  </ul>
+
+  <svg viewBox="0 0 800 400" class="diagram" role="img" aria-label="Ollama 아키텍처">
+    <defs>
+      <marker id="arrowhead-ollama" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--svg-arrow)" />
+      </marker>
+    </defs>
+
+    <!-- User -->
+    <rect x="50" y="50" width="120" height="80" fill="var(--svg-box)" stroke="var(--svg-border)" stroke-width="2" rx="8"/>
+    <text x="110" y="95" fill="var(--svg-text)" text-anchor="middle" font-size="16" font-weight="bold">사용자</text>
+    <text x="110" y="115" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="12">CLI / API</text>
+
+    <!-- Ollama -->
+    <rect x="250" y="30" width="300" height="340" fill="var(--svg-section)" stroke="var(--svg-accent)" stroke-width="3" rx="8"/>
+    <text x="400" y="55" fill="var(--svg-accent)" text-anchor="middle" font-size="18" font-weight="bold">Ollama 플랫폼</text>
+
+    <!-- Model Manager -->
+    <rect x="270" y="80" width="260" height="60" fill="var(--svg-box)" stroke="var(--svg-border)" stroke-width="2" rx="6"/>
+    <text x="400" y="110" fill="var(--svg-text)" text-anchor="middle" font-size="14" font-weight="bold">모델 관리자</text>
+    <text x="400" y="128" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="11">pull, list, rm, create</text>
+
+    <!-- Inference Engine -->
+    <rect x="270" y="160" width="260" height="60" fill="var(--svg-box)" stroke="var(--svg-border)" stroke-width="2" rx="6"/>
+    <text x="400" y="190" fill="var(--svg-text)" text-anchor="middle" font-size="14" font-weight="bold">추론 엔진</text>
+    <text x="400" y="208" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="11">llama.cpp 기반 최적화</text>
+
+    <!-- HTTP API Server -->
+    <rect x="270" y="240" width="260" height="60" fill="var(--svg-box)" stroke="var(--svg-border)" stroke-width="2" rx="6"/>
+    <text x="400" y="270" fill="var(--svg-text)" text-anchor="middle" font-size="14" font-weight="bold">HTTP API 서버</text>
+    <text x="400" y="288" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="11">:11434 포트</text>
+
+    <!-- Model Storage -->
+    <rect x="270" y="320" width="260" height="40" fill="var(--svg-highlight)" stroke="var(--svg-border)" stroke-width="2" rx="6"/>
+    <text x="400" y="345" fill="var(--svg-text)" text-anchor="middle" font-size="14" font-weight="bold">모델 저장소 (~/.ollama)</text>
+
+    <!-- External Apps -->
+    <rect x="630" y="50" width="120" height="80" fill="var(--svg-box)" stroke="var(--svg-border)" stroke-width="2" rx="8"/>
+    <text x="690" y="85" fill="var(--svg-text)" text-anchor="middle" font-size="14" font-weight="bold">외부 앱</text>
+    <text x="690" y="105" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="11">Continue</text>
+    <text x="690" y="120" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="11">Aider</text>
+
+    <!-- Arrows -->
+    <line x1="170" y1="90" x2="250" y2="90" stroke="var(--svg-arrow)" stroke-width="2" marker-end="url(#arrowhead-ollama)"/>
+    <text x="210" y="85" fill="var(--svg-text-secondary)" font-size="10">ollama run</text>
+
+    <line x1="550" y1="90" x2="630" y2="90" stroke="var(--svg-arrow)" stroke-width="2" marker-end="url(#arrowhead-ollama)"/>
+    <text x="590" y="85" fill="var(--svg-text-secondary)" font-size="10">HTTP API</text>
+
+    <line x1="400" y1="140" x2="400" y2="160" stroke="var(--svg-arrow)" stroke-width="2" marker-end="url(#arrowhead-ollama)"/>
+    <line x1="400" y1="220" x2="400" y2="240" stroke="var(--svg-arrow)" stroke-width="2" marker-end="url(#arrowhead-ollama)"/>
+    <line x1="400" y1="300" x2="400" y2="320" stroke="var(--svg-arrow)" stroke-width="2" marker-end="url(#arrowhead-ollama)"/>
+  </svg>
+
+  <h3 id="why-docker-analogy">Docker와의 비교</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>개념</th>
+        <th>Docker</th>
+        <th>Ollama</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>컨테이너</td>
+        <td>애플리케이션 패키지</td>
+        <td>AI 모델 패키지</td>
+      </tr>
+      <tr>
+        <td>레지스트리</td>
+        <td>Docker Hub</td>
+        <td>ollama.com/library</td>
+      </tr>
+      <tr>
+        <td>다운로드</td>
+        <td><code>docker pull nginx</code></td>
+        <td><code>ollama pull llama3.2</code></td>
+      </tr>
+      <tr>
+        <td>실행</td>
+        <td><code>docker run nginx</code></td>
+        <td><code>ollama run llama3.2</code></td>
+      </tr>
+      <tr>
+        <td>목록</td>
+        <td><code>docker ps</code></td>
+        <td><code>ollama list</code></td>
+      </tr>
+      <tr>
+        <td>삭제</td>
+        <td><code>docker rm</code></td>
+        <td><code>ollama rm llama3.2</code></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="why-local">왜 로컬 LLM인가?</h2>
+
+  <h3 id="advantages">로컬 LLM의 장점</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">💰 비용 절감</div>
+    <ul>
+      <li><strong>무료 무제한</strong>: API 키 불필요, 사용량 제한 없음</li>
+      <li><strong>월 구독료 제로</strong>: Claude Pro $20/월, ChatGPT Plus $20/월 절약</li>
+      <li><strong>토큰 비용 제로</strong>: Claude API $0.003~$0.015/1K 토큰 절약</li>
+    </ul>
+    <p><strong>예시</strong>: 하루 100만 토큰 사용 시 Claude API는 월 $90~$450, Ollama는 $0</p>
+  </div>
+
+  <div class="info-box info">
+    <div class="info-box-title">🔒 프라이버시 & 보안</div>
+    <ul>
+      <li><strong>데이터 외부 유출 없음</strong>: 회사 코드, 민감한 정보 안전</li>
+      <li><strong>인터넷 불필요</strong>: 완전 오프라인 환경에서도 작동</li>
+      <li><strong>로그 미전송</strong>: 대화 내용이 외부 서버에 저장되지 않음</li>
+      <li><strong>규정 준수</strong>: GDPR, HIPAA 등 개인정보 보호 규정 충족</li>
+    </ul>
+  </div>
+
+  <div class="info-box info">
+    <div class="info-box-title">⚡ 성능 & 가용성</div>
+    <ul>
+      <li><strong>레이턴시 제로</strong>: 네트워크 지연 없음 (로컬 추론)</li>
+      <li><strong>속도 제어</strong>: GPU 성능에 따라 응답 속도 조절 가능</li>
+      <li><strong>다운타임 없음</strong>: API 서버 장애, Rate Limit 영향 없음</li>
+      <li><strong>동시 요청 무제한</strong>: 로컬 리소스만 허용하면 병렬 처리</li>
+    </ul>
+  </div>
+
+  <div class="info-box info">
+    <div class="info-box-title">🛠️ 커스터마이징</div>
+    <ul>
+      <li><strong>모델 파인튜닝</strong>: 특정 도메인에 맞게 모델 학습</li>
+      <li><strong>프롬프트 제어</strong>: 시스템 프롬프트 완전 제어</li>
+      <li><strong>파라미터 조정</strong>: temperature, top_p, context length 등 세밀 조정</li>
+      <li><strong>모델 버전 고정</strong>: 특정 버전 사용 보장</li>
+    </ul>
+  </div>
+
+  <h3 id="disadvantages">로컬 LLM의 단점 (트레이드오프)</h3>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 고려사항</div>
+    <table>
+      <thead>
+        <tr>
+          <th>항목</th>
+          <th>클라우드 LLM (Claude, GPT-4)</th>
+          <th>로컬 LLM (Ollama)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>모델 품질</strong></td>
+          <td>최고 수준 (Claude 4, GPT-4o)</td>
+          <td>중상 수준 (Llama 3.1, Mistral)</td>
+        </tr>
+        <tr>
+          <td><strong>하드웨어 요구</strong></td>
+          <td>브라우저만 있으면 됨</td>
+          <td>16GB+ RAM, GPU 권장</td>
+        </tr>
+        <tr>
+          <td><strong>초기 설정</strong></td>
+          <td>API 키만 입력</td>
+          <td>Ollama 설치 + 모델 다운로드 (3-7GB)</td>
+        </tr>
+        <tr>
+          <td><strong>응답 속도</strong></td>
+          <td>빠름 (클라우드 인프라)</td>
+          <td>GPU 성능에 따라 다름</td>
+        </tr>
+        <tr>
+          <td><strong>디스크 사용</strong></td>
+          <td>없음</td>
+          <td>모델당 3-20GB</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="when-to-use">언제 Ollama를 사용해야 하나?</h3>
+
+  <p><strong>✅ Ollama 추천 상황:</strong></p>
+  <ul>
+    <li>회사 코드, 민감한 데이터 처리 (프라이버시 중요)</li>
+    <li>API 비용 절감이 필요한 경우 (무제한 사용)</li>
+    <li>인터넷 연결이 불안정하거나 오프라인 환경</li>
+    <li>실험, 학습, 프로토타이핑 (무료 무제한)</li>
+    <li>간단한 코드 생성, 리팩토링, 설명</li>
+  </ul>
+
+  <p><strong>❌ 클라우드 LLM 추천 상황:</strong></p>
+  <ul>
+    <li>최고 품질의 코드 생성 필요 (복잡한 알고리즘, 아키텍처 설계)</li>
+    <li>하드웨어 리소스 부족 (RAM 8GB 이하, GPU 없음)</li>
+    <li>빠른 응답 속도가 중요 (실시간 코딩 어시스턴트)</li>
+    <li>최신 기술 스택, 프레임워크 지원 필요</li>
+  </ul>
+
+  <p><strong>🎯 최적 전략: 하이브리드 접근</strong></p>
+  <pre><code><span class="cmt"># 간단한 작업 → Ollama (무료)</span>
+- 코드 설명, 주석 작성
+- 간단한 함수 생성
+- 리팩토링, 코드 스타일 변경
+
+<span class="cmt"># 복잡한 작업 → Claude/GPT-4 (유료)</span>
+- 복잡한 알고리즘 설계
+- 대규모 리팩토링
+- 버그 디버깅 (복잡한 스택 트레이스)
+- 아키텍처 설계</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="architecture">Ollama 아키텍처</h2>
+
+  <h3 id="components">핵심 구성 요소</h3>
+
+  <h4>1. llama.cpp 기반 추론 엔진</h4>
+  <p>
+    Ollama는 <a href="https://github.com/ggerganov/llama.cpp" target="_blank">llama.cpp</a>를
+    백엔드로 사용합니다. llama.cpp는 C++로 작성된 고성능 LLM 추론 엔진으로, CPU와 GPU에서
+    효율적으로 동작하도록 최적화되어 있습니다.
+  </p>
+
+  <ul>
+    <li><strong>양자화 지원</strong>: 4-bit, 5-bit, 8-bit 양자화로 메모리 사용량 감소</li>
+    <li><strong>멀티 플랫폼</strong>: macOS (Metal), Linux/Windows (CUDA, ROCm)</li>
+    <li><strong>GGUF 포맷</strong>: 최적화된 모델 파일 형식</li>
+  </ul>
+
+  <h4>2. HTTP REST API</h4>
+  <p>포트 11434에서 실행되는 HTTP 서버로, 표준 REST API를 제공합니다.</p>
+
+  <pre><code><span class="cmt"># API 엔드포인트</span>
+POST /api/generate        <span class="cmt"># 텍스트 생성</span>
+POST /api/chat            <span class="cmt"># 채팅 대화</span>
+POST /api/embeddings      <span class="cmt"># 임베딩 생성</span>
+GET  /api/tags            <span class="cmt"># 설치된 모델 목록</span>
+POST /api/pull            <span class="cmt"># 모델 다운로드</span>
+DELETE /api/delete        <span class="cmt"># 모델 삭제</span></code></pre>
+
+  <h4>3. 모델 레지스트리 & 저장소</h4>
+  <p>
+    <strong>ollama.com/library</strong>에서 큐레이션된 모델을 제공하며,
+    로컬에는 <code>~/.ollama/models</code>에 저장됩니다.
+  </p>
+
+  <pre><code><span class="cmt"># 모델 저장 구조</span>
+~/.ollama/
+├── models/
+│   ├── manifests/
+│   │   └── registry.ollama.ai/
+│   │       └── library/
+│   │           └── llama3.2/
+│   │               └── latest          <span class="cmt"># 모델 메타데이터</span>
+│   └── blobs/
+│       ├── sha256-abc123...            <span class="cmt"># 모델 가중치 (GGUF)</span>
+│       └── sha256-def456...            <span class="cmt"># 설정 파일</span>
+└── history/                            <span class="cmt"># 대화 히스토리</span></code></pre>
+
+  <h3 id="model-format">GGUF 모델 포맷</h3>
+
+  <p>
+    Ollama는 <strong>GGUF</strong> (GPT-Generated Unified Format) 파일 형식을 사용합니다.
+    이는 llama.cpp 프로젝트에서 개발한 최적화된 형식입니다.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>단일 파일</strong></td>
+        <td>모델, 토크나이저, 메타데이터를 하나의 파일로 패키징</td>
+      </tr>
+      <tr>
+        <td><strong>양자화</strong></td>
+        <td>Q4_0, Q5_K_M, Q8_0 등 다양한 양자화 레벨 지원</td>
+      </tr>
+      <tr>
+        <td><strong>메모리 매핑</strong></td>
+        <td>mmap으로 빠른 로딩, 메모리 효율적</td>
+      </tr>
+      <tr>
+        <td><strong>크로스 플랫폼</strong></td>
+        <td>Windows, Linux, macOS 모두 지원</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="quantization">양자화란?</h3>
+
+  <p>
+    <strong>양자화(Quantization)</strong>는 모델 가중치의 정밀도를 낮춰 메모리 사용량과
+    추론 속도를 개선하는 기법입니다.
+  </p>
+
+  <svg viewBox="0 0 800 300" class="diagram" role="img" aria-label="양자화 비교">
+    <defs>
+      <marker id="arrowhead-quant" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--svg-arrow)" />
+      </marker>
+    </defs>
+
+    <!-- FP16 -->
+    <rect x="50" y="50" width="200" height="200" fill="var(--svg-box)" stroke="var(--svg-border)" stroke-width="2" rx="8"/>
+    <text x="150" y="80" fill="var(--svg-text)" text-anchor="middle" font-size="16" font-weight="bold">FP16 (원본)</text>
+    <text x="150" y="120" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="14">16-bit 부동소수점</text>
+    <text x="150" y="150" fill="var(--svg-accent)" text-anchor="middle" font-size="18" font-weight="bold">13GB</text>
+    <text x="150" y="180" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="12">최고 품질</text>
+    <text x="150" y="200" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="12">느린 속도</text>
+    <text x="150" y="230" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="11">GPU 필수</text>
+
+    <!-- Arrow -->
+    <line x1="260" y1="150" x2="340" y2="150" stroke="var(--svg-arrow)" stroke-width="3" marker-end="url(#arrowhead-quant)"/>
+    <text x="300" y="140" fill="var(--svg-accent)" text-anchor="middle" font-size="14" font-weight="bold">양자화</text>
+
+    <!-- Q4_0 -->
+    <rect x="350" y="50" width="200" height="200" fill="var(--svg-highlight)" stroke="var(--svg-accent)" stroke-width="3" rx="8"/>
+    <text x="450" y="80" fill="var(--svg-text)" text-anchor="middle" font-size="16" font-weight="bold">Q4_0 (양자화)</text>
+    <text x="450" y="120" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="14">4-bit 정수</text>
+    <text x="450" y="150" fill="var(--svg-accent)" text-anchor="middle" font-size="18" font-weight="bold">3.5GB</text>
+    <text x="450" y="180" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="12">약간 품질 저하</text>
+    <text x="450" y="200" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="12">빠른 속도</text>
+    <text x="450" y="230" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="11">CPU 가능</text>
+
+    <!-- Stats -->
+    <rect x="580" y="70" width="180" height="160" fill="var(--svg-section)" stroke="var(--svg-border)" stroke-width="2" rx="6"/>
+    <text x="670" y="95" fill="var(--svg-accent)" text-anchor="middle" font-size="14" font-weight="bold">개선 효과</text>
+    <text x="670" y="125" fill="var(--svg-text)" text-anchor="middle" font-size="13">메모리: 73% ↓</text>
+    <text x="670" y="150" fill="var(--svg-text)" text-anchor="middle" font-size="13">속도: 2-3배 ↑</text>
+    <text x="670" y="175" fill="var(--svg-text)" text-anchor="middle" font-size="13">품질: ~5% ↓</text>
+    <text x="670" y="210" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="11">대부분 작업에서</text>
+    <text x="670" y="225" fill="var(--svg-text-secondary)" text-anchor="middle" font-size="11">차이 거의 없음</text>
+  </svg>
+
+  <table>
+    <thead>
+      <tr>
+        <th>양자화</th>
+        <th>비트</th>
+        <th>크기 (7B 모델)</th>
+        <th>품질</th>
+        <th>속도</th>
+        <th>추천 용도</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>FP16</td>
+        <td>16-bit</td>
+        <td>13GB</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>느림</td>
+        <td>최고 품질 필요 시 (GPU 전용)</td>
+      </tr>
+      <tr>
+        <td>Q8_0</td>
+        <td>8-bit</td>
+        <td>7GB</td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>보통</td>
+        <td>품질 우선, GPU 여유</td>
+      </tr>
+      <tr>
+        <td>Q5_K_M</td>
+        <td>5-bit</td>
+        <td>4.8GB</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>빠름</td>
+        <td>균형 (품질 + 속도)</td>
+      </tr>
+      <tr>
+        <td><strong>Q4_0</strong></td>
+        <td>4-bit</td>
+        <td>3.5GB</td>
+        <td>⭐⭐⭐⭐</td>
+        <td>매우 빠름</td>
+        <td><strong>기본 권장</strong> (CPU/GPU)</td>
+      </tr>
+      <tr>
+        <td>Q3_K_M</td>
+        <td>3-bit</td>
+        <td>2.8GB</td>
+        <td>⭐⭐⭐</td>
+        <td>매우 빠름</td>
+        <td>리소스 제한적 환경</td>
+      </tr>
+      <tr>
+        <td>Q2_K</td>
+        <td>2-bit</td>
+        <td>2.2GB</td>
+        <td>⭐⭐</td>
+        <td>초고속</td>
+        <td>실험용, RAM 8GB 이하</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 양자화 선택 가이드</div>
+    <ul>
+      <li><strong>RAM 16GB+, GPU 있음</strong>: Q5_K_M 또는 Q8_0 (최상 품질)</li>
+      <li><strong>RAM 8-16GB, CPU</strong>: Q4_0 (기본, 무난함)</li>
+      <li><strong>RAM 8GB 이하</strong>: Q3_K_M 또는 Q2_K (속도 우선)</li>
+      <li><strong>모르겠으면</strong>: 그냥 기본값 사용 (Ollama가 자동 선택)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="use-cases">Ollama 사용 사례</h2>
+
+  <h3 id="coding-assistant">1. 코딩 어시스턴트</h3>
+
+  <p><strong>Continue.dev + Ollama</strong></p>
+  <pre><code><span class="cmt"># VS Code에서 로컬 AI 코딩</span>
+<span class="str">1. Ollama 설치 및 CodeLlama 다운로드</span>
+$ ollama pull codellama:13b
+
+<span class="str">2. Continue 확장 설치 및 설정</span>
+<span class="cmt">// settings.json</span>
+{
+  <span class="str">"continue.models"</span>: [
+    {
+      <span class="str">"provider"</span>: <span class="str">"ollama"</span>,
+      <span class="str">"model"</span>: <span class="str">"codellama:13b"</span>
+    }
+  ]
+}
+
+<span class="str">3. Ctrl+I로 코드 생성 시작</span>
+<span class="cmt"># 완전 무료, API 키 불필요!</span></code></pre>
+
+  <h3 id="data-analysis">2. 데이터 분석 & 리포팅</h3>
+
+  <pre><code><span class="cmt"># Python 스크립트에서 Ollama 사용</span>
+<span class="kw">import</span> requests
+
+<span class="kw">def</span> <span class="fn">analyze_data</span>(data):
+    response = requests.post(<span class="str">'http://localhost:11434/api/generate'</span>, json={
+        <span class="str">'model'</span>: <span class="str">'llama3.2'</span>,
+        <span class="str">'prompt'</span>: <span class="str">f'이 데이터를 분석하고 인사이트를 제공해줘: {data}'</span>,
+        <span class="str">'stream'</span>: <span class="kw">False</span>
+    })
+    <span class="kw">return</span> response.json()[<span class="str">'response'</span>]
+
+<span class="cmt"># 민감한 비즈니스 데이터를 외부 전송 없이 분석</span></code></pre>
+
+  <h3 id="chatbot">3. 프라이빗 챗봇</h3>
+
+  <pre><code><span class="cmt"># 회사 내부 문서 기반 RAG 챗봇</span>
+<span class="kw">from</span> langchain <span class="kw">import</span> Ollama
+<span class="kw">from</span> langchain.vectorstores <span class="kw">import</span> Chroma
+
+<span class="cmt"># 로컬 LLM 사용 → 회사 문서 외부 유출 없음</span>
+llm = Ollama(model=<span class="str">"llama3.2"</span>)
+vectorstore = Chroma.from_documents(company_docs)
+
+<span class="kw">def</span> <span class="fn">ask_question</span>(query):
+    context = vectorstore.similarity_search(query, k=<span class="num">3</span>)
+    <span class="kw">return</span> llm(f<span class="str">"Context: {context}\n\nQuestion: {query}"</span>)</code></pre>
+
+  <h3 id="education">4. 학습 & 실험</h3>
+
+  <p>
+    API 비용 걱정 없이 무제한 실험 가능:
+  </p>
+  <ul>
+    <li>프롬프트 엔지니어링 연습</li>
+    <li>RAG, Agent 파이프라인 테스트</li>
+    <li>파인튜닝 실험</li>
+    <li>LLM 내부 동작 이해</li>
+  </ul>
+
+  <h3 id="offline">5. 오프라인 환경</h3>
+
+  <ul>
+    <li>비행기, 기차에서 코딩</li>
+    <li>인터넷 제한된 국가/환경</li>
+    <li>보안이 엄격한 폐쇄망</li>
+    <li>군사, 정부 기관</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="ecosystem">Ollama 생태계</h2>
+
+  <h3 id="supported-models">지원 모델 (2025년 기준)</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>모델군</th>
+        <th>대표 모델</th>
+        <th>특징</th>
+        <th>크기</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Llama</strong></td>
+        <td>llama3.2, llama3.1</td>
+        <td>Meta 오픈소스, 범용 성능</td>
+        <td>1B-405B</td>
+      </tr>
+      <tr>
+        <td><strong>CodeLlama</strong></td>
+        <td>codellama:13b</td>
+        <td>코딩 특화 (Python, JS 등)</td>
+        <td>7B-34B</td>
+      </tr>
+      <tr>
+        <td><strong>Mistral</strong></td>
+        <td>mistral:7b, mixtral:8x7b</td>
+        <td>효율적, 빠른 속도</td>
+        <td>7B-47B</td>
+      </tr>
+      <tr>
+        <td><strong>Phi</strong></td>
+        <td>phi3:mini, phi3:medium</td>
+        <td>Microsoft, 소형 고성능</td>
+        <td>3B-14B</td>
+      </tr>
+      <tr>
+        <td><strong>Gemma</strong></td>
+        <td>gemma:7b</td>
+        <td>Google, 경량</td>
+        <td>2B-7B</td>
+      </tr>
+      <tr>
+        <td><strong>Qwen</strong></td>
+        <td>qwen2.5:7b</td>
+        <td>Alibaba, 다국어 지원</td>
+        <td>0.5B-72B</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="integrations">통합 도구</h3>
+
+  <ul>
+    <li><strong>VS Code</strong>: Continue, CodeGPT, Twinny</li>
+    <li><strong>CLI</strong>: Aider, shell-gpt, fabric</li>
+    <li><strong>IDE</strong>: JetBrains AI Assistant (Ollama 지원)</li>
+    <li><strong>프레임워크</strong>: LangChain, LlamaIndex, Semantic Kernel</li>
+    <li><strong>앱</strong>: Open WebUI, AnythingLLM, Jan</li>
+  </ul>
+
+  <h3 id="community">커뮤니티</h3>
+
+  <ul>
+    <li><strong>GitHub</strong>: <a href="https://github.com/ollama/ollama" target="_blank">github.com/ollama/ollama</a> (80k+ stars)</li>
+    <li><strong>Discord</strong>: Ollama 공식 Discord 서버</li>
+    <li><strong>Reddit</strong>: r/LocalLLaMA, r/ollama</li>
+    <li><strong>블로그</strong>: ollama.com/blog</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="comparison">Ollama vs 다른 로컬 LLM 솔루션</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>항목</th>
+        <th>Ollama</th>
+        <th>LM Studio</th>
+        <th>llama.cpp (직접)</th>
+        <th>LocalAI</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>설치 난이도</strong></td>
+        <td>⭐⭐⭐⭐⭐ (매우 쉬움)</td>
+        <td>⭐⭐⭐⭐ (쉬움, GUI)</td>
+        <td>⭐⭐ (어려움, 빌드 필요)</td>
+        <td>⭐⭐⭐ (Docker 필요)</td>
+      </tr>
+      <tr>
+        <td><strong>사용 방식</strong></td>
+        <td>CLI + REST API</td>
+        <td>GUI + API</td>
+        <td>CLI 전용</td>
+        <td>REST API 전용</td>
+      </tr>
+      <tr>
+        <td><strong>모델 관리</strong></td>
+        <td>매우 간편 (pull/list/rm)</td>
+        <td>GUI로 쉬움</td>
+        <td>수동 다운로드/변환</td>
+        <td>컨테이너 볼륨 관리</td>
+      </tr>
+      <tr>
+        <td><strong>성능</strong></td>
+        <td>최적화 됨</td>
+        <td>최적화 됨</td>
+        <td>최고 (직접 제어)</td>
+        <td>약간 오버헤드</td>
+      </tr>
+      <tr>
+        <td><strong>플랫폼</strong></td>
+        <td>macOS, Linux, Windows</td>
+        <td>macOS, Windows</td>
+        <td>모든 플랫폼</td>
+        <td>Docker 지원 플랫폼</td>
+      </tr>
+      <tr>
+        <td><strong>오픈소스</strong></td>
+        <td>✅ MIT</td>
+        <td>❌ (Freeware)</td>
+        <td>✅ MIT</td>
+        <td>✅ MIT</td>
+      </tr>
+      <tr>
+        <td><strong>추천 대상</strong></td>
+        <td>개발자, CLI 선호</td>
+        <td>GUI 선호, 초보자</td>
+        <td>고급 사용자, 커스터마이징</td>
+        <td>Docker 환경, 서버</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 선택 가이드</div>
+    <ul>
+      <li><strong>개발자, CLI 편함</strong> → <strong>Ollama</strong> (가장 추천)</li>
+      <li><strong>GUI 선호, 초보자</strong> → LM Studio</li>
+      <li><strong>최고 성능 필요</strong> → llama.cpp 직접 빌드</li>
+      <li><strong>Docker 환경</strong> → LocalAI</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <p>Ollama의 개념을 이해했다면, 이제 직접 설치하고 사용해봅시다!</p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📚 학습 경로</div>
+    <ol>
+      <li><a href="ollama-installation.html">Ollama 설치</a> - Windows, macOS, Linux 설치 가이드</li>
+      <li><a href="ollama-models.html">모델 선택</a> - Llama, Mistral, CodeLlama 등 비교</li>
+      <li><a href="ollama-usage.html">기본 사용법</a> - CLI 명령어, API 사용</li>
+      <li><a href="ollama-integration.html">도구 연동</a> - Continue, Aider와 통합</li>
+      <li><a href="ollama-advanced.html">고급 활용</a> - 커스텀 모델, 파인튜닝</li>
+    </ol>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">⚡ 5분 퀵스타트</div>
+    <p>바로 시작하고 싶다면:</p>
+    <pre><code><span class="cmt"># 1. 설치 (Linux/macOS)</span>
+curl -fsSL https://ollama.com/install.sh | sh
+
+<span class="cmt"># 2. 모델 다운로드</span>
+ollama pull llama3.2
+
+<span class="cmt"># 3. 대화 시작</span>
+ollama run llama3.2
+<span class="str">&gt;&gt;&gt; 안녕! Python으로 피보나치 수열 생성하는 함수 만들어줘</span></code></pre>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

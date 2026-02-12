@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="문서 분석 - Claude 문서">
+<meta property="og:description" content="Claude를 활용한 문서 이해, 요약 및 Q&A 시스템 구축">
+<meta property="og:url" content="https://minzkn.com/claude/pages/document-analysis.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Claude를 활용한 문서 이해, 요약 및 Q&A 시스템 구축">
+<meta name="keywords" content="문서 분석, document analysis, 요약, summarization, Q&A">
+<meta name="author" content="MINZKN">
+<title>문서 분석 - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">문서 분석 (Document Analysis)</h1>
+  <p class="lead">
+    Claude의 긴 컨텍스트 윈도우(200K+ 토큰)를 활용하면 대규모 문서를 통째로 분석하고,
+    요약, Q&A, 정보 추출 등 다양한 작업을 수행할 수 있습니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="use-cases">활용 사례</h2>
+  <ul>
+    <li><strong>법률 문서 분석:</strong> 계약서, 약관 검토 및 리스크 평가</li>
+    <li><strong>연구 논문 요약:</strong> 학술 논문의 핵심 내용 추출</li>
+    <li><strong>기술 문서 Q&A:</strong> 매뉴얼 기반 질의응답 시스템</li>
+    <li><strong>재무 보고서 분석:</strong> 재무제표 해석 및 인사이트 도출</li>
+    <li><strong>의료 기록 검토:</strong> 환자 기록 요약 및 패턴 분석</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="basic-summary">기본: 문서 요약</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 문서 요약</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">from</span> anthropic <span class="kw">import</span> Anthropic
+
+client <span class="kw">=</span> <span class="fn">Anthropic</span>()
+
+<span class="cmt"># 긴 문서 읽기</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'long_document.txt'</span>, <span class="str">'r'</span>, encoding<span class="kw">=</span><span class="str">'utf-8'</span>) <span class="kw">as</span> f:
+    document <span class="kw">=</span> f.<span class="fn">read</span>()
+
+message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    max_tokens<span class="kw">=</span><span class="num">2048</span>,
+    messages<span class="kw">=</span>[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"""다음 문서를 3가지 수준으로 요약해주세요:
+
+1. 한 줄 요약 (핵심 메시지)
+2. 단락 요약 (3-5문장)
+3. 상세 요약 (주요 섹션별 핵심 내용)
+
+문서:
+{document}"""</span>
+        }
+    ]
+)
+
+<span class="fn">print</span>(message.content[<span class="num">0</span>].text)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="qa-system">Q&A 시스템</h2>
+  <p>
+    문서를 기반으로 질의응답 시스템을 구축할 수 있습니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 문서 Q&A</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">def</span> <span class="fn">document_qa</span>(document: <span class="type">str</span>, question: <span class="type">str</span>) <span class="kw">-></span> <span class="type">str</span>:
+    message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+        max_tokens<span class="kw">=</span><span class="num">1024</span>,
+        system<span class="kw">=</span><span class="str">"""당신은 문서 분석 전문가입니다.
+주어진 문서만을 기반으로 질문에 답변하세요.
+문서에 정보가 없으면 "문서에 해당 정보가 없습니다"라고 답변하세요."""</span>,
+        messages<span class="kw">=</span>[
+            {
+                <span class="str">"role"</span>: <span class="str">"user"</span>,
+                <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"""&lt;document&gt;
+{document}
+&lt;/document&gt;
+
+&lt;question&gt;
+{question}
+&lt;/question&gt;
+
+위 문서를 참고하여 질문에 답변해주세요. 답변 끝에 관련 문단이나 페이지를 인용하세요."""</span>
+            }
+        ]
+    )
+
+    <span class="kw">return</span> message.content[<span class="num">0</span>].text
+
+<span class="cmt"># 사용 예시</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'product_manual.txt'</span>, <span class="str">'r'</span>) <span class="kw">as</span> f:
+    manual <span class="kw">=</span> f.<span class="fn">read</span>()
+
+answer <span class="kw">=</span> <span class="fn">document_qa</span>(manual, <span class="str">"이 제품의 보증 기간은 얼마나 되나요?"</span>)
+<span class="fn">print</span>(answer)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="comparison">문서 비교</h2>
+  <p>
+    여러 문서를 비교 분석하여 차이점과 공통점을 파악할 수 있습니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 계약서 비교</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">def</span> <span class="fn">compare_documents</span>(doc1: <span class="type">str</span>, doc2: <span class="type">str</span>) <span class="kw">-></span> <span class="type">str</span>:
+    message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+        max_tokens<span class="kw">=</span><span class="num">3000</span>,
+        messages<span class="kw">=</span>[
+            {
+                <span class="str">"role"</span>: <span class="str">"user"</span>,
+                <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"""다음 두 계약서를 비교하고 분석해주세요:
+
+&lt;contract_a&gt;
+{doc1}
+&lt;/contract_a&gt;
+
+&lt;contract_b&gt;
+{doc2}
+&lt;/contract_b&gt;
+
+다음 형식으로 분석해주세요:
+
+## 주요 차이점
+[계약 A에만 있거나 다른 조항들]
+
+## 공통 조항
+[양쪽 모두 포함된 내용]
+
+## 리스크 평가
+- 계약 A의 리스크:
+- 계약 B의 리스크:
+
+## 추천
+[상황별 어느 계약이 유리한지]"""</span>
+            }
+        ]
+    )
+
+    <span class="kw">return</span> message.content[<span class="num">0</span>].text
+
+<span class="cmt"># 사용</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'contract_old.pdf'</span>, <span class="str">'r'</span>) <span class="kw">as</span> f:
+    contract_old <span class="kw">=</span> f.<span class="fn">read</span>()
+<span class="kw">with</span> <span class="fn">open</span>(<span class="str">'contract_new.pdf'</span>, <span class="str">'r'</span>) <span class="kw">as</span> f:
+    contract_new <span class="kw">=</span> f.<span class="fn">read</span>()
+
+analysis <span class="kw">=</span> <span class="fn">compare_documents</span>(contract_old, contract_new)
+<span class="fn">print</span>(analysis)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="key-points">핵심 포인트 추출</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 핵심 정보 추출</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">def</span> <span class="fn">extract_key_points</span>(document: <span class="type">str</span>, num_points: <span class="type">int</span> <span class="kw">=</span> <span class="num">5</span>) <span class="kw">-></span> <span class="type">list</span>:
+    message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+        max_tokens<span class="kw">=</span><span class="num">1024</span>,
+        messages<span class="kw">=</span>[
+            {
+                <span class="str">"role"</span>: <span class="str">"user"</span>,
+                <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"""다음 문서에서 가장 중요한 {num_points}가지 핵심 포인트를 추출하세요.
+
+문서:
+{document}
+
+출력 형식 (각 포인트는 한 줄로):
+1. [핵심 포인트 1]
+2. [핵심 포인트 2]
+...
+
+핵심 포인트만 출력하고, 추가 설명은 생략하세요."""</span>
+            }
+        ]
+    )
+
+    response <span class="kw">=</span> message.content[<span class="num">0</span>].text
+    <span class="cmt"># 파싱</span>
+    points <span class="kw">=</span> [
+        line.<span class="fn">strip</span>()[<span class="num">3</span>:]  <span class="cmt"># "1. " 제거</span>
+        <span class="kw">for</span> line <span class="kw">in</span> response.<span class="fn">split</span>(<span class="str">'\n'</span>)
+        <span class="kw">if</span> line.<span class="fn">strip</span>() <span class="kw">and</span> line[<span class="num">0</span>].<span class="fn">isdigit</span>()
+    ]
+
+    <span class="kw">return</span> points
+
+<span class="cmt"># 사용</span>
+key_points <span class="kw">=</span> <span class="fn">extract_key_points</span>(document, <span class="num">5</span>)
+<span class="kw">for</span> i, point <span class="kw">in</span> <span class="fn">enumerate</span>(key_points, <span class="num">1</span>):
+    <span class="fn">print</span>(<span class="fn">f</span><span class="str">"{i}. {point}"</span>)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="sentiment">감정/어조 분석</h2>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 문서 감정 분석</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> json
+
+<span class="kw">def</span> <span class="fn">analyze_sentiment</span>(document: <span class="type">str</span>) <span class="kw">-></span> <span class="type">dict</span>:
+    message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+        max_tokens<span class="kw">=</span><span class="num">512</span>,
+        messages<span class="kw">=</span>[
+            {
+                <span class="str">"role"</span>: <span class="str">"user"</span>,
+                <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"""다음 문서의 전체적인 어조와 감정을 분석하세요.
+
+문서:
+{document}
+
+JSON 형식으로 출력:
+{{
+  "overall_sentiment": "positive|negative|neutral|mixed",
+  "tone": "formal|casual|technical|persuasive|...",
+  "confidence": 0.0-1.0,
+  "key_emotions": ["emotion1", "emotion2"],
+  "summary": "간단한 설명"
+}}"""</span>
+            }
+        ]
+    )
+
+    <span class="kw">return</span> json.<span class="fn">loads</span>(message.content[<span class="num">0</span>].text)
+
+<span class="cmt"># 사용</span>
+analysis <span class="kw">=</span> <span class="fn">analyze_sentiment</span>(customer_feedback)
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"감정: {analysis['overall_sentiment']}"</span>)
+<span class="fn">print</span>(<span class="fn">f</span><span class="str">"어조: {analysis['tone']}"</span>)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">베스트 프랙티스</h2>
+
+  <h3 id="bp-1">1. 명확한 구조화</h3>
+  <p>
+    XML 태그로 문서를 구조화하면 Claude가 더 정확히 참조합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">구조화된 프롬프트</span>
+    </div>
+    <pre><code>prompt <span class="kw">=</span> <span class="fn">f</span><span class="str">"""&lt;document_type&gt;계약서&lt;/document_type&gt;
+&lt;document_date&gt;2024-01-15&lt;/document_date&gt;
+&lt;document_content&gt;
+{document}
+&lt;/document_content&gt;
+
+&lt;task&gt;
+위 계약서의 제3조를 분석하고 법적 리스크를 평가하세요.
+&lt;/task&gt;"""</span></code></pre>
+  </div>
+
+  <h3 id="bp-2">2. 프롬프트 캐싱 활용</h3>
+  <p>
+    같은 문서에 여러 질문을 하는 경우, 프롬프트 캐싱으로 비용 절감:
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 캐싱</span>
+    </div>
+    <pre><code>message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    max_tokens<span class="kw">=</span><span class="num">1024</span>,
+    system<span class="kw">=</span>[
+        {
+            <span class="str">"type"</span>: <span class="str">"text"</span>,
+            <span class="str">"text"</span>: <span class="str">"당신은 문서 분석 전문가입니다."</span>
+        },
+        {
+            <span class="str">"type"</span>: <span class="str">"text"</span>,
+            <span class="str">"text"</span>: large_document,  <span class="cmt"># 긴 문서</span>
+            <span class="str">"cache_control"</span>: {<span class="str">"type"</span>: <span class="str">"ephemeral"</span>}  <span class="cmt"># 캐싱</span>
+        }
+    ],
+    messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"질문 1"</span>}]
+)
+
+<span class="cmt"># 동일 문서로 다른 질문 (캐시 재사용)</span>
+message2 <span class="kw">=</span> client.messages.<span class="fn">create</span>(<span class="kw">...</span>)  <span class="cmt"># 훨씬 저렴</span></code></pre>
+  </div>
+
+  <h3 id="bp-3">3. 청킹 전략 (매우 긴 문서)</h3>
+  <p>
+    200K 토큰을 초과하는 문서는 청크로 나누어 처리:
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 청킹</span>
+    </div>
+    <pre><code><span class="kw">def</span> <span class="fn">analyze_large_document</span>(document: <span class="type">str</span>, chunk_size: <span class="type">int</span> <span class="kw">=</span> <span class="num">50000</span>):
+    chunks <span class="kw">=</span> [
+        document[i:i<span class="kw">+</span>chunk_size]
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="fn">len</span>(document), chunk_size)
+    ]
+
+    summaries <span class="kw">=</span> []
+    <span class="kw">for</span> i, chunk <span class="kw">in</span> <span class="fn">enumerate</span>(chunks):
+        msg <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+            model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+            max_tokens<span class="kw">=</span><span class="num">1024</span>,
+            messages<span class="kw">=</span>[{
+                <span class="str">"role"</span>: <span class="str">"user"</span>,
+                <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"문서의 {i+1}번째 부분을 요약:\n\n{chunk}"</span>
+            }]
+        )
+        summaries.<span class="fn">append</span>(msg.content[<span class="num">0</span>].text)
+
+    <span class="cmt"># 최종 통합 요약</span>
+    final <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+        model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+        max_tokens<span class="kw">=</span><span class="num">2048</span>,
+        messages<span class="kw">=</span>[{
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: <span class="fn">f</span><span class="str">"다음 부분 요약들을 통합:\n\n{<span class="str">'\n\n'</span>.<span class="fn">join</span>(summaries)}"</span>
+        }]
+    )
+
+    <span class="kw">return</span> final.content[<span class="num">0</span>].text</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>문서 분석을 익혔다면 관련 주제들을 탐색하세요:</p>
+
+  <ul>
+    <li><a href="data-extraction.html">데이터 추출</a> - 구조화된 정보 추출</li>
+    <li><a href="long-context.html">긴 컨텍스트</a> - 대규모 문서 처리 전략</li>
+    <li><a href="vision.html">Vision</a> - PDF 이미지 분석</li>
+  </ul>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

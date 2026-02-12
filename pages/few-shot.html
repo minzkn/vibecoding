@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Claude 문서 /with MINZKN">
+<meta property="og:title" content="Few-shot 학습 - Claude 문서">
+<meta property="og:description" content="예제를 통한 효과적인 Few-shot 학습 기법과 실전 가이드">
+<meta property="og:url" content="https://minzkn.com/claude/pages/few-shot.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="예제를 통한 효과적인 Few-shot 학습 기법과 실전 가이드">
+<meta name="keywords" content="few-shot, 예제 학습, in-context learning, 프롬프트 엔지니어링">
+<meta name="author" content="MINZKN">
+<title>Few-shot 학습 - Claude 문서 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+
+<nav class="breadcrumb"></nav>
+
+<section class="content-section">
+  <h1 id="top">Few-shot 학습 (Few-shot Learning)</h1>
+  <p class="lead">
+    Few-shot 학습은 몇 개의 예제를 제공하여 Claude가 패턴을 학습하고 유사한 작업을 수행하도록 하는 기법입니다.
+    명시적인 지시보다 예제가 더 효과적일 때 사용합니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="quick-start">처음 시작하기</h2>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎓 Few-shot 학습이란?</div>
+    <p>
+      <strong>"예제로 가르치기"</strong> - 설명 대신 예시를 보여주면 Claude가 패턴을 학습합니다.
+    </p>
+    <p style="margin-top: 1em;"><strong>3가지 핵심:</strong></p>
+    <ol>
+      <li><strong>Zero-shot</strong> - 예제 0개 (지시만) → 간단한 작업용</li>
+      <li><strong>One-shot</strong> - 예제 1개 → 형식 명확할 때</li>
+      <li><strong>Few-shot</strong> - 예제 2-10개 → 복잡한 패턴, 높은 정확도</li>
+    </ol>
+    <p style="margin-top: 1em;">
+      💡 <strong>언제 사용?</strong> "말로 설명하기 어렵지만 예시는 있을 때" - 스타일 복제, 형식 변환, 분류 등
+    </p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="what-is-few-shot">Few-shot이란?</h2>
+  <p>
+    Few-shot 학습은 <strong>In-Context Learning</strong>의 일종으로, 모델을 재학습시키지 않고
+    프롬프트 내 예제만으로 새로운 작업을 수행하게 합니다.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>방식</th>
+        <th>설명</th>
+        <th>예제 수</th>
+        <th>적합한 경우</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Zero-shot</strong></td>
+        <td>예제 없이 지시만</td>
+        <td>0개</td>
+        <td>간단하고 명확한 작업</td>
+      </tr>
+      <tr>
+        <td><strong>One-shot</strong></td>
+        <td>예제 1개 제공</td>
+        <td>1개</td>
+        <td>형식이 명확한 경우</td>
+      </tr>
+      <tr>
+        <td><strong>Few-shot</strong></td>
+        <td>예제 여러 개 제공</td>
+        <td>2~10개</td>
+        <td>복잡한 패턴, 애매한 작업</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <figure style="margin: 2.5rem 0;">
+    <svg viewBox="0 0 1000 450" style="width: 100%; max-width: 1000px; height: auto; display: block; margin: 0 auto;">
+      <defs>
+        <marker id="fewshot-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+          <path d="M0,0 L8,3 L0,6 Z" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- 제목 -->
+      <text x="500" y="25" text-anchor="middle" font-size="15" font-weight="bold" fill="var(--diagram-text)">Zero-shot vs Few-shot 학습 비교</text>
+
+      <!-- Zero-shot (상단) -->
+      <text x="500" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">Zero-shot: 예제 없이 지시만</text>
+
+      <rect x="50" y="70" width="350" height="100" fill="var(--diagram-warning)" fill-opacity="0.2" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <text x="225" y="90" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">프롬프트</text>
+      <text x="70" y="110" font-size="10" fill="var(--diagram-text)">"다음 리뷰의 감정을 분류하세요:</text>
+      <text x="70" y="127" font-size="10" fill="var(--diagram-text)">positive/negative/neutral"</text>
+      <text x="70" y="150" font-size="10" font-weight="bold" fill="var(--diagram-primary)">입력: "이 제품 마음에 들어요!"</text>
+
+      <line x1="400" y1="120" x2="470" y2="120" stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#fewshot-arrow)"/>
+      <text x="435" y="110" text-anchor="middle" font-size="9" fill="var(--diagram-secondary)">→</text>
+
+      <rect x="470" y="85" width="120" height="70" fill="var(--diagram-primary)" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <text x="530" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">Claude</text>
+      <text x="530" y="130" text-anchor="middle" font-size="9" fill="var(--diagram-text)">패턴 추론</text>
+      <text x="530" y="145" text-anchor="middle" font-size="9" fill="var(--diagram-secondary)">(예제 없음)</text>
+
+      <line x1="590" y1="120" x2="660" y2="120" stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#fewshot-arrow)"/>
+
+      <rect x="660" y="85" width="290" height="70" fill="var(--diagram-success)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <text x="805" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">출력</text>
+      <text x="805" y="130" text-anchor="middle" font-size="10" fill="var(--diagram-text)">positive</text>
+      <text x="805" y="145" text-anchor="middle" font-size="9" fill="var(--diagram-warning)">⚠️ 정확도: 보통 (70-80%)</text>
+
+      <!-- 구분선 -->
+      <line x1="50" y1="200" x2="950" y2="200" stroke="var(--diagram-border)" stroke-width="1.5" stroke-dasharray="5,5"/>
+
+      <!-- Few-shot (하단) -->
+      <text x="500" y="230" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">Few-shot: 예제로 패턴 학습</text>
+
+      <rect x="50" y="245" width="350" height="180" fill="var(--diagram-cache)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <text x="225" y="265" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">프롬프트 + 예제들</text>
+
+      <!-- 예제 1 -->
+      <rect x="70" y="275" width="310" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="80" y="293" font-size="9" fill="var(--diagram-text)">예제 1: "정말 좋아요!" → positive</text>
+
+      <!-- 예제 2 -->
+      <rect x="70" y="310" width="310" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="80" y="328" font-size="9" fill="var(--diagram-text)">예제 2: "실망이에요." → negative</text>
+
+      <!-- 예제 3 -->
+      <rect x="70" y="345" width="310" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <text x="80" y="363" font-size="9" fill="var(--diagram-text)">예제 3: "보통입니다." → neutral</text>
+
+      <!-- 실제 입력 -->
+      <rect x="70" y="385" width="310" height="30" fill="var(--diagram-primary)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="2" rx="3"/>
+      <text x="80" y="403" font-size="9" font-weight="bold" fill="var(--diagram-text)">입력: "이 제품 마음에 들어요!"</text>
+
+      <line x1="400" y1="335" x2="470" y2="335" stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#fewshot-arrow)"/>
+
+      <rect x="470" y="290" width="120" height="90" fill="var(--diagram-primary)" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <text x="530" y="315" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">Claude</text>
+      <text x="530" y="335" text-anchor="middle" font-size="9" fill="var(--diagram-text)">예제로부터</text>
+      <text x="530" y="350" text-anchor="middle" font-size="9" fill="var(--diagram-text)">패턴 학습</text>
+      <text x="530" y="370" text-anchor="middle" font-size="8" fill="var(--diagram-success)">✓ 3개 예제 참조</text>
+
+      <line x1="590" y1="335" x2="660" y2="335" stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#fewshot-arrow)"/>
+
+      <rect x="660" y="290" width="290" height="90" fill="var(--diagram-success)" fill-opacity="0.5" stroke="var(--diagram-success)" stroke-width="3" rx="6"/>
+      <text x="805" y="315" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">출력</text>
+      <text x="805" y="340" text-anchor="middle" font-size="10" fill="var(--diagram-text)">positive</text>
+      <text x="805" y="360" text-anchor="middle" font-size="9" fill="var(--diagram-success)" font-weight="bold">✅ 정확도: 높음 (85-95%)</text>
+      <text x="805" y="373" text-anchor="middle" font-size="8" fill="var(--diagram-secondary)">예제 패턴과 일치</text>
+
+      <!-- 하단 비교 박스 -->
+      <rect x="80" y="445" width="400" height="60" fill="var(--diagram-bg-tertiary)" stroke="var(--diagram-border)" stroke-width="1.5" rx="6"/>
+      <text x="280" y="465" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">Zero-shot 장단점</text>
+      <text x="280" y="482" text-anchor="middle" font-size="9" fill="var(--diagram-success)">✓ 빠름 (예제 준비 불필요)</text>
+      <text x="280" y="495" text-anchor="middle" font-size="9" fill="var(--diagram-warning)">✗ 낮은 정확도 (복잡한 작업)</text>
+
+      <rect x="520" y="445" width="400" height="60" fill="var(--diagram-bg-tertiary)" stroke="var(--diagram-border)" stroke-width="1.5" rx="6"/>
+      <text x="720" y="465" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">Few-shot 장단점</text>
+      <text x="720" y="482" text-anchor="middle" font-size="9" fill="var(--diagram-success)">✓ 높은 정확도 (패턴 학습)</text>
+      <text x="720" y="495" text-anchor="middle" font-size="9" fill="var(--diagram-warning)">✗ 예제 준비 필요 (토큰 사용 증가)</text>
+    </svg>
+    <figcaption style="text-align: center; margin-top: 0.8rem; font-size: 0.95rem; color: var(--text-tertiary);">
+      그림 1: Zero-shot vs Few-shot 학습 방식 비교 - 예제 제공 시 정확도가 15-25% 향상
+    </figcaption>
+  </figure>
+</section>
+
+<section class="content-section">
+  <h2 id="basic-structure">기본 구조</h2>
+  <p>Few-shot 프롬프트는 다음 구조를 따릅니다:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Few-shot 프롬프트 템플릿</span>
+    </div>
+    <pre><code>[작업 설명]
+
+예시:
+
+입력: [예제 입력 1]
+출력: [예제 출력 1]
+
+입력: [예제 입력 2]
+출력: [예제 출력 2]
+
+입력: [예제 입력 3]
+출력: [예제 출력 3]
+
+이제 다음 입력을 처리하세요:
+
+입력: [실제 입력]
+출력:</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="examples">실전 예시</h2>
+
+  <h3 id="sentiment-analysis">예시 1: 감정 분석</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Few-shot 감정 분석</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>다음 리뷰의 감정을 positive/negative/neutral로 분류하세요:
+
+예시:
+
+입력: "이 제품 정말 마음에 들어요! 품질이 최고네요."
+출력: positive
+
+입력: "배송은 빨랐지만 제품이 설명과 달라요."
+출력: negative
+
+입력: "보통입니다. 가격대비 무난해요."
+출력: neutral
+
+입력: "예상보다 훨씬 좋습니다. 강력 추천!"
+출력: positive
+
+이제 다음 리뷰를 분류하세요:
+
+입력: "디자인은 예쁜데 내구성이 걱정되네요."
+출력:</code></pre>
+  </div>
+
+  <h3 id="data-extraction">예시 2: 구조화된 데이터 추출</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">이메일에서 정보 추출</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>이메일에서 이름, 전화번호, 문의 유형을 JSON으로 추출하세요:
+
+예시:
+
+입력: "안녕하세요, 김철수입니다. 제품 A에 대해 문의드립니다. 연락처는 010-1234-5678입니다."
+출력:
+{
+  "name": "김철수",
+  "phone": "010-1234-5678",
+  "inquiry_type": "제품 문의"
+}
+
+입력: "이영희입니다. 환불 요청합니다. 010-9876-5432로 연락 주세요."
+출력:
+{
+  "name": "이영희",
+  "phone": "010-9876-5432",
+  "inquiry_type": "환불"
+}
+
+입력: "배송 관련 문의입니다. 박민수, 010-5555-7777"
+출력:
+{
+  "name": "박민수",
+  "phone": "010-5555-7777",
+  "inquiry_type": "배송 문의"
+}
+
+이제 다음 이메일을 처리하세요:
+
+입력: "최지영입니다. 주문 번호 12345의 배송 상태가 궁금합니다. 010-1111-2222"
+출력:</code></pre>
+  </div>
+
+  <h3 id="code-generation">예시 3: 코드 생성</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">자연어 → SQL 변환</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>자연어 질문을 SQL 쿼리로 변환하세요.
+
+테이블 스키마:
+- users(id, name, email, created_at)
+- orders(id, user_id, amount, order_date)
+
+예시:
+
+입력: "2024년에 가입한 모든 사용자 조회"
+출력:
+```sql
+SELECT * FROM users
+WHERE YEAR(created_at) = 2024;
+```
+
+입력: "주문 금액이 10만원 이상인 고객 이름과 이메일"
+출력:
+```sql
+SELECT DISTINCT u.name, u.email
+FROM users u
+JOIN orders o ON u.id = o.user_id
+WHERE o.amount >= 100000;
+```
+
+입력: "각 사용자의 총 주문 금액과 주문 건수"
+출력:
+```sql
+SELECT u.id, u.name,
+       COUNT(o.id) AS order_count,
+       SUM(o.amount) AS total_amount
+FROM users u
+LEFT JOIN orders o ON u.id = o.user_id
+GROUP BY u.id, u.name;
+```
+
+이제 다음 질문을 SQL로 변환하세요:
+
+입력: "최근 30일간 주문이 없는 사용자 목록"
+출력:</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">베스트 프랙티스</h2>
+
+  <h3 id="diverse-examples">1. 다양한 예제 제공</h3>
+  <p>
+    예제는 다양한 패턴과 엣지 케이스를 포함해야 합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">❌ 나쁜 예시 (유사한 예제)</span>
+    </div>
+    <pre><code>입력: "좋아요"
+출력: positive
+
+입력: "최고예요"
+출력: positive
+
+입력: "훌륭합니다"
+출력: positive
+
+<span class="cmt"># 모두 긍정 → 패턴 학습 부족</span></code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">✅ 좋은 예시 (다양한 예제)</span>
+    </div>
+    <pre><code>입력: "좋아요"
+출력: positive
+
+입력: "별로예요"
+출력: negative
+
+입력: "그냥 그래요"
+출력: neutral
+
+입력: "디자인은 좋은데 가격이 비싸요"
+출력: mixed
+
+<span class="cmt"># 다양한 감정 + 복합 감정 포함</span></code></pre>
+  </div>
+
+  <h3 id="consistent-format">2. 일관된 형식 유지</h3>
+  <p>
+    모든 예제는 동일한 형식을 따라야 합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">❌ 나쁜 예시 (형식 불일치)</span>
+    </div>
+    <pre><code>예시 1:
+Q: 파이썬으로 리스트 정렬하는 법?
+A: list.sort() 사용
+
+예시 2:
+리스트 길이는? → len(list)
+
+예시 3:
+딕셔너리에서 키 가져오기: dict.keys()
+
+<span class="cmt"># 형식이 제각각</span></code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">✅ 좋은 예시 (일관된 형식)</span>
+    </div>
+    <pre><code>질문: 파이썬으로 리스트 정렬하는 법?
+답변: list.sort() 또는 sorted(list) 사용
+
+질문: 리스트 길이 구하는 법?
+답변: len(list) 사용
+
+질문: 딕셔너리에서 모든 키 가져오는 법?
+답변: dict.keys() 사용
+
+<span class="cmt"># 모든 예제가 "질문: ... 답변: ..." 형식</span></code></pre>
+  </div>
+
+  <h3 id="example-order">3. 예제 순서 고려</h3>
+  <p>
+    간단한 예제부터 복잡한 예제 순으로 배치하세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">예제 순서 최적화</span>
+    </div>
+    <pre><code><span class="cmt"># 1. 기본 케이스</span>
+입력: "안녕하세요"
+출력: "반갑습니다!"
+
+<span class="cmt"># 2. 약간 복잡한 케이스</span>
+입력: "주문 취소하고 싶어요"
+출력: "주문 취소를 도와드리겠습니다. 주문번호를 알려주시겠어요?"
+
+<span class="cmt"># 3. 엣지 케이스</span>
+입력: "ㅁㄴㅇㄹ"
+출력: "죄송합니다. 이해하지 못했습니다. 다시 말씀해 주시겠어요?"</code></pre>
+  </div>
+
+  <h3 id="optimal-count">4. 최적 예제 수 찾기</h3>
+  <p>
+    일반적으로 3~5개가 적당하지만, 작업의 복잡도에 따라 조정하세요.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>작업 복잡도</th>
+        <th>권장 예제 수</th>
+        <th>예시</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>매우 간단</td>
+        <td>1~2개</td>
+        <td>단순 분류, 형식 변환</td>
+      </tr>
+      <tr>
+        <td>중간</td>
+        <td>3~5개</td>
+        <td>감정 분석, 데이터 추출</td>
+      </tr>
+      <tr>
+        <td>복잡</td>
+        <td>5~10개</td>
+        <td>코드 생성, 복잡한 추론</td>
+      </tr>
+      <tr>
+        <td>매우 복잡</td>
+        <td>10개+</td>
+        <td>도메인 특화 작업</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 예제가 많다고 항상 좋은 것은 아닙니다</div>
+    <p>
+      예제가 너무 많으면:
+    </p>
+    <ul>
+      <li>입력 토큰 증가 → 비용 상승</li>
+      <li>응답 지연 시간 증가</li>
+      <li>중요한 예제가 묻힐 수 있음</li>
+    </ul>
+    <p>
+      핵심은 <strong>대표성</strong>과 <strong>다양성</strong>입니다.
+    </p>
+  </div>
+
+  <h3 id="labeling">5. 명시적 레이블 사용</h3>
+  <p>
+    입력과 출력을 명확히 구분하세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">명시적 레이블 예시</span>
+    </div>
+    <pre><code>&lt;example&gt;
+&lt;input&gt;배송이 너무 느려요&lt;/input&gt;
+&lt;output&gt;negative&lt;/output&gt;
+&lt;/example&gt;
+
+&lt;example&gt;
+&lt;input&gt;품질이 좋네요&lt;/input&gt;
+&lt;output&gt;positive&lt;/output&gt;
+&lt;/example&gt;
+
+<span class="cmt"># XML 태그로 명확히 구분</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="advanced-techniques">고급 기법</h2>
+
+  <h3 id="chain-examples">1. 예제 체이닝</h3>
+  <p>
+    여러 단계의 작업을 예제로 보여줄 수 있습니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">다단계 예제</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>텍스트를 분석하고 단계별로 처리하세요:
+
+예시:
+
+입력: "김철수 고객님의 주문 #12345가 배송 중입니다."
+
+1단계 (개체 인식):
+- 이름: 김철수
+- 주문번호: 12345
+- 상태: 배송 중
+
+2단계 (의도 파악):
+- 의도: 배송 상태 알림
+
+3단계 (응답 생성):
+"고객님, 주문 #12345가 현재 배송 중입니다. 곧 도착할 예정입니다."
+
+---
+
+이제 다음 텍스트를 처리하세요:
+
+입력: "이영희 고객님의 환불 요청 #67890이 승인되었습니다."
+
+1단계 (개체 인식):
+2단계 (의도 파악):
+3단계 (응답 생성):</code></pre>
+  </div>
+
+  <h3 id="negative-examples">2. 부정적 예제 (Negative Examples)</h3>
+  <p>
+    잘못된 예제도 함께 보여주면 Claude가 피해야 할 것을 학습합니다.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">부정적 예제 포함</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>이메일 제목을 전문적으로 작성하세요.
+
+<span class="cmt">✅ 좋은 예시:</span>
+
+입력: 회의 일정 변경 건
+출력: "[일정 변경] 2월 15일 마케팅 회의 → 2월 20일로 조정"
+
+입력: 프로젝트 완료 보고
+출력: "[완료 보고] Q1 웹사이트 리뉴얼 프로젝트 최종 결과"
+
+<span class="cmt">❌ 피해야 할 예시:</span>
+
+입력: 급함!!!
+출력: "급한 거 있어요!!" (X)
+올바른 출력: "[긴급] 즉시 확인 필요 사항"
+
+입력: 문의드려요~
+출력: "질문 있어요~~" (X)
+올바른 출력: "[문의] 제품 사양 관련 질문"
+
+이제 다음 입력을 처리하세요:
+
+입력: 버그 발견됨
+출력:</code></pre>
+  </div>
+
+  <h3 id="explanation">3. 설명 포함 예제</h3>
+  <p>
+    복잡한 작업은 예제에 설명을 추가하세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">설명 포함 예제</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code>코드 리뷰를 수행하세요.
+
+예시:
+
+코드:
+```python
+def div(a, b):
+    return a / b
+```
+
+리뷰:
+**문제:** ZeroDivisionError 가능성
+**심각도:** HIGH
+**설명:** b가 0일 때 예외 발생
+**수정:**
+```python
+def div(a, b):
+    if b == 0:
+        raise ValueError("Division by zero")
+    return a / b
+```
+
+---
+
+코드:
+```python
+password = input("Password: ")
+print(f"Your password is {password}")
+```
+
+리뷰:
+**문제:** 보안 - 비밀번호 평문 출력
+**심각도:** CRITICAL
+**설명:** 비밀번호를 로그에 노출하면 안 됨
+**수정:**
+```python
+password = getpass.getpass("Password: ")
+# 비밀번호는 절대 출력하지 않음
+```</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="combining-with-system">시스템 프롬프트와 조합</h2>
+  <p>
+    시스템 프롬프트로 역할을 정의하고, Few-shot으로 구체적 패턴을 학습시키세요.
+  </p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python 예시</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">from</span> anthropic <span class="kw">import</span> Anthropic
+
+client <span class="kw">=</span> <span class="fn">Anthropic</span>()
+
+system_prompt <span class="kw">=</span> <span class="str">"""당신은 고객 지원 AI입니다.
+항상 공손하고, 간결하며, 해결 중심적으로 답변하세요."""</span>
+
+few_shot_examples <span class="kw">=</span> <span class="str">"""예시:
+
+고객: "배송이 안 왔어요"
+AI: "불편을 드려 죄송합니다. 주문번호를 알려주시면 배송 상태를 확인해드리겠습니다."
+
+고객: "환불해주세요"
+AI: "환불 도와드리겠습니다. 주문번호와 환불 사유를 말씀해 주시겠어요?"
+
+고객: "이거 어떻게 쓰는 거예요?"
+AI: "사용법을 안내해드리겠습니다. 어떤 기능이 궁금하신가요?"
+"""</span>
+
+user_input <span class="kw">=</span> <span class="str">"제품이 고장났어요"</span>
+
+message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
+    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    max_tokens<span class="kw">=</span><span class="num">512</span>,
+    system<span class="kw">=</span>system_prompt,
+    messages<span class="kw">=</span>[
+        {
+            <span class="str">"role"</span>: <span class="str">"user"</span>,
+            <span class="str">"content"</span>: few_shot_examples <span class="kw">+</span> <span class="fn">f</span><span class="str">"\n\n고객: \"{user_input}\"\nAI:"</span>
+        }
+    ]
+)
+
+<span class="fn">print</span>(message.content[<span class="num">0</span>].text)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="when-to-use">언제 Few-shot을 사용하나요?</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>상황</th>
+        <th>Zero-shot (예제 없음)</th>
+        <th>Few-shot (예제 있음)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>작업이 명확함</td>
+        <td>✅ 권장</td>
+        <td>불필요</td>
+      </tr>
+      <tr>
+        <td>복잡한 형식 요구</td>
+        <td>불확실</td>
+        <td>✅ 권장</td>
+      </tr>
+      <tr>
+        <td>도메인 특화 작업</td>
+        <td>어려움</td>
+        <td>✅ 필수</td>
+      </tr>
+      <tr>
+        <td>일관성 중요</td>
+        <td>변동 가능</td>
+        <td>✅ 권장</td>
+      </tr>
+      <tr>
+        <td>빠른 응답 필요</td>
+        <td>✅ 권장</td>
+        <td>느림 (예제 처리 시간)</td>
+      </tr>
+      <tr>
+        <td>비용 민감</td>
+        <td>✅ 권장</td>
+        <td>비쌈 (입력 토큰 증가)</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="troubleshooting">문제 해결</h2>
+
+  <h3 id="issue-1">문제 1: 예제를 그대로 복사함</h3>
+  <p><strong>증상:</strong> Claude가 새로운 입력에도 예제의 출력을 그대로 반환</p>
+  <p><strong>원인:</strong> 예제가 너무 유사하거나, 지시사항이 불명확</p>
+  <p><strong>해결:</strong></p>
+  <ul>
+    <li>더 다양한 예제 제공</li>
+    <li>"위 예시를 <strong>참고</strong>하여 새로운 입력을 처리하세요" 명시</li>
+  </ul>
+
+  <h3 id="issue-2">문제 2: 형식이 일관되지 않음</h3>
+  <p><strong>증상:</strong> 출력 형식이 예제와 다름</p>
+  <p><strong>해결:</strong></p>
+  <ul>
+    <li>예제 형식을 완벽히 일치시키기</li>
+    <li>"반드시 위 예시와 동일한 형식으로 출력하세요" 추가</li>
+  </ul>
+
+  <h3 id="issue-3">문제 3: 성능이 기대에 못 미침</h3>
+  <p><strong>해결:</strong></p>
+  <ul>
+    <li>예제 품질 점검 (오타, 논리 오류 등)</li>
+    <li>예제 수 조정 (너무 적거나 많을 수 있음)</li>
+    <li>Chain-of-Thought와 조합 (다음 섹션 참조)</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>Few-shot 학습을 마스터했다면 더 고급 기법을 탐색하세요:</p>
+
+  <ul>
+    <li><a href="chain-of-thought.html">Chain-of-Thought</a> - Few-shot + 추론 과정 표시</li>
+    <li><a href="prompt-patterns.html">프롬프트 패턴</a> - 다양한 패턴과 Few-shot 조합</li>
+    <li><a href="tool-use.html">Tool Use</a> - Few-shot으로 도구 사용 패턴 학습</li>
+  </ul>
+</section>
+
+<nav class="page-nav"></nav>
+
+</main>
+
+<aside class="inline-toc"></aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>
