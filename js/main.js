@@ -224,7 +224,7 @@ var NAV_STRUCTURE = [
 
     NAV_STRUCTURE.forEach((category, idx) => {
       // 모바일에서는 모든 카테고리 열기, 데스크톱에서는 첫 번째만
-      const isOpen = isMobile || idx === 0;
+      const isOpen = isMobile;
       html += `
         <div class="nav-category">
           <button class="nav-category-toggle ${isOpen ? 'active' : ''}" aria-expanded="${isOpen}">
