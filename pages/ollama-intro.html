@@ -621,8 +621,31 @@ vectorstore = Chroma.from_documents(company_docs)
     <li><strong>CLI</strong>: Aider, shell-gpt, fabric</li>
     <li><strong>IDE</strong>: JetBrains AI Assistant (Ollama 지원)</li>
     <li><strong>프레임워크</strong>: LangChain, LlamaIndex, Semantic Kernel</li>
-    <li><strong>앱</strong>: Open WebUI, AnythingLLM, Jan</li>
+    <li><strong>웹 인터페이스</strong>:
+      <ul style="margin-top: 0.5rem;">
+        <li><a href="ollama-integration.html#open-webui"><strong>Open WebUI</strong></a> - ChatGPT 스타일 완전한 웹 UI (RAG, 팀 협업, 플러그인)</li>
+        <li>AnythingLLM - 문서 중심 RAG 플랫폼</li>
+        <li>Jan - 데스크톱 앱 형태의 UI</li>
+      </ul>
+    </li>
   </ul>
+
+  <div class="info-box tip" style="margin-top: 1rem;">
+    <div class="info-box-title">🌐 Open WebUI 추천!</div>
+    <p>
+      Ollama와 함께 가장 많이 사용되는 도구는 <strong>Open WebUI</strong>입니다.
+      ChatGPT와 동일한 사용자 경험을 완전히 로컬에서 무료로 제공합니다.
+    </p>
+    <pre><code><span class="cmt"># Docker로 1분 안에 설치</span>
+docker run -d -p 3000:8080 \
+  -v open-webui:/app/backend/data \
+  -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+  --name open-webui \
+  ghcr.io/open-webui/open-webui:main
+
+<span class="cmt"># 브라우저에서 http://localhost:3000 접속</span></code></pre>
+    <p>→ <a href="ollama-integration.html#open-webui">Open WebUI 완전 가이드 보기</a></p>
+  </div>
 
   <h3 id="community">커뮤니티</h3>
 

@@ -378,34 +378,57 @@ Commit a3d8e4f Add comprehensive tests for calculator</code></pre>
   <h2 id="open-webui">Open WebUI (ChatGPT 스타일 인터페이스)</h2>
 
   <p>
-    <strong>Open WebUI</strong>는 Ollama를 위한 ChatGPT 스타일 웹 인터페이스입니다.
-    브라우저에서 대화, 문서 업로드, 이미지 생성 등 모든 기능을 제공합니다.
+    <strong>Open WebUI</strong>는 Ollama를 위한 완전한 기능을 갖춘 ChatGPT 스타일 웹 인터페이스입니다.
+    브라우저에서 대화, 문서 업로드, RAG, 팀 협업, 멀티모달, 음성 인식 등 모든 기능을 제공합니다.
+    개인 사용부터 기업 배포까지 다양한 시나리오를 지원합니다.
   </p>
 
-  <h3 id="webui-install">설치</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">🌟 Open WebUI를 선택해야 하는 이유</div>
+    <ul>
+      <li><strong>완전한 프라이버시</strong>: 모든 데이터가 로컬에 저장, 외부 전송 없음</li>
+      <li><strong>무료 & 오픈소스</strong>: MIT 라이센스, 평생 무료</li>
+      <li><strong>ChatGPT 수준 UI</strong>: 대화 히스토리, 마크다운, 코드 하이라이팅</li>
+      <li><strong>팀 협업</strong>: 사용자 관리, 권한, 대화 공유</li>
+      <li><strong>확장성</strong>: 플러그인, API, 커스텀 모델</li>
+    </ul>
+  </div>
 
-  <h4>Docker 사용 (권장)</h4>
+  <h3 id="webui-install">설치 방법</h3>
 
-  <pre><code><span class="cmt"># Ollama와 함께 실행 (CPU)</span>
+  <h4>방법 1: Docker (권장 - 가장 쉬움)</h4>
+
+  <pre><code><span class="cmt"># CPU 전용 (MacBook, 일반 PC)</span>
 docker run -d -p 3000:8080 \
   -v open-webui:/app/backend/data \
   -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
   --name open-webui \
+  --restart always \
   ghcr.io/open-webui/open-webui:main
 
-<span class="cmt"># GPU 지원 (NVIDIA)</span>
+<span class="cmt"># GPU 지원 (NVIDIA RTX, A100 등)</span>
 docker run -d -p 3000:8080 \
   --gpus all \
   -v open-webui:/app/backend/data \
   -v ollama:/root/.ollama \
   -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
   --name open-webui \
+  --restart always \
   ghcr.io/open-webui/open-webui:cuda
+
+<span class="cmt"># Apple Silicon (M1/M2/M3)</span>
+docker run -d -p 3000:8080 \
+  --platform linux/arm64 \
+  -v open-webui:/app/backend/data \
+  -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+  --name open-webui \
+  --restart always \
+  ghcr.io/open-webui/open-webui:main
 
 <span class="cmt"># 브라우저에서 접속</span>
 <span class="str">http://localhost:3000</span></code></pre>
 
-  <h4>Docker Compose (추천)</h4>
+  <h4>방법 2: Docker Compose (프로덕션 추천)</h4>
 
   <pre><code><span class="cmt"># docker-compose.yml</span>
 <span class="kw">version</span>: <span class="str">'3.8'</span>
@@ -418,6 +441,7 @@ docker run -d -p 3000:8080 \
       - <span class="str">"11434:11434"</span>
     <span class="kw">volumes</span>:
       - ollama:/root/.ollama
+    <span class="kw">restart</span>: always
     <span class="kw">deploy</span>:
       <span class="kw">resources</span>:
         <span class="kw">reservations</span>:
@@ -435,8 +459,15 @@ docker run -d -p 3000:8080 \
       - open-webui:/app/backend/data
     <span class="kw">environment</span>:
       - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_SECRET_KEY=<span class="str">"your-secret-key-change-this"</span>
+      - WEBUI_AUTH=<span class="kw">true</span>
+      - ENABLE_SIGNUP=<span class="kw">true</span>
+      - DEFAULT_MODELS=llama3.2,codellama:13b
+      - ENABLE_RAG_WEB_SEARCH=<span class="kw">true</span>
+      - RAG_EMBEDDING_MODEL=nomic-embed-text
     <span class="kw">depends_on</span>:
       - ollama
+    <span class="kw">restart</span>: always
 
 <span class="kw">volumes</span>:
   <span class="kw">ollama</span>:
@@ -446,90 +477,547 @@ docker run -d -p 3000:8080 \
 docker-compose up -d
 
 <span class="cmt"># 로그 확인</span>
-docker-compose logs -f open-webui</code></pre>
+docker-compose logs -f open-webui
 
-  <h3 id="webui-features">주요 기능</h3>
+<span class="cmt"># 중지</span>
+docker-compose down
+
+<span class="cmt"># 재시작</span>
+docker-compose restart</code></pre>
+
+  <h4>방법 3: Python으로 설치 (개발자용)</h4>
+
+  <pre><code><span class="cmt"># Python 3.11+ 필요</span>
+git clone https://github.com/open-webui/open-webui.git
+cd open-webui
+
+<span class="cmt"># 가상 환경 생성</span>
+python -m venv venv
+source venv/bin/activate  <span class="cmt"># Windows: venv\Scripts\activate</span>
+
+<span class="cmt"># 의존성 설치</span>
+pip install -r requirements.txt
+
+<span class="cmt"># 환경 변수 설정</span>
+<span class="kw">export</span> OLLAMA_BASE_URL=http://localhost:11434
+<span class="kw">export</span> WEBUI_SECRET_KEY=<span class="str">"your-secret-key"</span>
+
+<span class="cmt"># 실행</span>
+bash start.sh
+
+<span class="cmt"># 또는 개발 모드</span>
+npm install
+npm run dev  <span class="cmt"># http://localhost:5173</span></code></pre>
+
+  <h3 id="webui-first-setup">초기 설정</h3>
+
+  <h4>1. 첫 번째 계정 생성 (관리자)</h4>
+
+  <pre><code><span class="cmt"># 브라우저에서 http://localhost:3000 접속</span>
+<span class="str">1. "Sign up" 클릭</span>
+<span class="str">2. 이름, 이메일, 비밀번호 입력</span>
+<span class="str">3. 첫 번째 사용자는 자동으로 관리자 권한 부여</span>
+
+<span class="cmt"># 이후 사용자는 일반 권한으로 생성됨</span></code></pre>
+
+  <h4>2. 기본 모델 다운로드</h4>
+
+  <pre><code><span class="cmt"># 웹 UI에서 직접 다운로드</span>
+<span class="str">Settings → Models → Pull a model from Ollama.com</span>
+
+<span class="cmt"># 추천 시작 모델</span>
+llama3.2           <span class="cmt"># 범용 대화 (3B 또는 7B)</span>
+codellama:13b      <span class="cmt"># 코딩 전문</span>
+mistral            <span class="cmt"># 빠르고 정확</span>
+nomic-embed-text   <span class="cmt"># RAG용 임베딩</span>
+
+<span class="cmt"># 또는 터미널에서 미리 다운로드</span>
+ollama pull llama3.2
+ollama pull codellama:13b
+ollama pull nomic-embed-text</code></pre>
+
+  <h4>3. 기본 설정 최적화</h4>
+
+  <pre><code><span class="cmt"># Settings → General</span>
+<span class="str">✓ Default Model: llama3.2</span>
+<span class="str">✓ Request Mode: Chat (대화형)</span>
+<span class="str">✓ System Prompt: (비워두거나 커스텀)</span>
+
+<span class="cmt"># Settings → Interface</span>
+<span class="str">✓ Theme: Dark (or Auto)</span>
+<span class="str">✓ Language: 한국어</span>
+<span class="str">✓ Chat Direction: LTR</span>
+
+<span class="cmt"># Settings → Audio</span>
+<span class="str">✓ STT Engine: Web API (또는 Whisper)</span>
+<span class="str">✓ TTS Engine: Web API</span></code></pre>
+
+  <h3 id="webui-features">핵심 기능 상세</h3>
 
   <h4>1. 대화 관리</h4>
-  <ul>
-    <li>여러 채팅 세션 동시 관리</li>
-    <li>대화 히스토리 저장 및 검색</li>
-    <li>대화 내보내기 (Markdown, JSON)</li>
-    <li>폴더로 채팅 구조화</li>
-  </ul>
 
-  <h4>2. 문서 업로드 & RAG</h4>
+  <pre><code><span class="cmt"># 새 대화 시작</span>
+<span class="str">1. 상단 "+ New Chat" 버튼 클릭</span>
+<span class="str">2. 또는 Ctrl + Shift + O (단축키)</span>
 
-  <pre><code><span class="cmt"># 문서 업로드하여 질문</span>
-<span class="str">1. 채팅에서 파일 아이콘 클릭</span>
-<span class="str">2. PDF, TXT, DOCX, Markdown 업로드</span>
-<span class="str">3. "이 문서의 주요 내용을 요약해줘" 질문</span>
+<span class="cmt"># 대화 검색</span>
+<span class="str">왼쪽 사이드바 상단 검색창에 키워드 입력</span>
+<span class="str">예: "python 코드" 입력 → 관련 대화 필터링</span>
 
-<span class="cmt"># 지원 형식</span>
-- PDF (.pdf)
-- Word (.docx)
-- Text (.txt, .md)
-- 코드 (.py, .js, .java, etc.)</code></pre>
+<span class="cmt"># 대화 폴더 구조화</span>
+<span class="str">1. 대화 우클릭 → "Move to Folder"</span>
+<span class="str">2. 폴더 생성: "프로젝트", "학습", "디버깅" 등</span>
+<span class="str">3. 드래그 앤 드롭으로 이동</span>
 
-  <h4>3. 이미지 생성</h4>
+<span class="cmt"># 대화 내보내기</span>
+<span class="str">1. 대화 설정 (⋮) 클릭</span>
+<span class="str">2. Export → Markdown or JSON 선택</span>
+<span class="str">3. 파일 저장 → Notion, Obsidian 등에 활용</span>
 
-  <pre><code><span class="cmt"># Stable Diffusion 통합 (선택사항)</span>
-<span class="str">1. Settings → Images → Enable Image Generation</span>
-<span class="str">2. AUTOMATIC1111 또는 ComfyUI API 연결</span>
-<span class="str">3. 채팅에서 "고양이 그림 생성해줘" 요청</span></code></pre>
+<span class="cmt"># 대화 공유 (팀 협업)</span>
+<span class="str">1. 대화 설정 → Share</span>
+<span class="str">2. 링크 생성 → 팀원에게 전달</span>
+<span class="str">3. 권한 설정: View Only / Can Edit</span></code></pre>
 
-  <h4>4. 프롬프트 템플릿</h4>
+  <h4>2. 문서 업로드 & RAG (검색 증강 생성)</h4>
 
-  <pre><code><span class="cmt"># 자주 사용하는 프롬프트 저장</span>
-<span class="str">Settings → Prompts → New Prompt</span>
+  <p><strong>RAG</strong>는 문서를 업로드하고 LLM이 그 내용을 기반으로 답변하게 하는 기술입니다.</p>
 
-<span class="cmt"># 예시 템플릿</span>
+  <pre><code><span class="cmt"># 단일 문서 업로드 (빠른 질문)</span>
+<span class="str">1. 채팅 입력창 왼쪽 📎 아이콘 클릭</span>
+<span class="str">2. 파일 선택 (PDF, DOCX, TXT, MD, 코드 등)</span>
+<span class="str">3. 자동으로 임베딩 생성</span>
+<span class="str">4. 질문: "이 문서의 주요 결론은?"</span>
+
+<span class="cmt"># 지원 파일 형식</span>
+- 문서: PDF, DOCX, PPTX, TXT, MD
+- 코드: .py, .js, .java, .cpp, .go, .rs
+- 데이터: CSV, JSON, XML
+- 기타: HTML, RTF
+
+<span class="cmt"># 영구 문서 컬렉션 (지식 베이스)</span>
+<span class="str">1. Settings → Documents → Upload</span>
+<span class="str">2. 여러 파일 동시 업로드 (드래그 앤 드롭)</span>
+<span class="str">3. 태그 추가: #manual, #api, #guide</span>
+<span class="str">4. 모든 채팅에서 이 문서 검색 가능</span>
+
+<span class="cmt"># 채팅에서 문서 활성화</span>
+<span class="str">1. 채팅 시작</span>
+<span class="str">2. 메시지 입력창 위 "# Add Document" 클릭</span>
+<span class="str">3. 활성화할 문서 선택 (여러 개 가능)</span>
+<span class="str">4. 선택된 문서에서만 정보 검색</span></code></pre>
+
+  <h4>RAG 고급 설정</h4>
+
+  <pre><code><span class="cmt"># Settings → Documents → RAG</span>
+<span class="kw">Embedding Model</span>: nomic-embed-text     <span class="cmt"># 임베딩 모델</span>
+<span class="kw">Chunk Size</span>: 1000                      <span class="cmt"># 텍스트 분할 크기</span>
+<span class="kw">Chunk Overlap</span>: 200                    <span class="cmt"># 청크 오버랩</span>
+<span class="kw">Top K</span>: 5                               <span class="cmt"># 검색할 문서 수</span>
+<span class="kw">Relevance Threshold</span>: 0.5              <span class="cmt"># 관련성 임계값</span>
+
+<span class="cmt"># 임베딩 모델 추천</span>
+<span class="str">영어 문서</span>: nomic-embed-text (768차원, 빠름)
+<span class="str">다국어 (한국어 포함)</span>: mxbai-embed-large
+<span class="str">코드</span>: nomic-embed-text</code></pre>
+
+  <h4>실전 RAG 활용 예제</h4>
+
+  <pre><code><span class="cmt"># 시나리오 1: 회사 문서 Q&A 봇</span>
+<span class="str">1. 모든 사내 매뉴얼 PDF 업로드 (100개+)</span>
+<span class="str">2. 태그: #hr, #it, #finance</span>
+<span class="str">3. 질문: "휴가 신청 절차는?"</span>
+<span class="str">→ HR 매뉴얼에서 관련 정보 추출 후 답변</span>
+
+<span class="cmt"># 시나리오 2: 코드베이스 분석</span>
+<span class="str">1. 프로젝트의 모든 .py 파일 업로드</span>
+<span class="str">2. 질문: "인증 로직이 어떤 파일에 있어?"</span>
+<span class="str">→ auth.py, middleware.py 등에서 관련 코드 찾아 설명</span>
+
+<span class="cmt"># 시나리오 3: 연구 논문 요약</span>
+<span class="str">1. 논문 PDF 10개 업로드</span>
+<span class="str">2. 질문: "Transformer 아키텍처의 한계점은?"</span>
+<span class="str">→ 10개 논문에서 관련 내용 통합 요약</span></code></pre>
+
+  <h4>3. 멀티모달 & 비전</h4>
+
+  <pre><code><span class="cmt"># 이미지 분석 (llava, bakllava 모델 필요)</span>
+ollama pull llava:13b
+
+<span class="cmt"># 사용</span>
+<span class="str">1. 채팅에서 모델을 llava:13b로 변경</span>
+<span class="str">2. 이미지 업로드 (PNG, JPG, WEBP)</span>
+<span class="str">3. 질문: "이 이미지에서 무엇이 보이나요?"</span>
+<span class="str">4. 질문: "이 다이어그램을 설명해줘"</span>
+<span class="str">5. 질문: "이 코드 스크린샷을 분석해줘"</span>
+
+<span class="cmt"># 실전 활용</span>
+- UI 목업 → "이 디자인을 HTML/CSS로 구현해줘"
+- 에러 스크린샷 → "이 에러 원인과 해결 방법은?"
+- 다이어그램 → "이 아키텍처의 문제점은?"
+- 손글씨 수학 → "이 수식을 풀어줘"</code></pre>
+
+  <h4>4. 음성 입력 & 출력</h4>
+
+  <pre><code><span class="cmt"># STT (Speech-to-Text) 설정</span>
+<span class="str">Settings → Audio → STT</span>
+<span class="kw">Engine</span>: Web API (브라우저 내장) 또는 Whisper API
+
+<span class="cmt"># Whisper (Ollama) 사용</span>
+<span class="str">1. Whisper 모델 다운로드</span>
+ollama pull whisper
+
+<span class="str">2. Open WebUI 설정</span>
+<span class="str">Settings → Audio → STT Engine: Whisper (Ollama)</span>
+<span class="str">Settings → Audio → STT Model: whisper</span>
+
+<span class="str">3. 사용: 채팅 입력창 🎤 아이콘 클릭 → 말하기</span>
+
+<span class="cmt"># TTS (Text-to-Speech)</span>
+<span class="str">Settings → Audio → TTS</span>
+<span class="kw">Engine</span>: Web API (무료) 또는 ElevenLabs (고품질)
+
+<span class="cmt"># 메시지 음성 재생</span>
+<span class="str">1. AI 응답 위에 마우스 오버</span>
+<span class="str">2. 🔊 아이콘 클릭</span>
+<span class="str">3. 자동으로 음성 재생</span></code></pre>
+
+  <h4>5. 프롬프트 템플릿 & 프리셋</h4>
+
+  <pre><code><span class="cmt"># 프롬프트 템플릿 생성</span>
+<span class="str">Settings → Prompts → + New Prompt</span>
+
+<span class="cmt"># 템플릿 1: 코드 리뷰</span>
 <span class="kw">Name</span>: Code Review
-<span class="kw">Prompt</span>: <span class="str">"""
-당신은 시니어 개발자입니다. 다음 코드를 리뷰하고 개선점을 제안해주세요:
-- 버그 가능성
-- 성능 최적화
-- 코드 가독성
-- 보안 이슈
+<span class="kw">Command</span>: /review
+<span class="kw">Prompt</span>:
+<span class="str">"""
+당신은 10년 경력의 시니어 개발자입니다.
+다음 코드를 상세히 리뷰하고 개선점을 제안해주세요:
 
-코드:
+**체크리스트:**
+1. 버그 및 오류 가능성
+2. 성능 최적화 기회
+3. 코드 가독성 및 유지보수성
+4. 보안 취약점 (SQL injection, XSS 등)
+5. 베스트 프랙티스 준수 여부
+
+**코드:**
 {{CODE}}
+
+**리뷰 형식:**
+- 🔴 Critical: 즉시 수정 필요
+- 🟡 Important: 개선 권장
+- 🟢 Nice to have: 선택적 개선
+"""</span>
+
+<span class="cmt"># 사용</span>
+<span class="str">채팅에서 "/review" 입력 후 코드 붙여넣기</span>
+
+<span class="cmt"># 템플릿 2: 문서 요약</span>
+<span class="kw">Name</span>: Summarize Document
+<span class="kw">Command</span>: /summary
+<span class="kw">Prompt</span>:
+<span class="str">"""
+다음 문서를 3단계로 요약해주세요:
+
+1. **한 줄 요약** (핵심 메시지)
+2. **주요 포인트** (3-5개 불릿 포인트)
+3. **상세 요약** (1-2 문단)
+
+문서:
+{{DOCUMENT}}
+"""</span>
+
+<span class="cmt"># 템플릿 3: 번역</span>
+<span class="kw">Name</span>: Translate
+<span class="kw">Command</span>: /translate
+<span class="kw">Prompt</span>:
+<span class="str">"""
+다음 텍스트를 {{TARGET_LANG}}로 자연스럽게 번역해주세요.
+전문 용어는 정확하게 번역하고, 맥락을 유지하세요.
+
+원문:
+{{TEXT}}
+"""</span>
+
+<span class="cmt"># 템플릿 4: 학습 도우미</span>
+<span class="kw">Name</span>: Explain Like I'm 5
+<span class="kw">Command</span>: /eli5
+<span class="kw">Prompt</span>:
+<span class="str">"""
+다음 개념을 5살 아이도 이해할 수 있도록 쉽게 설명해주세요:
+- 비유와 예시 사용
+- 전문 용어 최소화
+- 단계별 설명
+
+개념: {{CONCEPT}}
 """</span></code></pre>
 
-  <h3 id="webui-admin">관리 기능</h3>
+  <h3 id="webui-admin">관리자 기능</h3>
 
   <h4>사용자 관리</h4>
 
-  <pre><code><span class="cmt"># 첫 번째 사용자 = 관리자</span>
-<span class="str">1. http://localhost:3000 접속</span>
-<span class="str">2. 계정 생성 (첫 사용자는 자동 admin)</span>
-<span class="str">3. Settings → Admin Panel → Users</span>
+  <pre><code><span class="cmt"># Admin Panel 접근</span>
+<span class="str">Settings → Admin Panel (관리자만 보임)</span>
 
-<span class="cmt"># 새 사용자 추가</span>
-- 이메일, 비밀번호 설정
-- 권한 부여 (Admin/User)
-- 모델 접근 제한</code></pre>
+<span class="cmt"># 사용자 추가</span>
+<span class="str">Admin Panel → Users → + Add User</span>
+<span class="kw">Name</span>: 홍길동
+<span class="kw">Email</span>: hong@company.com
+<span class="kw">Password</span>: (임시 비밀번호)
+<span class="kw">Role</span>: User (또는 Admin)
+
+<span class="cmt"># 사용자 권한 관리</span>
+<span class="str">User Actions:</span>
+- Edit: 정보 수정
+- Delete: 사용자 삭제
+- Ban: 일시 정지
+- Set as Admin: 관리자 승격
+
+<span class="cmt"># 대량 사용자 등록 (CSV)</span>
+<span class="str">1. CSV 파일 준비</span>
+name,email,role
+김철수,kim@company.com,user
+이영희,lee@company.com,admin
+
+<span class="str">2. Admin Panel → Import Users</span>
+<span class="str">3. CSV 업로드 → 자동 생성</span></code></pre>
 
   <h4>모델 관리</h4>
 
-  <pre><code><span class="cmt"># 웹 UI에서 모델 다운로드</span>
-<span class="str">Settings → Models → Pull a model from Ollama.com</span>
-llama3.2
+  <pre><code><span class="cmt"># 모델 다운로드</span>
+<span class="str">Settings → Models → Pull a model</span>
+llama3.2:7b
 codellama:13b
-mistral
+mistral:latest
+qwen2.5-coder:14b
 
 <span class="cmt"># 모델 삭제</span>
-<span class="str">Settings → Models → Delete icon</span></code></pre>
+<span class="str">모델 우클릭 → Delete</span>
+
+<span class="cmt"># 모델 별칭 (사용자 친화적 이름)</span>
+<span class="str">Settings → Models → Model Aliases</span>
+llama3.2:7b → "일반 대화"
+codellama:13b → "코딩 전문가"
+
+<span class="cmt"># 모델 접근 제어</span>
+<span class="str">Admin Panel → Models → Permissions</span>
+<span class="str">특정 사용자/그룹만 특정 모델 사용 허용</span>
+<span class="str">예: GPT-4 모델은 Senior 팀만 접근</span></code></pre>
+
+  <h4>시스템 설정</h4>
+
+  <pre><code><span class="cmt"># 회원가입 제어</span>
+<span class="str">Admin Panel → Settings → General</span>
+<span class="kw">Enable Signup</span>: false     <span class="cmt"># 공개 가입 차단</span>
+<span class="kw">Default Role</span>: user        <span class="cmt"># 기본 권한</span>
+
+<span class="cmt"># API 키 관리</span>
+<span class="str">Admin Panel → Settings → API Keys</span>
+<span class="str">외부 서비스 연동용 API 키 생성/관리</span>
+
+<span class="cmt"># 감사 로그</span>
+<span class="str">Admin Panel → Audit Logs</span>
+<span class="str">모든 사용자 활동 로그 확인</span>
+- 로그인/로그아웃
+- 모델 사용
+- 문서 업로드/삭제
+- 설정 변경</code></pre>
+
+  <h3 id="webui-plugins">플러그인 & 확장</h3>
+
+  <h4>1. Web Search (실시간 검색)</h4>
+
+  <pre><code><span class="cmt"># SearxNG 연동</span>
+<span class="str">Settings → Web Search</span>
+<span class="kw">Enable</span>: true
+<span class="kw">Engine</span>: SearxNG
+<span class="kw">URL</span>: https://searx.example.com
+
+<span class="cmt"># 사용</span>
+<span class="str">채팅에서 "#" 입력 후 검색</span>
+<span class="str">예: "#오늘 날씨는?" → 실시간 검색 후 답변</span></code></pre>
+
+  <h4>2. Python Code Interpreter</h4>
+
+  <pre><code><span class="cmt"># 설정</span>
+<span class="str">Settings → Functions → Python Interpreter</span>
+<span class="kw">Enable</span>: true
+
+<span class="cmt"># 사용</span>
+<span class="str">채팅:</span> "피보나치 수열 20개 계산해줘"
+<span class="str">→ Python 코드 자동 생성 및 실행 → 결과 표시</span>
+
+<span class="cmt"># 지원 라이브러리</span>
+numpy, pandas, matplotlib, requests, beautifulsoup4</code></pre>
+
+  <h4>3. Wolfram Alpha (수학/과학)</h4>
+
+  <pre><code><span class="cmt"># API 키 발급</span>
+<span class="str">1. https://products.wolframalpha.com/api/ 가입</span>
+<span class="str">2. App ID 발급</span>
+
+<span class="cmt"># 설정</span>
+<span class="str">Settings → Functions → Wolfram Alpha</span>
+<span class="kw">App ID</span>: YOUR_APP_ID
+
+<span class="cmt"># 사용</span>
+<span class="str">"∫ x² dx 계산해줘"</span>
+<span class="str">"태양과 지구의 거리는?"</span></code></pre>
+
+  <h3 id="webui-api">API 통합</h3>
+
+  <pre><code><span class="cmt"># Open WebUI API 키 생성</span>
+<span class="str">Settings → Account → API Keys → + New Key</span>
+<span class="kw">Name</span>: MyApp
+<span class="kw">Expires</span>: Never (또는 30 days)
+
+<span class="cmt"># Python에서 API 사용</span>
+<span class="kw">import</span> requests
+
+url = <span class="str">"http://localhost:3000/api/chat"</span>
+headers = {
+    <span class="str">"Authorization"</span>: <span class="str">"Bearer YOUR_API_KEY"</span>,
+    <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span>
+}
+payload = {
+    <span class="str">"model"</span>: <span class="str">"llama3.2"</span>,
+    <span class="str">"messages"</span>: [
+        {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello!"</span>}
+    ]
+}
+
+response = requests.post(url, json=payload, headers=headers)
+<span class="kw">print</span>(response.json())
+
+<span class="cmt"># JavaScript에서 사용</span>
+<span class="kw">const</span> response = <span class="kw">await</span> fetch(<span class="str">'http://localhost:3000/api/chat'</span>, {
+  method: <span class="str">'POST'</span>,
+  headers: {
+    <span class="str">'Authorization'</span>: <span class="str">'Bearer YOUR_API_KEY'</span>,
+    <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>
+  },
+  body: JSON.stringify({
+    model: <span class="str">'llama3.2'</span>,
+    messages: [{role: <span class="str">'user'</span>, content: <span class="str">'Hello!'</span>}]
+  })
+});
+
+<span class="kw">const</span> data = <span class="kw">await</span> response.json();
+console.log(data);</code></pre>
+
+  <h3 id="webui-deployment">프로덕션 배포</h3>
+
+  <h4>HTTPS 설정 (Nginx + Let's Encrypt)</h4>
+
+  <pre><code><span class="cmt"># Nginx 설정</span>
+<span class="kw">server</span> {
+    <span class="kw">listen</span> <span class="num">80</span>;
+    <span class="kw">server_name</span> ai.company.com;
+    <span class="kw">return</span> <span class="num">301</span> https://<span class="macro">$server_name$request_uri</span>;
+}
+
+<span class="kw">server</span> {
+    <span class="kw">listen</span> <span class="num">443</span> ssl http2;
+    <span class="kw">server_name</span> ai.company.com;
+
+    <span class="kw">ssl_certificate</span> /etc/letsencrypt/live/ai.company.com/fullchain.pem;
+    <span class="kw">ssl_certificate_key</span> /etc/letsencrypt/live/ai.company.com/privkey.pem;
+
+    <span class="kw">location</span> / {
+        <span class="kw">proxy_pass</span> http://localhost:<span class="num">3000</span>;
+        <span class="kw">proxy_http_version</span> <span class="num">1.1</span>;
+        <span class="kw">proxy_set_header</span> Upgrade <span class="macro">$http_upgrade</span>;
+        <span class="kw">proxy_set_header</span> Connection <span class="str">'upgrade'</span>;
+        <span class="kw">proxy_set_header</span> Host <span class="macro">$host</span>;
+        <span class="kw">proxy_cache_bypass</span> <span class="macro">$http_upgrade</span>;
+    }
+}</code></pre>
+
+  <h4>백업 및 복원</h4>
+
+  <pre><code><span class="cmt"># 데이터 백업</span>
+docker run --rm \
+  -v open-webui:/source \
+  -v $(pwd):/backup \
+  alpine tar czf /backup/open-webui-backup-$(date +%Y%m%d).tar.gz -C /source .
+
+<span class="cmt"># 복원</span>
+docker run --rm \
+  -v open-webui:/target \
+  -v $(pwd):/backup \
+  alpine sh -c <span class="str">"cd /target && tar xzf /backup/open-webui-backup-20250212.tar.gz"</span>
+
+<span class="cmt"># 자동 백업 (cron)</span>
+<span class="num">0</span> <span class="num">2</span> * * * /path/to/backup-script.sh</code></pre>
+
+  <h4>환경 변수 전체 목록</h4>
+
+  <pre><code><span class="cmt"># docker-compose.yml 또는 .env 파일</span>
+<span class="kw">OLLAMA_BASE_URL</span>=http://ollama:11434
+<span class="kw">WEBUI_SECRET_KEY</span>=random-secret-key-min-32-chars
+<span class="kw">WEBUI_AUTH</span>=true
+<span class="kw">ENABLE_SIGNUP</span>=false
+<span class="kw">DEFAULT_MODELS</span>=llama3.2,codellama:13b
+<span class="kw">DEFAULT_USER_ROLE</span>=user
+<span class="kw">ENABLE_RAG_WEB_SEARCH</span>=true
+<span class="kw">RAG_EMBEDDING_MODEL</span>=nomic-embed-text
+<span class="kw">CHUNK_SIZE</span>=1000
+<span class="kw">CHUNK_OVERLAP</span>=200
+<span class="kw">RAG_TOP_K</span>=5
+<span class="kw">ENABLE_IMAGE_GENERATION</span>=false
+<span class="kw">IMAGE_GENERATION_API_URL</span>=http://stable-diffusion:7860
+<span class="kw">WHISPER_MODEL</span>=whisper
+<span class="kw">TTS_ENGINE</span>=web_api</code></pre>
 
   <div class="info-box tip">
-    <div class="info-box-title">💡 Open WebUI 추천 플러그인</div>
+    <div class="info-box-title">🚀 프로덕션 체크리스트</div>
     <ul>
-      <li><strong>Web Search</strong>: SearxNG 통합 (실시간 검색)</li>
-      <li><strong>Wolfram Alpha</strong>: 수학 계산</li>
-      <li><strong>Python Interpreter</strong>: 코드 실행</li>
-      <li><strong>Wikipedia</strong>: 백과사전 검색</li>
+      <li>✓ HTTPS 설정 (Let's Encrypt)</li>
+      <li>✓ 회원가입 비활성화 (ENABLE_SIGNUP=false)</li>
+      <li>✓ 강력한 SECRET_KEY 설정</li>
+      <li>✓ 정기 백업 (매일 2AM)</li>
+      <li>✓ 리버스 프록시 (Nginx/Caddy)</li>
+      <li>✓ 방화벽 설정 (3000 포트 내부망만)</li>
+      <li>✓ 로그 모니터링</li>
+      <li>✓ 리소스 제한 (Docker memory/CPU)</li>
     </ul>
   </div>
+
+  <h3 id="webui-troubleshooting">문제 해결</h3>
+
+  <pre><code><span class="cmt"># 문제 1: Ollama 연결 안됨</span>
+<span class="str">증상:</span> "Cannot connect to Ollama"
+<span class="str">해결:</span>
+1. Ollama가 실행 중인지 확인: curl http://localhost:11434
+2. Docker 네트워크: host.docker.internal → localhost 변경
+3. OLLAMA_BASE_URL 환경 변수 확인
+
+<span class="cmt"># 문제 2: 모델이 보이지 않음</span>
+<span class="str">해결:</span>
+ollama list                    <span class="cmt"># 모델 확인</span>
+ollama pull llama3.2           <span class="cmt"># 모델 다운로드</span>
+docker restart open-webui      <span class="cmt"># 재시작</span>
+
+<span class="cmt"># 문제 3: RAG 임베딩 실패</span>
+<span class="str">해결:</span>
+ollama pull nomic-embed-text   <span class="cmt"># 임베딩 모델 설치</span>
+<span class="str">Settings → Documents → RAG → Embedding Model 설정</span>
+
+<span class="cmt"># 문제 4: 메모리 부족</span>
+<span class="str">해결:</span>
+<span class="cmt"># docker-compose.yml에 리소스 제한 추가</span>
+<span class="kw">deploy</span>:
+  <span class="kw">resources</span>:
+    <span class="kw">limits</span>:
+      <span class="kw">memory</span>: 4G
+
+<span class="cmt"># 문제 5: 느린 응답</span>
+<span class="str">해결:</span>
+1. 더 작은 모델 사용 (7B → 3B)
+2. GPU 활성화 (--gpus all)
+3. Ollama num_ctx 줄이기 (4096 → 2048)</code></pre>
 </section>
 
 <section class="content-section">

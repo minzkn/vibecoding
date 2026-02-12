@@ -25,7 +25,7 @@ var SEARCH_INDEX = [
   { title: "Ollama 설치", url: "pages/ollama-installation.html", description: "Windows, macOS, Linux에서 Ollama 설치", keywords: "ollama installation 설치 윈도우 맥 리눅스" },
   { title: "Ollama 모델 가이드", url: "pages/ollama-models.html", description: "Llama, Mistral, CodeLlama 등 모델 설치 및 비교", keywords: "ollama models llama mistral codellama 모델" },
   { title: "Ollama 사용법", url: "pages/ollama-usage.html", description: "Ollama CLI 명령어, API, 모델 관리", keywords: "ollama usage cli api 사용법" },
-  { title: "Ollama 연동", url: "pages/ollama-integration.html", description: "Ollama와 CLI 도구 연동 (Continue, Aider 등)", keywords: "ollama integration 연동 통합" },
+  { title: "Ollama 연동", url: "pages/ollama-integration.html", description: "Ollama와 CLI 도구 연동 (Continue, Aider, Open WebUI, LangChain 등)", keywords: "ollama integration 연동 통합 open webui langchain llamaindex continue aider 웹ui chatgpt" },
   { title: "Ollama 고급 활용", url: "pages/ollama-advanced.html", description: "커스텀 모델, 파인튜닝, 성능 최적화", keywords: "ollama advanced 고급 커스텀 파인튜닝" },
   { title: "Ollama 트러블슈팅", url: "pages/ollama-troubleshooting.html", description: "Ollama 문제 해결 가이드", keywords: "ollama troubleshooting 문제해결 오류" },
 
