@@ -32,88 +32,131 @@
 <main class="main-content">
 <nav class="breadcrumb"></nav>
 
-<h1 id="top">OpenCode</h1>
-<p class="lead">VS Code를 위한 오픈소스 AI 코딩 어시스턴트</p>
+<h1 id="top">OpenCode (아카이브됨)</h1>
+<p class="lead">터미널 기반 오픈소스 AI 코딩 에이전트 - 2025년 9월 아카이브됨</p>
 
-<div class="info-box warning">
-  <div class="info-box-title">⚠️ 면책 조항</div>
+<div class="info-box warning" style="background: #ff4444; border-color: #cc0000;">
+  <div class="info-box-title" style="color: white;">⚠️ 프로젝트 아카이브됨 (중요)</div>
+  <p style="color: white;">
+    <strong>OpenCode 프로젝트는 2025년 9월 18일에 아카이브</strong>되었으며, 더 이상 개발되지 않습니다.
+    신규 프로젝트에는 사용을 권장하지 않습니다.
+  </p>
+  <p style="color: white; margin-bottom: 0;">
+    <strong>활성 대안 도구:</strong>
+    <a href="continue.html" style="color: #ffff99; text-decoration: underline;">Continue.dev</a> (VS Code 확장, 다중 LLM),
+    <a href="cline.html" style="color: #ffff99; text-decoration: underline;">Cline</a> (자율 에이전트),
+    <a href="claude-cli.html" style="color: #ffff99; text-decoration: underline;">Claude CLI</a> (공식 터미널 도구)
+  </p>
+</div>
+
+<div class="info-box info">
+  <div class="info-box-title">ℹ️ 이 문서의 목적</div>
   <p>
-    이 문서는 OpenCode의 일반적인 사용 가이드입니다.
-    OpenCode는 활발히 개발 중인 오픈소스 프로젝트로, 버전에 따라 기능, 설정 옵션, 사용법이 다를 수 있습니다.
-    정확한 정보는 <a href="https://github.com/opencode-ai/opencode" target="_blank" rel="noopener">공식 GitHub 저장소</a> 및
-    <a href="https://opencode.ai/docs/" target="_blank" rel="noopener">공식 문서</a>를 참고하세요.
+    이 문서는 아카이브된 OpenCode 프로젝트에 대한 참고 자료로 유지됩니다.
+    현재 OpenCode를 사용 중이라면 위의 활성 대안으로 마이그레이션을 권장합니다.
   </p>
   <p style="margin-bottom: 0;">
-    <strong>참고:</strong> 문서의 성능 벤치마크, 비용 예상치, 설정 예시는 참고용이며 실제 환경과 다를 수 있습니다.
+    <strong>참고:</strong> 공식 저장소 <a href="https://github.com/opencode-ai/opencode" target="_blank" rel="noopener">GitHub (Archived)</a>,
+    공식 사이트 <a href="https://opencode.ai" target="_blank" rel="noopener">opencode.ai</a>
   </p>
 </div>
 
 <div class="info-box tip">
-  <div class="info-box-title">⚡ 빠른 시작</div>
-  <ol>
-    <li>VS Code Extensions에서 "OpenCode" 검색</li>
-    <li>Install 클릭</li>
-    <li>API 키 설정 (Claude, GPT-4, 또는 Ollama)</li>
-    <li>Cmd+K (Mac) 또는 Ctrl+K (Windows)로 시작</li>
-  </ol>
+  <div class="info-box-title">⚡ OpenCode 기본 사용 (참고용)</div>
+  <pre><code><span class="cmt"># 터미널에서 OpenCode 실행</span>
+<span class="cmt"># 1. 설치 (Go 필요)</span>
+git clone https://github.com/opencode-ai/opencode.git
+cd opencode
+go build -o opencode
+
+<span class="cmt"># 2. 실행</span>
+./opencode
+
+<span class="cmt"># 3. 프롬프트 입력</span>
+&gt; <span class="str">"Python 웹 서버 만들어줘"</span></code></pre>
 </div>
 
 <section class="content-section">
   <h2 id="introduction">소개</h2>
 
   <p>
-    <strong>OpenCode</strong>는 VS Code를 위한 경량 오픈소스 AI 코딩 어시스턴트입니다.
-    Cursor나 Continue보다 단순하면서도 핵심 기능에 집중하여 빠르고 효율적인 AI 코딩 경험을 제공합니다.
-    다양한 LLM을 지원하며 설정이 간단하여 초보자도 쉽게 시작할 수 있습니다.
+    <strong>OpenCode</strong>는 <strong>터미널 기반 AI 코딩 에이전트</strong>입니다.
+    VS Code 확장이 아닌 CLI 도구로, <a href="claude-cli.html">Claude CLI</a>와 유사한 구조를 가지고 있습니다.
+    다양한 LLM을 지원하며 Go 언어로 작성되었습니다.
   </p>
 
-  <h3 id="why-opencode">왜 OpenCode인가?</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 도구 유형 주의</div>
+    <p>
+      OpenCode는 <strong>VS Code 확장이 아닙니다.</strong>
+      터미널에서 실행되는 CLI 도구이며, VS Code 확장은 터미널 통합을 위한 보조 도구일 뿐입니다.
+      VS Code 네이티브 확장을 원한다면 <a href="continue.html">Continue.dev</a>나 <a href="cline.html">Cline</a>을 사용하세요.
+    </p>
+  </div>
+
+  <h3 id="why-opencode">OpenCode의 특징 (아카이브 전)</h3>
 
   <table>
     <thead>
       <tr>
         <th>특징</th>
         <th>설명</th>
+        <th>현재 상태</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>경량 & 빠름</strong></td>
-        <td>핵심 기능에 집중, 메모리 사용량 최소화</td>
+        <td><strong>터미널 기반</strong></td>
+        <td>CLI 도구로 터미널에서 실행</td>
+        <td>❌ 아카이브됨</td>
       </tr>
       <tr>
-        <td><strong>완전 무료</strong></td>
-        <td>MIT 라이선스, 오픈소스, 무료 영구 사용</td>
+        <td><strong>오픈소스</strong></td>
+        <td>MIT 라이선스, Go 언어로 작성</td>
+        <td>✅ 코드 접근 가능</td>
       </tr>
       <tr>
         <td><strong>다중 LLM</strong></td>
-        <td>Claude, GPT-4, Gemini, Ollama 등 자유롭게 선택</td>
+        <td>Claude, GPT-4, Gemini, Ollama 등 지원</td>
+        <td>✅ 기능 동작</td>
       </tr>
       <tr>
-        <td><strong>간단한 설정</strong></td>
-        <td>VS Code settings.json 몇 줄로 모든 설정 완료</td>
+        <td><strong>경량</strong></td>
+        <td>핵심 기능에 집중, 메모리 사용량 최소화</td>
+        <td>✅ 기능 동작</td>
       </tr>
       <tr>
         <td><strong>프라이버시</strong></td>
-        <td>Ollama와 함께 사용 시 완전 로컬, 데이터 유출 없음</td>
+        <td>Ollama 사용 시 완전 로컬 처리</td>
+        <td>✅ 기능 동작</td>
       </tr>
       <tr>
-        <td><strong>VS Code 네이티브</strong></td>
-        <td>별도 에디터 없이 기존 VS Code에 통합</td>
+        <td><strong>개발 상태</strong></td>
+        <td>2025년 9월 아카이브, 더 이상 업데이트 없음</td>
+        <td>🔴 아카이브됨</td>
       </tr>
     </tbody>
   </table>
 
-  <h3 id="features">핵심 기능</h3>
+  <h3 id="features">핵심 기능 (터미널 기반)</h3>
 
   <ul>
-    <li><strong>인라인 편집 (Cmd/Ctrl+K)</strong>: 코드 블록 선택 후 즉시 수정</li>
-    <li><strong>채팅 인터페이스</strong>: 사이드바에서 AI와 대화하며 코딩</li>
-    <li><strong>자동완성 (Tab)</strong>: GitHub Copilot 스타일 코드 제안</li>
-    <li><strong>멀티모델 지원</strong>: 작업별로 다른 모델 선택 가능</li>
-    <li><strong>컨텍스트 인식</strong>: 현재 파일, 선택 영역 자동 컨텍스트 제공</li>
-    <li><strong>커스텀 프롬프트</strong>: 반복 작업을 위한 프롬프트 템플릿</li>
+    <li><strong>터미널 대화형 인터페이스</strong>: 터미널에서 AI와 대화하며 코드 생성</li>
+    <li><strong>파일 생성/편집</strong>: 프롬프트로 파일 자동 생성 및 수정</li>
+    <li><strong>멀티모델 지원</strong>: Claude, GPT-4, Gemini, Ollama 등 다양한 LLM</li>
+    <li><strong>컨텍스트 인식</strong>: 프로젝트 파일 자동 인식 및 컨텍스트 제공</li>
+    <li><strong>커스텀 명령어</strong>: Markdown 파일로 반복 작업용 명령어 저장</li>
+    <li><strong>경량 설계</strong>: Go 언어로 작성되어 빠른 실행 속도</li>
   </ul>
+
+  <div class="info-box info">
+    <div class="info-box-title">💡 VS Code 확장 vs CLI 도구</div>
+    <p>
+      OpenCode는 VS Code 내부에서 실행되는 확장이 아니라 <strong>별도의 터미널 프로그램</strong>입니다.
+      VS Code와 통합하려면 터미널을 열어 OpenCode를 실행해야 합니다.
+      VS Code 네이티브 확장을 원한다면 Continue.dev나 Cline을 사용하세요.
+    </p>
+  </div>
 
   <h3 id="vs-others">다른 도구와 비교</h3>
 
@@ -122,84 +165,234 @@
       <tr>
         <th>특징</th>
         <th>OpenCode</th>
+        <th>Claude CLI</th>
         <th>Continue.dev</th>
-        <th>Cursor</th>
         <th>Cline</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>오픈소스</td>
-        <td>✅ MIT</td>
-        <td>✅ Apache</td>
-        <td>❌</td>
-        <td>✅ Apache</td>
+        <td><strong>도구 유형</strong></td>
+        <td>터미널 CLI</td>
+        <td>터미널 CLI</td>
+        <td>VS Code 확장</td>
+        <td>VS Code 확장</td>
       </tr>
       <tr>
-        <td>가격</td>
-        <td>무료</td>
-        <td>무료</td>
-        <td>$20/월</td>
-        <td>무료</td>
+        <td><strong>개발 상태</strong></td>
+        <td>🔴 아카이브됨</td>
+        <td>✅ 활발</td>
+        <td>✅ 활발</td>
+        <td>✅ 활발</td>
+      </tr>
+      <tr>
+        <td>오픈소스</td>
+        <td>✅ MIT</td>
+        <td>❌ 독점</td>
+        <td>✅ Apache</td>
+        <td>✅ Apache</td>
       </tr>
       <tr>
         <td>다중 LLM</td>
         <td>✅</td>
-        <td>✅</td>
-        <td>✅</td>
-        <td>✅</td>
-      </tr>
-      <tr>
-        <td>인라인 편집</td>
-        <td>✅</td>
-        <td>✅</td>
+        <td>❌ Claude만</td>
         <td>✅</td>
         <td>✅</td>
       </tr>
       <tr>
-        <td>자동완성</td>
-        <td>✅</td>
-        <td>✅</td>
-        <td>✅</td>
+        <td>가격</td>
+        <td>무료</td>
+        <td>무료 (API 비용)</td>
+        <td>무료 (API 비용)</td>
+        <td>무료 (API 비용)</td>
+      </tr>
+      <tr>
+        <td>공식 지원</td>
         <td>❌</td>
-      </tr>
-      <tr>
-        <td>메모리 사용</td>
-        <td>🟢 낮음</td>
-        <td>🟡 보통</td>
-        <td>🟡 보통</td>
-        <td>🟢 낮음</td>
-      </tr>
-      <tr>
-        <td>설정 복잡도</td>
-        <td>🟢 쉬움</td>
-        <td>🟡 보통</td>
-        <td>🟢 쉬움</td>
-        <td>🟡 보통</td>
+        <td>✅ Anthropic</td>
+        <td>✅ 커뮤니티</td>
+        <td>✅ 커뮤니티</td>
       </tr>
       <tr>
         <td>Ollama 지원</td>
         <td>✅</td>
-        <td>✅</td>
         <td>❌</td>
         <td>✅</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td>메모리 사용</td>
+        <td>🟢 낮음</td>
+        <td>🟢 낮음</td>
+        <td>🟡 보통</td>
+        <td>🟢 낮음</td>
       </tr>
     </tbody>
   </table>
 
-  <div class="info-box info">
-    <div class="info-box-title">💡 언제 OpenCode를 선택할까?</div>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ OpenCode 사용 권장하지 않음</div>
+    <p>
+      OpenCode는 아카이브되어 더 이상 업데이트되지 않습니다.
+      보안 패치, 버그 수정, 새로운 기능이 제공되지 않으므로 신규 프로젝트에는 사용을 권장하지 않습니다.
+    </p>
+    <p style="margin-bottom: 0;">
+      <strong>권장 대안:</strong> 아래 마이그레이션 가이드를 참고하여 활성 도구로 전환하세요.
+    </p>
+  </div>
+</section>
+
+<!-- 마이그레이션 가이드 섹션 -->
+<section class="content-section">
+  <h2 id="migration">OpenCode에서 마이그레이션</h2>
+
+  <p>
+    OpenCode가 아카이브되었으므로, 다음 활성 도구로 마이그레이션을 권장합니다.
+    각 도구의 특성에 맞춰 선택하세요.
+  </p>
+
+  <h3 id="migration-continue">Continue.dev로 전환 (가장 권장)</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">✅ 권장 이유</div>
     <ul>
-      <li>빠르고 가벼운 도구를 원할 때</li>
-      <li>복잡한 설정 없이 바로 시작하고 싶을 때</li>
-      <li>기존 VS Code 환경을 그대로 유지하고 싶을 때</li>
-      <li>Ollama로 완전 무료 AI 코딩을 하고 싶을 때</li>
+      <li><strong>오픈소스</strong>: Apache 2.0 라이선스, 활발한 개발</li>
+      <li><strong>다중 LLM</strong>: OpenCode처럼 다양한 모델 지원</li>
+      <li><strong>VS Code 네이티브</strong>: 별도 터미널 없이 에디터에 통합</li>
+      <li><strong>Ollama 지원</strong>: 완전 무료 로컬 사용 가능</li>
+      <li><strong>풍부한 기능</strong>: @codebase, @docs 등 고급 기능 제공</li>
     </ul>
   </div>
 
-  <h3 id="benchmarks">성능 벤치마크</h3>
+  <h4>마이그레이션 단계</h4>
+  <pre><code><span class="cmt"># 1. Continue 확장 설치</span>
+VS Code Extensions → "Continue" 검색 → 설치
 
-  <h4>응답 속도 비교 (평균)</h4>
+<span class="cmt"># 2. Ollama 연동 (OpenCode에서 Ollama 사용했다면)</span>
+Continue 사이드바 → Settings → Ollama 선택
+모델: qwen2.5-coder (OpenCode와 동일)
+
+<span class="cmt"># 3. 기존 API 키 재사용</span>
+Continue 설정에 Claude/OpenAI API 키 입력
+
+<span class="cmt"># 4. 단축키 학습</span>
+Cmd/Ctrl + L  <span class="cmt"># 채팅 열기</span>
+Cmd/Ctrl + I  <span class="cmt"># 인라인 편집</span></code></pre>
+
+  <p><a href="continue.html">Continue.dev 완전 가이드 →</a></p>
+
+  <h3 id="migration-claude-cli">Claude CLI로 전환 (터미널 선호 시)</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">ℹ️ Claude CLI 특징</div>
+    <ul>
+      <li><strong>공식 도구</strong>: Anthropic 공식 지원, 안정적</li>
+      <li><strong>터미널 기반</strong>: OpenCode처럼 CLI 인터페이스</li>
+      <li><strong>최신 모델</strong>: Claude 4.6 Opus, 4.5 Sonnet 즉시 지원</li>
+      <li><strong>제한사항</strong>: Claude 모델만 지원 (다중 LLM 불가)</li>
+    </ul>
+  </div>
+
+  <h4>마이그레이션 단계</h4>
+  <pre><code><span class="cmt"># 1. Claude CLI 설치</span>
+npm install -g @anthropic-ai/claude-cli
+
+<span class="cmt"># 2. API 키 설정</span>
+export ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxx"</span>
+
+<span class="cmt"># 3. 실행 (OpenCode 대신)</span>
+claude  <span class="cmt"># opencode 대신 claude 명령어 사용</span>
+
+<span class="cmt"># 4. 프로젝트 컨텍스트 설정</span>
+mkdir .claude
+<span class="cmt"># .claude/instructions.md에 프로젝트 규칙 작성</span></code></pre>
+
+  <p><a href="claude-cli.html">Claude CLI 완전 가이드 →</a></p>
+
+  <h3 id="migration-cline">Cline으로 전환 (자율 에이전트 원할 때)</h3>
+
+  <div class="info-box info">
+    <div class="info-box-title">ℹ️ Cline 특징</div>
+    <ul>
+      <li><strong>자율 에이전트</strong>: 복잡한 작업을 단계별로 자동 실행</li>
+      <li><strong>터미널 실행</strong>: npm install, git commit 자동 처리</li>
+      <li><strong>브라우저 제어</strong>: 웹 테스트 자동화 가능</li>
+      <li><strong>승인 시스템</strong>: 위험한 작업은 사용자 확인</li>
+    </ul>
+  </div>
+
+  <h4>마이그레이션 단계</h4>
+  <pre><code><span class="cmt"># 1. Cline 확장 설치</span>
+VS Code Extensions → "Cline" 검색 → 설치
+
+<span class="cmt"># 2. API 키 설정</span>
+Cline 사이드바 → Settings → API 키 입력
+
+<span class="cmt"># 3. 첫 작업 요청</span>
+<span class="str">"전체 프로젝트 구조 생성해줘"</span>
+→ Cline이 자율적으로 파일 생성, 설치, 설정</code></pre>
+
+  <p><a href="cline.html">Cline 완전 가이드 →</a></p>
+
+  <h3 id="migration-comparison">마이그레이션 선택 가이드</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>상황</th>
+        <th>권장 도구</th>
+        <th>이유</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>OpenCode + Ollama 사용 중</td>
+        <td><a href="continue.html">Continue.dev</a></td>
+        <td>동일한 무료 로컬 환경, VS Code 통합</td>
+      </tr>
+      <tr>
+        <td>터미널 CLI를 선호</td>
+        <td><a href="claude-cli.html">Claude CLI</a></td>
+        <td>공식 지원, 안정적, 터미널 기반</td>
+      </tr>
+      <tr>
+        <td>자율적인 작업 처리 원함</td>
+        <td><a href="cline.html">Cline</a></td>
+        <td>에이전트 방식, 복잡한 작업 자동화</td>
+      </tr>
+      <tr>
+        <td>최고 품질 코드 생성</td>
+        <td><a href="claude-cli.html">Claude CLI</a></td>
+        <td>Claude 4.6 Opus 사용 가능</td>
+      </tr>
+      <tr>
+        <td>다양한 LLM 사용 필요</td>
+        <td><a href="continue.html">Continue.dev</a></td>
+        <td>모든 주요 LLM 지원</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><a href="cli-comparison.html">모든 도구 상세 비교 →</a></p>
+</section>
+
+<!-- 성능 벤치마크 섹션 (참고용) -->
+<section class="content-section">
+  <h2 id="benchmarks">성능 벤치마크 (참고용)</h2>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 벤치마크 데이터 주의</div>
+    <p>
+      <strong>이 벤치마크 데이터는 추정값이며, OpenCode가 아카이브되어 최신 데이터가 없습니다.</strong>
+      실제 성능은 환경, 네트워크, 시스템 사양에 따라 크게 다를 수 있습니다.
+    </p>
+    <p style="margin-bottom: 0;">
+      활성 도구의 최신 벤치마크는 각 도구의 공식 문서를 참고하세요:
+      <a href="continue.html">Continue</a>, <a href="cline.html">Cline</a>, <a href="claude-cli.html">Claude CLI</a>
+    </p>
+  </div>
+
+  <h3 id="speed-benchmark">응답 속도 비교 (평균, 추정값)</h3>
   <table>
     <thead>
       <tr>
@@ -1538,98 +1731,111 @@ ollama list  <span class="cmt"># 모델 목록 확인</span></code></pre>
 <section class="content-section">
   <h2 id="resources">커뮤니티 및 학습 리소스</h2>
 
-  <h3 id="official-resources">공식 리소스</h3>
+  <h3 id="official-resources">공식 리소스 (아카이브됨)</h3>
 
   <table>
     <thead>
       <tr>
         <th>리소스</th>
         <th>링크</th>
-        <th>설명</th>
+        <th>상태</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td><strong>GitHub 저장소</strong></td>
-        <td><a href="https://github.com/opencode-ai/opencode" target="_blank" rel="noopener">github.com/opencode-ai/opencode</a></td>
-        <td>소스 코드, 이슈 트래킹, PR</td>
+        <td><a href="https://github.com/opencode-ai/opencode" target="_blank" rel="noopener">opencode-ai/opencode</a></td>
+        <td>🔴 아카이브됨 (2025.09)</td>
+      </tr>
+      <tr>
+        <td><strong>공식 사이트</strong></td>
+        <td><a href="https://opencode.ai" target="_blank" rel="noopener">opencode.ai</a></td>
+        <td>✅ 접근 가능</td>
       </tr>
       <tr>
         <td><strong>공식 문서</strong></td>
         <td><a href="https://opencode.ai/docs/" target="_blank" rel="noopener">opencode.ai/docs</a></td>
-        <td>설치 가이드 및 상세 설명서</td>
+        <td>✅ 참고용</td>
       </tr>
       <tr>
         <td><strong>VS Code 확장</strong></td>
-        <td><a href="https://marketplace.visualstudio.com/search?term=opencode&target=VSCode" target="_blank" rel="noopener">VS Code Marketplace 검색</a></td>
-        <td>여러 OpenCode 확장 버전 제공</td>
-      </tr>
-      <tr>
-        <td><strong>커뮤니티 지원</strong></td>
-        <td><a href="https://github.com/opencode-ai/opencode/discussions" target="_blank" rel="noopener">GitHub Discussions</a></td>
-        <td>Q&amp;A, 기능 요청, 토론</td>
+        <td><a href="https://marketplace.visualstudio.com/items?itemName=sst-dev.opencode" target="_blank" rel="noopener">VS Code Marketplace</a></td>
+        <td>✅ 설치 가능 (업데이트 없음)</td>
       </tr>
     </tbody>
   </table>
 
-  <div class="info-box info">
-    <div class="info-box-title">ℹ️ 참고</div>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 아카이브된 프로젝트</div>
     <p>
-      OpenCode는 활발히 개발 중인 오픈소스 프로젝트입니다.
-      최신 정보는 <a href="https://github.com/opencode-ai/opencode" target="_blank" rel="noopener">공식 GitHub 저장소</a>를 참고하세요.
+      <strong>OpenCode는 2025년 9월 18일에 아카이브</strong>되었으며, 더 이상 업데이트되지 않습니다.
+      이슈 리포트, 기능 요청, Pull Request가 받아들여지지 않습니다.
+    </p>
+    <p style="margin-bottom: 0;">
+      <strong>활성 대안:</strong>
+      <a href="continue.html">Continue.dev</a>,
+      <a href="cline.html">Cline</a>,
+      <a href="claude-cli.html">Claude CLI</a>
     </p>
   </div>
 
-  <h3 id="tutorials">학습 자료</h3>
+  <h3 id="alternative-learning">활성 도구 학습 자료</h3>
 
-  <h4>초보자 가이드</h4>
+  <p>OpenCode가 아카이브되었으므로, 활성 도구의 학습 자료를 참고하세요:</p>
+
+  <h4>Continue.dev 가이드</h4>
   <ul>
-    <li><strong>5분 퀵스타트</strong>: 설치부터 첫 코드 생성까지</li>
-    <li><strong>OpenCode vs GitHub Copilot</strong>: 차이점과 선택 가이드</li>
-    <li><strong>Ollama 무료 설정</strong>: 비용 없이 시작하기</li>
-    <li><strong>첫 커스텀 프롬프트 만들기</strong>: 프롬프트 작성 팁</li>
+    <li><a href="continue.html#installation">Continue 설치 및 초기 설정</a></li>
+    <li><a href="continue.html#basic-usage">인라인 편집, 채팅, 자동완성</a></li>
+    <li><a href="continue.html#context-providers">@codebase, @docs 활용</a></li>
+    <li><a href="continue.html#config">다중 LLM 설정 및 Ollama 연동</a></li>
   </ul>
 
-  <h4>중급 튜토리얼</h4>
+  <h4>Claude CLI 가이드</h4>
   <ul>
-    <li><strong>프로젝트별 설정 마스터하기</strong>: 팀 협업 설정</li>
-    <li><strong>다중 LLM 전략</strong>: 비용 최적화 가이드</li>
-    <li><strong>워크플로우 자동화</strong>: 반복 작업 효율화</li>
-    <li><strong>보안 설정 완벽 가이드</strong>: 기업 환경 적용</li>
+    <li><a href="claude-cli.html#installation">Claude CLI 설치 및 API 키 설정</a></li>
+    <li><a href="claude-cli.html#basic-usage">터미널 기반 코딩 워크플로우</a></li>
+    <li><a href="claude-cli.html#project-context">.claude/ 디렉토리 활용</a></li>
+    <li><a href="claude-cli.html#mcp-integration">MCP 서버 통합</a></li>
   </ul>
 
-  <h4>고급 활용</h4>
+  <h4>Cline 가이드</h4>
   <ul>
-    <li><strong>OpenCode API 확장</strong>: 플러그인 개발</li>
-    <li><strong>커스텀 모델 통합</strong>: 자체 LLM 연동</li>
-    <li><strong>대규모 코드베이스 최적화</strong>: 성능 튜닝</li>
-    <li><strong>CI/CD 파이프라인 통합</strong>: 자동화된 코드 리뷰</li>
+    <li><a href="cline.html#installation">Cline 설치 및 API 설정</a></li>
+    <li><a href="cline.html#autonomous-behavior">자율 에이전트 활용</a></li>
+    <li><a href="cline.html#complex-tasks">복잡한 프로젝트 자동 생성</a></li>
   </ul>
 
-  <h3 id="community">커뮤니티 활동</h3>
+  <h3 id="community">활성 커뮤니티</h3>
 
-  <h4>참여 방법</h4>
-  <pre><code><span class="cmt"># 1. GitHub 이슈 리포트</span>
-<span class="cmt"># 버그 발견 시 상세한 재현 방법과 함께 이슈 등록</span>
-<a href="https://github.com/opencode-ai/opencode/issues" target="_blank" rel="noopener">https://github.com/opencode-ai/opencode/issues</a>
+  <p>OpenCode 커뮤니티는 더 이상 활동하지 않습니다. 활성 프로젝트 커뮤니티를 참고하세요:</p>
 
-<span class="cmt"># 2. 기능 제안 및 토론</span>
-<span class="cmt"># Discussions에서 새 기능 아이디어 공유</span>
-<a href="https://github.com/opencode-ai/opencode/discussions" target="_blank" rel="noopener">https://github.com/opencode-ai/opencode/discussions</a>
-
-<span class="cmt"># 3. 코드 기여 (Pull Requests)</span>
-git clone https://github.com/opencode-ai/opencode.git
-cd opencode
-<span class="cmt"># 설치 및 개발 방법은 README.md 참고</span>
-cat README.md</code></pre>
-
-  <h4>커뮤니티 플러그인</h4>
-  <ul>
-    <li><strong>opencode-snippets</strong>: 자주 사용하는 프롬프트 컬렉션</li>
-    <li><strong>opencode-themes</strong>: 채팅 UI 테마</li>
-    <li><strong>opencode-stats</strong>: 사용량 통계 대시보드</li>
-    <li><strong>opencode-team</strong>: 팀 협업 기능 확장</li>
-  </ul>
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>커뮤니티</th>
+        <th>링크</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Continue.dev</strong></td>
+        <td>GitHub Discussions</td>
+        <td><a href="https://github.com/continuedev/continue/discussions" target="_blank" rel="noopener">토론 참여</a></td>
+      </tr>
+      <tr>
+        <td><strong>Claude CLI</strong></td>
+        <td>GitHub Issues</td>
+        <td><a href="https://github.com/anthropics/claude-cli/issues" target="_blank" rel="noopener">이슈 리포트</a></td>
+      </tr>
+      <tr>
+        <td><strong>Cline</strong></td>
+        <td>GitHub Discussions</td>
+        <td><a href="https://github.com/saoudrizwan/claude-dev/discussions" target="_blank" rel="noopener">토론 참여</a></td>
+      </tr>
+    </tbody>
+  </table>
 
   <h3 id="related-tools">관련 도구</h3>
 

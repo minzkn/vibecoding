@@ -11,7 +11,7 @@ var SEARCH_INDEX = [
 
   // AI CLI 도구들
   { title: "Claude CLI 완전 가이드", url: "pages/claude-cli.html", description: "Claude Code CLI 설치, 설정, 워크플로우, 고급 기능", keywords: "claude cli code 가이드 설치 설정" },
-  { title: "OpenCode", url: "pages/opencode.html", description: "OpenCode VS Code 확장 완전 가이드", keywords: "opencode vscode 확장 extension" },
+  { title: "OpenCode (아카이브됨)", url: "pages/opencode.html", description: "OpenCode 터미널 CLI 도구 가이드 - 2025년 9월 아카이브됨", keywords: "opencode cli 아카이브 archived terminal" },
   { title: "Aider CLI", url: "pages/aider.html", description: "Aider CLI 완전 가이드", keywords: "aider cli git 통합" },
   { title: "Continue.dev", url: "pages/continue.html", description: "Continue.dev 완전 가이드", keywords: "continue dev vscode 확장" },
   { title: "Cursor IDE", url: "pages/cursor.html", description: "Cursor IDE 가이드", keywords: "cursor ide editor 에디터" },
@@ -85,7 +85,7 @@ var NAV_STRUCTURE = [
   ]},
   { title: 'AI CLI 도구들', pages: [
     { file: 'claude-cli.html', title: 'Claude CLI 완전 가이드' },
-    { file: 'opencode.html', title: 'OpenCode' },
+    { file: 'opencode.html', title: 'OpenCode (아카이브됨)' },
     { file: 'aider.html', title: 'Aider CLI' },
     { file: 'continue.html', title: 'Continue.dev' },
     { file: 'cursor.html', title: 'Cursor IDE' },
