@@ -165,78 +165,78 @@
 
 <h3 id="overview">전체 구조</h3>
 
-<svg viewBox="0 0 800 600" style="max-width: 100%; height: auto; background: var(--code-bg); border-radius: 8px; padding: 20px;">
+<svg viewBox="0 0 800 600" style="max-width: 100%; height: auto; background: var(--diagram-fill); border-radius: 8px; padding: 20px;">
   <!-- AI Client -->
-  <rect x="50" y="50" width="200" height="120" fill="var(--primary-color)" opacity="0.2" stroke="var(--primary-color)" stroke-width="2" rx="8"/>
-  <text x="150" y="85" text-anchor="middle" fill="var(--text-color)" font-size="16" font-weight="bold">AI 클라이언트</text>
-  <text x="150" y="110" text-anchor="middle" fill="var(--text-color)" font-size="12">Claude Desktop</text>
-  <text x="150" y="130" text-anchor="middle" fill="var(--text-color)" font-size="12">Claude CLI</text>
-  <text x="150" y="150" text-anchor="middle" fill="var(--text-color)" font-size="12">Custom Client</text>
+  <rect x="50" y="50" width="200" height="120" fill="var(--accent-tertiary)" opacity="0.2" stroke="var(--accent-tertiary)" stroke-width="2" rx="8"/>
+  <text x="150" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="16" font-weight="bold">AI 클라이언트</text>
+  <text x="150" y="110" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Claude Desktop</text>
+  <text x="150" y="130" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Claude CLI</text>
+  <text x="150" y="150" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Custom Client</text>
 
   <!-- MCP Protocol -->
-  <rect x="300" y="50" width="200" height="120" fill="var(--accent-color)" opacity="0.2" stroke="var(--accent-color)" stroke-width="2" rx="8"/>
-  <text x="400" y="85" text-anchor="middle" fill="var(--text-color)" font-size="16" font-weight="bold">MCP 프로토콜</text>
-  <text x="400" y="110" text-anchor="middle" fill="var(--text-color)" font-size="12">JSON-RPC 2.0</text>
-  <text x="400" y="130" text-anchor="middle" fill="var(--text-color)" font-size="12">Transport Layer</text>
-  <text x="400" y="150" text-anchor="middle" fill="var(--text-color)" font-size="12">(stdio / HTTP SSE)</text>
+  <rect x="300" y="50" width="200" height="120" fill="var(--diagram-accent)" opacity="0.2" stroke="var(--diagram-accent)" stroke-width="2" rx="8"/>
+  <text x="400" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="16" font-weight="bold">MCP 프로토콜</text>
+  <text x="400" y="110" text-anchor="middle" fill="var(--diagram-text)" font-size="12">JSON-RPC 2.0</text>
+  <text x="400" y="130" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Transport Layer</text>
+  <text x="400" y="150" text-anchor="middle" fill="var(--diagram-text)" font-size="12">(stdio / HTTP SSE)</text>
 
   <!-- MCP Servers -->
-  <rect x="550" y="50" width="200" height="120" fill="var(--success-color)" opacity="0.2" stroke="var(--success-color)" stroke-width="2" rx="8"/>
-  <text x="650" y="85" text-anchor="middle" fill="var(--text-color)" font-size="16" font-weight="bold">MCP 서버</text>
-  <text x="650" y="110" text-anchor="middle" fill="var(--text-color)" font-size="12">Filesystem</text>
-  <text x="650" y="130" text-anchor="middle" fill="var(--text-color)" font-size="12">Database</text>
-  <text x="650" y="150" text-anchor="middle" fill="var(--text-color)" font-size="12">API Integrations</text>
+  <rect x="550" y="50" width="200" height="120" fill="var(--accent-primary)" opacity="0.2" stroke="var(--accent-primary)" stroke-width="2" rx="8"/>
+  <text x="650" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="16" font-weight="bold">MCP 서버</text>
+  <text x="650" y="110" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Filesystem</text>
+  <text x="650" y="130" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Database</text>
+  <text x="650" y="150" text-anchor="middle" fill="var(--diagram-text)" font-size="12">API Integrations</text>
 
   <!-- Arrows -->
   <defs>
     <marker id="mcp-intro-1-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <polygon points="0 0, 10 3, 0 6" fill="var(--text-color)" />
+      <polygon points="0 0, 10 3, 0 6" fill="var(--diagram-text)" />
     </marker>
   </defs>
 
-  <line x1="250" y1="110" x2="300" y2="110" stroke="var(--text-color)" stroke-width="2" marker-end="url(#mcp-intro-1-arrow)"/>
-  <line x1="500" y1="110" x2="550" y2="110" stroke="var(--text-color)" stroke-width="2" marker-end="url(#mcp-intro-1-arrow)"/>
+  <line x1="250" y1="110" x2="300" y2="110" stroke="var(--diagram-text)" stroke-width="2" marker-end="url(#mcp-intro-1-arrow)"/>
+  <line x1="500" y1="110" x2="550" y2="110" stroke="var(--diagram-text)" stroke-width="2" marker-end="url(#mcp-intro-1-arrow)"/>
 
   <!-- Data Sources -->
-  <text x="400" y="220" text-anchor="middle" fill="var(--text-color)" font-size="14" font-weight="bold">데이터 소스</text>
+  <text x="400" y="220" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">데이터 소스</text>
 
-  <rect x="80" y="250" width="120" height="80" fill="var(--info-color)" opacity="0.2" stroke="var(--info-color)" stroke-width="2" rx="8"/>
-  <text x="140" y="275" text-anchor="middle" fill="var(--text-color)" font-size="12" font-weight="bold">파일 시스템</text>
-  <text x="140" y="295" text-anchor="middle" fill="var(--text-color)" font-size="10">로컬 파일</text>
-  <text x="140" y="310" text-anchor="middle" fill="var(--text-color)" font-size="10">디렉토리</text>
+  <rect x="80" y="250" width="120" height="80" fill="var(--accent-tertiary)" opacity="0.2" stroke="var(--accent-tertiary)" stroke-width="2" rx="8"/>
+  <text x="140" y="275" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">파일 시스템</text>
+  <text x="140" y="295" text-anchor="middle" fill="var(--diagram-text)" font-size="10">로컬 파일</text>
+  <text x="140" y="310" text-anchor="middle" fill="var(--diagram-text)" font-size="10">디렉토리</text>
 
-  <rect x="240" y="250" width="120" height="80" fill="var(--info-color)" opacity="0.2" stroke="var(--info-color)" stroke-width="2" rx="8"/>
-  <text x="300" y="275" text-anchor="middle" fill="var(--text-color)" font-size="12" font-weight="bold">데이터베이스</text>
-  <text x="300" y="295" text-anchor="middle" fill="var(--text-color)" font-size="10">PostgreSQL</text>
-  <text x="300" y="310" text-anchor="middle" fill="var(--text-color)" font-size="10">SQLite</text>
+  <rect x="240" y="250" width="120" height="80" fill="var(--accent-tertiary)" opacity="0.2" stroke="var(--accent-tertiary)" stroke-width="2" rx="8"/>
+  <text x="300" y="275" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">데이터베이스</text>
+  <text x="300" y="295" text-anchor="middle" fill="var(--diagram-text)" font-size="10">PostgreSQL</text>
+  <text x="300" y="310" text-anchor="middle" fill="var(--diagram-text)" font-size="10">SQLite</text>
 
-  <rect x="400" y="250" width="120" height="80" fill="var(--info-color)" opacity="0.2" stroke="var(--info-color)" stroke-width="2" rx="8"/>
-  <text x="460" y="275" text-anchor="middle" fill="var(--text-color)" font-size="12" font-weight="bold">웹 API</text>
-  <text x="460" y="295" text-anchor="middle" fill="var(--text-color)" font-size="10">GitHub</text>
-  <text x="460" y="310" text-anchor="middle" fill="var(--text-color)" font-size="10">Slack</text>
+  <rect x="400" y="250" width="120" height="80" fill="var(--accent-tertiary)" opacity="0.2" stroke="var(--accent-tertiary)" stroke-width="2" rx="8"/>
+  <text x="460" y="275" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">웹 API</text>
+  <text x="460" y="295" text-anchor="middle" fill="var(--diagram-text)" font-size="10">GitHub</text>
+  <text x="460" y="310" text-anchor="middle" fill="var(--diagram-text)" font-size="10">Slack</text>
 
-  <rect x="560" y="250" width="120" height="80" fill="var(--info-color)" opacity="0.2" stroke="var(--info-color)" stroke-width="2" rx="8"/>
-  <text x="620" y="275" text-anchor="middle" fill="var(--text-color)" font-size="12" font-weight="bold">기타</text>
-  <text x="620" y="295" text-anchor="middle" fill="var(--text-color)" font-size="10">검색 엔진</text>
-  <text x="620" y="310" text-anchor="middle" fill="var(--text-color)" font-size="10">실행 환경</text>
+  <rect x="560" y="250" width="120" height="80" fill="var(--accent-tertiary)" opacity="0.2" stroke="var(--accent-tertiary)" stroke-width="2" rx="8"/>
+  <text x="620" y="275" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">기타</text>
+  <text x="620" y="295" text-anchor="middle" fill="var(--diagram-text)" font-size="10">검색 엔진</text>
+  <text x="620" y="310" text-anchor="middle" fill="var(--diagram-text)" font-size="10">실행 환경</text>
 
   <!-- Arrows from servers to data sources -->
-  <line x1="650" y1="170" x2="140" y2="250" stroke="var(--text-color)" stroke-width="1" stroke-dasharray="5,5"/>
-  <line x1="650" y1="170" x2="300" y2="250" stroke="var(--text-color)" stroke-width="1" stroke-dasharray="5,5"/>
-  <line x1="650" y1="170" x2="460" y2="250" stroke="var(--text-color)" stroke-width="1" stroke-dasharray="5,5"/>
-  <line x1="650" y1="170" x2="620" y2="250" stroke="var(--text-color)" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="650" y1="170" x2="140" y2="250" stroke="var(--diagram-text)" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="650" y1="170" x2="300" y2="250" stroke="var(--diagram-text)" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="650" y1="170" x2="460" y2="250" stroke="var(--diagram-text)" stroke-width="1" stroke-dasharray="5,5"/>
+  <line x1="650" y1="170" x2="620" y2="250" stroke="var(--diagram-text)" stroke-width="1" stroke-dasharray="5,5"/>
 
   <!-- Message flow -->
-  <text x="400" y="380" text-anchor="middle" fill="var(--text-color)" font-size="14" font-weight="bold">메시지 흐름</text>
+  <text x="400" y="380" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">메시지 흐름</text>
 
-  <rect x="100" y="400" width="600" height="150" fill="none" stroke="var(--border-color)" stroke-width="1" rx="8"/>
+  <rect x="100" y="400" width="600" height="150" fill="none" stroke="var(--diagram-stroke)" stroke-width="1" rx="8"/>
 
-  <text x="120" y="425" fill="var(--text-color)" font-size="11">1. 클라이언트: "list tools" 요청</text>
-  <text x="120" y="445" fill="var(--text-color)" font-size="11">2. 서버: 사용 가능한 도구 목록 응답</text>
-  <text x="120" y="465" fill="var(--text-color)" font-size="11">3. 클라이언트: "call tool" 요청 (매개변수 포함)</text>
-  <text x="120" y="485" fill="var(--text-color)" font-size="11">4. 서버: 도구 실행 및 결과 반환</text>
-  <text x="120" y="505" fill="var(--text-color)" font-size="11">5. 클라이언트: 결과를 AI 모델에 전달</text>
-  <text x="120" y="525" fill="var(--text-color)" font-size="11">6. AI: 결과를 기반으로 응답 생성</text>
+  <text x="120" y="425" fill="var(--diagram-text)" font-size="11">1. 클라이언트: "list tools" 요청</text>
+  <text x="120" y="445" fill="var(--diagram-text)" font-size="11">2. 서버: 사용 가능한 도구 목록 응답</text>
+  <text x="120" y="465" fill="var(--diagram-text)" font-size="11">3. 클라이언트: "call tool" 요청 (매개변수 포함)</text>
+  <text x="120" y="485" fill="var(--diagram-text)" font-size="11">4. 서버: 도구 실행 및 결과 반환</text>
+  <text x="120" y="505" fill="var(--diagram-text)" font-size="11">5. 클라이언트: 결과를 AI 모델에 전달</text>
+  <text x="120" y="525" fill="var(--diagram-text)" font-size="11">6. AI: 결과를 기반으로 응답 생성</text>
 </svg>
 
 <h3 id="components">핵심 컴포넌트</h3>
@@ -340,37 +340,37 @@ server = Server(<span class="str">"my-mcp-server"</span>)
 
 <h3 id="protocol-layers">프로토콜 계층</h3>
 
-<svg viewBox="0 0 600 400" style="max-width: 100%; height: auto; background: var(--code-bg); border-radius: 8px; padding: 20px;">
+<svg viewBox="0 0 600 400" style="max-width: 100%; height: auto; background: var(--diagram-fill); border-radius: 8px; padding: 20px;">
   <!-- Layer 1: Application -->
-  <rect x="100" y="50" width="400" height="60" fill="var(--primary-color)" opacity="0.3" stroke="var(--primary-color)" stroke-width="2" rx="4"/>
-  <text x="300" y="75" text-anchor="middle" fill="var(--text-color)" font-size="14" font-weight="bold">애플리케이션 계층</text>
-  <text x="300" y="95" text-anchor="middle" fill="var(--text-color)" font-size="11">Tools, Resources, Prompts</text>
+  <rect x="100" y="50" width="400" height="60" fill="var(--accent-tertiary)" opacity="0.3" stroke="var(--accent-tertiary)" stroke-width="2" rx="4"/>
+  <text x="300" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">애플리케이션 계층</text>
+  <text x="300" y="95" text-anchor="middle" fill="var(--diagram-text)" font-size="11">Tools, Resources, Prompts</text>
 
   <!-- Layer 2: Protocol -->
-  <rect x="100" y="130" width="400" height="60" fill="var(--accent-color)" opacity="0.3" stroke="var(--accent-color)" stroke-width="2" rx="4"/>
-  <text x="300" y="155" text-anchor="middle" fill="var(--text-color)" font-size="14" font-weight="bold">프로토콜 계층</text>
-  <text x="300" y="175" text-anchor="middle" fill="var(--text-color)" font-size="11">JSON-RPC 2.0 메시지</text>
+  <rect x="100" y="130" width="400" height="60" fill="var(--diagram-accent)" opacity="0.3" stroke="var(--diagram-accent)" stroke-width="2" rx="4"/>
+  <text x="300" y="155" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">프로토콜 계층</text>
+  <text x="300" y="175" text-anchor="middle" fill="var(--diagram-text)" font-size="11">JSON-RPC 2.0 메시지</text>
 
   <!-- Layer 3: Transport -->
-  <rect x="100" y="210" width="400" height="60" fill="var(--success-color)" opacity="0.3" stroke="var(--success-color)" stroke-width="2" rx="4"/>
-  <text x="300" y="235" text-anchor="middle" fill="var(--text-color)" font-size="14" font-weight="bold">전송 계층</text>
-  <text x="300" y="255" text-anchor="middle" fill="var(--text-color)" font-size="11">stdio / HTTP SSE / WebSocket</text>
+  <rect x="100" y="210" width="400" height="60" fill="var(--accent-primary)" opacity="0.3" stroke="var(--accent-primary)" stroke-width="2" rx="4"/>
+  <text x="300" y="235" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">전송 계층</text>
+  <text x="300" y="255" text-anchor="middle" fill="var(--diagram-text)" font-size="11">stdio / HTTP SSE / WebSocket</text>
 
   <!-- Layer 4: Network -->
-  <rect x="100" y="290" width="400" height="60" fill="var(--info-color)" opacity="0.3" stroke="var(--info-color)" stroke-width="2" rx="4"/>
-  <text x="300" y="315" text-anchor="middle" fill="var(--text-color)" font-size="14" font-weight="bold">네트워크 계층</text>
-  <text x="300" y="335" text-anchor="middle" fill="var(--text-color)" font-size="11">TCP/IP, Local IPC</text>
+  <rect x="100" y="290" width="400" height="60" fill="var(--accent-tertiary)" opacity="0.3" stroke="var(--accent-tertiary)" stroke-width="2" rx="4"/>
+  <text x="300" y="315" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">네트워크 계층</text>
+  <text x="300" y="335" text-anchor="middle" fill="var(--diagram-text)" font-size="11">TCP/IP, Local IPC</text>
 
   <!-- Arrows -->
   <defs>
     <marker id="mcp-intro-2-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-      <polygon points="0 0, 10 3, 0 6" fill="var(--text-color)" />
+      <polygon points="0 0, 10 3, 0 6" fill="var(--diagram-text)" />
     </marker>
   </defs>
 
-  <line x1="300" y1="110" x2="300" y2="130" stroke="var(--text-color)" stroke-width="1.5" marker-end="url(#mcp-intro-2-arrow)"/>
-  <line x1="300" y1="190" x2="300" y2="210" stroke="var(--text-color)" stroke-width="1.5" marker-end="url(#mcp-intro-2-arrow)"/>
-  <line x1="300" y1="270" x2="300" y2="290" stroke="var(--text-color)" stroke-width="1.5" marker-end="url(#mcp-intro-2-arrow)"/>
+  <line x1="300" y1="110" x2="300" y2="130" stroke="var(--diagram-text)" stroke-width="1.5" marker-end="url(#mcp-intro-2-arrow)"/>
+  <line x1="300" y1="190" x2="300" y2="210" stroke="var(--diagram-text)" stroke-width="1.5" marker-end="url(#mcp-intro-2-arrow)"/>
+  <line x1="300" y1="270" x2="300" y2="290" stroke="var(--diagram-text)" stroke-width="1.5" marker-end="url(#mcp-intro-2-arrow)"/>
 </svg>
 </section>
 
@@ -999,39 +999,39 @@ server = Server(<span class="str">"my-mcp-server"</span>)
 <section class="content-section">
 <h2 id="lifecycle">연결 생명주기</h2>
 
-<svg viewBox="0 0 700 500" style="max-width: 100%; height: auto; background: var(--code-bg); border-radius: 8px; padding: 20px;">
+<svg viewBox="0 0 700 500" style="max-width: 100%; height: auto; background: var(--diagram-fill); border-radius: 8px; padding: 20px;">
   <!-- Timeline -->
-  <line x1="50" y1="50" x2="50" y2="450" stroke="var(--primary-color)" stroke-width="3"/>
+  <line x1="50" y1="50" x2="50" y2="450" stroke="var(--accent-tertiary)" stroke-width="3"/>
 
   <!-- Phase 1: Connection -->
-  <circle cx="50" cy="80" r="8" fill="var(--primary-color)"/>
-  <text x="70" y="85" fill="var(--text-color)" font-size="14" font-weight="bold">1. 연결 (Connection)</text>
-  <rect x="70" y="95" width="580" height="60" fill="var(--info-color)" opacity="0.1" stroke="var(--info-color)" stroke-width="1" rx="4"/>
-  <text x="85" y="115" fill="var(--text-color)" font-size="11">• 전송 계층 초기화 (stdio/HTTP SSE)</text>
-  <text x="85" y="135" fill="var(--text-color)" font-size="11">• 서버 프로세스 시작 또는 네트워크 연결</text>
+  <circle cx="50" cy="80" r="8" fill="var(--accent-tertiary)"/>
+  <text x="70" y="85" fill="var(--diagram-text)" font-size="14" font-weight="bold">1. 연결 (Connection)</text>
+  <rect x="70" y="95" width="580" height="60" fill="var(--accent-tertiary)" opacity="0.1" stroke="var(--accent-tertiary)" stroke-width="1" rx="4"/>
+  <text x="85" y="115" fill="var(--diagram-text)" font-size="11">• 전송 계층 초기화 (stdio/HTTP SSE)</text>
+  <text x="85" y="135" fill="var(--diagram-text)" font-size="11">• 서버 프로세스 시작 또는 네트워크 연결</text>
 
   <!-- Phase 2: Initialization -->
-  <circle cx="50" cy="180" r="8" fill="var(--primary-color)"/>
-  <text x="70" y="185" fill="var(--text-color)" font-size="14" font-weight="bold">2. 초기화 (Initialization)</text>
-  <rect x="70" y="195" width="580" height="80" fill="var(--info-color)" opacity="0.1" stroke="var(--info-color)" stroke-width="1" rx="4"/>
-  <text x="85" y="215" fill="var(--text-color)" font-size="11">• 클라이언트: initialize 요청 (프로토콜 버전, capabilities)</text>
-  <text x="85" y="235" fill="var(--text-color)" font-size="11">• 서버: initialize 응답 (서버 정보, capabilities)</text>
-  <text x="85" y="255" fill="var(--text-color)" font-size="11">• 클라이언트: initialized 알림 전송</text>
+  <circle cx="50" cy="180" r="8" fill="var(--accent-tertiary)"/>
+  <text x="70" y="185" fill="var(--diagram-text)" font-size="14" font-weight="bold">2. 초기화 (Initialization)</text>
+  <rect x="70" y="195" width="580" height="80" fill="var(--accent-tertiary)" opacity="0.1" stroke="var(--accent-tertiary)" stroke-width="1" rx="4"/>
+  <text x="85" y="215" fill="var(--diagram-text)" font-size="11">• 클라이언트: initialize 요청 (프로토콜 버전, capabilities)</text>
+  <text x="85" y="235" fill="var(--diagram-text)" font-size="11">• 서버: initialize 응답 (서버 정보, capabilities)</text>
+  <text x="85" y="255" fill="var(--diagram-text)" font-size="11">• 클라이언트: initialized 알림 전송</text>
 
   <!-- Phase 3: Operation -->
-  <circle cx="50" cy="300" r="8" fill="var(--primary-color)"/>
-  <text x="70" y="305" fill="var(--text-color)" font-size="14" font-weight="bold">3. 작업 (Operation)</text>
-  <rect x="70" y="315" width="580" height="80" fill="var(--info-color)" opacity="0.1" stroke="var(--info-color)" stroke-width="1" rx="4"/>
-  <text x="85" y="335" fill="var(--text-color)" font-size="11">• tools/list, resources/list, prompts/list</text>
-  <text x="85" y="355" fill="var(--text-color)" font-size="11">• tools/call, resources/read, prompts/get</text>
-  <text x="85" y="375" fill="var(--text-color)" font-size="11">• 반복 호출 가능</text>
+  <circle cx="50" cy="300" r="8" fill="var(--accent-tertiary)"/>
+  <text x="70" y="305" fill="var(--diagram-text)" font-size="14" font-weight="bold">3. 작업 (Operation)</text>
+  <rect x="70" y="315" width="580" height="80" fill="var(--accent-tertiary)" opacity="0.1" stroke="var(--accent-tertiary)" stroke-width="1" rx="4"/>
+  <text x="85" y="335" fill="var(--diagram-text)" font-size="11">• tools/list, resources/list, prompts/list</text>
+  <text x="85" y="355" fill="var(--diagram-text)" font-size="11">• tools/call, resources/read, prompts/get</text>
+  <text x="85" y="375" fill="var(--diagram-text)" font-size="11">• 반복 호출 가능</text>
 
   <!-- Phase 4: Shutdown -->
-  <circle cx="50" cy="420" r="8" fill="var(--primary-color)"/>
-  <text x="70" y="425" fill="var(--text-color)" font-size="14" font-weight="bold">4. 종료 (Shutdown)</text>
-  <rect x="70" y="435" width="580" height="60" fill="var(--info-color)" opacity="0.1" stroke="var(--info-color)" stroke-width="1" rx="4"/>
-  <text x="85" y="455" fill="var(--text-color)" font-size="11">• 클라이언트: 연결 해제</text>
-  <text x="85" y="475" fill="var(--text-color)" font-size="11">• 서버: 리소스 정리, 프로세스 종료</text>
+  <circle cx="50" cy="420" r="8" fill="var(--accent-tertiary)"/>
+  <text x="70" y="425" fill="var(--diagram-text)" font-size="14" font-weight="bold">4. 종료 (Shutdown)</text>
+  <rect x="70" y="435" width="580" height="60" fill="var(--accent-tertiary)" opacity="0.1" stroke="var(--accent-tertiary)" stroke-width="1" rx="4"/>
+  <text x="85" y="455" fill="var(--diagram-text)" font-size="11">• 클라이언트: 연결 해제</text>
+  <text x="85" y="475" fill="var(--diagram-text)" font-size="11">• 서버: 리소스 정리, 프로세스 종료</text>
 </svg>
 
 <div class="code-block">
