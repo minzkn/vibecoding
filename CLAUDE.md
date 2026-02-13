@@ -25,7 +25,7 @@ python3 -m http.server 8080   # http://localhost:8080
 - 에셋 경로: **루트(index.html)** prefix 없음, **pages/*.html** `../` prefix
 - 5개 테마: `dark-kernel`(기본), `light`, `solarized`, `nord`, `high-contrast`
   - `<html data-theme="...">` 속성, 쿠키 `claude_theme` (365일 영속)
-  - `<head>` 내 인라인 스크립트로 flash 방지
+  - `<head>` 최상단에 Google Adsense/Analytics 스크립트, 그 다음 인라인 스크립트로 flash 방지
   - SVG 다이어그램은 CSS custom property 사용
 - header, side-nav, breadcrumb, page-nav, inline-toc, footer → JS가 `NAV_STRUCTURE` 기반 동적 생성
 - HTML 파일에는 빈 컨테이너 태그만 존재
@@ -44,6 +44,7 @@ python3 -m http.server 8080   # http://localhost:8080
 <!DOCTYPE html>
 <html lang="ko" data-theme="dark-kernel">
 <head>
+<!-- Google adsense/analytics -->
 <!-- Flash 방지 스크립트 -->
 <script>
 (function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();

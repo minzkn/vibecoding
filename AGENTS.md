@@ -107,21 +107,23 @@ JS가 자동으로 생성하는 항목:
 - SVG 다이어그램은 CSS custom property 사용: `var(--diagram-arrow)`, `var(--diagram-accent)`, `var(--diagram-text)`, `var(--border-color)`, `var(--bg-secondary)`, `var(--accent-primary)`
 
 ### 네비게이션 구조 (NAV_STRUCTURE)
-7개 카테고리 (계획):
-- **시작하기**: 홈, Claude란?, 빠른 시작
-- **API 기본**: API 개요, 인증, 메시지 API, 스트리밍
-- **고급 기능**: Tool Use, Vision, 긴 컨텍스트, 시스템 프롬프트
-- **프롬프트 엔지니어링**: 프롬프트 기본, 프롬프트 패턴, Few-shot 학습, Chain-of-Thought
-- **도구**: Claude Code, Claude.ai 웹, Python SDK, TypeScript SDK
-- **활용 사례**: 코드 생성, 문서 분석, 데이터 추출, 대화형 에이전트
-- **참고**: 모델 비교, 요금, 제한사항, FAQ
+8개 카테고리:
+- **시작하기**: Vibe Coding 개념, CLI 도구 생태계, 학습 경로
+- **AI CLI 도구들**: Codex, Claude CLI, Aider, Continue 등
+- **Ollama & 로컬 LLM**: 로컬 실행, 모델 가이드, 트러블슈팅
+- **MCP**: 서버/클라이언트/생태계/고급 주제
+- **LLM API & 연동**: Claude/OpenAI/Gemini/API 추상화
+- **프롬프트 엔지니어링**: 기본/패턴/Few-shot/최적화
+- **환경 구축 & 도구**: 키 관리, Docker, CI/CD, 비용 모니터링
+- **참고 & 리소스**: 모델 비교, 제한사항, FAQ, 용어집
 
 ## HTML 페이지 템플릿
 
 ### `<head>` 섹션 (정확한 순서)
-1. Flash 방지 인라인 스크립트 (쿠키에서 테마 읽기)
-2. `<meta charset>`, `<meta viewport>`, `<meta description>`, `<meta keywords>`, `<meta author>`
-3. `<title>`, favicon, D2Coding 폰트 (jsDelivr CDN), CSS 3파일
+1. Google Adsense/Analytics 스크립트 블록
+2. Flash 방지 인라인 스크립트 (쿠키에서 테마 읽기)
+3. `<meta charset>`, `<meta viewport>`, `<meta description>`, `<meta keywords>`, `<meta author>`
+4. `<title>`, favicon, D2Coding 폰트 (jsDelivr CDN), CSS 3파일
 
 ### 코드 구문 강조 (CSS 클래스)
 ```html
