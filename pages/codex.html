@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="ko" data-theme="dark-kernel">
 <head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
 <!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
 <script>
 (function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
@@ -178,6 +196,27 @@ codex --full-auto</code></pre>
   </div>
   <p>
     승인 모드는 기본적으로 제안(Suggest)이며, Auto-edit/Full-auto로 단계적으로 확장할 수 있습니다.
+  </p>
+</section>
+
+<section class="content-section">
+  <h2 id="auth">접근 및 인증</h2>
+  <p>
+    Codex는 ChatGPT 계정으로 로그인해 사용할 수 있으며, 필요 시 API 키 기반으로도 사용할 수 있습니다.
+  </p>
+  <p>
+    CLI는 첫 실행 시 로그인 안내가 나오며, ChatGPT 계정 또는 API 키로 인증할 수 있습니다.
+  </p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="language">로그인 예시</span>
+      <button class="copy-btn" aria-label="Copy code">Copy</button>
+    </div>
+    <pre><code><span class="cmt"># 첫 실행 시 로그인 안내</span>
+codex</code></pre>
+  </div>
+  <p>
+    Codex 앱은 macOS에서 제공되며, CLI/IDE 확장과 함께 동일한 계정으로 연결됩니다.
   </p>
 </section>
 

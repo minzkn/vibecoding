@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="ko" data-theme="dark-kernel">
 <head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
 <!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
 <script>
 (function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
@@ -670,7 +688,7 @@ claude</code></pre>
   <div class="info-box warning">
     <div class="info-box-title">⚠️ API 키 필요</div>
     <p>
-      Claude CLI는 Anthropic API 키가 필요합니다. 아직 없다면:
+      Claude CLI는 Claude API 키(Anthropic)가 필요합니다. 아직 없다면:
     </p>
     <ol>
       <li><a href="https://console.anthropic.com" target="_blank" rel="noopener">Anthropic Console</a> 접속</li>
@@ -678,6 +696,11 @@ claude</code></pre>
       <li><code>export ANTHROPIC_API_KEY=your-key-here</code> 설정</li>
     </ol>
     <p>또는 <a href="quickstart-local.html">Ollama로 무료 시작</a>을 선택하세요.</p>
+  </div>
+  <div class="info-box info">
+    <div class="info-box-title">🧭 Codex 대비 안내</div>
+    <p>Codex는 OpenAI 계정/키로 시작합니다. CLI는 로그인 흐름 또는 API 키 인증을 제공합니다.</p>
+    <p>Codex 앱은 macOS 환경에서 제공됩니다. <a href="codex.html">Codex 가이드</a> 참고.</p>
   </div>
 
   <h4>Step 3: 첫 번째 요청</h4>

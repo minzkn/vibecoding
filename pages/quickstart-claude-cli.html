@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="ko" data-theme="dark-kernel">
 <head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
 <!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
 <script>
 (function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
@@ -14,7 +32,7 @@
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Claude CLI 5분 시작: Claude CLI를 설치하고 첫 번째 Vibe Coding 프로젝트를 5분 안에 시작하세요.">
-<meta name="keywords" content="Claude, AI, LLM, Claude CLI 5분 시작, Claude CLI란?, Step 1: Anthropic API 키 발급, Step 2: Claude CLI 실행, Step 3: 첫 번째 실전 프로젝트">
+<meta name="keywords" content="Claude, AI, LLM, Claude CLI 5분 시작, Claude CLI란?, Step 1: Claude API 키(Anthropic) 발급, Step 2: Claude CLI 실행, Step 3: 첫 번째 실전 프로젝트">
 <meta name="author" content="MINZKN">
 <title>Claude CLI 5분 시작 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -51,7 +69,7 @@
 <div class="info-box tip">
   <div class="info-box-title">⏱️ 5분 체크리스트</div>
   <ol>
-    <li>✅ Anthropic API 키 발급 (2분)</li>
+    <li>✅ Claude API 키(Anthropic) 발급 (2분)</li>
     <li>✅ Claude CLI 실행 (1분)</li>
     <li>✅ 첫 번째 프로젝트 생성 (2분)</li>
   </ol>
@@ -87,11 +105,16 @@
       <strong>무료로 시작하고 싶다면:</strong> <a href="quickstart-local.html">Ollama 로컬 시작</a>을 참고하세요.
     </p>
   </div>
+  <div class="info-box info">
+    <div class="info-box-title">🧭 Codex 대비 안내</div>
+    <p>Codex는 OpenAI 계정/키로 시작합니다. CLI는 로그인 흐름 또는 API 키 인증을 제공합니다.</p>
+    <p>Codex 앱은 macOS 환경에서 제공됩니다. <a href="codex.html">Codex 가이드</a> 참고.</p>
+  </div>
 </section>
 
 <!-- Section 2: Step 1 - API 키 발급 -->
 <section class="content-section">
-  <h2 id="api-key">Step 1: Anthropic API 키 발급</h2>
+  <h2 id="api-key">Step 1: Claude API 키(Anthropic) 발급</h2>
 
   <p>
     Claude CLI를 사용하려면 먼저 Anthropic Console에서 API 키를 발급받아야 합니다.

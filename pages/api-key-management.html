@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="ko" data-theme="dark-kernel">
 <head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
 <script>
 (function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
 </script>
@@ -68,7 +86,7 @@
     <h4>사례 2: .env 파일이 Docker 이미지에 포함</h4>
     <p>
       .env 파일을 .dockerignore에 추가하지 않아 Docker Hub에 공개 이미지로 푸시됨.
-      48시간 후 Anthropic API 한도 초과로 서비스 중단.
+      48시간 후 OpenAI API 한도 초과로 서비스 중단.
     </p>
 
     <h4>사례 3: 클라이언트 사이드에 하드코딩</h4>
@@ -217,7 +235,7 @@ credentials.json
 
 <pre><code><span class="cmt"># .env.example - Git에 커밋하여 팀과 공유</span>
 
-<span class="cmt"># Anthropic API Key (https://console.anthropic.com/)</span>
+<span class="cmt"># OpenAI API Key (https://console.anthropic.com/)</span>
 ANTHROPIC_API_KEY=sk-ant-api03-your-key-here
 
 <span class="cmt"># OpenAI API Key (https://platform.openai.com/api-keys)</span>
@@ -360,7 +378,7 @@ eval $(op signin)</code></pre>
 
 <pre><code><span class="cmt"># 대화형으로 저장</span>
 op item create --category=<span class="str">"API Credential"</span> \
-  --title=<span class="str">"Anthropic API Key"</span> \
+  --title=<span class="str">"OpenAI API Key"</span> \
   --vault=<span class="str">"Development"</span> \
   <span class="str">"username=ANTHROPIC_API_KEY"</span> \
   <span class="str">"credential=sk-ant-api03-..."</span></code></pre>
@@ -379,7 +397,7 @@ op item create --category=<span class="str">"API Credential"</span> \
     )
     <span class="kw">return</span> json.loads(result.stdout)[<span class="str">'value'</span>]
 
-api_key = get_secret(<span class="str">'Anthropic API Key'</span>)</code></pre>
+api_key = get_secret(<span class="str">'OpenAI API Key'</span>)</code></pre>
 
 <pre><code><span class="cmt">// Node.js</span>
 <span class="kw">import</span> { execSync } from <span class="str">'child_process'</span>;
@@ -392,7 +410,7 @@ api_key = get_secret(<span class="str">'Anthropic API Key'</span>)</code></pre>
   <span class="kw">return</span> output.trim();
 }
 
-<span class="kw">const</span> apiKey = getSecret(<span class="str">'Anthropic API Key'</span>);</code></pre>
+<span class="kw">const</span> apiKey = getSecret(<span class="str">'OpenAI API Key'</span>);</code></pre>
 
   <h3 id="manager-bitwarden">Bitwarden (오픈소스 대안)</h3>
 
@@ -409,12 +427,12 @@ export BW_SESSION=<span class="str">"$(bw unlock --raw)"</span>
 
 <span class="cmt"># API 키 저장</span>
 bw create item --organizationid null \
-  --name <span class="str">"Anthropic API Key"</span> \
+  --name <span class="str">"OpenAI API Key"</span> \
   --username <span class="str">"ANTHROPIC_API_KEY"</span> \
   --password <span class="str">"sk-ant-api03-..."</span>
 
 <span class="cmt"># 키 가져오기</span>
-bw get password <span class="str">"Anthropic API Key"</span></code></pre>
+bw get password <span class="str">"OpenAI API Key"</span></code></pre>
 
   <h3 id="manager-aws">AWS Secrets Manager (프로덕션)</h3>
 
@@ -641,7 +659,7 @@ gitleaks protect --staged --verbose</code></pre>
 
 [[rules]]
 id = <span class="str">"anthropic-api-key"</span>
-description = <span class="str">"Anthropic API Key"</span>
+description = <span class="str">"OpenAI API Key"</span>
 regex = <span class="str">'''sk-ant-api03-[A-Za-z0-9_-]{95}'''</span>
 
 [[rules]]
