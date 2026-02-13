@@ -202,11 +202,20 @@ var NAV_STRUCTURE = [
           <input type="text" class="search-input" placeholder="검색..." aria-label="검색">
           <div class="search-results"></div>
         </div>
-        <button class="theme-toggle" aria-label="테마 변경" title="테마 변경">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
-          </svg>
-        </button>
+        <div class="theme-switcher">
+          <button class="theme-btn" aria-label="테마 변경" title="테마 변경">
+            &#127912; <span class="theme-btn-label">Dark</span>
+          </button>
+          <div class="theme-dropdown">
+            ${THEMES.map(theme => {
+              let swatchStyle = `background:${theme.swatch}`;
+              if (theme.id === 'high-contrast') swatchStyle += ';border-color:#fff';
+              return `<button class="theme-option" data-theme="${theme.id}">
+                <span class="theme-swatch" style="${swatchStyle}"></span>${theme.name}
+              </button>`;
+            }).join('')}
+          </div>
+        </div>
       </div>
     `;
 
@@ -388,23 +397,76 @@ var NAV_STRUCTURE = [
 
   // ========== 테마 전환 ==========
 
-  const themes = ['dark-kernel', 'light', 'solarized', 'nord', 'high-contrast'];
-  let currentThemeIndex = 0;
+  const THEME_COOKIE = 'claude_theme';
+  const DEFAULT_THEME = 'dark-kernel';
+  const THEMES = [
+    { id: 'dark-kernel', name: 'Dark', swatch: '#0d1117' },
+    { id: 'light', name: 'Light', swatch: '#ffffff' },
+    { id: 'solarized', name: 'Solarized', swatch: '#002b36' },
+    { id: 'nord', name: 'Nord', swatch: '#2e3440' },
+    { id: 'high-contrast', name: 'High Contrast', swatch: '#000000' }
+  ];
 
-  function initTheme() {
-    const savedTheme = getCookie('claude_theme');
-    if (savedTheme) {
-      currentThemeIndex = themes.indexOf(savedTheme);
-      if (currentThemeIndex === -1) currentThemeIndex = 0;
-    }
-    document.documentElement.setAttribute('data-theme', themes[currentThemeIndex]);
+  function getTheme() {
+    const savedTheme = getCookie(THEME_COOKIE);
+    const isValidTheme = THEMES.some(theme => theme.id === savedTheme);
+    return isValidTheme ? savedTheme : DEFAULT_THEME;
   }
 
-  function toggleTheme() {
-    currentThemeIndex = (currentThemeIndex + 1) % themes.length;
-    const newTheme = themes[currentThemeIndex];
-    document.documentElement.setAttribute('data-theme', newTheme);
-    setCookie('claude_theme', newTheme, 365);
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    setCookie(THEME_COOKIE, theme, 365);
+    updateThemeUI(theme);
+  }
+
+  function updateThemeUI(theme) {
+    const options = document.querySelectorAll('.theme-option');
+    options.forEach(option => {
+      option.classList.toggle('active', option.getAttribute('data-theme') === theme);
+    });
+
+    const label = document.querySelector('.theme-btn-label');
+    if (label) {
+      const selectedTheme = THEMES.find(item => item.id === theme);
+      if (selectedTheme) label.textContent = selectedTheme.name;
+    }
+  }
+
+  function initThemeSwitcher() {
+    const button = document.querySelector('.theme-btn');
+    const dropdown = document.querySelector('.theme-dropdown');
+    if (!button || !dropdown) return;
+
+    const currentTheme = getTheme();
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    updateThemeUI(currentTheme);
+
+    button.addEventListener('click', event => {
+      event.stopPropagation();
+      dropdown.classList.toggle('active');
+    });
+
+    button.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        event.stopPropagation();
+        dropdown.classList.toggle('active');
+      }
+      if (event.key === 'Escape') {
+        dropdown.classList.remove('active');
+      }
+    });
+
+    dropdown.querySelectorAll('.theme-option').forEach(option => {
+      option.addEventListener('click', () => {
+        setTheme(option.getAttribute('data-theme'));
+        dropdown.classList.remove('active');
+      });
+    });
+
+    document.addEventListener('click', () => {
+      dropdown.classList.remove('active');
+    });
   }
 
   function getCookie(name) {
@@ -717,7 +779,7 @@ var NAV_STRUCTURE = [
     buildInlineTOC();
     buildFooter();
 
-    initTheme();
+    initThemeSwitcher();
     initSearch();
     initScrollSpy();
     initMobileNav();
@@ -725,12 +787,6 @@ var NAV_STRUCTURE = [
     initNavToggle();
     initBackToTop();
     initCopyButtons();
-
-    // 테마 토글 버튼 이벤트
-    const themeToggle = document.querySelector('.theme-toggle');
-    if (themeToggle) {
-      themeToggle.addEventListener('click', toggleTheme);
-    }
 
     // 화면 크기 변경 시 네비게이션 재구성 (모바일 ↔ 데스크톱 전환 시)
     let resizeTimer;
