@@ -49,7 +49,7 @@
 
 <main class="main-content">
 
-<nav class="breadcrumb"></nav>
+<div class="breadcrumb"></div>
 
 <section class="content-section">
   <h1 id="top">Chain-of-Thought (CoT)</h1>
@@ -120,11 +120,11 @@
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 380"
          style="width:100%;max-width:750px;display:block;margin:1.5em auto;">
       <defs>
-        <marker id="cot-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+        <marker id="chain-of-thought-1-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
                 markerWidth="10" markerHeight="7" orient="auto">
           <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
         </marker>
-        <marker id="cot-cross" viewBox="0 0 10 10" refX="5" refY="5"
+        <marker id="chain-of-thought-2-cross" viewBox="0 0 10 10" refX="5" refY="5"
                 markerWidth="10" markerHeight="10">
           <line x1="2" y1="2" x2="8" y2="8" stroke="var(--accent-danger)" stroke-width="2"/>
           <line x1="8" y1="2" x2="2" y2="8" stroke="var(--accent-danger)" stroke-width="2"/>
@@ -198,7 +198,7 @@
 
       <!-- Step 1 -->
       <line x1="190" y1="215" x2="225" y2="215"
-            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cot-arrow)"/>
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#chain-of-thought-1-arrow)"/>
       <rect x="225" y="185" width="90" height="60" rx="6"
             fill="var(--accent-glow)" stroke="var(--accent-primary)" stroke-width="1.5"/>
       <text x="270" y="203" text-anchor="middle" fill="var(--accent-primary)" font-size="12" font-weight="bold">
@@ -213,7 +213,7 @@
 
       <!-- Step 2 -->
       <line x1="315" y1="215" x2="345" y2="215"
-            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cot-arrow)"/>
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#chain-of-thought-1-arrow)"/>
       <rect x="345" y="185" width="90" height="60" rx="6"
             fill="var(--accent-glow)" stroke="var(--accent-primary)" stroke-width="1.5"/>
       <text x="390" y="203" text-anchor="middle" fill="var(--accent-primary)" font-size="12" font-weight="bold">
@@ -228,7 +228,7 @@
 
       <!-- Step 3 -->
       <line x1="435" y1="215" x2="465" y2="215"
-            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cot-arrow)"/>
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#chain-of-thought-1-arrow)"/>
       <rect x="465" y="185" width="90" height="60" rx="6"
             fill="var(--accent-glow)" stroke="var(--accent-primary)" stroke-width="1.5"/>
       <text x="510" y="203" text-anchor="middle" fill="var(--accent-primary)" font-size="12" font-weight="bold">
@@ -243,7 +243,7 @@
 
       <!-- Final Answer -->
       <line x1="555" y1="215" x2="590" y2="215"
-            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cot-arrow)"/>
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#chain-of-thought-1-arrow)"/>
       <rect x="590" y="185" width="120" height="60" rx="8"
             fill="var(--accent-primary)" fill-opacity="0.2"
             stroke="var(--accent-primary)" stroke-width="2"/>

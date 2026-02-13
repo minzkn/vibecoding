@@ -47,7 +47,7 @@
 <header class="site-header"></header>
 <nav class="side-nav" aria-label="사이트 내비게이션"></nav>
 <main class="main-content">
-<nav class="breadcrumb"></nav>
+<div class="breadcrumb"></div>
 
 <h1 id="top">Ollama 사용법</h1>
 <p class="lead">Ollama의 CLI 명령어, REST API, 파라미터 설정 등 실전 사용 방법을 상세히 다룹니다.</p>
@@ -257,7 +257,7 @@ time=2024-01-15T10:30:45.123+09:00 level=INFO source=server.go:123 msg=<span cla
 
   <svg viewBox="0 0 800 450" style="max-width: 100%; height: auto; background: var(--code-bg); border-radius: 8px; padding: 20px;">
     <defs>
-      <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <marker id="ollama-usage-1-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
         <polygon points="0 0, 10 3, 0 6" fill="var(--accent-primary)" />
       </marker>
     </defs>
@@ -267,19 +267,19 @@ time=2024-01-15T10:30:45.123+09:00 level=INFO source=server.go:123 msg=<span cla
     <text x="140" y="75" text-anchor="middle" fill="var(--bg-primary)" font-weight="bold" font-size="14">1. ollama pull</text>
     <text x="140" y="95" text-anchor="middle" fill="var(--bg-primary)" font-size="12">모델 다운로드</text>
 
-    <path d="M 230 80 L 280 80" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M 230 80 L 280 80" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-usage-1-arrow)"/>
 
     <rect x="280" y="50" width="180" height="60" rx="8" fill="var(--accent-secondary)" stroke="none"/>
     <text x="370" y="75" text-anchor="middle" fill="var(--text-primary)" font-weight="bold" font-size="14">2. ollama list</text>
     <text x="370" y="95" text-anchor="middle" fill="var(--text-secondary)" font-size="12">설치 확인</text>
 
-    <path d="M 460 80 L 510 80" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M 460 80 L 510 80" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-usage-1-arrow)"/>
 
     <rect x="510" y="50" width="180" height="60" rx="8" fill="var(--info-bg)" stroke="none"/>
     <text x="600" y="75" text-anchor="middle" fill="var(--text-primary)" font-weight="bold" font-size="14">3. ollama run</text>
     <text x="600" y="95" text-anchor="middle" fill="var(--text-secondary)" font-size="12">실행</text>
 
-    <path d="M 600 110 L 600 160" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M 600 110 L 600 160" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-usage-1-arrow)"/>
 
     <rect x="510" y="160" width="180" height="60" rx="8" fill="var(--success-bg)" stroke="none"/>
     <text x="600" y="185" text-anchor="middle" fill="var(--text-primary)" font-weight="bold" font-size="14">4. 대화/작업</text>
@@ -292,13 +292,13 @@ time=2024-01-15T10:30:45.123+09:00 level=INFO source=server.go:123 msg=<span cla
     <text x="370" y="185" text-anchor="middle" fill="var(--text-secondary)" font-weight="bold" font-size="14">다른 모델 시도</text>
     <text x="370" y="205" text-anchor="middle" fill="var(--text-tertiary)" font-size="12">ollama pull</text>
 
-    <path d="M 370 220 L 370 260" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M 370 220 L 370 260" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-usage-1-arrow)"/>
 
     <rect x="280" y="260" width="180" height="60" rx="8" fill="var(--warning-bg)" stroke="none"/>
     <text x="370" y="285" text-anchor="middle" fill="var(--text-primary)" font-weight="bold" font-size="14">5. 최적화</text>
     <text x="370" y="305" text-anchor="middle" fill="var(--text-secondary)" font-size="12">파라미터 조정</text>
 
-    <path d="M 370 320 L 370 360" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrow)"/>
+    <path d="M 370 320 L 370 360" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-usage-1-arrow)"/>
 
     <rect x="280" y="360" width="180" height="60" rx="8" fill="var(--accent-primary)" stroke="none"/>
     <text x="370" y="385" text-anchor="middle" fill="var(--bg-primary)" font-weight="bold" font-size="14">6. 통합</text>

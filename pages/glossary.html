@@ -55,7 +55,7 @@
 
 <!-- ===== Main Content ===== -->
 <main class="main-content">
-<nav class="breadcrumb"></nav>
+<div class="breadcrumb"></div>
 
 <h1 id="top">용어집 (Glossary)</h1>
 <p class="lead">AI, LLM, CLI, MCP 등 Vibe Coding과 AI 개발에 필요한 모든 기술 용어를 A-Z 알파벳 순으로 정리한 종합 사전입니다.</p>
@@ -102,7 +102,7 @@
 
   <h3 id="aider">Aider</h3>
   <p>
-    Git 통합을 강조한 오픈소스 AI CLI 코딩 도구. 파일 변경 사항을 자동으로 커밋하고, 여러 LLM(Claude, GPT-4, Ollama 등)을 지원합니다.
+    Git 통합을 강조한 오픈소스 AI CLI 코딩 도구. 파일 변경 사항을 자동으로 커밋하고, 여러 LLM(Claude, GPT, Ollama 등)을 지원합니다.
     Python 기반이며 <code>pip install aider-chat</code>로 설치합니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="aider.html">Aider 가이드</a>, <a href="cli-comparison.html">CLI 도구 비교</a></p>
@@ -110,7 +110,7 @@
   <h3 id="anthropic">Anthropic (앤트로픽)</h3>
   <p>
     Claude를 개발한 AI 연구 기업. OpenAI 출신 연구진들이 2021년 설립하였으며, AI 안전성과 해석 가능성(Interpretability)에 중점을 둡니다.
-    Claude 3.5 Sonnet, Claude Opus (고성능) 등의 모델을 제공합니다.
+    Claude 모델 계열(고성능/균형형/경량형)을 제공합니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="getting-started.html">Vibe Coding이란?</a>, <a href="claude-cli.html">Claude CLI</a></p>
 
@@ -189,14 +189,14 @@
 
   <h3 id="chatgpt">ChatGPT (챗GPT)</h3>
   <p>
-    OpenAI가 개발한 대화형 AI 서비스. GPT-3.5, GPT-4, o1 등의 모델을 제공하며, 웹 인터페이스와 API를 통해 이용 가능합니다.
+    OpenAI가 개발한 대화형 AI 서비스. 다양한 GPT 계열 및 추론 계열 모델을 제공하며, 웹 인터페이스와 API를 통해 이용 가능합니다.
     2022년 11월 출시 이후 전 세계적으로 가장 널리 사용되는 AI 어시스턴트입니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="model-comparison.html">LLM 모델 비교</a>, <a href="getting-started.html">Vibe Coding이란?</a></p>
 
   <h3 id="claude">Claude (클로드)</h3>
   <p>
-    Anthropic이 개발한 LLM 시리즈. Claude 3.5 Sonnet, Claude Opus (고성능) 등의 모델이 있으며, 긴 컨텍스트(최대 200K 토큰)와 높은 코드 생성 품질로 유명합니다.
+    Anthropic이 개발한 LLM 시리즈. Claude는 긴 컨텍스트와 안정적인 코드 생성 품질로 Vibe Coding에서 널리 사용됩니다.
     Vibe Coding에서 가장 많이 사용되는 모델 중 하나입니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="claude-cli.html">Claude CLI</a>, <a href="quickstart-claude-cli.html">Claude CLI 5분 시작</a></p>
@@ -225,7 +225,7 @@
   <h3 id="context">Context (컨텍스트)</h3>
   <p>
     LLM이 처리할 수 있는 입력 텍스트의 범위. 컨텍스트 창(Context Window)이 클수록 더 긴 문서, 대화, 코드베이스를 한 번에 처리할 수 있습니다.
-    Claude는 200K 토큰(약 50만 단어), GPT-4는 128K 토큰을 지원합니다.
+    정확한 한도는 모델/버전별로 다르므로 공식 모델 문서를 기준으로 확인해야 합니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="prompt-optimization.html#context">컨텍스트 관리</a>, <a href="prompt-optimization.html#token-optimization">토큰 최적화</a></p>
 
@@ -253,7 +253,7 @@
   <h3 id="cursor">Cursor</h3>
   <p>
     AI 기능이 통합된 코드 에디터(VS Code 포크). 자연어로 코드를 생성하고, 파일 전체를 리팩토링하며, 프로젝트 전반을 이해하는 능력이 뛰어납니다.
-    Pro 플랜(변동/월)에서는 GPT-4, Claude를 무제한으로 사용할 수 있습니다.
+    플랜/한도/과금 정책은 시점에 따라 달라질 수 있으므로 공식 가격 페이지 확인이 필요합니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="cursor.html">Cursor 가이드</a>, <a href="cli-comparison.html">CLI 도구 비교</a></p>
 </section>
@@ -265,7 +265,7 @@
   <h3 id="deepseek">DeepSeek</h3>
   <p>
     중국 기반의 오픈소스 LLM. DeepSeek Coder는 코드 생성에 특화되어 있으며, Ollama를 통해 로컬에서 실행할 수 있습니다.
-    벤치마크에서 GPT-3.5 수준의 성능을 보입니다.
+    벤치마크 성능은 모델 크기, 학습 데이터, 추론 설정에 따라 달라집니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="ollama-models.html">Ollama 모델 가이드</a></p>
 
@@ -356,7 +356,7 @@
 
   <h3 id="gemini">Gemini (제미니)</h3>
   <p>
-    Google이 개발한 멀티모달 LLM. Gemini Pro, Gemini Ultra, Gemini Flash 등이 있으며, 텍스트, 이미지, 비디오, 오디오를 모두 처리할 수 있습니다.
+    Google이 개발한 멀티모달 LLM. Gemini 모델 계열은 텍스트, 이미지, 비디오, 오디오를 함께 처리할 수 있습니다.
     무료 티어(하루 15 요청)를 제공합니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="model-comparison.html">LLM 모델 비교</a></p>
@@ -384,7 +384,7 @@
 
   <h3 id="gpt">GPT (Generative Pre-trained Transformer)</h3>
   <p>
-    OpenAI가 개발한 LLM 시리즈. GPT-3.5, GPT-4, GPT-4o, o1 등이 있으며, 범용 언어 이해와 생성 능력이 뛰어납니다.
+    OpenAI가 개발한 LLM 시리즈. GPT 계열과 추론 특화 계열을 제공하며, 범용 언어 이해와 생성 능력이 뛰어납니다.
     ChatGPT와 API를 통해 제공됩니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="model-comparison.html">LLM 모델 비교</a></p>
@@ -403,8 +403,8 @@
 
   <h3 id="haiku">Haiku (하이쿠)</h3>
   <p>
-    Claude 모델 시리즈 중 가장 작고 빠른 모델. Claude 3 Haiku는 낮은 비용과 빠른 응답 속도가 장점이며, 간단한 작업에 적합합니다.
-    Sonnet, Opus보다 저렴합니다(입력 변동/1M 토큰).
+    Claude 모델 시리즈 중 경량/고속 티어를 가리키는 명칭. 일반적으로 낮은 비용과 빠른 응답 속도가 장점이며, 간단한 작업에 적합합니다.
+    일반적으로 대형 모델보다 비용 효율적인 선택지로 사용됩니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="model-comparison.html">LLM 모델 비교</a></p>
 
@@ -564,7 +564,7 @@
 
   <h3 id="model">Model (모델)</h3>
   <p>
-    학습된 신경망의 파라미터와 구조. GPT-4, Claude Opus, Gemini Pro 등이 모두 모델입니다.
+    학습된 신경망의 파라미터와 구조. GPT 계열, Claude 계열, Gemini 계열 등이 모두 모델입니다.
     모델 크기는 파라미터 수(7B, 70B, 175B 등)로 표현됩니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="llm-landscape.html">LLM 기초</a></p>
@@ -578,7 +578,7 @@
 
   <h3 id="multimodal">Multimodal (멀티모달)</h3>
   <p>
-    텍스트, 이미지, 오디오, 비디오 등 여러 종류의 데이터를 처리할 수 있는 모델. GPT-4o, Claude 3.5 Sonnet, Gemini Pro는 이미지를 이해하고 설명할 수 있습니다.
+    텍스트, 이미지, 오디오, 비디오 등 여러 종류의 데이터를 처리할 수 있는 모델. 멀티모달 모델은 이미지 내용을 이해하고 설명할 수 있습니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="model-comparison.html">LLM 모델 비교</a></p>
 </section>
@@ -636,7 +636,7 @@
 
   <h3 id="openai">OpenAI (오픈AI)</h3>
   <p>
-    ChatGPT와 GPT 시리즈를 개발한 AI 연구 기업. GPT-3, GPT-4, o1, DALL-E, Whisper 등을 제공하며, AI 대중화에 큰 기여를 했습니다.
+    ChatGPT와 GPT 시리즈를 개발한 AI 연구 기업. 언어/음성/이미지 분야의 다양한 모델과 개발 도구를 제공하며, AI 대중화에 큰 기여를 했습니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="model-comparison.html">LLM 모델 비교</a></p>
 
@@ -649,7 +649,7 @@
 
   <h3 id="opus">Opus (오퍼스)</h3>
   <p>
-    Claude 모델 시리즈 중 가장 크고 강력한 모델. Claude Opus (고성능)은 복잡한 추론, 긴 컨텍스트 이해, 멀티모달 능력이 뛰어나지만 비용이 높습니다(입력 변동/1M 토큰).
+    Claude 모델 라인업에서 고성능 티어를 가리키는 명칭. 복잡한 추론과 고난도 작업에 유리하지만 일반적으로 비용이 높습니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="model-comparison.html">LLM 모델 비교</a></p>
 </section>
@@ -777,8 +777,8 @@
 
   <h3 id="sonnet">Sonnet (소네트)</h3>
   <p>
-    Claude 모델 시리즈의 중간 크기 모델. Claude 3.5 Sonnet은 성능과 비용의 균형이 뛰어나 가장 인기 있는 모델입니다.
-    대부분의 Vibe Coding 작업에 적합합니다(입력 변동/1M 토큰).
+    Claude 모델 라인업에서 성능과 비용의 균형형 티어를 가리키는 명칭입니다.
+    대부분의 Vibe Coding 작업에 넓게 사용됩니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="model-comparison.html">LLM 모델 비교</a></p>
 
@@ -915,7 +915,7 @@
 
   <h3 id="vision">Vision (비전)</h3>
   <p>
-    이미지를 이해하고 설명하는 AI 능력. GPT-4o, Claude 3.5 Sonnet, Gemini Pro는 Vision 기능을 제공하며, 이미지의 텍스트, 객체, 장면을 분석합니다.
+    이미지를 이해하고 설명하는 AI 능력. Vision 기능이 있는 모델은 이미지의 텍스트, 객체, 장면을 분석할 수 있습니다.
     스크린샷 기반 디버깅, UI 복제 등에 활용됩니다.
   </p>
   <p><strong>관련 페이지:</strong> <a href="claude-api.html#capabilities">멀티모달 가이드</a></p>

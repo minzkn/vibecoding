@@ -6,7 +6,7 @@ var SEARCH_INDEX = [
   { title: "Vibe Coding이란?", url: "pages/getting-started.html", description: "AI 기반 Vibe Coding 개념, 전통적 개발과의 차이, 장점", keywords: "vibe coding ai 개념 시작 바이브코딩" },
   { title: "AI CLI 도구 생태계", url: "pages/cli-tools-overview.html", description: "모든 주요 AI CLI 도구 개요 및 비교", keywords: "cli tools 도구 생태계 비교 개요" },
   { title: "Claude CLI 5분 시작", url: "pages/quickstart-claude-cli.html", description: "Claude CLI로 첫 Vibe Coding 시작하기", keywords: "claude cli quickstart 빠른시작 튜토리얼" },
-  { title: "Ollama 로컬 시작", url: "pages/quickstart-local.html", description: "Ollama로 비용 없이 로컬에서 시작하기", keywords: "ollama local 로컬 빠른시작 무료" },
+  { title: "Ollama 로컬 시작", url: "pages/quickstart-local.html", description: "Ollama로 로컬 실행 워크플로우 시작하기", keywords: "ollama local 로컬 빠른시작" },
   { title: "학습 경로 가이드", url: "pages/learning-path.html", description: "초급부터 고급까지 단계별 학습 경로", keywords: "learning path 학습경로 로드맵 단계별" },
 
   // AI CLI 도구들
@@ -40,11 +40,11 @@ var SEARCH_INDEX = [
   // LLM API & 연동
   { title: "LLM 생태계 개요", url: "pages/llm-landscape.html", description: "주요 LLM, API, 가격 비교", keywords: "llm landscape 생태계 개요 비교" },
   { title: "Claude API 가이드", url: "pages/claude-api.html", description: "Claude API 가이드 (인증, 메시지, 스트리밍, Tool Use)", keywords: "claude api anthropic 가이드 인증" },
-  { title: "OpenAI API", url: "pages/openai-api.html", description: "OpenAI API 가이드 (GPT-4, o1)", keywords: "openai api gpt-4 o1 가이드" },
+  { title: "OpenAI API", url: "pages/openai-api.html", description: "OpenAI API 사용 흐름과 연동 가이드", keywords: "openai api 가이드 연동" },
   { title: "Codex 가이드", url: "pages/codex.html", description: "OpenAI Codex 개요, 작동 방식, 사용 흐름, 보안 고려사항", keywords: "codex openai 코딩 에이전트 워크플로우 보안" },
   { title: "Gemini API", url: "pages/gemini-api.html", description: "Google Gemini API 가이드", keywords: "gemini google api 가이드" },
   { title: "API 추상화 도구", url: "pages/api-abstraction.html", description: "LiteLLM, Portkey 등 API 추상화 도구", keywords: "api abstraction litellm portkey 추상화" },
-  { title: "로컬 LLM API", url: "pages/local-api.html", description: "Ollama, LM Studio, LocalAI, vLLM 등 로컬 LLM 서버 완벽 가이드", keywords: "local api ollama lm studio localai vllm 로컬 추론 서버 inference" },
+  { title: "로컬 LLM API", url: "pages/local-api.html", description: "Ollama, LM Studio, LocalAI, vLLM 기반 로컬 LLM 서버 가이드", keywords: "local api ollama lm studio localai vllm 로컬 추론 서버 inference" },
   { title: "다중 LLM 전환", url: "pages/api-switching.html", description: "다중 LLM 전환 전략 및 비용 최적화", keywords: "api switching 전환 다중 llm 최적화" },
   { title: "API 모범 사례", url: "pages/api-best-practices.html", description: "LLM API 에러 처리, 재시도, 캐싱", keywords: "api best practices 모범사례 에러처리" },
 

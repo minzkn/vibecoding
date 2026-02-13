@@ -47,7 +47,7 @@
 <header class="site-header"></header>
 <nav class="side-nav" aria-label="사이트 내비게이션"></nav>
 <main class="main-content">
-<nav class="breadcrumb"></nav>
+<div class="breadcrumb"></div>
 
 <h1 id="top">Ollama 모델 가이드</h1>
 <p class="lead">Ollama가 지원하는 다양한 오픈소스 LLM 모델들의 특징과 선택 방법을 알아봅니다.</p>
@@ -142,7 +142,7 @@
 
   <svg viewBox="0 0 800 500" style="max-width: 100%; height: auto; background: var(--code-bg); border-radius: 8px; padding: 20px;">
     <defs>
-      <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <marker id="ollama-models-1-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
         <polygon points="0 0, 10 3, 0 6" fill="var(--accent-primary)" />
       </marker>
     </defs>
@@ -152,30 +152,30 @@
     <text x="400" y="50" text-anchor="middle" fill="var(--bg-primary)" font-weight="bold">모델 선택 시작</text>
 
     <!-- Decision 1: Purpose -->
-    <path d="M 400 70 L 400 100" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M 400 70 L 400 100" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-models-1-arrow)"/>
     <path d="M 400 120 L 500 170 L 400 220 L 300 170 Z" fill="var(--bg-tertiary)" stroke="var(--accent-primary)" stroke-width="2"/>
     <text x="400" y="175" text-anchor="middle" fill="var(--text-primary)" font-size="14">주요 용도?</text>
 
     <!-- Branch: Coding -->
-    <path d="M 500 170 L 600 170" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M 500 170 L 600 170" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-models-1-arrow)"/>
     <rect x="600" y="150" width="150" height="40" rx="5" fill="var(--accent-secondary)" stroke="none"/>
     <text x="675" y="175" text-anchor="middle" fill="var(--text-primary)" font-size="13">CodeLlama</text>
     <text x="675" y="190" text-anchor="middle" fill="var(--text-secondary)" font-size="11">DeepSeek-Coder</text>
 
     <!-- Branch: General -->
-    <path d="M 300 170 L 200 170" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M 300 170 L 200 170" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-models-1-arrow)"/>
     <rect x="50" y="150" width="150" height="40" rx="5" fill="var(--accent-secondary)" stroke="none"/>
     <text x="125" y="175" text-anchor="middle" fill="var(--text-primary)" font-size="13">Llama / Mistral</text>
     <text x="125" y="190" text-anchor="middle" fill="var(--text-secondary)" font-size="11">Qwen</text>
 
     <!-- Decision 2: Resources -->
-    <path d="M 400 220 L 400 250" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M 400 220 L 400 250" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-models-1-arrow)"/>
     <path d="M 400 270 L 500 320 L 400 370 L 300 320 Z" fill="var(--bg-tertiary)" stroke="var(--accent-primary)" stroke-width="2"/>
     <text x="400" y="315" text-anchor="middle" fill="var(--text-primary)" font-size="14">RAM 크기?</text>
     <text x="400" y="330" text-anchor="middle" fill="var(--text-secondary)" font-size="11">(VRAM 포함)</text>
 
     <!-- Branch: Low RAM -->
-    <path d="M 300 320 L 200 320" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M 300 320 L 200 320" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-models-1-arrow)"/>
     <rect x="50" y="300" width="150" height="40" rx="5" fill="var(--warning-bg)" stroke="none"/>
     <text x="125" y="320" text-anchor="middle" fill="var(--text-primary)" font-size="13">&lt; 8GB</text>
     <text x="125" y="335" text-anchor="middle" fill="var(--text-secondary)" font-size="11">Phi-3 / Gemma</text>
@@ -186,13 +186,13 @@
     <text x="400" y="415" text-anchor="middle" fill="var(--text-secondary)" font-size="11">Llama 3.2 7B</text>
 
     <!-- Branch: High RAM -->
-    <path d="M 500 320 L 600 320" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M 500 320 L 600 320" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-models-1-arrow)"/>
     <rect x="600" y="300" width="150" height="40" rx="5" fill="var(--success-bg)" stroke="none"/>
     <text x="675" y="320" text-anchor="middle" fill="var(--text-primary)" font-size="13">&gt; 32GB</text>
     <text x="675" y="335" text-anchor="middle" fill="var(--text-secondary)" font-size="11">Llama 3.1 70B</text>
 
     <!-- Final recommendation -->
-    <path d="M 400 370 L 400 380" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M 400 370 L 400 380" stroke="var(--accent-primary)" stroke-width="2" marker-end="url(#ollama-models-1-arrow)"/>
     <rect x="275" y="440" width="250" height="40" rx="5" fill="var(--accent-primary)" stroke="none"/>
     <text x="400" y="465" text-anchor="middle" fill="var(--bg-primary)" font-weight="bold">양자화 레벨 선택</text>
   </svg>

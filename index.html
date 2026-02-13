@@ -27,14 +27,14 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
 <meta property="og:title" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:description" content="AI Vibe Coding 가이드 /with MINZKN: 의도만 전달하면 AI가 코드를 작성합니다. CLI 도구부터 로컬 LLM까지, Vibe Coding의 모든 것을 마스터하세요.">
+<meta property="og:description" content="AI Vibe Coding 가이드 /with MINZKN: 자연어 의도 전달을 기반으로 한 AI 코딩 워크플로우를 정리합니다. CLI 도구부터 로컬 LLM까지 실무 중심으로 안내합니다.">
 <meta property="og:url" content="https://minzkn.com/claude/">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="AI Vibe Coding 가이드 /with MINZKN: 의도만 전달하면 AI가 코드를 작성합니다. CLI 도구부터 로컬 LLM까지, Vibe Coding의 모든 것을 마스터하세요.">
+<meta name="description" content="AI Vibe Coding 가이드 /with MINZKN: 자연어 의도 전달을 기반으로 한 AI 코딩 워크플로우를 정리합니다. CLI 도구부터 로컬 LLM까지 실무 중심으로 안내합니다.">
 <meta name="keywords" content="Claude, AI, LLM, AI Vibe Coding 가이드 /with MINZKN, Vibe Coding이란?, 빠른 시작 경로, 문서 구조, 추천 학습 경로">
 <meta name="author" content="MINZKN">
-<title>AI Vibe Coding 가이드 /with MINZKN - AI Vibe Coding 가이드 /with MINZKN</title>
+<title>AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
@@ -64,14 +64,14 @@
   <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
   최신 내용은 공식 문서를 확인하세요.
 </div>
-  <p class="subtitle">의도만 전달하면 AI가 코드를 작성합니다. CLI 도구부터 로컬 LLM까지, Vibe Coding의 모든 것을 마스터하세요.</p>
-  <p class="doc-meta">Claude CLI · Ollama · MCP · 다양한 LLM 연동 · 최종 업데이트 <strong>2026-02-12</strong></p>
+  <p class="subtitle">의도를 자연어로 전달하면 AI가 코드 작성을 보조합니다. CLI 도구부터 로컬 LLM까지 실무 흐름을 단계별로 정리했습니다.</p>
+  <p class="doc-meta">Claude CLI · Ollama · MCP · 다양한 LLM 연동 · 최종 업데이트 <strong>2026-02-13</strong></p>
 
   <!-- Hero diagram: Vibe Coding Workflow -->
   <div class="diagram-container">
     <svg viewBox="0 0 720 360" width="720" height="360" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <marker id="index-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <marker id="index-1-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
           <path d="M0,0 L8,3 L0,6 Z" fill="var(--diagram-arrow)"/>
         </marker>
       </defs>
@@ -84,21 +84,21 @@
       <text x="360" y="70" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">1. 개발자 (You)</text>
       <text x="360" y="88" text-anchor="middle" font-size="11" fill="var(--diagram-text)">"TODO 앱 만들어줘"</text>
 
-      <line x1="360" y1="100" x2="360" y2="125" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#index-arrow)"/>
+      <line x1="360" y1="100" x2="360" y2="125" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#index-1-arrow)"/>
 
       <!-- Step 2: AI CLI Tool -->
       <rect x="280" y="125" width="160" height="50" rx="8" class="box"/>
       <text x="360" y="145" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">2. AI CLI 도구</text>
       <text x="360" y="163" text-anchor="middle" font-size="10" fill="var(--diagram-text)">Claude CLI, Aider, Continue...</text>
 
-      <line x1="360" y1="175" x2="360" y2="200" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#index-arrow)"/>
+      <line x1="360" y1="175" x2="360" y2="200" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#index-1-arrow)"/>
 
       <!-- Step 3: LLM -->
       <rect x="280" y="200" width="160" height="50" rx="8" class="box"/>
       <text x="360" y="220" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">3. LLM</text>
       <text x="360" y="238" text-anchor="middle" font-size="10" fill="var(--diagram-text)">Claude, GPT, Ollama...</text>
 
-      <line x1="360" y1="250" x2="360" y2="275" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#index-arrow)"/>
+      <line x1="360" y1="250" x2="360" y2="275" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#index-1-arrow)"/>
 
       <!-- Step 4: Generated Code -->
       <rect x="280" y="275" width="160" height="50" rx="8" class="box-accent" opacity="0.8"/>
@@ -166,10 +166,10 @@
   <div class="card-grid">
     <div class="doc-card">
       <h3>☁️ 클라우드 LLM으로 시작</h3>
-      <p><strong>Codex</strong> 또는 <strong>Claude CLI</strong>로 5분 안에 첫 Vibe Coding 경험</p>
+      <p><strong>Codex</strong> 또는 <strong>Claude CLI</strong>로 첫 Vibe Coding 워크플로우를 빠르게 시작</p>
       <ul>
         <li>OpenAI 또는 Claude API 키(Anthropic)만 있으면 준비 완료</li>
-        <li>최고 품질의 코드 생성</li>
+        <li>상용 모델 기반 코드 생성 보조</li>
         <li>별도 설치 불필요 (npx 사용)</li>
       </ul>
       <a href="pages/codex.html" class="card-link">Codex 시작하기 →</a><br>
@@ -178,9 +178,9 @@
 
     <div class="doc-card">
       <h3>💻 로컬 LLM으로 시작</h3>
-      <p><strong>Ollama</strong>로 비용 없이 로컬에서 시작</p>
+      <p><strong>Ollama</strong>로 로컬 실행 중심 워크플로우 시작</p>
       <ul>
-        <li>API 키 불필요, 완전 무료</li>
+        <li>API 키 없이 시작 가능(로컬 환경 기준)</li>
         <li>인터넷 없이도 작동</li>
         <li>개인정보 보호 (모든 데이터 로컬)</li>
       </ul>
@@ -209,7 +209,7 @@
 
     <div class="doc-card">
       <h3>🦙 Ollama & 로컬 LLM</h3>
-      <p>로컬에서 LLM을 실행하여 비용 없이 Vibe Coding을 경험합니다.</p>
+      <p>로컬에서 LLM을 실행해 데이터 통제와 비용 예측 가능성을 높입니다.</p>
       <a href="pages/ollama-intro.html" class="card-link">Ollama 배우기 →</a>
     </div>
 
@@ -295,7 +295,7 @@
       <tr>
         <td><strong><a href="pages/claude-cli.html">Claude CLI</a></strong></td>
         <td>CLI</td>
-        <td>공식 도구, 최고 품질</td>
+        <td>공식 도구, 안정적 워크플로우</td>
         <td>Claude API 사용자</td>
       </tr>
       <tr>
@@ -319,7 +319,7 @@
       <tr>
         <td><strong><a href="pages/ollama-intro.html">Ollama</a></strong></td>
         <td>로컬 LLM</td>
-        <td>완전 무료, 오프라인</td>
+        <td>로컬 실행, 오프라인 가능</td>
         <td>비용 절감, 프라이버시</td>
       </tr>
     </tbody>
