@@ -1,5 +1,12 @@
 # 검증 체크리스트
 
+기준일: 2026-02-13
+
+현재 기준 예상 수치:
+- 총 페이지: 63개 (`index.html` 포함)
+- 문서 페이지: 62개 (`pages/*.html`)
+- 카테고리: 8개
+
 ## 로컬 서버 실행
 ```bash
 cd /mnt/public_home/work/vibecoding

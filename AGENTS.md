@@ -11,7 +11,8 @@ Claude AI 어시스턴트에 대한 **한국어** 정적 문서 사이트.
 - 3개 CSS: `css/style.css`, `css/themes.css`, `css/responsive.css`
 - 1개 JS: `js/main.js`
 - 2개 SEO: `sitemap.xml`, `robots.txt`
-- 8개 카테고리, 54개 페이지
+- 8개 카테고리, 62개 문서 페이지 (`pages/*.html`)
+- 전체 63개 페이지 (`index.html` 포함)
 - 5개 테마: `dark-kernel`(기본), `light`, `solarized`, `nord`, `high-contrast`
 
 ## Development
@@ -373,7 +374,7 @@ var(--accent-primary)    강조색
 - 모든 문서는 **한국어**로 작성 (코드/기술 용어 제외)
 - Claude AI 어시스턴트 사용자 대상 (초급~고급)
 - 실제 API 코드 예제 포함 (구문 강조 클래스 적용)
-- 최신 Claude 4.5/4.6 모델 기준
+- 최신 Claude 모델 라인업 기준 (문서 작성 시점)
 
 ## Do NOT
 
