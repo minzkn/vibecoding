@@ -1,5 +1,5 @@
 # Deny access
-<FilesMatch "^(CLAUDE|AGENTS|SEO_AUDIT_REPORT)\.md$">
+<FilesMatch "^(CLAUDE|AGENTS|SEO_AUDIT_REPORT|VERIFICATION_CHECKLIST)\.md$">
     Require all denied
 </FilesMatch>
 
