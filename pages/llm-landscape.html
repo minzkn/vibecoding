@@ -3,9 +3,21 @@
 <head>
 <script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
 <meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="LLM 생태계 개요">
+<meta property="og:description" content="LLM 생태계 개요: 현대 AI 개발 환경에서 사용할 수 있는 다양한 Large Language Model(LLM) 제공자와 모델들을 비교하고, 프로젝트에 적합한 LLM을 선택하는 방법을 안내합니다. 상용 API 서비스부터 로컬 실행 가능한 오픈소스 모델까지 전체 생태계를 탐색합니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/llm-landscape.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LLM 생태계 개요 - AI Vibe Coding 가이드 /with MINZKN</title>
-<meta name="description" content="주요 LLM 제공자, 모델 비교, API vs 로컬 LLM, 가격 비교 및 선택 가이드">
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<meta name="description" content="LLM 생태계 개요: 현대 AI 개발 환경에서 사용할 수 있는 다양한 Large Language Model(LLM) 제공자와 모델들을 비교하고, 프로젝트에 적합한 LLM을 선택하는 방법을 안내합니다. 상용 API 서비스부터 로컬 실행 가능한 오픈소스 모델까지 전체 생태계를 탐색합니다.">
+<meta name="keywords" content="Claude, AI, LLM, LLM 생태계 개요, 주요 LLM 제공자, 모델 성능 비교, 가격 비교, API vs 로컬 LLM">
+<meta name="author" content="MINZKN">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
 <link rel="stylesheet" href="../css/themes.css">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/responsive.css">
@@ -13,12 +25,17 @@
 <body>
 <div class="page-wrapper">
 <header class="site-header"></header>
-<nav class="side-nav"></nav>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
 <main class="main-content">
 <nav class="breadcrumb"></nav>
 
 <h1 id="top">LLM 생태계 개요</h1>
 <p class="lead">현대 AI 개발 환경에서 사용할 수 있는 다양한 Large Language Model(LLM) 제공자와 모델들을 비교하고, 프로젝트에 적합한 LLM을 선택하는 방법을 안내합니다. 상용 API 서비스부터 로컬 실행 가능한 오픈소스 모델까지 전체 생태계를 탐색합니다.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
 <strong>핵심 포인트</strong>
@@ -269,22 +286,22 @@ GPQA (고급 추론):
 ┌────────────────────┬─────────────┬─────────────┬────────────┐
 │ 모델               │ Input (1M)  │ Output (1M) │ 비고       │
 ├────────────────────┼─────────────┼─────────────┼────────────┤
-│ Claude 4 Opus      │ $15.00      │ $75.00      │ 최고성능   │
-│ Claude 4 Sonnet    │ $3.00       │ $15.00      │ 균형       │
-│ Claude 4 Haiku     │ $0.25       │ $1.25       │ 경제적     │
-│ GPT-4o             │ $2.50       │ $10.00      │ 멀티모달   │
-│ o1                 │ $15.00      │ $60.00      │ 추론특화   │
-│ o1-mini            │ $3.00       │ $12.00      │ 빠른추론   │
-│ GPT-4 Turbo        │ $10.00      │ $30.00      │ 범용       │
-│ GPT-3.5 Turbo      │ $0.50       │ $1.50       │ 저렴       │
-│ Gemini 1.5 Pro     │ $1.25       │ $5.00       │ 긴컨텍스트 │
-│ Gemini 1.5 Flash   │ $0.075      │ $0.30       │ 빠름       │
+│ Claude 4 Opus      │ 변동      │ 변동      │ 최고성능   │
+│ Claude 4 Sonnet    │ 변동       │ 변동      │ 균형       │
+│ Claude 4 Haiku     │ 변동       │ 변동       │ 경제적     │
+│ GPT-4o             │ 변동       │ 변동      │ 멀티모달   │
+│ o1                 │ 변동      │ 변동      │ 추론특화   │
+│ o1-mini            │ 변동       │ 변동      │ 빠른추론   │
+│ GPT-4 Turbo        │ 변동      │ 변동      │ 범용       │
+│ GPT-3.5 Turbo      │ 변동       │ 변동       │ 저렴       │
+│ Gemini 1.5 Pro     │ 변동       │ 변동       │ 긴컨텍스트 │
+│ Gemini 1.5 Flash   │ 변동      │ 변동       │ 빠름       │
 └────────────────────┴─────────────┴─────────────┴────────────┘
 
 <span class="cmt">// 실제 비용 예시 (1,000 요청, 평균 2K input, 500 output)</span>
-Claude 4 Sonnet: (2,000 × $3 + 500 × $15) / 1M × 1,000 = $13.50
-GPT-4o:          (2,000 × $2.5 + 500 × $10) / 1M × 1,000 = $10.00
-Gemini 1.5 Pro:  (2,000 × $1.25 + 500 × $5) / 1M × 1,000 = $5.00
+Claude 4 Sonnet: (2,000 × 변동 + 500 × 변동) / 1M × 1,000 = 변동
+GPT-4o:          (2,000 × 변동 + 500 × 변동) / 1M × 1,000 = 변동
+Gemini 1.5 Pro:  (2,000 × 변동 + 500 × 변동) / 1M × 1,000 = 변동
 </code></pre>
 </div>
 
@@ -296,10 +313,10 @@ Gemini 1.5 Pro:  (2,000 × $1.25 + 500 × $5) / 1M × 1,000 = $5.00
 <button class="copy-btn" aria-label="Copy code">Copy</button>
 </div>
 <pre><code><span class="cmt">// Anthropic Console</span>
-<span class="kw">free</span>: <span class="str">"$5 크레딧 (신규 가입)"</span>
+<span class="kw">free</span>: <span class="str">"변동 크레딧 (신규 가입)"</span>
 
 <span class="cmt">// OpenAI</span>
-<span class="kw">free</span>: <span class="str">"$5 크레딧 (신규 가입, 3개월)"</span>
+<span class="kw">free</span>: <span class="str">"변동 크레딧 (신규 가입, 3개월)"</span>
 
 <span class="cmt">// Google AI Studio</span>
 <span class="kw">free</span>: <span class="str">"Gemini 1.5 Flash - 분당 15 요청, 일일 1,500 요청"</span>
@@ -431,7 +448,7 @@ Gemini 1.5 Pro:  (2,000 × $1.25 + 500 × $5) / 1M × 1,000 = $5.00
 
     <span class="kw">def</span> <span class="fn">_use_claude</span>(<span class="kw">self</span>, prompt):
         message = <span class="kw">self</span>.claude.messages.create(
-            model=<span class="str">"claude-4-sonnet-20260101"</span>,
+            model=<span class="str">"claude-<tier>20260101"</span>,
             max_tokens=<span class="num">1024</span>,
             messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
         )
@@ -559,13 +576,11 @@ $ ollama run qwen2.5
 <button class="copy-btn" aria-label="Copy code">Copy</button>
 </div>
 <pre><code><span class="cmt">// 코드 생성 및 리뷰</span>
-1순위: Claude 3.5 Sonnet, Claude 4 Sonnet
-2순위: GPT-4o, DeepSeek Coder (로컬)
+1순위: Claude 3.5 Sonnet, Claude 4 Sonnet (균형)순위: GPT-4o, DeepSeek Coder (로컬)
 이유: 코드 이해도, 설명 능력 우수
 
 <span class="cmt">// 복잡한 추론</span>
-1순위: o1, Claude 4 Opus
-2순위: Claude 4 Sonnet, GPT-4o
+1순위: o1, Claude 4 Opus (고성능)순위: Claude 4 Sonnet, GPT-4o
 이유: 다단계 추론 능력
 
 <span class="cmt">// 긴 문서 분석</span>
@@ -574,8 +589,7 @@ $ ollama run qwen2.5
 이유: 긴 컨텍스트 처리
 
 <span class="cmt">// 비용 최적화</span>
-1순위: Gemini 1.5 Flash, Claude 4 Haiku
-2순위: GPT-3.5 Turbo, 로컬 LLM
+1순위: Gemini 1.5 Flash, Claude 4 Haiku (경량)순위: GPT-3.5 Turbo, 로컬 LLM
 이유: 저렴한 가격
 
 <span class="cmt">// 멀티모달 (이미지+텍스트)</span>
@@ -721,7 +735,7 @@ $ ollama run qwen2.5
 
     <span class="kw">def</span> <span class="fn">_use_claude_sonnet</span>(<span class="kw">self</span>, prompt):
         message = <span class="kw">self</span>.claude.messages.create(
-            model=<span class="str">"claude-4-sonnet-20260101"</span>,
+            model=<span class="str">"claude-<tier>20260101"</span>,
             max_tokens=<span class="num">2048</span>,
             messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
         )
@@ -774,9 +788,9 @@ simple = router.route(
 <pre><code><span class="kw">class</span> <span class="type">CostOptimizedRouter</span>:
     <span class="cmt"># 모델별 가격 (Input/Output per 1M tokens)</span>
     PRICING = {
-        <span class="str">"claude-4-opus"</span>: (<span class="num">15.0</span>, <span class="num">75.0</span>),
-        <span class="str">"claude-4-sonnet"</span>: (<span class="num">3.0</span>, <span class="num">15.0</span>),
-        <span class="str">"claude-4-haiku"</span>: (<span class="num">0.25</span>, <span class="num">1.25</span>),
+        <span class="str">"claude-<tier>"</span>: (<span class="num">15.0</span>, <span class="num">75.0</span>),
+        <span class="str">"claude-<tier>"</span>: (<span class="num">3.0</span>, <span class="num">15.0</span>),
+        <span class="str">"claude-<tier>"</span>: (<span class="num">0.25</span>, <span class="num">1.25</span>),
         <span class="str">"gpt-4o"</span>: (<span class="num">2.5</span>, <span class="num">10.0</span>),
         <span class="str">"gpt-3.5-turbo"</span>: (<span class="num">0.5</span>, <span class="num">1.5</span>),
     }
@@ -796,8 +810,8 @@ simple = router.route(
 
         <span class="cmt"># 성능 순서 (간단한 예시)</span>
         performance_order = [
-            <span class="str">"claude-4-opus"</span>, <span class="str">"claude-4-sonnet"</span>, <span class="str">"gpt-4o"</span>,
-            <span class="str">"claude-4-haiku"</span>, <span class="str">"gpt-3.5-turbo"</span>
+            <span class="str">"claude-<tier>"</span>, <span class="str">"claude-<tier>"</span>, <span class="str">"gpt-4o"</span>,
+            <span class="str">"claude-<tier>"</span>, <span class="str">"gpt-3.5-turbo"</span>
         ]
 
         <span class="kw">for</span> model <span class="kw">in</span> performance_order:
@@ -809,11 +823,11 @@ simple = router.route(
 <span class="cmt"># 사용 예시</span>
 router = CostOptimizedRouter()
 
-<span class="cmt"># 5,000 토큰, $0.10 예산</span>
+<span class="cmt"># 5,000 토큰, 변동 예산</span>
 model = router.select_model(input_tokens=<span class="num">5000</span>, max_budget_usd=<span class="num">0.10</span>)
-<span class="fn">print</span>(<span class="str">f"선택된 모델: <span class="macro">{model}</span>"</span>)  <span class="cmt"># claude-4-sonnet</span>
+<span class="fn">print</span>(<span class="str">f"선택된 모델: <span class="macro">{model}</span>"</span>)  <span class="cmt"># claude-<tier></span>
 
-<span class="cmt"># 1,000 토큰, $0.01 예산</span>
+<span class="cmt"># 1,000 토큰, 변동 예산</span>
 model = router.select_model(input_tokens=<span class="num">1000</span>, max_budget_usd=<span class="num">0.01</span>)
 <span class="fn">print</span>(<span class="str">f"선택된 모델: <span class="macro">{model}</span>"</span>)  <span class="cmt"># gpt-3.5-turbo</span>
 </code></pre>
@@ -922,9 +936,29 @@ model = router.select_model(input_tokens=<span class="num">1000</span>, max_budg
 </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>LLM 생태계 개요의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>주요 LLM 제공자를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>LLM 생태계 개요 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>주요 LLM 제공자 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 </div>
 <script src="../js/main.js"></script>

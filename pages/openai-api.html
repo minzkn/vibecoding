@@ -3,9 +3,21 @@
 <head>
 <script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
 <meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="OpenAI API 가이드">
+<meta property="og:description" content="OpenAI API 가이드: OpenAI API는 ChatGPT를 구동하는 GPT 모델을 프로그래밍 방식으로 사용할 수 있게 해주는 RESTful API입니다. GPT-4o, o1 등 최신 모델과 다양한 기능을 제공하여 강력한 AI 애플리케이션을 구축할 수 있습니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/openai-api.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OpenAI API 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
-<meta name="description" content="OpenAI API 개요, GPT-4o, o1, SDK 사용법, Function Calling, Vision, 비용 관리">
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<meta name="description" content="OpenAI API 가이드: OpenAI API는 ChatGPT를 구동하는 GPT 모델을 프로그래밍 방식으로 사용할 수 있게 해주는 RESTful API입니다. GPT-4o, o1 등 최신 모델과 다양한 기능을 제공하여 강력한 AI 애플리케이션을 구축할 수 있습니다.">
+<meta name="keywords" content="Claude, AI, LLM, OpenAI API 가이드, OpenAI API 개요, 시작하기, Chat Completions API, 스트리밍">
+<meta name="author" content="MINZKN">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
 <link rel="stylesheet" href="../css/themes.css">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/responsive.css">
@@ -13,12 +25,17 @@
 <body>
 <div class="page-wrapper">
 <header class="site-header"></header>
-<nav class="side-nav"></nav>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
 <main class="main-content">
 <nav class="breadcrumb"></nav>
 
 <h1 id="top">OpenAI API 가이드</h1>
 <p class="lead">OpenAI API는 ChatGPT를 구동하는 GPT 모델을 프로그래밍 방식으로 사용할 수 있게 해주는 RESTful API입니다. GPT-4o, o1 등 최신 모델과 다양한 기능을 제공하여 강력한 AI 애플리케이션을 구축할 수 있습니다.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
 <strong>핵심 포인트</strong>
@@ -45,21 +62,21 @@
 ┌──────────────────┬──────────┬──────────┬────────────────────┐
 │ 모델             │ 입력     │ 출력     │ 특징               │
 ├──────────────────┼──────────┼──────────┼────────────────────┤
-│ gpt-4o           │ $2.50/1M │ $10/1M   │ 멀티모달, 빠름     │
-│ gpt-4o-mini      │ $0.15/1M │ $0.60/1M │ 저렴, 빠름         │
-│ gpt-4-turbo      │ $10/1M   │ $30/1M   │ 범용, 안정적       │
-│ gpt-4            │ $30/1M   │ $60/1M   │ 레거시             │
+│ gpt-4o           │ 변동/1M │ 변동/1M   │ 멀티모달, 빠름     │
+│ gpt-4o-mini      │ 변동/1M │ 변동/1M │ 저렴, 빠름         │
+│ gpt-4-turbo      │ 변동/1M   │ 변동/1M   │ 범용, 안정적       │
+│ gpt-4            │ 변동/1M   │ 변동/1M   │ 레거시             │
 └──────────────────┴──────────┴──────────┴────────────────────┘
 
 추론 모델 (o 시리즈):
 ┌──────────────────┬──────────┬──────────┬────────────────────┐
-│ o1               │ $15/1M   │ $60/1M   │ 고급 추론          │
-│ o1-mini          │ $3/1M    │ $12/1M   │ 빠른 추론          │
+│ o1               │ 변동/1M   │ 변동/1M   │ 고급 추론          │
+│ o1-mini          │ 변동/1M    │ 변동/1M   │ 빠른 추론          │
 └──────────────────┴──────────┴──────────┴────────────────────┘
 
 GPT-3.5:
 ┌──────────────────┬──────────┬──────────┬────────────────────┐
-│ gpt-3.5-turbo    │ $0.50/1M │ $1.50/1M │ 저렴, 빠름         │
+│ gpt-3.5-turbo    │ 변동/1M │ 변동/1M │ 저렴, 빠름         │
 └──────────────────┴──────────┴──────────┴────────────────────┘
 
 컨텍스트 윈도우:
@@ -139,7 +156,7 @@ GPT-3.5:
 <div class="info-box note">
 <strong>신규 가입 크레딧</strong>
 <ul>
-<li>신규 가입 시 $5 크레딧 제공 (3개월 유효)</li>
+<li>신규 가입 시 변동 크레딧 제공 (3개월 유효)</li>
 <li>결제 수단 등록 후 추가 크레딧 사용 가능</li>
 <li>사용량 제한(Rate Limit)은 티어에 따라 다름</li>
 </ul>
@@ -706,17 +723,17 @@ batch = client.batches.retrieve(batch.id)
 ┌──────────────────┬──────────┬──────────┬──────────────┐
 │ 모델             │ 입력     │ 출력     │ 비용(예시)   │
 ├──────────────────┼──────────┼──────────┼──────────────┤
-│ gpt-4o           │ $2.50/1M │ $10/1M   │ $0.0125      │
-│ gpt-4o-mini      │ $0.15/1M │ $0.60/1M │ $0.0008      │
-│ o1               │ $15/1M   │ $60/1M   │ $0.0750      │
-│ gpt-3.5-turbo    │ $0.50/1M │ $1.50/1M │ $0.0025      │
+│ gpt-4o           │ 변동/1M │ 변동/1M   │ 변동      │
+│ gpt-4o-mini      │ 변동/1M │ 변동/1M │ 변동      │
+│ o1               │ 변동/1M   │ 변동/1M   │ 변동      │
+│ gpt-3.5-turbo    │ 변동/1M │ 변동/1M │ 변동      │
 └──────────────────┴──────────┴──────────┴──────────────┘
 예시: 2K input + 500 output
 
 배치 API (50% 할인):
 ┌──────────────────┬──────────┬──────────┐
-│ gpt-4o           │ $1.25/1M │ $5/1M    │
-│ gpt-4o-mini      │ $0.075/1M│ $0.30/1M │
+│ gpt-4o           │ 변동/1M │ 변동/1M    │
+│ gpt-4o-mini      │ 변동/1M│ 변동/1M │
 └──────────────────┴──────────┴──────────┘
 </code></pre>
 </div>
@@ -847,9 +864,45 @@ api_key = os.getenv(<span class="str">"OPENAI_API_KEY"</span>)
 </div>
 </section>
 
+<section class="content-section">
+  <h2 id="codex">Codex 연계</h2>
+  <p>
+    OpenAI API를 활용해 Codex와 같은 코딩 에이전트 워크플로우를 구성할 수 있습니다.
+    Codex의 개요와 보안 흐름은 전용 가이드를 참고하세요.
+  </p>
+  <p>
+    Codex는 코드 작성/수정/테스트를 수행하는 코딩 에이전트이며,
+    클라우드 샌드박스에서 병렬 작업을 수행하거나 CLI/IDE에서 로컬로 작업할 수 있습니다.
+  </p>
+  <ul>
+    <li><a href="codex.html">Codex 가이드</a> - 개요, 사용 흐름, 보안/거버넌스</li>
+    <li><a href="cli-best-practices.html">CLI 모범 사례</a> - 승인 모드와 안전한 작업 흐름</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>OpenAI API 가이드의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>OpenAI API 개요를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>OpenAI API 가이드 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>OpenAI API 개요 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 </div>
 <script src="../js/main.js"></script>

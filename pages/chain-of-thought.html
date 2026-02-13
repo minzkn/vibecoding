@@ -6,16 +6,16 @@
 </script>
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
-<meta property="og:site_name" content="Claude 문서 /with MINZKN">
-<meta property="og:title" content="Chain-of-Thought - Claude 문서">
-<meta property="og:description" content="단계별 사고 과정을 통한 복잡한 추론 향상 기법">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Chain-of-Thought (CoT)">
+<meta property="og:description" content="Chain-of-Thought (CoT): Chain-of-Thought는 AI가 최종 답변에 도달하기 전에 사고 과정을 단계별로 표시하도록 하는 프롬프팅 기법입니다. 복잡한 추론, 수학 문제, 다단계 분석에서 정확도를 크게 향상시킵니다.">
 <meta property="og:url" content="https://minzkn.com/claude/pages/chain-of-thought.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="단계별 사고 과정을 통한 복잡한 추론 향상 기법">
-<meta name="keywords" content="chain-of-thought, CoT, 추론, reasoning, 프롬프트 엔지니어링">
+<meta name="description" content="Chain-of-Thought (CoT): Chain-of-Thought는 AI가 최종 답변에 도달하기 전에 사고 과정을 단계별로 표시하도록 하는 프롬프팅 기법입니다. 복잡한 추론, 수학 문제, 다단계 분석에서 정확도를 크게 향상시킵니다.">
+<meta name="keywords" content="Claude, AI, LLM, Chain-of-Thought (CoT), CoT란?, CoT 기법 종류, 언제 CoT를 사용하나요?, 실전 예시">
 <meta name="author" content="MINZKN">
-<title>Chain-of-Thought - Claude 문서 /with MINZKN</title>
+<title>Chain-of-Thought (CoT) - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
@@ -39,6 +39,11 @@
     Chain-of-Thought는 AI가 최종 답변에 도달하기 전에 사고 과정을 단계별로 표시하도록 하는 프롬프팅 기법입니다.
     복잡한 추론, 수학 문제, 다단계 분석에서 정확도를 크게 향상시킵니다.
   </p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 </section>
 
 <div class="info-box tip" style="margin-top: 2rem;">
@@ -346,7 +351,7 @@ prompt <span class="kw">=</span> <span class="fn">f</span><span class="str">"{pr
 answers <span class="kw">=</span> []
 <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">5</span>):
     message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-        model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+        model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
         max_tokens<span class="kw">=</span><span class="num">512</span>,
         temperature<span class="kw">=</span><span class="num">0.7</span>,  <span class="cmt"># 다양성 확보</span>
         messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
@@ -747,7 +752,7 @@ x = 5
       <span class="code-lang">Python</span>
     </div>
     <pre><code>message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
     max_tokens<span class="kw">=</span><span class="num">2048</span>,
     temperature<span class="kw">=</span><span class="num">0.3</span>,  <span class="cmt"># 낮은 온도 → 일관된 추론</span>
     messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: cot_prompt}]
@@ -789,18 +794,38 @@ x = 5
   <p>CoT를 마스터했다면 실전에 적용해보세요:</p>
 
   <ul>
-    <li><a href="tool-use.html">Tool Use</a> - CoT + 외부 도구 조합</li>
-    <li><a href="code-generation.html">코드 생성</a> - CoT로 단계별 코드 작성</li>
-    <li><a href="data-extraction.html">데이터 추출</a> - CoT로 복잡한 데이터 파싱</li>
-    <li><a href="document-analysis.html">문서 분석</a> - CoT로 심층 분석</li>
+    <li><a href="claude-api.html">Tool Use</a> - CoT + 외부 도구 조합</li>
+    <li><a href="prompt-for-coding.html">코드 생성</a> - CoT로 단계별 코드 작성</li>
+    <li><a href="prompt-patterns.html">데이터 추출</a> - CoT로 복잡한 데이터 파싱</li>
+    <li><a href="prompt-patterns.html">문서 분석</a> - CoT로 심층 분석</li>
   </ul>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>Chain-of-Thought (CoT)의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>CoT란?를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>Chain-of-Thought (CoT) 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>CoT란? 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

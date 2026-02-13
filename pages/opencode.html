@@ -7,15 +7,15 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="OpenCode - VS Code 오픈소스 AI 확장">
-<meta property="og:description" content="OpenCode VS Code 확장 완전 가이드. 설치, 설정, 사용법을 배웁니다.">
+<meta property="og:title" content="OpenCode (아카이브됨)">
+<meta property="og:description" content="OpenCode (아카이브됨): 터미널 기반 오픈소스 AI 코딩 에이전트 - 2025년 9월 아카이브됨">
 <meta property="og:url" content="https://minzkn.com/claude/pages/opencode.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="OpenCode VS Code 확장 가이드. 오픈소스 AI 코딩 어시스턴트 완전 정복.">
-<meta name="keywords" content="opencode, vscode, 확장, extension, ai coding, opensource">
+<meta name="description" content="OpenCode (아카이브됨): 터미널 기반 오픈소스 AI 코딩 에이전트 - 2025년 9월 아카이브됨">
+<meta name="keywords" content="Claude, AI, LLM, OpenCode (아카이브됨), 소개, OpenCode에서 마이그레이션, 성능 벤치마크 (참고용), 설치 전 요구사항">
 <meta name="author" content="MINZKN">
-<title>OpenCode - AI Vibe Coding 가이드 /with MINZKN</title>
+<title>OpenCode (아카이브됨) - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
@@ -34,6 +34,11 @@
 
 <h1 id="top">OpenCode (아카이브됨)</h1>
 <p class="lead">터미널 기반 오픈소스 AI 코딩 에이전트 - 2025년 9월 아카이브됨</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box warning" style="background: #ff4444; border-color: #cc0000;">
   <div class="info-box-title" style="color: white;">⚠️ 프로젝트 아카이브됨 (중요)</div>
@@ -434,7 +439,7 @@ Cline 사이드바 → Settings → API 키 입력
       </tr>
     </tbody>
   </table>
-  <p class="caption">* 참고: 예상 성능 수치입니다. 실제 응답 속도는 네트워크 상태, 시스템 사양, 모델 부하에 따라 달라질 수 있습니다. (테스트 환경: M1 Mac, Claude Sonnet 4.5, Ollama Qwen2.5-Coder 7B)</p>
+  <p class="caption">* 참고: 예상 성능 수치입니다. 실제 응답 속도는 네트워크 상태, 시스템 사양, 모델 부하에 따라 달라질 수 있습니다. (테스트 환경: M1 Mac, Claude Sonnet (균형), Ollama Qwen2.5-Coder 7B)</p>
 
   <h4>코드 정확도 비교</h4>
   <table>
@@ -494,24 +499,24 @@ Cline 사이드바 → Settings → API 키 입력
     <tbody>
       <tr>
         <td><strong>가벼운 사용</strong><br>(하루 10회)</td>
-        <td>$5-10</td>
-        <td>$0</td>
-        <td>$20</td>
-        <td>$10</td>
+        <td>변동-10</td>
+        <td>변동</td>
+        <td>변동</td>
+        <td>변동</td>
       </tr>
       <tr>
         <td><strong>중간 사용</strong><br>(하루 50회)</td>
-        <td>$20-30</td>
-        <td>$0</td>
-        <td>$20</td>
-        <td>$10</td>
+        <td>변동-30</td>
+        <td>변동</td>
+        <td>변동</td>
+        <td>변동</td>
       </tr>
       <tr>
         <td><strong>헤비 사용</strong><br>(하루 200회)</td>
-        <td>$60-100</td>
-        <td>$0</td>
-        <td>$20</td>
-        <td>$10</td>
+        <td>변동-100</td>
+        <td>변동</td>
+        <td>변동</td>
+        <td>변동</td>
       </tr>
     </tbody>
   </table>
@@ -667,15 +672,15 @@ npm --version
 {
   <span class="str">"opencode.provider"</span>: <span class="str">"anthropic"</span>,
   <span class="str">"opencode.apiKey"</span>: <span class="str">"sk-ant-api03-xxx"</span>,
-  <span class="str">"opencode.model"</span>: <span class="str">"claude-sonnet-4-5-20250929"</span>,
+  <span class="str">"opencode.model"</span>: <span class="str">"claude-<tier>"</span>,
   <span class="str">"opencode.maxTokens"</span>: <span class="num">8000</span>,
   <span class="str">"opencode.temperature"</span>: <span class="num">0.7</span>
 }
 
 <span class="cmt">// 사용 가능한 모델:</span>
-<span class="cmt">// - claude-opus-4-6 (최고 품질, 비싼)</span>
-<span class="cmt">// - claude-sonnet-4-5-20250929 (균형, 권장)</span>
-<span class="cmt">// - claude-haiku-4-5-20251001 (빠르고 저렴)</span></code></pre>
+<span class="cmt">// - claude-<tier> (최고 품질, 비싼)</span>
+<span class="cmt">// - claude-<tier> (균형, 권장)</span>
+<span class="cmt">// - claude-<tier> (빠르고 저렴)</span></code></pre>
 
   <h4>OpenAI (GPT-4, GPT-4o)</h4>
   <pre><code><span class="cmt">// settings.json</span>
@@ -728,21 +733,21 @@ ollama pull qwen2.5-coder
   <span class="str">"opencode.apiKey"</span>: <span class="str">"sk-ant-api03-xxx"</span>,
 
   <span class="cmt">// 인라인 편집: 빠른 모델</span>
-  <span class="str">"opencode.inlineModel"</span>: <span class="str">"claude-haiku-4-5-20251001"</span>,
+  <span class="str">"opencode.inlineModel"</span>: <span class="str">"claude-<tier>"</span>,
 
   <span class="cmt">// 채팅: 고품질 모델</span>
-  <span class="str">"opencode.chatModel"</span>: <span class="str">"claude-sonnet-4-5-20250929"</span>,
+  <span class="str">"opencode.chatModel"</span>: <span class="str">"claude-<tier>"</span>,
 
   <span class="cmt">// 자동완성: 초고속 모델</span>
-  <span class="str">"opencode.autocompleteModel"</span>: <span class="str">"claude-haiku-4-5-20251001"</span>
+  <span class="str">"opencode.autocompleteModel"</span>: <span class="str">"claude-<tier>"</span>
 }</code></pre>
 
   <div class="info-box tip">
     <div class="info-box-title">💡 권장 설정</div>
     <ul>
-      <li><strong>최고 품질</strong>: Claude Sonnet 4.5 (균형있는 성능)</li>
+      <li><strong>최고 품질</strong>: Claude Sonnet (균형) (균형있는 성능)</li>
       <li><strong>완전 무료</strong>: Ollama + Qwen2.5-Coder (로컬)</li>
-      <li><strong>빠른 속도</strong>: Claude Haiku 4.5 또는 GPT-3.5</li>
+      <li><strong>빠른 속도</strong>: Claude Haiku (경량) 또는 GPT-3.5</li>
       <li><strong>비용 최적화</strong>: 간단한 작업은 Haiku, 복잡한 작업은 Sonnet</li>
     </ul>
   </div>
@@ -761,7 +766,7 @@ ollama pull qwen2.5-coder
 <span class="cmt"># settings.json (API 키 제거)</span>
 {
   <span class="str">"opencode.provider"</span>: <span class="str">"anthropic"</span>,
-  <span class="str">"opencode.model"</span>: <span class="str">"claude-sonnet-4-5-20250929"</span>
+  <span class="str">"opencode.model"</span>: <span class="str">"claude-<tier>"</span>
   <span class="cmt">// apiKey 필드 없음 → 환경 변수에서 자동 로드</span>
 }</code></pre>
 
@@ -810,7 +815,7 @@ ollama pull qwen2.5-coder
 {
   <span class="cmt">// API 키는 환경 변수로 (Git 커밋 안 함)</span>
   <span class="str">"opencode.provider"</span>: <span class="str">"anthropic"</span>,
-  <span class="str">"opencode.model"</span>: <span class="str">"claude-sonnet-4-5-20250929"</span>,
+  <span class="str">"opencode.model"</span>: <span class="str">"claude-<tier>"</span>,
 
   <span class="cmt">// 프로젝트 전용 커스텀 프롬프트</span>
   <span class="str">"opencode.customPrompts"</span>: {
@@ -1616,7 +1621,7 @@ secrets.json
 {
   <span class="str">"opencode.contextWindow"</span>: <span class="num">2000</span>,        <span class="cmt">// 기본 4000에서 축소</span>
   <span class="str">"opencode.includeOpenFiles"</span>: <span class="kw">false</span>,    <span class="cmt">// 현재 파일만</span>
-  <span class="str">"opencode.model"</span>: <span class="str">"claude-haiku-4-5-20251001"</span>  <span class="cmt">// 빠른 모델</span>
+  <span class="str">"opencode.model"</span>: <span class="str">"claude-<tier>"</span>  <span class="cmt">// 빠른 모델</span>
 }</code></pre>
 
   <h3 id="issue-quota">API 할당량 초과</h3>
@@ -1890,10 +1895,30 @@ ollama list  <span class="cmt"># 모델 목록 확인</span></code></pre>
   </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>OpenCode (아카이브됨)의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>소개를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>OpenCode (아카이브됨) 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>소개 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

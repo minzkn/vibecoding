@@ -8,13 +8,13 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="Ollama 로컬 시작 - 완전 무료 Vibe Coding">
-<meta property="og:description" content="Ollama를 설치하고 로컬 LLM으로 무료 Vibe Coding을 시작하세요. API 키 불필요, 완전 무료입니다.">
+<meta property="og:title" content="Ollama 로컬 시작">
+<meta property="og:description" content="Ollama 로컬 시작: Ollama를 설치하고 로컬 LLM으로 완전 무료 Vibe Coding을 시작하세요. API 키 불필요!">
 <meta property="og:url" content="https://minzkn.com/claude/pages/quickstart-local.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Ollama 로컬 LLM 빠른 시작 가이드. 완전 무료로 Vibe Coding을 경험하세요.">
-<meta name="keywords" content="ollama, local llm, 로컬, 무료, vibe coding, llama2, mistral">
+<meta name="description" content="Ollama 로컬 시작: Ollama를 설치하고 로컬 LLM으로 완전 무료 Vibe Coding을 시작하세요. API 키 불필요!">
+<meta name="keywords" content="Claude, AI, LLM, Ollama 로컬 시작, Ollama란?, Ollama 설치, 첫 번째 모델 실행, Aider와 Ollama 연동">
 <meta name="author" content="MINZKN">
 <title>Ollama 로컬 시작 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -42,12 +42,17 @@
 <h1 id="top">Ollama 로컬 시작</h1>
 <p class="lead">Ollama를 설치하고 로컬 LLM으로 완전 무료 Vibe Coding을 시작하세요. API 키 불필요!</p>
 
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
+
 <!-- Quick Start Info-box -->
 <div class="info-box tip">
   <div class="info-box-title">🎁 완전 무료!</div>
   <p><strong>Ollama의 장점:</strong></p>
   <ul>
-    <li>✅ 완전 무료 (API 비용 $0)</li>
+    <li>✅ 완전 무료 (API 비용 변동)</li>
     <li>✅ API 키 불필요</li>
     <li>✅ 인터넷 없이 작동 (오프라인 가능)</li>
     <li>✅ 프라이버시 보호 (모든 데이터 로컬)</li>
@@ -81,20 +86,20 @@
       <tbody>
         <tr>
           <td><strong>Claude API</strong></td>
-          <td>$5 무료</td>
-          <td>$20-100</td>
+          <td>변동 무료</td>
+          <td>변동-100</td>
           <td>토큰 제한</td>
         </tr>
         <tr>
           <td><strong>GPT-4 API</strong></td>
-          <td>$0</td>
-          <td>$20-200</td>
+          <td>변동</td>
+          <td>변동-200</td>
           <td>토큰 제한</td>
         </tr>
         <tr>
           <td><strong>Ollama (로컬)</strong></td>
-          <td>$0</td>
-          <td>$0</td>
+          <td>변동</td>
+          <td>변동</td>
           <td>하드웨어만</td>
         </tr>
       </tbody>
@@ -592,67 +597,12 @@ ollama list
 
 <!-- Summary -->
 <section class="content-section">
-  <h2 id="summary">요약</h2>
-
-  <div class="info-box info">
-    <div class="info-box-title">🎉 축하합니다!</div>
-    <p>
-      Ollama로 완전 무료 Vibe Coding을 시작했습니다! 이제 여러분은:
-    </p>
-    <ul>
-      <li>✅ Ollama를 설치했습니다</li>
-      <li>✅ 첫 번째 로컬 LLM을 실행했습니다</li>
-      <li>✅ Aider와 Ollama를 연동했습니다</li>
-      <li>✅ 무료로 TODO 앱을 만들었습니다</li>
-      <li>✅ 다양한 모델을 비교했습니다</li>
-    </ul>
-    <p>
-      <strong>이제 API 비용 걱정 없이 무제한 Vibe Coding이 가능합니다!</strong>
-    </p>
-  </div>
-
-  <h3 id="free-vs-paid">무료 vs 유료 비교</h3>
-
-  <table>
-    <thead>
-      <tr>
-        <th>측면</th>
-        <th>Ollama (무료)</th>
-        <th>Claude API (유료)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>비용</strong></td>
-        <td>✅ $0</td>
-        <td>❌ $20-100/월</td>
-      </tr>
-      <tr>
-        <td><strong>품질</strong></td>
-        <td>⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td><strong>속도</strong></td>
-        <td>⭐⭐⭐ (HW 의존)</td>
-        <td>⭐⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td><strong>프라이버시</strong></td>
-        <td>✅ 완벽</td>
-        <td>❌ 클라우드</td>
-      </tr>
-      <tr>
-        <td><strong>오프라인</strong></td>
-        <td>✅ 가능</td>
-        <td>❌ 불가</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <p>
-    <strong>권장:</strong> 둘 다 사용하세요! 간단한 작업은 Ollama, 복잡한 작업은 Claude API.
-  </p>
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>Ollama 로컬 시작의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>Ollama란?를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
 </section>
 
 <!-- Page Navigation (이전/다음) -->
@@ -662,6 +612,8 @@ ollama list
 
 <!-- ===== Inline TOC (Aside) ===== -->
 <aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
 </aside>
 
 <!-- ===== Footer ===== -->

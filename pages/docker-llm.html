@@ -7,15 +7,15 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="Docker로 LLM 환경 구축 - 컨테이너 기반 개발 환경">
-<meta property="og:description" content="Docker와 Docker Compose로 일관된 LLM 개발 환경을 구축하는 완전 가이드">
+<meta property="og:title" content="Docker로 LLM 환경 구축">
+<meta property="og:description" content="Docker로 LLM 환경 구축: 컨테이너 기반으로 일관되고 이식 가능한 LLM 개발 환경을 구축하는 완벽한 가이드">
 <meta property="og:url" content="https://minzkn.com/claude/pages/docker-llm.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Docker로 LLM 환경 구축 완전 가이드. Ollama, GPU 지원, 볼륨 관리, 프로덕션 배포까지.">
-<meta name="keywords" content="docker llm container ollama gpu nvidia 컨테이너 도커">
+<meta name="description" content="Docker로 LLM 환경 구축: 컨테이너 기반으로 일관되고 이식 가능한 LLM 개발 환경을 구축하는 완벽한 가이드">
+<meta name="keywords" content="Claude, AI, LLM, Docker로 LLM 환경 구축, Docker 기본 설정, Docker로 Ollama 실행, 개발 환경 컨테이너화, 볼륨 관리">
 <meta name="author" content="MINZKN">
-<title>Docker LLM 환경 구축 - AI Vibe Coding 가이드 /with MINZKN</title>
+<title>Docker로 LLM 환경 구축 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
@@ -34,6 +34,11 @@
 
 <h1 id="top">Docker로 LLM 환경 구축</h1>
 <p class="lead">컨테이너 기반으로 일관되고 이식 가능한 LLM 개발 환경을 구축하는 완벽한 가이드</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
   <div class="info-box-title">⚡ Docker를 사용하는 이유</div>
@@ -385,7 +390,7 @@ app = FastAPI()
 
 <span class="kw">class</span> <span class="type">ChatRequest</span>(BaseModel):
     message: str
-    model: str = <span class="str">"claude-sonnet-4"</span>
+    model: str = <span class="str">"claude-<tier>"</span>
 
 <span class="pp">@app.post</span>(<span class="str">"/chat"</span>)
 <span class="kw">async def</span> <span class="fn">chat</span>(request: ChatRequest):
@@ -1075,10 +1080,30 @@ node_modules
   </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>Docker로 LLM 환경 구축의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>Docker 기본 설정를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>Docker로 LLM 환경 구축 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>Docker 기본 설정 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

@@ -7,13 +7,13 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="Ollama 도구 연동 - Continue, Aider, LangChain, Open WebUI">
-<meta property="og:description" content="Ollama를 VS Code, LangChain, LlamaIndex, API와 통합하여 강력한 AI 개발 환경 구축">
+<meta property="og:title" content="Ollama 도구 연동">
+<meta property="og:description" content="Ollama 도구 연동: 로컬 LLM을 개발 도구와 통합하여 완전한 AI 코딩 환경 구축하기">
 <meta property="og:url" content="https://minzkn.com/claude/pages/ollama-integration.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Ollama 통합 가이드. Continue.dev, Aider, LangChain, LlamaIndex, Open WebUI 연동 방법.">
-<meta name="keywords" content="ollama 연동, continue dev, aider, langchain, llamaindex, open webui, api integration">
+<meta name="description" content="Ollama 도구 연동: 로컬 LLM을 개발 도구와 통합하여 완전한 AI 코딩 환경 구축하기">
+<meta name="keywords" content="Claude, AI, LLM, Ollama 도구 연동, Continue.dev + Ollama (VS Code), Aider + Ollama (CLI), Open WebUI (ChatGPT 스타일 인터페이스), LangChain + Ollama (Python)">
 <meta name="author" content="MINZKN">
 <title>Ollama 도구 연동 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -34,6 +34,11 @@
 
 <h1 id="top">Ollama 도구 연동</h1>
 <p class="lead">로컬 LLM을 개발 도구와 통합하여 완전한 AI 코딩 환경 구축하기</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
   <div class="info-box-title">🚀 빠른 시작</div>
@@ -1638,10 +1643,30 @@ docker run -d -p 3001:3001 \
   </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>Ollama 도구 연동의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>Continue.dev + Ollama (VS Code)를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>Ollama 도구 연동 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>Continue.dev + Ollama (VS Code) 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

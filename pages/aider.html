@@ -7,13 +7,13 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="Aider CLI 완전 가이드 - Git 통합 AI 코딩">
-<meta property="og:description" content="Aider CLI 완전 가이드. Git 통합, 다중 LLM 지원, 오픈소스 AI 코딩 도구를 마스터하세요.">
+<meta property="og:title" content="Aider CLI 완전 가이드">
+<meta property="og:description" content="Aider CLI 완전 가이드: Git 통합 AI 코딩 도구 Aider를 마스터하세요. 오픈소스, 무료, 다중 LLM 지원.">
 <meta property="og:url" content="https://minzkn.com/claude/pages/aider.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Aider CLI 완전 가이드. Git 통합 AI 코딩 도구의 모든 기능과 활용법을 배웁니다.">
-<meta name="keywords" content="aider, cli, git, ai coding, opensource, llm">
+<meta name="description" content="Aider CLI 완전 가이드: Git 통합 AI 코딩 도구 Aider를 마스터하세요. 오픈소스, 무료, 다중 LLM 지원.">
+<meta name="keywords" content="Claude, AI, LLM, Aider CLI 완전 가이드, 소개, 설치, 기본 사용법, Git 통합">
 <meta name="author" content="MINZKN">
 <title>Aider CLI 완전 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -34,6 +34,11 @@
 
 <h1 id="top">Aider CLI 완전 가이드</h1>
 <p class="lead">Git 통합 AI 코딩 도구 Aider를 마스터하세요. 오픈소스, 무료, 다중 LLM 지원.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
   <div class="info-box-title">⚡ 빠른 시작</div>
@@ -109,7 +114,7 @@ aider --version</code></pre>
 
   <pre><code><span class="cmt"># Claude 사용</span>
 export ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxx"</span>
-aider --model claude-sonnet-4-5-20250929
+aider --model claude-<tier>
 
 <span class="cmt"># OpenAI 사용</span>
 export OPENAI_API_KEY=<span class="str">"sk-xxx"</span>
@@ -137,7 +142,7 @@ aider
 aider src/app.js src/utils.js
 
 <span class="cmt"># 특정 모델 지정</span>
-aider --model claude-sonnet-4-5-20250929</code></pre>
+aider --model claude-<tier></code></pre>
 
   <h3 id="first-request">첫 번째 요청</h3>
 
@@ -245,8 +250,8 @@ aider --model claude-sonnet-4-5-20250929</code></pre>
   <h3 id="supported-models">지원 모델</h3>
 
   <pre><code><span class="cmt"># Claude</span>
-aider --model claude-sonnet-4-5-20250929
-aider --model claude-opus-4-6
+aider --model claude-<tier>
+aider --model claude-<tier>
 
 <span class="cmt"># OpenAI</span>
 aider --model gpt-4
@@ -346,7 +351,7 @@ OAuth 2.0 지원, refresh token, 역할 기반 권한."</span>
   <p>프로젝트별 설정:</p>
 
   <pre><code><span class="cmt"># .aider.conf.yml</span>
-<span class="str">model</span>: claude-sonnet-4-5-20250929
+<span class="str">model</span>: claude-<tier>
 <span class="str">auto-commits</span>: <span class="kw">true</span>
 <span class="str">dark-mode</span>: <span class="kw">true</span>
 <span class="str">edit-format</span>: diff
@@ -399,53 +404,21 @@ OAuth 2.0 지원, refresh token, 역할 기반 권한."</span>
 </section>
 
 <section class="content-section">
-  <h2 id="summary">요약</h2>
-
-  <div class="info-box info">
-    <div class="info-box-title">📝 핵심 요약</div>
-    <ul>
-      <li><strong>설치</strong>: <code>pip install aider-chat</code></li>
-      <li><strong>시작</strong>: <code>aider</code> (Git 저장소 필요)</li>
-      <li><strong>Git 통합</strong>: 자동 커밋, diff, undo</li>
-      <li><strong>다중 LLM</strong>: Claude, GPT-4, Ollama 지원</li>
-      <li><strong>무료 사용</strong>: Ollama와 함께 완전 무료</li>
-      <li><strong>워크플로우</strong>: 기능 개발, 버그 수정, 리팩토링</li>
-    </ul>
-  </div>
-
-  <h3 id="next-learning">다음 학습</h3>
-
-  <div class="card-grid">
-    <div class="doc-card">
-      <h3>🦙 Ollama 연동</h3>
-      <p>무료 로컬 LLM 사용</p>
-      <a href="ollama-integration.html" class="card-link">연동하기 →</a>
-    </div>
-
-    <div class="doc-card">
-      <h3>📊 도구 비교</h3>
-      <p>다른 CLI 도구와 비교</p>
-      <a href="cli-comparison.html" class="card-link">비교하기 →</a>
-    </div>
-
-    <div class="doc-card">
-      <h3>✍️ 프롬프트</h3>
-      <p>효과적인 요청 방법</p>
-      <a href="prompt-for-coding.html" class="card-link">배우기 →</a>
-    </div>
-
-    <div class="doc-card">
-      <h3>⚙️ CLI 모범 사례</h3>
-      <p>실전 활용 노하우</p>
-      <a href="cli-best-practices.html" class="card-link">배우기 →</a>
-    </div>
-  </div>
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>Aider CLI 완전 가이드의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>소개를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
 </section>
 
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

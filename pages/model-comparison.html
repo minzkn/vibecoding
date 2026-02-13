@@ -6,16 +6,16 @@
 </script>
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
-<meta property="og:site_name" content="Claude 문서 /with MINZKN">
-<meta property="og:title" content="모델 비교 - Claude 문서">
-<meta property="og:description" content="Claude Opus, Sonnet, Haiku 모델별 성능, 가격, 적합한 사용 사례 비교">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="모델 비교">
+<meta property="og:description" content="모델 비교: Claude는 Opus, Sonnet, Haiku 세 가지 모델 티어를 제공합니다. 각 모델은 성능, 속도, 비용의 균형이 다르므로 사용 사례에 따라 선택하세요.">
 <meta property="og:url" content="https://minzkn.com/claude/pages/model-comparison.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Claude Opus, Sonnet, Haiku 모델별 성능, 가격, 적합한 사용 사례 비교">
-<meta name="keywords" content="Claude 모델, Opus, Sonnet, Haiku, 모델 비교">
+<meta name="description" content="모델 비교: Claude는 Opus, Sonnet, Haiku 세 가지 모델 티어를 제공합니다. 각 모델은 성능, 속도, 비용의 균형이 다르므로 사용 사례에 따라 선택하세요.">
+<meta name="keywords" content="Claude, AI, LLM, 모델 비교, 모델 개요, 가격 비교, 성능 비교, 사용 사례별 추천">
 <meta name="author" content="MINZKN">
-<title>모델 비교 - Claude 문서 /with MINZKN</title>
+<title>모델 비교 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
@@ -40,6 +40,11 @@
     각 모델은 성능, 속도, 비용의 균형이 다르므로 사용 사례에 따라 선택하세요.
   </p>
 
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
+
   <figure style="margin: 2.5rem 0;">
     <svg viewBox="0 0 900 550" style="width: 100%; max-width: 900px; height: auto; display: block; margin: 0 auto;">
       <defs>
@@ -56,48 +61,48 @@
 
       <!-- Haiku 박스 (왼쪽 - 저비용/고속) -->
       <rect x="50" y="90" width="240" height="180" fill="var(--diagram-success)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="3" rx="8"/>
-      <text x="170" y="120" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--diagram-text)">⚡ Haiku 4.5</text>
+      <text x="170" y="120" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--diagram-text)">⚡ Haiku (경량)</text>
 
       <rect x="70" y="135" width="200" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="4"/>
-      <text x="170" y="155" text-anchor="middle" font-size="11" fill="var(--diagram-text)">💰 입력: $0.80/MTok</text>
+      <text x="170" y="155" text-anchor="middle" font-size="11" fill="var(--diagram-text)">💰 입력: 변동/MTok</text>
 
       <rect x="70" y="170" width="200" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="4"/>
       <text x="170" y="190" text-anchor="middle" font-size="11" fill="var(--diagram-text)">⚡ 속도: 가장 빠름</text>
 
       <rect x="70" y="205" width="200" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="4"/>
-      <text x="170" y="225" text-anchor="middle" font-size="11" fill="var(--diagram-text)">🎯 성능: 82-88%</text>
+      <text x="170" y="225" text-anchor="middle" font-size="11" fill="var(--diagram-text)">🎯 성능: 높음</text>
 
       <text x="170" y="250" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--diagram-success)">최적: 간단한 작업</text>
       <text x="170" y="265" text-anchor="middle" font-size="9" fill="var(--diagram-secondary)">분류, 태깅, 대량 처리</text>
 
       <!-- Sonnet 박스 (중앙 - 균형) -->
       <rect x="330" y="90" width="240" height="180" fill="var(--diagram-warning)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="3" rx="8"/>
-      <text x="450" y="120" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--diagram-text)">⚖️ Sonnet 4.5</text>
+      <text x="450" y="120" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--diagram-text)">⚖️ Sonnet (균형)</text>
 
       <rect x="350" y="135" width="200" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="4"/>
-      <text x="450" y="155" text-anchor="middle" font-size="11" fill="var(--diagram-text)">💰 입력: $3/MTok</text>
+      <text x="450" y="155" text-anchor="middle" font-size="11" fill="var(--diagram-text)">💰 입력: 변동/MTok</text>
 
       <rect x="350" y="170" width="200" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="4"/>
       <text x="450" y="190" text-anchor="middle" font-size="11" fill="var(--diagram-text)">⚡ 속도: 보통</text>
 
       <rect x="350" y="205" width="200" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="4"/>
-      <text x="450" y="225" text-anchor="middle" font-size="11" fill="var(--diagram-text)">🎯 성능: 86-92%</text>
+      <text x="450" y="225" text-anchor="middle" font-size="11" fill="var(--diagram-text)">🎯 성능: 높음</text>
 
       <text x="450" y="250" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--diagram-warning)">최적: 대부분 작업</text>
       <text x="450" y="265" text-anchor="middle" font-size="9" fill="var(--diagram-secondary)">코딩, 분석, 대화, 문서</text>
 
       <!-- Opus 박스 (오른쪽 - 고성능) -->
       <rect x="610" y="90" width="240" height="180" fill="var(--diagram-primary)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="3" rx="8"/>
-      <text x="730" y="120" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--diagram-text)">🎖️ Opus 4.6</text>
+      <text x="730" y="120" text-anchor="middle" font-size="16" font-weight="bold" fill="var(--diagram-text)">🎖️ Opus (고성능)</text>
 
       <rect x="630" y="135" width="200" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="4"/>
-      <text x="730" y="155" text-anchor="middle" font-size="11" fill="var(--diagram-text)">💰 입력: $15/MTok</text>
+      <text x="730" y="155" text-anchor="middle" font-size="11" fill="var(--diagram-text)">💰 입력: 변동/MTok</text>
 
       <rect x="630" y="170" width="200" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="4"/>
       <text x="730" y="190" text-anchor="middle" font-size="11" fill="var(--diagram-text)">⚡ 속도: 느림</text>
 
       <rect x="630" y="205" width="200" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="4"/>
-      <text x="730" y="225" text-anchor="middle" font-size="11" fill="var(--diagram-text)">🎯 성능: 88-95%</text>
+      <text x="730" y="225" text-anchor="middle" font-size="11" fill="var(--diagram-text)">🎯 성능: 매우 높음</text>
 
       <text x="730" y="250" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--diagram-primary)">최적: 복잡한 작업</text>
       <text x="730" y="265" text-anchor="middle" font-size="9" fill="var(--diagram-secondary)">연구, 창작, 추론, 설계</text>
@@ -120,7 +125,7 @@
       <rect x="240" y="365" width="170" height="45" fill="var(--diagram-primary)" fill-opacity="0.5" stroke="var(--diagram-border)" stroke-width="1.5" rx="4"/>
       <text x="325" y="383" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--diagram-text)">Opus</text>
       <text x="325" y="398" text-anchor="middle" font-size="9" fill="var(--diagram-secondary)">상세 분석 (일부만)</text>
-      <text x="325" y="408" text-anchor="middle" font-size="8" fill="var(--diagram-success)">비용 70% 절감!</text>
+      <text x="325" y="408" text-anchor="middle" font-size="8" fill="var(--diagram-success)">비용 절감 가능</text>
 
       <!-- 전략 2 -->
       <rect x="470" y="330" width="380" height="90" fill="var(--diagram-bg-tertiary)" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
@@ -137,28 +142,28 @@
       <rect x="660" y="365" width="170" height="45" fill="var(--diagram-primary)" fill-opacity="0.5" stroke="var(--diagram-border)" stroke-width="1.5" rx="4"/>
       <text x="745" y="383" text-anchor="middle" font-size="10" font-weight="bold" fill="var(--diagram-text)">Opus</text>
       <text x="745" y="398" text-anchor="middle" font-size="9" fill="var(--diagram-secondary)">최종 품질 향상</text>
-      <text x="745" y="408" text-anchor="middle" font-size="8" fill="var(--diagram-success)">100% 품질!</text>
+      <text x="745" y="408" text-anchor="middle" font-size="8" fill="var(--diagram-success)">품질 개선</text>
 
       <!-- 비용 비교 바 차트 -->
-      <text x="450" y="450" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--diagram-text)">10K 입력 + 1K 출력 기준 비용 비교</text>
+      <text x="450" y="450" text-anchor="middle" font-size="14" font-weight="bold" fill="var(--diagram-text)">상대 비용 비교(정성적)</text>
 
       <!-- Haiku 바 -->
       <rect x="100" y="470" width="60" height="50" fill="var(--diagram-success)" stroke="var(--diagram-border)" stroke-width="1.5" rx="3"/>
       <text x="130" y="545" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">Haiku</text>
-      <text x="130" y="500" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">$0.012</text>
+      <text x="130" y="500" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">변동</text>
 
       <!-- Sonnet 바 -->
       <rect x="250" y="470" width="60" height="50" fill="var(--diagram-warning)" stroke="var(--diagram-border)" stroke-width="1.5" rx="3"/>
       <rect x="250" y="450" width="60" height="20" fill="var(--diagram-warning)" fill-opacity="0.6" stroke="var(--diagram-border)" stroke-width="1.5" rx="3"/>
       <text x="280" y="545" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">Sonnet</text>
-      <text x="280" y="490" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">$0.045</text>
+      <text x="280" y="490" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">변동</text>
       <text x="280" y="465" text-anchor="middle" font-size="9" fill="var(--diagram-secondary)">3.75배</text>
 
       <!-- Opus 바 -->
       <rect x="400" y="470" width="60" height="50" fill="var(--diagram-primary)" stroke="var(--diagram-border)" stroke-width="1.5" rx="3"/>
       <rect x="400" y="380" width="60" height="90" fill="var(--diagram-primary)" fill-opacity="0.6" stroke="var(--diagram-border)" stroke-width="1.5" rx="3"/>
       <text x="430" y="545" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">Opus</text>
-      <text x="430" y="440" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">$0.225</text>
+      <text x="430" y="440" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">변동</text>
       <text x="430" y="425" text-anchor="middle" font-size="9" fill="var(--diagram-secondary)">18.75배</text>
 
       <!-- 권장 사항 -->
@@ -177,79 +182,20 @@
 <section class="content-section">
   <h2 id="overview">모델 개요</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>모델</th>
-        <th>최신 버전</th>
-        <th>특징</th>
-        <th>컨텍스트 윈도우</th>
-        <th>최적 용도</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Opus 4.6</strong></td>
-        <td><code>claude-opus-4-6</code></td>
-        <td>최고 성능, 최고 지능</td>
-        <td>200K 토큰</td>
-        <td>복잡한 분석, 창작, 연구</td>
-      </tr>
-      <tr>
-        <td><strong>Sonnet 4.5</strong></td>
-        <td><code>claude-sonnet-4-5-20250929</code></td>
-        <td>성능과 속도의 균형</td>
-        <td>200K 토큰</td>
-        <td>일반 업무, 코딩, 대화</td>
-      </tr>
-      <tr>
-        <td><strong>Haiku 4.5</strong></td>
-        <td><code>claude-haiku-4-5-20251001</code></td>
-        <td>빠른 응답, 저렴한 비용</td>
-        <td>200K 토큰</td>
-        <td>간단한 작업, 대량 처리</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="info-box tip">
+  <strong>모델 티어 요약</strong>
+  <ul>
+    <li><strong>고성능 티어</strong>: 복잡한 분석/추론에 적합</li>
+    <li><strong>균형 티어</strong>: 대부분의 일반 작업에 적합</li>
+    <li><strong>경량 티어</strong>: 빠른 응답과 대량 처리에 적합</li>
+  </ul>
+</div>
 </section>
 
 <section class="content-section">
   <h2 id="pricing">가격 비교</h2>
 
-  <table>
-    <thead>
-      <tr>
-        <th>모델</th>
-        <th>입력 (MTok)</th>
-        <th>출력 (MTok)</th>
-        <th>캐시 읽기 (MTok)</th>
-        <th>캐시 쓰기 (MTok)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>Opus 4.6</strong></td>
-        <td>$15</td>
-        <td>$75</td>
-        <td>$1.50</td>
-        <td>$18.75</td>
-      </tr>
-      <tr>
-        <td><strong>Sonnet 4.5</strong></td>
-        <td>$3</td>
-        <td>$15</td>
-        <td>$0.30</td>
-        <td>$3.75</td>
-      </tr>
-      <tr>
-        <td><strong>Haiku 4.5</strong></td>
-        <td>$0.80</td>
-        <td>$4</td>
-        <td>$0.08</td>
-        <td>$1</td>
-      </tr>
-    </tbody>
-  </table>
+  <p>요금은 입력/출력 토큰, 캐싱 정책, 계약 유형에 따라 달라집니다. 정확한 단가는 공식 문서를 확인하세요.</p>
 
   <div class="info-box tip">
     <div class="info-box-title">💡 비용 예시</div>
@@ -257,9 +203,9 @@
       10,000 토큰 입력 + 1,000 토큰 출력 기준:
     </p>
     <ul>
-      <li><strong>Opus:</strong> $0.15 + $0.075 = <strong>$0.225</strong></li>
-      <li><strong>Sonnet:</strong> $0.03 + $0.015 = <strong>$0.045</strong></li>
-      <li><strong>Haiku:</strong> $0.008 + $0.004 = <strong>$0.012</strong></li>
+      <li><strong>Opus:</strong> 변동 + 변동 = <strong>변동</strong></li>
+      <li><strong>Sonnet:</strong> 변동 + 변동 = <strong>변동</strong></li>
+      <li><strong>Haiku:</strong> 변동 + 변동 = <strong>변동</strong></li>
     </ul>
   </div>
 </section>
@@ -272,58 +218,17 @@
     공개 벤치마크 기준 상대적 성능 (숫자가 클수록 우수):
   </p>
 
-  <table>
-    <thead>
-      <tr>
-        <th>벤치마크</th>
-        <th>Opus 4.6</th>
-        <th>Sonnet 4.5</th>
-        <th>Haiku 4.5</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>MMLU (일반 지식)</td>
-        <td>88.7%</td>
-        <td>86.2%</td>
-        <td>82.4%</td>
-      </tr>
-      <tr>
-        <td>HumanEval (코딩)</td>
-        <td>84.9%</td>
-        <td>81.3%</td>
-        <td>75.1%</td>
-      </tr>
-      <tr>
-        <td>GSM8K (수학)</td>
-        <td>95.0%</td>
-        <td>92.3%</td>
-        <td>88.6%</td>
-      </tr>
-      <tr>
-        <td>응답 속도</td>
-        <td>느림</td>
-        <td>보통</td>
-        <td>빠름</td>
-      </tr>
-      <tr>
-        <td>Vibe Coding 능력</td>
-        <td>⭐⭐⭐⭐⭐ 탁월</td>
-        <td>⭐⭐⭐⭐ 우수 (권장)</td>
-        <td>⭐⭐⭐ 양호</td>
-      </tr>
-    </tbody>
-  </table>
+  <p>벤치마크는 모델 간 상대 비교용 참고 자료입니다. 실제 성능은 과제 유형, 프롬프트, 평가 기준에 따라 달라질 수 있습니다.</p>
 
   <div class="info-box tip" style="margin-top: 1.5rem;">
     <div class="info-box-title">💡 Vibe Coding 모델 선택 가이드</div>
     <ul style="margin-top: 0.5em;">
-      <li><strong>Opus 4.6:</strong> 복잡한 아키텍처 설계, 대규모 리팩토링, 새로운 프레임워크 학습</li>
-      <li><strong>Sonnet 4.5:</strong> 일반 코딩 작업, 버그 수정, 기능 추가, 테스트 작성 - <strong>대부분의 Vibe Coding에 권장</strong></li>
-      <li><strong>Haiku 4.5:</strong> 간단한 함수 생성, 문법 수정, 빠른 프로토타이핑</li>
+      <li><strong>Opus (고성능):</strong> 복잡한 아키텍처 설계, 대규모 리팩토링, 새로운 프레임워크 학습</li>
+      <li><strong>Sonnet (균형):</strong> 일반 코딩 작업, 버그 수정, 기능 추가, 테스트 작성 - <strong>대부분의 Vibe Coding에 권장</strong></li>
+      <li><strong>Haiku (경량):</strong> 간단한 함수 생성, 문법 수정, 빠른 프로토타이핑</li>
     </ul>
     <p style="margin-top: 0.8em;">
-      자세한 내용은 <a href="claude-code.html#vibe-coding">Vibe Coding 가이드</a>를 참조하세요.
+      자세한 내용은 <a href="vibe-coding-patterns.html">Vibe Coding 가이드</a>를 참조하세요.
     </p>
   </div>
 
@@ -339,7 +244,7 @@
 <section class="content-section">
   <h2 id="use-cases">사용 사례별 추천</h2>
 
-  <h3 id="opus-cases">Opus 4.6 추천</h3>
+  <h3 id="opus-cases">Opus (고성능) 추천</h3>
   <ul>
     <li><strong>복잡한 추론:</strong> 다단계 논리, 수학 증명, 전략 수립</li>
     <li><strong>창작 콘텐츠:</strong> 소설, 시나리오, 마케팅 카피</li>
@@ -353,7 +258,7 @@
       <span class="code-lang">Opus 사용 예시</span>
     </div>
     <pre><code>message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-    model<span class="kw">=</span><span class="str">"claude-opus-4-6"</span>,
+    model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
     max_tokens<span class="kw">=</span><span class="num">4096</span>,
     messages<span class="kw">=</span>[{
         <span class="str">"role"</span>: <span class="str">"user"</span>,
@@ -366,7 +271,7 @@
 )</code></pre>
   </div>
 
-  <h3 id="sonnet-cases">Sonnet 4.5 추천 (대부분의 경우)</h3>
+  <h3 id="sonnet-cases">Sonnet (균형) 추천 (대부분의 경우)</h3>
   <ul>
     <li><strong>일반 코딩:</strong> 함수 작성, 디버깅, 코드 리뷰</li>
     <li><strong>문서 작업:</strong> 요약, 번역, Q&A</li>
@@ -380,7 +285,7 @@
       <span class="code-lang">Sonnet 사용 예시</span>
     </div>
     <pre><code>message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
     max_tokens<span class="kw">=</span><span class="num">2048</span>,
     messages<span class="kw">=</span>[{
         <span class="str">"role"</span>: <span class="str">"user"</span>,
@@ -389,7 +294,7 @@
 )</code></pre>
   </div>
 
-  <h3 id="haiku-cases">Haiku 4.5 추천</h3>
+  <h3 id="haiku-cases">Haiku (경량) 추천</h3>
   <ul>
     <li><strong>간단한 분류:</strong> 감정 분석, 카테고리 태깅</li>
     <li><strong>대량 처리:</strong> 수천 개 문서 일괄 요약</li>
@@ -403,7 +308,7 @@
       <span class="code-lang">Haiku 사용 예시</span>
     </div>
     <pre><code>message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-    model<span class="kw">=</span><span class="str">"claude-haiku-4-5-20251001"</span>,
+    model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
     max_tokens<span class="kw">=</span><span class="num">256</span>,
     messages<span class="kw">=</span>[{
         <span class="str">"role"</span>: <span class="str">"user"</span>,
@@ -448,7 +353,7 @@
     </div>
     <pre><code><span class="cmt"># 1단계: Haiku로 빠른 분류</span>
 classification <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-    model<span class="kw">=</span><span class="str">"claude-haiku-4-5-20251001"</span>,
+    model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
     max_tokens<span class="kw">=</span><span class="num">100</span>,
     messages<span class="kw">=</span>[{
         <span class="str">"role"</span>: <span class="str">"user"</span>,
@@ -459,7 +364,7 @@ classification <span class="kw">=</span> client.messages.<span class="fn">create
 <span class="cmt"># 2단계: 긴급한 경우에만 Opus로 상세 분석</span>
 <span class="kw">if</span> <span class="str">"yes"</span> <span class="kw">in</span> classification.content[<span class="num">0</span>].text.<span class="fn">lower</span>():
     analysis <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-        model<span class="kw">=</span><span class="str">"claude-opus-4-6"</span>,
+        model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
         max_tokens<span class="kw">=</span><span class="num">2048</span>,
         messages<span class="kw">=</span>[{
             <span class="str">"role"</span>: <span class="str">"user"</span>,
@@ -475,7 +380,7 @@ classification <span class="kw">=</span> client.messages.<span class="fn">create
     </div>
     <pre><code><span class="cmt"># 1단계: Sonnet으로 초안 생성</span>
 draft <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
     max_tokens<span class="kw">=</span><span class="num">1024</span>,
     messages<span class="kw">=</span>[{
         <span class="str">"role"</span>: <span class="str">"user"</span>,
@@ -485,7 +390,7 @@ draft <span class="kw">=</span> client.messages.<span class="fn">create</span>(
 
 <span class="cmt"># 2단계: Opus로 품질 향상</span>
 final <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-    model<span class="kw">=</span><span class="str">"claude-opus-4-6"</span>,
+    model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
     max_tokens<span class="kw">=</span><span class="num">2048</span>,
     messages<span class="kw">=</span>[{
         <span class="str">"role"</span>: <span class="str">"user"</span>,
@@ -509,13 +414,13 @@ final <span class="kw">=</span> client.messages.<span class="fn">create</span>(
       <span class="code-lang">Python 모델 전환</span>
     </div>
     <pre><code><span class="cmt"># 기존 (Sonnet)</span>
-model <span class="kw">=</span> <span class="str">"claude-sonnet-4-5-20250929"</span>
+model <span class="kw">=</span> <span class="str">"claude-<tier>"</span>
 
 <span class="cmt"># 업그레이드 (Opus)</span>
-model <span class="kw">=</span> <span class="str">"claude-opus-4-6"</span>
+model <span class="kw">=</span> <span class="str">"claude-<tier>"</span>
 
 <span class="cmt"># 다운그레이드 (Haiku)</span>
-model <span class="kw">=</span> <span class="str">"claude-haiku-4-5-20251001"</span>
+model <span class="kw">=</span> <span class="str">"claude-<tier>"</span>
 
 <span class="cmt"># 나머지 코드는 동일</span>
 message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
@@ -527,62 +432,20 @@ message <span class="kw">=</span> client.messages.<span class="fn">create</span>
 </section>
 
 <section class="content-section">
-  <h2 id="summary">요약 및 추천</h2>
-
-  <table>
-    <thead>
-      <tr>
-        <th>상황</th>
-        <th>추천 모델</th>
-        <th>이유</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>처음 시작</td>
-        <td><strong>Sonnet</strong></td>
-        <td>성능과 비용의 균형, 대부분 작업에 충분</td>
-      </tr>
-      <tr>
-        <td>프로토타입</td>
-        <td><strong>Haiku</strong></td>
-        <td>빠른 반복, 저렴한 비용</td>
-      </tr>
-      <tr>
-        <td>프로덕션 (일반)</td>
-        <td><strong>Sonnet</strong></td>
-        <td>안정적 품질, 합리적 비용</td>
-      </tr>
-      <tr>
-        <td>프로덕션 (고급)</td>
-        <td><strong>Opus</strong></td>
-        <td>최고 품질 보장</td>
-      </tr>
-      <tr>
-        <td>대량 처리</td>
-        <td><strong>Haiku</strong></td>
-        <td>비용 최소화, 빠른 처리</td>
-      </tr>
-      <tr>
-        <td>비용 민감</td>
-        <td><strong>Haiku</strong> 또는 <strong>Sonnet</strong></td>
-        <td>저렴한 가격</td>
-      </tr>
-      <tr>
-        <td>품질 최우선</td>
-        <td><strong>Opus</strong></td>
-        <td>최고 성능</td>
-      </tr>
-    </tbody>
-  </table>
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>모델 비교의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>모델 개요를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
 </section>
 
 <section class="content-section">
   <h2 id="next-steps">다음 단계</h2>
   <ul>
-    <li><a href="pricing.html">요금</a> - 상세 가격 정보 및 계산 방법</li>
-    <li><a href="quickstart.html">빠른 시작</a> - 실제로 모델 사용해보기</li>
-    <li><a href="api-overview.html">API 개요</a> - API 사용법</li>
+    <li><a href="codex.html">Codex 가이드</a> - 코딩 에이전트 워크플로우 이해</li>
+    <li><a href="openai-api.html">OpenAI API</a> - 실제 API 사용 흐름</li>
+    <li><a href="claude-api.html">Claude API</a> - API 사용법과 모범 사례</li>
   </ul>
 </section>
 
@@ -590,7 +453,10 @@ message <span class="kw">=</span> client.messages.<span class="fn">create</span>
 
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

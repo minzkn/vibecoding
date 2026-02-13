@@ -3,9 +3,21 @@
 <head>
 <script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
 <meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="API 추상화 레이어">
+<meta property="og:description" content="API 추상화 레이어: 다양한 LLM API를 하나의 통합 인터페이스로 사용할 수 있게 해주는 추상화 레이어입니다. LiteLLM, Portkey, OpenRouter 등을 통해 벤더 종속성을 피하고 쉽게 모델을 전환할 수 있습니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/api-abstraction.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>API 추상화 레이어 - AI Vibe Coding 가이드 /with MINZKN</title>
-<meta name="description" content="LiteLLM, Portkey, OpenRouter 등 다중 LLM 통합 도구, 벤더 독립성, 쉬운 전환">
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<meta name="description" content="API 추상화 레이어: 다양한 LLM API를 하나의 통합 인터페이스로 사용할 수 있게 해주는 추상화 레이어입니다. LiteLLM, Portkey, OpenRouter 등을 통해 벤더 종속성을 피하고 쉽게 모델을 전환할 수 있습니다.">
+<meta name="keywords" content="Claude, AI, LLM, API 추상화 레이어, 추상화 레이어가 필요한 이유, LiteLLM, Portkey, OpenRouter">
+<meta name="author" content="MINZKN">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
 <link rel="stylesheet" href="../css/themes.css">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/responsive.css">
@@ -13,12 +25,17 @@
 <body>
 <div class="page-wrapper">
 <header class="site-header"></header>
-<nav class="side-nav"></nav>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
 <main class="main-content">
 <nav class="breadcrumb"></nav>
 
 <h1 id="top">API 추상화 레이어</h1>
 <p class="lead">다양한 LLM API를 하나의 통합 인터페이스로 사용할 수 있게 해주는 추상화 레이어입니다. LiteLLM, Portkey, OpenRouter 등을 통해 벤더 종속성을 피하고 쉽게 모델을 전환할 수 있습니다.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
 <strong>핵심 포인트</strong>
@@ -62,7 +79,7 @@
 <span class="kw">import</span> anthropic
 client = anthropic.Anthropic()
 message = client.messages.create(
-    model=<span class="str">"claude-4-sonnet"</span>,
+    model=<span class="str">"claude-<tier>"</span>,
     max_tokens=<span class="num">1024</span>,
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"..."</span>}]
 )
@@ -109,7 +126,7 @@ result = response.choices[<span class="num">0</span>].message.content
 
 <span class="cmt"># Claude 사용</span>
 response = completion(
-    model=<span class="str">"claude-4-sonnet"</span>,
+    model=<span class="str">"claude-<tier>"</span>,
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"..."</span>}]
 )
 
@@ -185,7 +202,7 @@ $ export GEMINI_API_KEY=<span class="str">"AIzaSy..."</span>
 
 <span class="cmt"># Claude</span>
 response = completion(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}]
 )
 <span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
@@ -244,7 +261,7 @@ response = completion(
 response = completion_with_fallback(
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕!"</span>}],
     models=[
-        <span class="str">"claude-4-sonnet-20260101"</span>,  <span class="cmt"># 1순위</span>
+        <span class="str">"claude-<tier>20260101"</span>,  <span class="cmt"># 1순위</span>
         <span class="str">"gpt-4o"</span>,                    <span class="cmt"># 2순위</span>
         <span class="str">"gemini/gemini-1.5-flash"</span>   <span class="cmt"># 3순위</span>
     ]
@@ -265,7 +282,7 @@ response = completion_with_fallback(
 
 <span class="cmt"># 모든 모델에서 동일한 스트리밍 인터페이스</span>
 response = completion(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,  <span class="cmt"># 또는 gpt-4o, gemini/...</span>
+    model=<span class="str">"claude-<tier>20260101"</span>,  <span class="cmt"># 또는 gpt-4o, gemini/...</span>
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"긴 이야기를 들려줘."</span>}],
     stream=<span class="kw">True</span>
 )
@@ -297,7 +314,7 @@ $ cat > config.yaml << <span class="str">'EOF'</span>
       api_key: sk-...
   - model_name: claude
     litellm_params:
-      model: claude-4-sonnet-20260101
+      model: claude-<tier>20260101
       api_key: sk-ant-...
   - model_name: gemini
     litellm_params:
@@ -383,7 +400,7 @@ portkey = Portkey(
 <span class="cmt"># Claude 사용</span>
 response = portkey.chat.completions.create(
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}],
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     virtual_key=<span class="str">"anthropic-virtual-key"</span>  <span class="cmt"># Portkey에서 생성한 Virtual Key</span>
 )
 
@@ -420,7 +437,7 @@ config = {
         {
             <span class="str">"virtual_key"</span>: <span class="str">"anthropic-key"</span>,
             <span class="str">"override_params"</span>: {
-                <span class="str">"model"</span>: <span class="str">"claude-4-sonnet-20260101"</span>
+                <span class="str">"model"</span>: <span class="str">"claude-<tier>20260101"</span>
             }
         },
         {
@@ -457,7 +474,7 @@ config = {
     <span class="str">"targets"</span>: [
         {
             <span class="str">"virtual_key"</span>: <span class="str">"anthropic-key"</span>,
-            <span class="str">"override_params"</span>: {<span class="str">"model"</span>: <span class="str">"claude-4-sonnet"</span>},
+            <span class="str">"override_params"</span>: {<span class="str">"model"</span>: <span class="str">"claude-<tier>"</span>},
             <span class="str">"weight"</span>: <span class="num">0.6</span>  <span class="cmt"># 60%</span>
         },
         {
@@ -571,7 +588,7 @@ client = OpenAI(
 
 <span class="cmt"># Claude 사용</span>
 response = client.chat.completions.create(
-    model=<span class="str">"anthropic/claude-4-sonnet"</span>,
+    model=<span class="str">"anthropic/claude-<tier>"</span>,
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}]
 )
 <span class="fn">print</span>(response.choices[<span class="num">0</span>].message.content)
@@ -714,9 +731,29 @@ response = client.chat.completions.create(
 </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>API 추상화 레이어의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>추상화 레이어가 필요한 이유를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>API 추상화 레이어 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>추상화 레이어가 필요한 이유 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 </div>
 <script src="../js/main.js"></script>

@@ -9,12 +9,12 @@
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
 <meta property="og:title" content="GitHub Copilot CLI 완전 가이드">
-<meta property="og:description" content="GitHub Copilot CLI 완전 가이드. 터미널에서 AI로 명령어 생성, 코드 설명, Git 도우미.">
+<meta property="og:description" content="GitHub Copilot CLI 완전 가이드: 터미널에서 AI의 도움을 받는 명령어 생성 도구. Git, 쉘 명령어, 시스템 관리를 AI로 자동화.">
 <meta property="og:url" content="https://minzkn.com/claude/pages/github-copilot.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="GitHub Copilot CLI 완전 가이드. 터미널 AI 어시스턴트의 모든 기능과 활용법을 배웁니다.">
-<meta name="keywords" content="github copilot, cli, terminal, ai, git, commands">
+<meta name="description" content="GitHub Copilot CLI 완전 가이드: 터미널에서 AI의 도움을 받는 명령어 생성 도구. Git, 쉘 명령어, 시스템 관리를 AI로 자동화.">
+<meta name="keywords" content="Claude, AI, LLM, GitHub Copilot CLI 완전 가이드, 소개, 설치, 기본 사용법, 실전 활용">
 <meta name="author" content="MINZKN">
 <title>GitHub Copilot CLI 완전 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -35,6 +35,11 @@
 
 <h1 id="top">GitHub Copilot CLI 완전 가이드</h1>
 <p class="lead">터미널에서 AI의 도움을 받는 명령어 생성 도구. Git, 쉘 명령어, 시스템 관리를 AI로 자동화.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
   <div class="info-box-title">⚡ 빠른 시작</div>
@@ -102,7 +107,7 @@ alias ghce='gh copilot explain'</code></pre>
   <div class="info-box warning">
     <div class="info-box-title">⚠️ 제한사항</div>
     <ul>
-      <li>GitHub Copilot 구독 필요 ($10/월)</li>
+      <li>GitHub Copilot 구독 필요 (변동/월)</li>
       <li>코드 편집 기능 없음 (명령어 생성만)</li>
       <li>인터넷 연결 필수</li>
       <li>일부 명령어는 플랫폼 특정적</li>
@@ -117,7 +122,7 @@ alias ghce='gh copilot explain'</code></pre>
   <h3 id="prerequisites">사전 요구사항</h3>
 
   <ol>
-    <li><strong>GitHub Copilot 구독</strong> ($10/월 또는 학생 무료)</li>
+    <li><strong>GitHub Copilot 구독</strong> (변동/월 또는 학생 무료)</li>
     <li><strong>GitHub CLI (gh)</strong> 설치</li>
   </ol>
 
@@ -246,7 +251,7 @@ sudo lsof -t -i:80 | xargs kill -9
 이미 푸시한 커밋을 리베이스하면 force push가 필요합니다.</code></pre>
 
   <h4>예시: 복잡한 파이프라인</h4>
-  <pre><code>$ gh copilot explain "ps aux | grep node | awk '{print $2}' | xargs kill"
+  <pre><code>$ gh copilot explain "ps aux | grep node | awk '{print 변동}' | xargs kill"
 
 <span class="fn">Explanation:</span>
 
@@ -260,7 +265,7 @@ sudo lsof -t -i:80 | xargs kill -9
 2. | grep node
    → "node"가 포함된 줄만 필터링
 
-3. | awk '{print $2}'
+3. | awk '{print 변동}'
    → 두 번째 필드(프로세스 ID)만 추출
 
 4. | xargs kill
@@ -339,7 +344,7 @@ $ ghcs "특정 문자열 포함 파일 찾기"
 → find . -name "*.log" -exec gzip {} \;
 
 $ ghcs "특정 확장자 파일 이름 변경"
-→ find . -name "*.txt" -exec bash -c 'mv "$0" "${0%.txt}.md"' {} \;</code></pre>
+→ find . -name "*.txt" -exec bash -c 'mv "변동" "${0%.txt}.md"' {} \;</code></pre>
 
   <h3 id="system-admin">시스템 관리</h3>
 
@@ -493,7 +498,7 @@ tar -xzf archive.tar.gz && echo "Success" || echo "Error"</code></pre>
       </tr>
       <tr>
         <td><strong>가격</strong></td>
-        <td>$10/월</td>
+        <td>변동/월</td>
         <td>종량제</td>
       </tr>
       <tr>
@@ -575,10 +580,10 @@ alias gce='gh copilot explain'</code></pre>
 
   <h4>2. 히스토리 활용</h4>
   <pre><code><span class="cmt"># 마지막 명령어 설명</span>
-ghce "$(history -1 | awk '{$1=""; print $0}')"
+ghce "$(history -1 | awk '{변동=""; print 변동}')"
 
 <span class="cmt"># 별칭으로 등록</span>
-alias explain-last='ghce "$(history -1 | awk '"'"'{$1=""; print $0}'"'"')"'</code></pre>
+alias explain-last='ghce "$(history -1 | awk '"'"'{변동=""; print 변동}'"'"')"'</code></pre>
 
   <h4>3. 명령어 라이브러리</h4>
   <pre><code><span class="cmt"># 자주 사용하는 명령어 저장</span>
@@ -593,17 +598,17 @@ EOF
 
 <span class="cmt"># 검색 함수</span>
 function copilot-search() {
-  grep -r "$1" ~/.copilot-commands/
+  grep -r "변동" ~/.copilot-commands/
 }</code></pre>
 
   <h4>4. 파이프라인 디버깅</h4>
   <pre><code><span class="cmt"># 각 단계별로 테스트</span>
 $ ps aux | head
 $ ps aux | grep node | head
-$ ps aux | grep node | awk '{print $2}' | head
+$ ps aux | grep node | awk '{print 변동}' | head
 
 <span class="cmt"># AI에게 검증 요청</span>
-$ ghce "ps aux | grep node | awk '{print $2}' | xargs kill"</code></pre>
+$ ghce "ps aux | grep node | awk '{print 변동}' | xargs kill"</code></pre>
 
   <h3 id="learning-strategies">학습 전략</h3>
 
@@ -684,7 +689,7 @@ ghcs "에러를 수정한 명령어"</code></pre>
     <tbody>
       <tr>
         <td><strong>개인</strong></td>
-        <td>$10/월</td>
+        <td>변동/월</td>
         <td>CLI + IDE Copilot</td>
       </tr>
       <tr>
@@ -694,7 +699,7 @@ ghcs "에러를 수정한 명령어"</code></pre>
       </tr>
       <tr>
         <td><strong>팀</strong></td>
-        <td>$19/월/인</td>
+        <td>변동/월/인</td>
         <td>조직 관리 포함</td>
       </tr>
     </tbody>
@@ -743,64 +748,21 @@ ghcs "Linux에서 메모리 사용량 확인"</code></pre>
 
 <!-- Section 10: 요약 -->
 <section class="content-section">
-  <h2 id="summary">요약</h2>
-
-  <div class="info-box info">
-    <div class="info-box-title">📝 핵심 요약</div>
-    <ul>
-      <li><strong>목적</strong>: 터미널 명령어 생성 및 설명</li>
-      <li><strong>설치</strong>: <code>gh extension install github/gh-copilot</code></li>
-      <li><strong>주요 명령어</strong>: <code>gh copilot suggest</code>, <code>gh copilot explain</code></li>
-      <li><strong>가격</strong>: $10/월 (GitHub Copilot 구독 포함)</li>
-      <li><strong>장점</strong>: 간단, 빠름, 학습 도구로 우수</li>
-      <li><strong>단점</strong>: 코드 편집 불가, 구독 필요</li>
-      <li><strong>추천 대상</strong>: 터미널 작업이 많은 개발자, 시스템 관리자</li>
-    </ul>
-  </div>
-
-  <h3 id="use-cases">추천 사용 사례</h3>
-
-  <ol>
-    <li><strong>Git 학습</strong>: 복잡한 Git 명령어 생성 및 이해</li>
-    <li><strong>시스템 관리</strong>: 서버 관리 명령어 빠르게 생성</li>
-    <li><strong>스크립트 작성</strong>: Bash/Python 스크립트 작성 보조</li>
-    <li><strong>명령어 디버깅</strong>: 에러 나는 명령어 분석</li>
-    <li><strong>생산성 향상</strong>: 명령어 검색 시간 단축</li>
-  </ol>
-
-  <h3 id="next-learning">다음 학습</h3>
-
-  <div class="card-grid">
-    <div class="doc-card">
-      <h3>💻 Claude CLI</h3>
-      <p>코드 생성 및 프로젝트 관리</p>
-      <a href="claude-cli.html" class="card-link">배우기 →</a>
-    </div>
-
-    <div class="doc-card">
-      <h3>🔄 Continue.dev</h3>
-      <p>IDE 내 AI 어시스턴트</p>
-      <a href="continue.html" class="card-link">비교하기 →</a>
-    </div>
-
-    <div class="doc-card">
-      <h3>🔧 Cursor IDE</h3>
-      <p>AI 네이티브 에디터</p>
-      <a href="cursor.html" class="card-link">비교하기 →</a>
-    </div>
-
-    <div class="doc-card">
-      <h3>⚙️ CLI 모범 사례</h3>
-      <p>효과적인 도구 활용</p>
-      <a href="cli-best-practices.html" class="card-link">마스터하기 →</a>
-    </div>
-  </div>
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>GitHub Copilot CLI 완전 가이드의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>소개를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
 </section>
 
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

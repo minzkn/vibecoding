@@ -6,16 +6,16 @@
 </script>
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
-<meta property="og:site_name" content="Claude 문서 /with MINZKN">
-<meta property="og:title" content="Few-shot 학습 - Claude 문서">
-<meta property="og:description" content="예제를 통한 효과적인 Few-shot 학습 기법과 실전 가이드">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Few-shot 학습 (Few-shot Learning)">
+<meta property="og:description" content="Few-shot 학습 (Few-shot Learning): Few-shot 학습은 몇 개의 예제를 제공하여 Claude가 패턴을 학습하고 유사한 작업을 수행하도록 하는 기법입니다. 명시적인 지시보다 예제가 더 효과적일 때 사용합니다.">
 <meta property="og:url" content="https://minzkn.com/claude/pages/few-shot.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="예제를 통한 효과적인 Few-shot 학습 기법과 실전 가이드">
-<meta name="keywords" content="few-shot, 예제 학습, in-context learning, 프롬프트 엔지니어링">
+<meta name="description" content="Few-shot 학습 (Few-shot Learning): Few-shot 학습은 몇 개의 예제를 제공하여 Claude가 패턴을 학습하고 유사한 작업을 수행하도록 하는 기법입니다. 명시적인 지시보다 예제가 더 효과적일 때 사용합니다.">
+<meta name="keywords" content="Claude, AI, LLM, Few-shot 학습 (Few-shot Learning), 처음 시작하기, Few-shot이란?, 기본 구조, 실전 예시">
 <meta name="author" content="MINZKN">
-<title>Few-shot 학습 - Claude 문서 /with MINZKN</title>
+<title>Few-shot 학습 (Few-shot Learning) - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
@@ -39,6 +39,11 @@
     Few-shot 학습은 몇 개의 예제를 제공하여 Claude가 패턴을 학습하고 유사한 작업을 수행하도록 하는 기법입니다.
     명시적인 지시보다 예제가 더 효과적일 때 사용합니다.
   </p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 </section>
 
 <section class="content-section">
@@ -679,7 +684,7 @@ AI: "사용법을 안내해드리겠습니다. 어떤 기능이 궁금하신가�
 user_input <span class="kw">=</span> <span class="str">"제품이 고장났어요"</span>
 
 message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-    model<span class="kw">=</span><span class="str">"claude-sonnet-4-5-20250929"</span>,
+    model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
     max_tokens<span class="kw">=</span><span class="num">512</span>,
     system<span class="kw">=</span>system_prompt,
     messages<span class="kw">=</span>[
@@ -776,15 +781,35 @@ message <span class="kw">=</span> client.messages.<span class="fn">create</span>
   <ul>
     <li><a href="chain-of-thought.html">Chain-of-Thought</a> - Few-shot + 추론 과정 표시</li>
     <li><a href="prompt-patterns.html">프롬프트 패턴</a> - 다양한 패턴과 Few-shot 조합</li>
-    <li><a href="tool-use.html">Tool Use</a> - Few-shot으로 도구 사용 패턴 학습</li>
+    <li><a href="claude-api.html">Tool Use</a> - Few-shot으로 도구 사용 패턴 학습</li>
   </ul>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>Few-shot 학습 (Few-shot Learning)의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>처음 시작하기를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>Few-shot 학습 (Few-shot Learning) 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>처음 시작하기 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

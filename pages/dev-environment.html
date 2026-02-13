@@ -7,13 +7,13 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="LLM 개발 환경 구축 - 터미널, 에디터, Git 설정">
-<meta property="og:description" content="LLM 기반 Vibe Coding을 위한 완벽한 개발 환경 구축 가이드">
+<meta property="og:title" content="LLM 개발 환경 구축">
+<meta property="og:description" content="LLM 개발 환경 구축: AI 기반 Vibe Coding을 위한 터미널, 에디터, Git, CLI 도구 완벽 설정 가이드">
 <meta property="og:url" content="https://minzkn.com/claude/pages/dev-environment.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="LLM 개발 환경 구축 완전 가이드. 터미널, 에디터, Git, CLI 도구, dotfiles 관리까지.">
-<meta name="keywords" content="llm development environment 개발환경 터미널 에디터 vscode neovim git">
+<meta name="description" content="LLM 개발 환경 구축: AI 기반 Vibe Coding을 위한 터미널, 에디터, Git, CLI 도구 완벽 설정 가이드">
+<meta name="keywords" content="Claude, AI, LLM, LLM 개발 환경 구축, 터미널 환경 구축, 에디터 환경 구축, Git 환경 구축, 환경 변수 관리">
 <meta name="author" content="MINZKN">
 <title>LLM 개발 환경 구축 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -34,6 +34,11 @@
 
 <h1 id="top">LLM 개발 환경 구축</h1>
 <p class="lead">AI 기반 Vibe Coding을 위한 터미널, 에디터, Git, CLI 도구 완벽 설정 가이드</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
   <div class="info-box-title">⚡ 빠른 시작 체크리스트</div>
@@ -654,7 +659,7 @@ chmod +x .git/hooks/pre-commit</code></pre>
 <pre><code><span class="cmt"># .git/hooks/commit-msg</span>
 <span class="pp">#!/bin/bash</span>
 
-<span class="kw">commit_msg</span>=$(cat <span class="str">"$1"</span>)
+<span class="kw">commit_msg</span>=$(cat <span class="str">"변동"</span>)
 
 <span class="cmt"># Conventional Commits 형식 강제</span>
 <span class="kw">if</span> ! echo <span class="str">"$commit_msg"</span> | grep -qE <span class="str">'^(feat|fix|docs|style|refactor|test|chore)(\(.+\))?: .{1,}'</span>; <span class="kw">then</span>
@@ -969,17 +974,17 @@ chezmoi git pull -- --rebase</code></pre>
 
 <span class="cmt"># 디렉토리 생성 후 바로 이동</span>
 <span class="fn">mkcd</span>() {
-  mkdir -p <span class="str">"$1"</span> && cd <span class="str">"$1"</span>
+  mkdir -p <span class="str">"변동"</span> && cd <span class="str">"변동"</span>
 }
 
 <span class="cmt"># Git 브랜치 생성 + 체크아웃 + 푸시</span>
 <span class="fn">gcob</span>() {
-  git checkout -b <span class="str">"$1"</span> && git push -u origin <span class="str">"$1"</span>
+  git checkout -b <span class="str">"변동"</span> && git push -u origin <span class="str">"변동"</span>
 }
 
 <span class="cmt"># 파일 찾기 + 에디터 열기</span>
 <span class="fn">fcode</span>() {
-  code $(find . -name <span class="str">"*$1*"</span> | head -1)
+  code $(find . -name <span class="str">"*변동*"</span> | head -1)
 }
 
 <span class="cmt"># Claude CLI로 현재 디렉토리 설명 요청</span>
@@ -989,7 +994,7 @@ chezmoi git pull -- --rebase</code></pre>
 
 <span class="cmt"># Docker 컨테이너 빠른 접속</span>
 <span class="fn">dsh</span>() {
-  docker exec -it <span class="str">"$1"</span> /bin/bash
+  docker exec -it <span class="str">"변동"</span> /bin/bash
 }</code></pre>
 
   <h3 id="tips-vscode-snippets">VS Code 스니펫</h3>
@@ -1003,7 +1008,7 @@ chezmoi git pull -- --rebase</code></pre>
       <span class="str">""</span>,
       <span class="str">"client = anthropic.Anthropic(api_key=os.getenv('ANTHROPIC_API_KEY'))"</span>,
       <span class="str">"message = client.messages.create("</span>,
-      <span class="str">"    model='claude-sonnet-4',  # 또는 claude-opus-4"</span>,
+      <span class="str">"    model='claude-<tier>',  # 또는 claude-<tier>"</span>,
       <span class="str">"    max_tokens=4096,"</span>,
       <span class="str">"    messages=[{'role': 'user', 'content': '${1:prompt}'}]"</span>,
       <span class="str">")\"</span>,
@@ -1217,10 +1222,30 @@ rm -rf ~/Library/Application\ Support/Code/CachedData
   </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>LLM 개발 환경 구축의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>터미널 환경 구축를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>LLM 개발 환경 구축 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>터미널 환경 구축 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

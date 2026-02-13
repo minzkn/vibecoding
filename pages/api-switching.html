@@ -3,9 +3,21 @@
 <head>
 <script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
 <meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="다중 LLM 전환 전략">
+<meta property="og:description" content="다중 LLM 전환 전략: 단일 LLM에 의존하는 것은 비용, 성능, 안정성 측면에서 비효율적입니다. 작업 복잡도에 따라 적절한 LLM을 선택하고, 실패 시 자동으로 대체하며, 부하를 분산하는 전략을 통해 견고하고 경제적인 AI 시스템을 구축하는 방법을 다룹니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/api-switching.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>다중 LLM 전환 전략 - AI Vibe Coding 가이드 /with MINZKN</title>
-<meta name="description" content="여러 LLM을 조합하여 비용 최적화, 폴백 구현, 로드 밸런싱을 통한 안정적인 AI 서비스 구축">
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<meta name="description" content="다중 LLM 전환 전략: 단일 LLM에 의존하는 것은 비용, 성능, 안정성 측면에서 비효율적입니다. 작업 복잡도에 따라 적절한 LLM을 선택하고, 실패 시 자동으로 대체하며, 부하를 분산하는 전략을 통해 견고하고 경제적인 AI 시스템을 구축하는 방법을 다룹니다.">
+<meta name="keywords" content="Claude, AI, LLM, 다중 LLM 전환 전략, 다중 LLM의 필요성, 라우팅 전략, 폴백 구현, 로드 밸런싱">
+<meta name="author" content="MINZKN">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
 <link rel="stylesheet" href="../css/themes.css">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/responsive.css">
@@ -13,12 +25,17 @@
 <body>
 <div class="page-wrapper">
 <header class="site-header"></header>
-<nav class="side-nav"></nav>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
 <main class="main-content">
 <nav class="breadcrumb"></nav>
 
 <h1 id="top">다중 LLM 전환 전략</h1>
 <p class="lead">단일 LLM에 의존하는 것은 비용, 성능, 안정성 측면에서 비효율적입니다. 작업 복잡도에 따라 적절한 LLM을 선택하고, 실패 시 자동으로 대체하며, 부하를 분산하는 전략을 통해 견고하고 경제적인 AI 시스템을 구축하는 방법을 다룹니다.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
 <strong>핵심 포인트</strong>
@@ -47,10 +64,10 @@
 ┌──────────────────────┬──────────────┬────────────┬──────────────┐
 │ 전략                 │ 평균 비용    │ 월 총비용  │ 절감율       │
 ├──────────────────────┼──────────────┼────────────┼──────────────┤
-│ Claude Opus만        │ $0.045/req   │ $4,500     │ 기준         │
-│ GPT-4o만             │ $0.018/req   │ $1,800     │ 60%          │
-│ 복잡도 기반 라우팅   │ $0.012/req   │ $1,200     │ 73%          │
-│ 로컬 LLM 우선        │ $0.003/req   │ $300       │ 93%          │
+│ Claude Opus만        │ 변동/req   │ 변동,500     │ 기준         │
+│ GPT-4o만             │ 변동/req   │ 변동,800     │ 60%          │
+│ 복잡도 기반 라우팅   │ 변동/req   │ 변동,200     │ 73%          │
+│ 로컬 LLM 우선        │ 변동/req   │ 변동       │ 93%          │
 └──────────────────────┴──────────────┴────────────┴──────────────┘
 
 <span class="cmt">// 복잡도 기반 라우팅 분포</span>
@@ -198,9 +215,9 @@ TTFT = Time To First Token (스트리밍 시작)
         complexity = <span class="kw">self</span>.classify(query)
 
         models = {
-            <span class="str">'simple'</span>: <span class="str">'claude-haiku-3-5'</span>,      <span class="cmt"># 빠르고 저렴</span>
+            <span class="str">'simple'</span>: <span class="str">'claude-<tier>'</span>,      <span class="cmt"># 빠르고 저렴</span>
             <span class="str">'medium'</span>: <span class="str">'gpt-4o-mini'</span>,          <span class="cmt"># 균형잡힘</span>
-            <span class="str">'complex'</span>: <span class="str">'claude-opus-4'</span>,       <span class="cmt"># 최고 품질</span>
+            <span class="str">'complex'</span>: <span class="str">'claude-<tier>'</span>,       <span class="cmt"># 최고 품질</span>
         }
 
         <span class="kw">return</span> models[complexity]
@@ -326,7 +343,7 @@ routes = [
             <span class="str">"알고리즘 구현"</span>,
             <span class="str">"코드 리뷰"</span>,
         ],
-        model=<span class="str">"claude-sonnet-4"</span>  <span class="cmt"># 코딩 특화</span>
+        model=<span class="str">"claude-<tier>"</span>  <span class="cmt"># 코딩 특화</span>
     ),
     Route(
         name=<span class="str">"translate"</span>,
@@ -437,7 +454,7 @@ logger = logging.getLogger(__name__)
                 user_messages.append(msg)
 
         response = <span class="kw">self</span>.anthropic.messages.create(
-            model=<span class="str">"claude-4-sonnet"</span>,
+            model=<span class="str">"claude-<tier>"</span>,
             system=system,
             messages=user_messages,
             max_tokens=<span class="num">2000</span>,
@@ -539,7 +556,7 @@ llm = FallbackLLM()
         <span class="kw">try</span>:
             <span class="kw">return</span> <span class="kw">self</span>._call_with_retry(
                 anthropic_client.messages.create,
-                model=<span class="str">"claude-4-sonnet"</span>,
+                model=<span class="str">"claude-<tier>"</span>,
                 messages=messages,
                 max_tokens=<span class="num">2000</span>
             ).content[<span class="num">0</span>].text
@@ -802,7 +819,7 @@ messages = [{<span class="str">"role"</span>: <span class="str">"user"</span>, <
 response = completion(model=<span class="str">"gpt-4o"</span>, messages=messages)
 
 <span class="cmt"># Anthropic</span>
-response = completion(model=<span class="str">"claude-4-sonnet"</span>, messages=messages)
+response = completion(model=<span class="str">"claude-<tier>"</span>, messages=messages)
 
 <span class="cmt"># Google</span>
 response = completion(model=<span class="str">"gemini/gemini-1.5-pro"</span>, messages=messages)
@@ -847,7 +864,7 @@ router = Router(
         {
             <span class="str">"model_name"</span>: <span class="str">"claude"</span>,
             <span class="str">"litellm_params"</span>: {
-                <span class="str">"model"</span>: <span class="str">"claude-4-sonnet"</span>,
+                <span class="str">"model"</span>: <span class="str">"claude-<tier>"</span>,
                 <span class="str">"api_key"</span>: os.getenv(<span class="str">"ANTHROPIC_API_KEY"</span>)
             }
         }
@@ -893,7 +910,7 @@ response = router.completion(
 
   - <span class="kw">model_name:</span> claude
     <span class="kw">litellm_params:</span>
-      <span class="kw">model:</span> claude-4-sonnet
+      <span class="kw">model:</span> claude-<tier>
       <span class="kw">api_key:</span> os.environ/ANTHROPIC_API_KEY
 
 <span class="kw">router_settings:</span>
@@ -1025,7 +1042,7 @@ config = PortkeyConfig(
         },
         {
             <span class="str">"virtual_key"</span>: <span class="str">"anthropic-key"</span>,
-            <span class="str">"override_params"</span>: {<span class="str">"model"</span>: <span class="str">"claude-4-sonnet"</span>}
+            <span class="str">"override_params"</span>: {<span class="str">"model"</span>: <span class="str">"claude-<tier>"</span>}
         },
         {
             <span class="str">"virtual_key"</span>: <span class="str">"google-key"</span>,
@@ -1226,8 +1243,8 @@ atexit.register(collector.report)
 PRICING = {
     <span class="str">'gpt-4o'</span>: {<span class="str">'input'</span>: <span class="num">2.5</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">10</span> / <span class="num">1_000_000</span>},
     <span class="str">'gpt-4o-mini'</span>: {<span class="str">'input'</span>: <span class="num">0.15</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">0.6</span> / <span class="num">1_000_000</span>},
-    <span class="str">'claude-4-opus'</span>: {<span class="str">'input'</span>: <span class="num">15</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">75</span> / <span class="num">1_000_000</span>},
-    <span class="str">'claude-4-sonnet'</span>: {<span class="str">'input'</span>: <span class="num">3</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">15</span> / <span class="num">1_000_000</span>},
+    <span class="str">'claude-<tier>'</span>: {<span class="str">'input'</span>: <span class="num">15</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">75</span> / <span class="num">1_000_000</span>},
+    <span class="str">'claude-<tier>'</span>: {<span class="str">'input'</span>: <span class="num">3</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">15</span> / <span class="num">1_000_000</span>},
     <span class="str">'claude-haiku'</span>: {<span class="str">'input'</span>: <span class="num">0.25</span> / <span class="num">1_000_000</span>, <span class="str">'output'</span>: <span class="num">1.25</span> / <span class="num">1_000_000</span>},
 }
 
@@ -1332,9 +1349,29 @@ PRICING = {
 </ul>
 </div>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>다중 LLM 전환 전략의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>다중 LLM의 필요성를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>다중 LLM 전환 전략 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>다중 LLM의 필요성 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 </div>
 <script src="../js/main.js"></script>

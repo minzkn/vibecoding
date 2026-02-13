@@ -7,15 +7,15 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="LLM API 비용 모니터링 - 사용량 추적 및 최적화">
-<meta property="og:description" content="Claude, GPT, Gemini API 비용을 추적하고 최적화하는 완전 가이드">
+<meta property="og:title" content="LLM API 비용 모니터링">
+<meta property="og:description" content="LLM API 비용 모니터링: Claude, GPT, Gemini API 비용을 효과적으로 추적하고 최적화하는 완벽한 가이드">
 <meta property="og:url" content="https://minzkn.com/claude/pages/monitoring-costs.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="LLM API 비용 모니터링 완전 가이드. 토큰 사용량 추적, 알림 설정, 최적화 전략, 대시보드 구축까지.">
-<meta name="keywords" content="llm cost monitoring api 비용 모니터링 토큰 usage 사용량">
+<meta name="description" content="LLM API 비용 모니터링: Claude, GPT, Gemini API 비용을 효과적으로 추적하고 최적화하는 완벽한 가이드">
+<meta name="keywords" content="Claude, AI, LLM, LLM API 비용 모니터링, LLM 가격 구조, 사용량 추적, 알림 설정, 비용 최적화 전략">
 <meta name="author" content="MINZKN">
-<title>비용 모니터링 - AI Vibe Coding 가이드 /with MINZKN</title>
+<title>LLM API 비용 모니터링 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
@@ -34,6 +34,11 @@
 
 <h1 id="top">LLM API 비용 모니터링</h1>
 <p class="lead">Claude, GPT, Gemini API 비용을 효과적으로 추적하고 최적화하는 완벽한 가이드</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box warning">
   <div class="info-box-title">⚠️ 비용 관리가 중요한 이유</div>
@@ -64,59 +69,59 @@
     <tbody>
       <tr>
         <td rowspan="3"><strong>Anthropic</strong></td>
-        <td>Claude Opus 4</td>
-        <td>$15.00</td>
-        <td>$75.00</td>
+        <td>Claude Opus (고성능)</td>
+        <td>변동</td>
+        <td>변동</td>
         <td>200K</td>
       </tr>
       <tr>
-        <td>Claude Sonnet 4</td>
-        <td>$3.00</td>
-        <td>$15.00</td>
+        <td>Claude Sonnet (균형)</td>
+        <td>변동</td>
+        <td>변동</td>
         <td>200K</td>
       </tr>
       <tr>
-        <td>Claude Haiku 4</td>
-        <td>$0.80</td>
-        <td>$4.00</td>
+        <td>Claude Haiku (경량)</td>
+        <td>변동</td>
+        <td>변동</td>
         <td>200K</td>
       </tr>
       <tr>
         <td rowspan="4"><strong>OpenAI</strong></td>
         <td>GPT-4 Turbo</td>
-        <td>$10.00</td>
-        <td>$30.00</td>
+        <td>변동</td>
+        <td>변동</td>
         <td>128K</td>
       </tr>
       <tr>
         <td>GPT-4o</td>
-        <td>$2.50</td>
-        <td>$10.00</td>
+        <td>변동</td>
+        <td>변동</td>
         <td>128K</td>
       </tr>
       <tr>
         <td>GPT-4o mini</td>
-        <td>$0.15</td>
-        <td>$0.60</td>
+        <td>변동</td>
+        <td>변동</td>
         <td>128K</td>
       </tr>
       <tr>
         <td>o1-preview</td>
-        <td>$15.00</td>
-        <td>$60.00</td>
+        <td>변동</td>
+        <td>변동</td>
         <td>128K</td>
       </tr>
       <tr>
         <td rowspan="2"><strong>Google</strong></td>
         <td>Gemini 1.5 Pro</td>
-        <td>$3.50</td>
-        <td>$10.50</td>
+        <td>변동</td>
+        <td>변동</td>
         <td>2M</td>
       </tr>
       <tr>
         <td>Gemini 1.5 Flash</td>
-        <td>$0.075</td>
-        <td>$0.30</td>
+        <td>변동</td>
+        <td>변동</td>
         <td>1M</td>
       </tr>
       <tr>
@@ -138,9 +143,9 @@
 
     <span class="cmt"># 가격표 (입력, 출력 per 1M tokens)</span>
     prices = {
-        <span class="str">"claude-opus-4"</span>: (15.00, 75.00),
-        <span class="str">"claude-sonnet-4"</span>: (3.00, 15.00),
-        <span class="str">"claude-haiku-4"</span>: (0.80, 4.00),
+        <span class="str">"claude-<tier>"</span>: (15.00, 75.00),
+        <span class="str">"claude-<tier>"</span>: (3.00, 15.00),
+        <span class="str">"claude-<tier>"</span>: (0.80, 4.00),
         <span class="str">"gpt-4-turbo"</span>: (10.00, 30.00),
         <span class="str">"gpt-4o"</span>: (2.50, 10.00),
         <span class="str">"gpt-4o-mini"</span>: (0.15, 0.60),
@@ -160,12 +165,12 @@
 
 <span class="cmt"># 사용 예시</span>
 cost = calculate_cost(
-    model=<span class="str">"claude-sonnet-4"</span>,
+    model=<span class="str">"claude-<tier>"</span>,
     input_tokens=5000,
     output_tokens=1000
 )
 print(f<span class="str">"비용: ${cost:.4f}"</span>)
-<span class="cmt"># 출력: 비용: $0.0300</span></code></pre>
+<span class="cmt"># 출력: 비용: 변동</span></code></pre>
 
   <h3 id="pricing-examples">실제 사용 예시</h3>
 
@@ -181,33 +186,33 @@ print(f<span class="str">"비용: ${cost:.4f}"</span>)
     <tbody>
       <tr>
         <td>간단한 질문</td>
-        <td>Sonnet 4</td>
+        <td>Sonnet (균형)</td>
         <td>100 / 50</td>
-        <td>$0.0001</td>
+        <td>변동</td>
       </tr>
       <tr>
         <td>코드 리뷰 (1파일)</td>
-        <td>Sonnet 4</td>
+        <td>Sonnet (균형)</td>
         <td>2,000 / 500</td>
-        <td>$0.0135</td>
+        <td>변동</td>
       </tr>
       <tr>
         <td>문서 요약 (10페이지)</td>
-        <td>Haiku 4</td>
+        <td>Haiku (경량)</td>
         <td>8,000 / 300</td>
-        <td>$0.0076</td>
+        <td>변동</td>
       </tr>
       <tr>
         <td>PR 전체 리뷰</td>
-        <td>Sonnet 4</td>
+        <td>Sonnet (균형)</td>
         <td>15,000 / 3,000</td>
-        <td>$0.0900</td>
+        <td>변동</td>
       </tr>
       <tr>
         <td>대규모 코드베이스 분석</td>
-        <td>Opus 4</td>
+        <td>Opus (고성능)</td>
         <td>100,000 / 5,000</td>
-        <td>$1.8750</td>
+        <td>변동</td>
       </tr>
     </tbody>
   </table>
@@ -284,7 +289,7 @@ logging.basicConfig(
 <span class="cmt"># 사용</span>
 tracker = CostTracker()
 message = tracker.create_message(
-    model=<span class="str">"claude-sonnet-4"</span>,
+    model=<span class="str">"claude-<tier>"</span>,
     max_tokens=1024,
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello!"</span>}]
 )</code></pre>
@@ -380,7 +385,7 @@ message = tracker.create_message(
 <span class="cmt"># 사용</span>
 db = UsageDatabase()
 db.log_request(
-    model=<span class="str">"claude-sonnet-4"</span>,
+    model=<span class="str">"claude-<tier>"</span>,
     input_tokens=5000,
     output_tokens=1000,
     cost=0.03,
@@ -435,7 +440,7 @@ client = MonitoredAnthropicClient(
 )
 
 message = client.messages_create(
-    model=<span class="str">"claude-sonnet-4"</span>,
+    model=<span class="str">"claude-<tier>"</span>,
     max_tokens=1024,
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello!"</span>}],
     user_id=<span class="str">"user123"</span>
@@ -542,7 +547,7 @@ alerter.check_limits()</code></pre>
 <span class="kw">if</span> daily_cost &gt; 100:
     send_slack_alert(
         webhook_url=os.getenv(<span class="str">"SLACK_WEBHOOK_URL"</span>),
-        message=f<span class="str">"🚨 *API Cost Alert*\n\nDaily cost: ${daily_cost:.2f}\nLimit: $100.00"</span>
+        message=f<span class="str">"🚨 *API Cost Alert*\n\nDaily cost: ${daily_cost:.2f}\nLimit: 변동"</span>
     )</code></pre>
 
   <h3 id="alerts-realtime">실시간 알림</h3>
@@ -590,16 +595,16 @@ Please review the usage pattern.
 
 <pre><code><span class="cmt"># 캐싱 없이 (매번 전체 비용 지불)</span>
 message = client.messages.create(
-    model=<span class="str">"claude-sonnet-4"</span>,
+    model=<span class="str">"claude-<tier>"</span>,
     max_tokens=1024,
     system=<span class="str">"You are a code reviewer. [긴 가이드라인...]"</span>,  <span class="cmt"># 10,000 토큰</span>
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Review this code..."</span>}]
 )
-<span class="cmt"># 비용: $0.0300 (10,000 입력 토큰)</span>
+<span class="cmt"># 비용: 변동 (10,000 입력 토큰)</span>
 
 <span class="cmt"># 캐싱 사용 (첫 요청 후 90% 절감)</span>
 message = client.messages.create(
-    model=<span class="str">"claude-sonnet-4"</span>,
+    model=<span class="str">"claude-<tier>"</span>,
     max_tokens=1024,
     system=[
         {
@@ -610,8 +615,8 @@ message = client.messages.create(
     ],
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Review this code..."</span>}]
 )
-<span class="cmt"># 첫 요청: $0.0375 (캐시 쓰기 비용 25% 추가)</span>
-<span class="cmt"># 이후 요청: $0.0030 (캐시 읽기 비용 90% 절감)</span></code></pre>
+<span class="cmt"># 첫 요청: 변동 (캐시 쓰기 비용 25% 추가)</span>
+<span class="cmt"># 이후 요청: 변동 (캐시 읽기 비용 90% 절감)</span></code></pre>
 
   <h3 id="opt-model">모델 선택 전략</h3>
 
@@ -631,9 +636,9 @@ message = client.messages.create(
 
     <span class="cmt"># 모델 선택</span>
     model_map = {
-        <span class="str">"simple"</span>: <span class="str">"claude-haiku-4"</span>,      <span class="cmt"># $0.80/$4.00 per 1M</span>
-        <span class="str">"medium"</span>: <span class="str">"claude-sonnet-4"</span>,     <span class="cmt"># $3.00/$15.00 per 1M</span>
-        <span class="str">"complex"</span>: <span class="str">"claude-opus-4"</span>,      <span class="cmt"># $15.00/$75.00 per 1M</span>
+        <span class="str">"simple"</span>: <span class="str">"claude-<tier>"</span>,      <span class="cmt"># 변동/변동 per 1M</span>
+        <span class="str">"medium"</span>: <span class="str">"claude-<tier>"</span>,     <span class="cmt"># 변동/변동 per 1M</span>
+        <span class="str">"complex"</span>: <span class="str">"claude-<tier>"</span>,      <span class="cmt"># 변동/변동 per 1M</span>
     }
 
     model = model_map[complexity]
@@ -665,7 +670,7 @@ response = smart_generate(<span class="str">"Analyze this complex algorithm..."<
 
     <span class="cmt"># Haiku로 요약 (저렴)</span>
     message = client.messages.create(
-        model=<span class="str">"claude-haiku-4"</span>,
+        model=<span class="str">"claude-<tier>"</span>,
         max_tokens=max_tokens,
         messages=[{
             <span class="str">"role"</span>: <span class="str">"user"</span>,
@@ -681,15 +686,15 @@ summary = summarize_context(large_codebase, max_tokens=5000)  <span class="cmt">
 
 <span class="cmt"># 요약된 컨텍스트로 메인 작업 수행</span>
 result = client.messages.create(
-    model=<span class="str">"claude-sonnet-4"</span>,
+    model=<span class="str">"claude-<tier>"</span>,
     max_tokens=2048,
     messages=[{
         <span class="str">"role"</span>: <span class="str">"user"</span>,
         <span class="str">"content"</span>: f<span class="str">"Based on this codebase summary:\n{summary}\n\nGenerate a README."</span>
     }]
 )
-<span class="cmt"># 총 비용: 요약($0.08) + 메인($0.03) = $0.11</span>
-<span class="cmt"># vs 전체 전달: $0.30 (3배 절감!)</span></code></pre>
+<span class="cmt"># 총 비용: 요약(변동) + 메인(변동) = 변동</span>
+<span class="cmt"># vs 전체 전달: 변동 (3배 절감!)</span></code></pre>
 
   <h3 id="opt-batch">배치 처리</h3>
 
@@ -707,7 +712,7 @@ result = client.messages.create(
     ])
 
     message = client.messages.create(
-        model=<span class="str">"claude-sonnet-4"</span>,
+        model=<span class="str">"claude-<tier>"</span>,
         max_tokens=8192,
         system=<span class="str">"You are a code reviewer..."</span>,  <span class="cmt"># 한 번만 전송</span>
         messages=[{
@@ -737,7 +742,7 @@ result = client.messages.create(
     <span class="kw">else</span>:
         <span class="cmt"># Claude 사용 (유료, 더 정확)</span>
         message = client.messages.create(
-            model=<span class="str">"claude-sonnet-4"</span>,
+            model=<span class="str">"claude-<tier>"</span>,
             max_tokens=1024,
             messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
         )
@@ -1031,7 +1036,7 @@ api_latency = Histogram(
     <div class="info-box-title">✅ 비용 관리 체크리스트</div>
     <ul>
       <li>모든 API 호출을 데이터베이스에 로깅</li>
-      <li>일일 비용 알림 설정 (예: $50 초과 시)</li>
+      <li>일일 비용 알림 설정 (예: 변동 초과 시)</li>
       <li>월간 예산 설정 및 모니터링</li>
       <li>Prompt Caching 적용 (반복 컨텍스트)</li>
       <li>작업별로 적절한 모델 선택 (Haiku/Sonnet/Opus)</li>
@@ -1052,10 +1057,30 @@ api_latency = Histogram(
   </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>LLM API 비용 모니터링의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>LLM 가격 구조를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>LLM API 비용 모니터링 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>LLM 가격 구조 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

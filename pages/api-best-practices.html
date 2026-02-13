@@ -3,9 +3,21 @@
 <head>
 <script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
 <meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="LLM API 모범 사례">
+<meta property="og:description" content="LLM API 모범 사례: LLM API를 프로덕션 환경에 안전하고 효율적으로 배포하려면 에러 처리, Rate Limiting, 타임아웃, 캐싱, 로깅, 모니터링, 보안 등 여러 측면을 고려해야 합니다. 이 가이드는 안정적이고 비용 효율적인 LLM 서비스를 구축하는 데 필요한 모든...">
+<meta property="og:url" content="https://minzkn.com/claude/pages/api-best-practices.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LLM API 모범 사례 - AI Vibe Coding 가이드 /with MINZKN</title>
-<meta name="description" content="프로덕션 환경의 LLM API 에러 처리, Rate Limiting, 타임아웃, 캐싱, 로깅, 모니터링, 보안 및 비용 추적">
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<meta name="description" content="LLM API 모범 사례: LLM API를 프로덕션 환경에 안전하고 효율적으로 배포하려면 에러 처리, Rate Limiting, 타임아웃, 캐싱, 로깅, 모니터링, 보안 등 여러 측면을 고려해야 합니다. 이 가이드는 안정적이고 비용 효율적인 LLM 서비스를 구축하는 데 필요한 모든...">
+<meta name="keywords" content="Claude, AI, LLM, LLM API 모범 사례, 에러 처리, Rate Limiting 대응, 타임아웃 설정, 캐싱 전략">
+<meta name="author" content="MINZKN">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
 <link rel="stylesheet" href="../css/themes.css">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/responsive.css">
@@ -13,12 +25,17 @@
 <body>
 <div class="page-wrapper">
 <header class="site-header"></header>
-<nav class="side-nav"></nav>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
 <main class="main-content">
 <nav class="breadcrumb"></nav>
 
 <h1 id="top">LLM API 모범 사례</h1>
 <p class="lead">LLM API를 프로덕션 환경에 안전하고 효율적으로 배포하려면 에러 처리, Rate Limiting, 타임아웃, 캐싱, 로깅, 모니터링, 보안 등 여러 측면을 고려해야 합니다. 이 가이드는 안정적이고 비용 효율적인 LLM 서비스를 구축하는 데 필요한 모든 모범 사례를 다룹니다.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
 <strong>핵심 포인트</strong>
@@ -328,8 +345,8 @@ Gemini Pro:
 
 <span class="cmt">// 계층별 차이</span>
 Tier 1 (무료): RPM <span class="num">500</span>, TPM <span class="num">200,000</span>
-Tier 2 ($50+): RPM <span class="num">5,000</span>, TPM <span class="num">450,000</span>
-Tier 5 ($1,000+): RPM <span class="num">10,000</span>, TPM <span class="num">30,000,000</span>
+Tier 2 (변동+): RPM <span class="num">5,000</span>, TPM <span class="num">450,000</span>
+Tier 5 (변동,000+): RPM <span class="num">10,000</span>, TPM <span class="num">30,000,000</span>
 </code></pre>
 </div>
 
@@ -814,7 +831,7 @@ long_context = <span class="str">"""
 """</span>
 
 response = client.messages.create(
-    model=<span class="str">"claude-4-sonnet"</span>,
+    model=<span class="str">"claude-<tier>"</span>,
     max_tokens=<span class="num">1000</span>,
     system=[
         {
@@ -1201,7 +1218,7 @@ logger.info(<span class="str">f"Using API key: {mask_api_key(api_key)}"</span>)
 <span class="kw">class</span> <span class="type">ChatRequest</span>(BaseModel):
     <span class="str">"""입력 검증 스키마"""</span>
 
-    model: <span class="type">str</span> = Field(..., regex=<span class="str">r'^(gpt-4o|claude-4-sonnet|gemini-pro)$'</span>)
+    model: <span class="type">str</span> = Field(..., regex=<span class="str">r'^(gpt-4o|claude-<tier>|gemini-pro)$'</span>)
     messages: <span class="type">list</span> = Field(..., min_items=<span class="num">1</span>, max_items=<span class="num">100</span>)
     temperature: <span class="type">float</span> = Field(<span class="num">0.7</span>, ge=<span class="num">0.0</span>, le=<span class="num">2.0</span>)
     max_tokens: <span class="type">int</span> = Field(<span class="num">1000</span>, ge=<span class="num">1</span>, le=<span class="num">4000</span>)
@@ -1477,7 +1494,7 @@ cost_total = Counter(<span class="str">'llm_cost_usd_total'</span>, <span class=
         채팅 완성 (캐싱, 재시도, 폴백 포함)
 
         Args:
-            model: 모델 이름 (예: 'gpt-4o', 'claude-4-sonnet')
+            model: 모델 이름 (예: 'gpt-4o', 'claude-<tier>')
             messages: 메시지 리스트
             use_cache: 캐싱 사용 여부
 
@@ -1500,7 +1517,7 @@ cost_total = Counter(<span class="str">'llm_cost_usd_total'</span>, <span class=
         <span class="cmt"># 3. API 호출 (폴백 체인)</span>
         providers = [
             (<span class="str">'openai'</span>, <span class="kw">self</span>._call_openai, <span class="str">'gpt-4o'</span>),
-            (<span class="str">'anthropic'</span>, <span class="kw">self</span>._call_anthropic, <span class="str">'claude-4-sonnet'</span>),
+            (<span class="str">'anthropic'</span>, <span class="kw">self</span>._call_anthropic, <span class="str">'claude-<tier>'</span>),
         ]
 
         last_error = <span class="kw">None</span>
@@ -1566,9 +1583,29 @@ cost_total = Counter(<span class="str">'llm_cost_usd_total'</span>, <span class=
 </ul>
 </div>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>LLM API 모범 사례의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>에러 처리를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>LLM API 모범 사례 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>에러 처리 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 </div>
 <script src="../js/main.js"></script>

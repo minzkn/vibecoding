@@ -8,13 +8,13 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="AI CLI 도구 생태계 - 모든 도구를 한눈에 비교">
-<meta property="og:description" content="Claude CLI, Aider, Continue, Cursor 등 주요 AI CLI 도구를 비교하고 선택 가이드를 제공합니다.">
+<meta property="og:title" content="AI CLI 도구 생태계">
+<meta property="og:description" content="AI CLI 도구 생태계: 모든 주요 AI CLI 도구를 한눈에 비교하고, 여러분에게 맞는 도구를 선택하세요.">
 <meta property="og:url" content="https://minzkn.com/claude/pages/cli-tools-overview.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="모든 주요 AI CLI 도구를 비교하고, 사용 사례별 선택 가이드를 제공합니다.">
-<meta name="keywords" content="ai cli tools, claude cli, aider, continue, cursor, 도구 비교, vibe coding">
+<meta name="description" content="AI CLI 도구 생태계: 모든 주요 AI CLI 도구를 한눈에 비교하고, 여러분에게 맞는 도구를 선택하세요.">
+<meta name="keywords" content="Claude, AI, LLM, AI CLI 도구 생태계, AI CLI 도구란?, 주요 AI CLI 도구, 도구 상세 비교, 선택 가이드">
 <meta name="author" content="MINZKN">
 <title>AI CLI 도구 생태계 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -41,6 +41,11 @@
 
 <h1 id="top">AI CLI 도구 생태계</h1>
 <p class="lead">모든 주요 AI CLI 도구를 한눈에 비교하고, 여러분에게 맞는 도구를 선택하세요.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <!-- Quick Start Info-box -->
 <div class="info-box tip">
@@ -175,8 +180,35 @@
   <h2 id="major-tools">주요 AI CLI 도구</h2>
 
   <p>
-    2024-2026년 현재 가장 인기 있는 AI CLI 도구 6가지를 소개합니다:
+    현재 많이 사용되는 AI CLI 도구들을 소개합니다:
   </p>
+  <p>
+    Codex CLI 같은 코딩 에이전트형 도구도 포함되며, 자세한 내용은 <a href="codex.html">Codex 가이드</a>를 참고하세요.
+  </p>
+
+  <!-- Tool 0: Codex CLI -->
+  <h3 id="tool-codex-cli">0. Codex CLI</h3>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🤖 코딩 에이전트형 CLI</div>
+    <p>
+      OpenAI Codex 기반의 CLI 도구로, 코드 수정/테스트/리뷰 흐름을 작업 단위로 수행합니다.
+    </p>
+  </div>
+
+  <p><strong>주요 특징:</strong></p>
+  <ul>
+    <li><strong>작업 단위 실행</strong>: 범위/목표를 명확히 지정해 반복 작업 자동화</li>
+    <li><strong>로컬 실행</strong>: 파일 읽기/쓰기와 명령 실행을 로컬에서 수행</li>
+    <li><strong>승인 모드</strong>: 제안/자동 수정/자율 실행 모드 제공</li>
+    <li><strong>지원 OS</strong>: macOS/Linux (Windows는 실험적)</li>
+  </ul>
+
+  <p><strong>설치:</strong></p>
+  <pre><code><span class="cmt"># 전역 설치</span>
+npm install -g @openai/codex</code></pre>
+
+  <p><strong>관련 문서:</strong> <a href="codex.html">Codex 가이드</a></p>
 
   <!-- Tool 1: Claude CLI -->
   <h3 id="tool-claude-cli">1. Claude CLI (Claude Code)</h3>
@@ -352,7 +384,7 @@ brew install --cask cursor
 
   <p><strong>단점:</strong></p>
   <ul>
-    <li>❌ 유료 ($20/월, 무료 티어 제한적)</li>
+    <li>❌ 유료 (변동/월, 무료 티어 제한적)</li>
     <li>❌ 별도 IDE 설치 필요</li>
     <li>❌ 오픈소스 아님</li>
   </ul>
@@ -400,7 +432,7 @@ gh copilot suggest "find all python files modified in last week"</code></pre>
   <p><strong>단점:</strong></p>
   <ul>
     <li>❌ 코드 편집 기능 제한적</li>
-    <li>❌ GitHub Copilot 구독 필요 ($10/월)</li>
+    <li>❌ GitHub Copilot 구독 필요 (변동/월)</li>
     <li>❌ 프로젝트 컨텍스트 관리 약함</li>
   </ul>
 
@@ -501,7 +533,7 @@ gh copilot suggest "find all python files modified in last week"</code></pre>
         <td><strong><a href="cursor.html">Cursor</a></strong></td>
         <td>IDE</td>
         <td>다중 LLM</td>
-        <td>$20/월</td>
+        <td>변동/월</td>
         <td>❌</td>
         <td>⭐⭐⭐</td>
         <td>✅</td>
@@ -510,7 +542,7 @@ gh copilot suggest "find all python files modified in last week"</code></pre>
         <td><strong><a href="github-copilot.html">Copilot CLI</a></strong></td>
         <td>CLI</td>
         <td>GPT-4</td>
-        <td>$10/월</td>
+        <td>변동/월</td>
         <td>❌</td>
         <td>⭐⭐⭐⭐</td>
         <td>❌</td>
@@ -655,22 +687,22 @@ gh copilot suggest "find all python files modified in last week"</code></pre>
       <tr>
         <td><strong>완전 무료</strong></td>
         <td><a href="aider.html">Aider</a> + <a href="ollama-intro.html">Ollama</a></td>
-        <td>$0</td>
+        <td>변동</td>
       </tr>
       <tr>
         <td><strong>저예산</strong></td>
         <td><a href="claude-cli.html">Claude CLI</a> (API 종량제)</td>
-        <td>$5-20</td>
+        <td>변동-20</td>
       </tr>
       <tr>
         <td><strong>중간</strong></td>
         <td><a href="github-copilot.html">Copilot CLI</a> or <a href="cursor.html">Cursor</a></td>
-        <td>$10-20</td>
+        <td>변동-20</td>
       </tr>
       <tr>
         <td><strong>고급</strong></td>
         <td><a href="cursor.html">Cursor Pro</a> + <a href="claude-cli.html">Claude CLI</a></td>
-        <td>$40+</td>
+        <td>변동+</td>
       </tr>
     </tbody>
   </table>
@@ -776,40 +808,12 @@ gh auth login</code></pre>
 
 <!-- Summary & Next Steps -->
 <section class="content-section">
-  <h2 id="summary">요약 및 다음 단계</h2>
-
-  <div class="info-box info">
-    <div class="info-box-title">📝 핵심 요약</div>
-    <ul>
-      <li><strong>6가지 주요 도구</strong>: Claude CLI, Aider, Continue, Cursor, Copilot CLI, Cline</li>
-      <li><strong>최고 품질</strong>: Claude CLI, Cursor</li>
-      <li><strong>Git 통합</strong>: Aider</li>
-      <li><strong>에디터 통합</strong>: Continue.dev, Cline</li>
-      <li><strong>무료 조합</strong>: Aider + Ollama</li>
-      <li><strong>올인원</strong>: Cursor (유료)</li>
-    </ul>
-  </div>
-
-  <h3 id="next-actions">다음 단계</h3>
-
-  <div class="card-grid">
-    <div class="doc-card">
-      <h3>🚀 바로 시작</h3>
-      <p><a href="quickstart-claude-cli.html">Claude CLI 5분 시작</a> 또는 <a href="quickstart-local.html">Ollama 로컬 시작</a></p>
-    </div>
-    <div class="doc-card">
-      <h3>📊 상세 비교</h3>
-      <p><a href="cli-comparison.html">CLI 도구 상세 비교</a>에서 더 깊은 분석 확인</p>
-    </div>
-    <div class="doc-card">
-      <h3>💡 모범 사례</h3>
-      <p><a href="cli-best-practices.html">CLI 모범 사례</a>에서 실전 노하우 배우기</p>
-    </div>
-    <div class="doc-card">
-      <h3>🦙 로컬 LLM</h3>
-      <p><a href="ollama-intro.html">Ollama</a>로 완전 무료 Vibe Coding</p>
-    </div>
-  </div>
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>AI CLI 도구 생태계의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>AI CLI 도구란?를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
 </section>
 
 <!-- Page Navigation (이전/다음) -->
@@ -819,6 +823,8 @@ gh auth login</code></pre>
 
 <!-- ===== Inline TOC (Aside) ===== -->
 <aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
 </aside>
 
 <!-- ===== Footer ===== -->

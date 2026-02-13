@@ -6,16 +6,16 @@
 </script>
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
-<meta property="og:site_name" content="Claude 문서 /with MINZKN">
-<meta property="og:title" content="프롬프트 패턴 - Claude 문서">
-<meta property="og:description" content="재사용 가능한 프롬프트 패턴 모음과 실전 적용 가이드">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="프롬프트 패턴 (Prompt Patterns)">
+<meta property="og:description" content="프롬프트 패턴 (Prompt Patterns): 검증된 프롬프트 패턴을 활용하면 일관되게 고품질 결과를 얻을 수 있습니다. 이 페이지는 다양한 시나리오에 바로 적용할 수 있는 실전 패턴을 소개합니다.">
 <meta property="og:url" content="https://minzkn.com/claude/pages/prompt-patterns.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="재사용 가능한 프롬프트 패턴 모음과 실전 적용 가이드">
-<meta name="keywords" content="프롬프트 패턴, prompt patterns, 템플릿, 베스트 프랙티스">
+<meta name="description" content="프롬프트 패턴 (Prompt Patterns): 검증된 프롬프트 패턴을 활용하면 일관되게 고품질 결과를 얻을 수 있습니다. 이 페이지는 다양한 시나리오에 바로 적용할 수 있는 실전 패턴을 소개합니다.">
+<meta name="keywords" content="Claude, AI, LLM, 프롬프트 패턴 (Prompt Patterns), 패턴 가이드, 1. 역할 기반 패턴 (Role Prompting), 2. 구조화된 출력 패턴, 3. 단계별 분해 패턴">
 <meta name="author" content="MINZKN">
-<title>프롬프트 패턴 - Claude 문서 /with MINZKN</title>
+<title>프롬프트 패턴 (Prompt Patterns) - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
@@ -39,6 +39,11 @@
     검증된 프롬프트 패턴을 활용하면 일관되게 고품질 결과를 얻을 수 있습니다.
     이 페이지는 다양한 시나리오에 바로 적용할 수 있는 실전 패턴을 소개합니다.
   </p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 </section>
 
 <section class="content-section">
@@ -478,7 +483,7 @@ print(result)
 제품 특징:
 - AI 기반 코드 자동완성
 - 30개 언어 지원
-- 월 $9.99
+- 월 변동
 
 타겟: 주니어 개발자</code></pre>
   </div>
@@ -492,7 +497,7 @@ print(result)
 &lt;draft&gt;
 1. "CodeMaster AI 출시: AI가 코드를 대신 작성합니다"
 2. "주니어 개발자를 위한 AI 코딩 어시스턴트"
-3. "월 $9.99로 30개 언어 지원"
+3. "월 변동로 30개 언어 지원"
 4. ...
 &lt;/draft&gt;
 
@@ -838,15 +843,35 @@ PATTERNS <span class="kw">=</span> {
   <ul>
     <li><a href="few-shot.html">Few-shot 학습</a> - 예제로 패턴 학습시키기</li>
     <li><a href="chain-of-thought.html">Chain-of-Thought</a> - 단계별 추론 강화</li>
-    <li><a href="system-prompts.html">시스템 프롬프트</a> - 일관된 행동 정의</li>
+    <li><a href="prompt-basics.html">시스템 프롬프트</a> - 일관된 행동 정의</li>
   </ul>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>프롬프트 패턴 (Prompt Patterns)의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>패턴 가이드를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>프롬프트 패턴 (Prompt Patterns) 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>패턴 가이드 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

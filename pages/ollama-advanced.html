@@ -7,13 +7,13 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="Ollama 고급 활용 - Modelfile, 커스텀 모델, RAG, 에이전트">
-<meta property="og:description" content="Modelfile 작성, 커스텀 모델 생성, RAG 파이프라인, 에이전트 구현, 성능 최적화, 프로덕션 배포">
+<meta property="og:title" content="Ollama 고급 활용">
+<meta property="og:description" content="Ollama 고급 활용: Modelfile 작성, 커스텀 모델 생성, RAG 파이프라인, 에이전트 구현, 프로덕션 배포">
 <meta property="og:url" content="https://minzkn.com/claude/pages/ollama-advanced.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Ollama 고급 가이드. Modelfile, 커스텀 모델, RAG, 에이전트, 프로덕션 배포.">
-<meta name="keywords" content="ollama 고급, modelfile, custom model, rag, agent, production, 최적화">
+<meta name="description" content="Ollama 고급 활용: Modelfile 작성, 커스텀 모델 생성, RAG 파이프라인, 에이전트 구현, 프로덕션 배포">
+<meta name="keywords" content="Claude, AI, LLM, Ollama 고급 활용, Modelfile 작성, 커스텀 모델 생성, RAG 파이프라인 구축, 에이전트 구현">
 <meta name="author" content="MINZKN">
 <title>Ollama 고급 활용 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -34,6 +34,11 @@
 
 <h1 id="top">Ollama 고급 활용</h1>
 <p class="lead">Modelfile 작성, 커스텀 모델 생성, RAG 파이프라인, 에이전트 구현, 프로덕션 배포</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
   <div class="info-box-title">🎯 이 문서에서 배울 내용</div>
@@ -1192,10 +1197,30 @@ result = lb.generate(<span class="str">"안녕"</span>)  <span class="cmt"># 자
   </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>Ollama 고급 활용의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>Modelfile 작성를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>Ollama 고급 활용 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>Modelfile 작성 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

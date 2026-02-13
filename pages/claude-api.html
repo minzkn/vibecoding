@@ -3,9 +3,21 @@
 <head>
 <script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
 <meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Claude API 완전 가이드">
+<meta property="og:description" content="Claude API 완전 가이드: Anthropic의 Claude API는 안전하고 강력한 AI 기능을 애플리케이션에 통합할 수 있는 RESTful API입니다. 이 가이드는 API 키 발급부터 고급 기능 활용까지 Claude API의 모든 것을 다룹니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/claude-api.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Claude API 완전 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
-<meta name="description" content="Claude API 개요, SDK 사용법, 스트리밍, 툴 사용, 프롬프트 캐싱, 비용 최적화">
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<meta name="description" content="Claude API 완전 가이드: Anthropic의 Claude API는 안전하고 강력한 AI 기능을 애플리케이션에 통합할 수 있는 RESTful API입니다. 이 가이드는 API 키 발급부터 고급 기능 활용까지 Claude API의 모든 것을 다룹니다.">
+<meta name="keywords" content="Claude, AI, LLM, Claude API 완전 가이드, Claude API 개요, 시작하기, Messages API, 스트리밍">
+<meta name="author" content="MINZKN">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
 <link rel="stylesheet" href="../css/themes.css">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/responsive.css">
@@ -13,12 +25,17 @@
 <body>
 <div class="page-wrapper">
 <header class="site-header"></header>
-<nav class="side-nav"></nav>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
 <main class="main-content">
 <nav class="breadcrumb"></nav>
 
 <h1 id="top">Claude API 완전 가이드</h1>
 <p class="lead">Anthropic의 Claude API는 안전하고 강력한 AI 기능을 애플리케이션에 통합할 수 있는 RESTful API입니다. 이 가이드는 API 키 발급부터 고급 기능 활용까지 Claude API의 모든 것을 다룹니다.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
 <strong>핵심 포인트</strong>
@@ -41,25 +58,15 @@
 <span class="language">모델</span>
 <button class="copy-btn" aria-label="Copy code">Copy</button>
 </div>
-<pre><code>Claude 4 시리즈 (2026):
-┌───────────────────┬──────────┬──────────┬─────────────────────┐
-│ 모델              │ 입력     │ 출력     │ 특징                │
-├───────────────────┼──────────┼──────────┼─────────────────────┤
-│ claude-4-opus     │ $15/1M   │ $75/1M   │ 최고 성능, 복잡작업 │
-│ claude-4-sonnet   │ $3/1M    │ $15/1M   │ 균형잡힌 성능/가격  │
-│ claude-4-haiku    │ $0.25/1M │ $1.25/1M │ 빠른 응답, 저렴     │
-└───────────────────┴──────────┴──────────┴─────────────────────┘
+<pre><code>모델 티어는 일반적으로 다음과 같이 구분됩니다:
+• 고성능 티어: 복잡한 추론/분석에 적합
+• 균형 티어: 성능과 비용의 균형
+• 경량 티어: 빠른 응답과 대량 처리
 
-Claude 3.5 (2024):
-┌───────────────────┬──────────┬──────────┬─────────────────────┐
-│ claude-3-5-sonnet │ $3/1M    │ $15/1M   │ 코딩 특화           │
-│ claude-3-5-haiku  │ $0.80/1M │ $4/1M    │ 빠른 응답           │
-└───────────────────┴──────────┴──────────┴─────────────────────┘
-
-모든 모델 공통:
-• 200K 토큰 컨텍스트 윈도우
+공통 특징(상세 수치는 문서 참고):
+• 긴 컨텍스트 지원
 • 비전(이미지 입력) 지원
-• 툴 사용(Function Calling) 지원
+• 툴 사용 지원
 • 프롬프트 캐싱 지원
 </code></pre>
 </div>
@@ -80,8 +87,7 @@ Claude 3.5 (2024):
 • 이미지 분석 및 설명
 • 차트, 다이어그램 해석
 • OCR 및 문서 이해
-• 최대 이미지 크기: 5MB
-• 지원 형식: JPEG, PNG, GIF, WebP
+• 이미지 크기/형식 제한 있음 (최신 정책 확인)
 
 <span class="cmt">// 3. 툴 사용 (Tool Use)</span>
 • 외부 함수/API 호출
@@ -96,8 +102,8 @@ Claude 3.5 (2024):
 
 <span class="cmt">// 5. 프롬프트 캐싱</span>
 • 반복 컨텍스트 캐싱
-• 입력 토큰 비용 90% 절감
-• 5분 TTL, 자동 갱신
+• 반복 컨텍스트 비용 절감
+• 정책/TTL은 변경 가능
 </code></pre>
 </div>
 </section>
@@ -160,7 +166,7 @@ $ export ANTHROPIC_API_KEY='sk-ant-api03-...'
 client = anthropic.Anthropic()
 
 message = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     messages=[
         {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}
@@ -187,7 +193,7 @@ $ npm install @anthropic-ai/sdk
 });
 
 <span class="kw">const</span> message = <span class="kw">await</span> client.messages.create({
-  model: <span class="str">'claude-4-sonnet-20260101'</span>,
+  model: <span class="str">'claude-<tier>20260101'</span>,
   max_tokens: <span class="num">1024</span>,
   messages: [
     { role: <span class="str">'user'</span>, content: <span class="str">'안녕하세요!'</span> }
@@ -214,7 +220,7 @@ console.log(message.content[<span class="num">0</span>].text);
 client = anthropic.Anthropic(api_key=<span class="str">"sk-ant-..."</span>)
 
 message = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     system=<span class="str">"당신은 친절한 AI 어시스턴트입니다."</span>,  <span class="cmt"># 선택적</span>
     messages=[
@@ -257,7 +263,7 @@ conversation = [
 
 <span class="cmt"># 첫 번째 요청</span>
 message1 = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     messages=conversation
 )
@@ -278,7 +284,7 @@ conversation.append({
 
 <span class="cmt"># 두 번째 요청</span>
 message2 = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     messages=conversation
 )
@@ -296,7 +302,7 @@ message2 = client.messages.create(
 </div>
 <pre><code><span class="cmt"># 시스템 프롬프트로 역할 정의</span>
 message = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">2048</span>,
     system=<span class="str">"""당신은 시니어 백엔드 개발자입니다.
 
@@ -335,7 +341,7 @@ client = anthropic.Anthropic()
 
 <span class="cmt"># stream=True로 스트리밍 활성화</span>
 <span class="kw">with</span> client.messages.stream(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     messages=[
         {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"긴 이야기를 들려줘."</span>}
@@ -365,7 +371,7 @@ client = anthropic.Anthropic()
 
 <span class="cmt"># 이벤트별 처리</span>
 <span class="kw">with</span> client.messages.stream(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"안녕하세요!"</span>}],
 ) <span class="kw">as</span> stream:
@@ -403,7 +409,7 @@ client = anthropic.Anthropic()
 <span class="kw">const</span> client = <span class="kw">new</span> <span class="type">Anthropic</span>();
 
 <span class="kw">const</span> stream = <span class="kw">await</span> client.messages.stream({
-  model: <span class="str">'claude-4-sonnet-20260101'</span>,
+  model: <span class="str">'claude-<tier>20260101'</span>,
   max_tokens: <span class="num">1024</span>,
   messages: [
     { role: <span class="str">'user'</span>, content: <span class="str">'긴 이야기를 들려줘.'</span> }
@@ -476,7 +482,7 @@ tools = [
 
 <span class="cmt"># 첫 요청</span>
 message = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     tools=tools,
     messages=[
@@ -530,7 +536,7 @@ messages = [
 <span class="kw">while</span> <span class="kw">True</span>:
     <span class="cmt"># Claude 호출</span>
     response = client.messages.create(
-        model=<span class="str">"claude-4-sonnet-20260101"</span>,
+        model=<span class="str">"claude-<tier>20260101"</span>,
         max_tokens=<span class="num">4096</span>,
         tools=tools,
         messages=messages
@@ -602,7 +608,7 @@ client = anthropic.Anthropic()
 
 <span class="cmt"># 이미지와 함께 요청</span>
 message = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     messages=[
         {
@@ -642,7 +648,7 @@ message = client.messages.create(
         <span class="kw">return</span> base64.standard_b64encode(f.read()).decode(<span class="str">"utf-8"</span>)
 
 message = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">2048</span>,
     messages=[
         {
@@ -693,9 +699,9 @@ message = client.messages.create(
 • 최소 1024 토큰부터 캐싱 가능
 
 비용 예시 (Claude 4 Sonnet):
-일반 입력: $3.00 / 1M tokens
-캐시 읽기: $0.30 / 1M tokens (90% 할인)
-캐시 쓰기: $3.75 / 1M tokens (25% 추가 비용)
+일반 입력: 변동 / 1M tokens
+캐시 읽기: 변동 / 1M tokens (90% 할인)
+캐시 쓰기: 변동 / 1M tokens (25% 추가 비용)
 
 언제 사용?
 ✓ 긴 시스템 프롬프트
@@ -718,7 +724,7 @@ client = anthropic.Anthropic()
 
 <span class="cmt"># cache_control을 사용하여 캐싱할 블록 지정</span>
 response = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     system=[
         {
@@ -742,7 +748,7 @@ response = client.messages.create(
 
 <span class="cmt"># 5분 이내 두 번째 요청 (캐시 히트)</span>
 response2 = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     system=[
         {
@@ -778,7 +784,7 @@ response2 = client.messages.create(
 
 <span class="cmt"># 첫 번째 질문 (캐시 생성)</span>
 response1 = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     messages=[
         {
@@ -803,7 +809,7 @@ response1 = client.messages.create(
 
 <span class="cmt"># 두 번째 질문 (캐시 재사용)</span>
 response2 = client.messages.create(
-    model=<span class="str">"claude-4-sonnet-20260101"</span>,
+    model=<span class="str">"claude-<tier>20260101"</span>,
     max_tokens=<span class="num">1024</span>,
     messages=[
         {
@@ -827,8 +833,8 @@ response2 = client.messages.create(
 <span class="fn">print</span>(<span class="str">f"\n캐시 읽기: <span class="macro">{response2.usage.cache_read_input_tokens}</span> tokens"</span>)
 
 <span class="cmt"># 비용 절감 계산</span>
-normal_cost = <span class="num">50000</span> * <span class="num">3.00</span> / <span class="num">1_000_000</span>  <span class="cmt"># $0.15</span>
-cached_cost = <span class="num">50000</span> * <span class="num">0.30</span> / <span class="num">1_000_000</span>  <span class="cmt"># $0.015</span>
+normal_cost = <span class="num">50000</span> * <span class="num">3.00</span> / <span class="num">1_000_000</span>  <span class="cmt"># 변동</span>
+cached_cost = <span class="num">50000</span> * <span class="num">0.30</span> / <span class="num">1_000_000</span>  <span class="cmt"># 변동</span>
 <span class="fn">print</span>(<span class="str">f"\n비용 절감: ${normal_cost - cached_cost:.4f} (90%)"</span>)
 </code></pre>
 </div>
@@ -849,7 +855,7 @@ cached_cost = <span class="num">50000</span> * <span class="num">0.30</span> / <
   -H <span class="str">"anthropic-version: 2023-06-01"</span> \
   -H <span class="str">"content-type: application/json"</span> \
   -d '{
-    "model": "claude-4-sonnet-20260101",
+    "model": "claude-<tier>20260101",
     "max_tokens": 1024,
     "messages": [
       {
@@ -878,7 +884,7 @@ cached_cost = <span class="num">50000</span> * <span class="num">0.30</span> / <
       <span class="str">"text"</span>: <span class="str">"안녕하세요! 무엇을 도와드릴까요?"</span>
     }
   ],
-  <span class="str">"model"</span>: <span class="str">"claude-4-sonnet-20260101"</span>,
+  <span class="str">"model"</span>: <span class="str">"claude-<tier>20260101"</span>,
   <span class="str">"stop_reason"</span>: <span class="str">"end_turn"</span>,
   <span class="str">"stop_sequence"</span>: <span class="kw">null</span>,
   <span class="str">"usage"</span>: {
@@ -901,9 +907,9 @@ cached_cost = <span class="num">50000</span> * <span class="num">0.30</span> / <
 <button class="copy-btn" aria-label="Copy code">Copy</button>
 </div>
 <pre><code><span class="cmt">// 1. 올바른 모델 선택</span>
-간단한 작업 → Haiku ($0.25/$1.25)
-일반 작업 → Sonnet ($3/$15)
-복잡한 작업 → Opus ($15/$75)
+간단한 작업 → Haiku (변동/변동)
+일반 작업 → Sonnet (변동/변동)
+복잡한 작업 → Opus (변동/변동)
 
 <span class="cmt">// 2. 프롬프트 캐싱</span>
 • 긴 시스템 프롬프트 캐싱
@@ -940,9 +946,9 @@ cached_cost = <span class="num">50000</span> * <span class="num">0.30</span> / <
 </div>
 <pre><code><span class="kw">class</span> <span class="type">CostCalculator</span>:
     PRICING = {
-        <span class="str">"claude-4-opus"</span>: (<span class="num">15.0</span>, <span class="num">75.0</span>),
-        <span class="str">"claude-4-sonnet"</span>: (<span class="num">3.0</span>, <span class="num">15.0</span>),
-        <span class="str">"claude-4-haiku"</span>: (<span class="num">0.25</span>, <span class="num">1.25</span>),
+        <span class="str">"claude-<tier>"</span>: (<span class="num">15.0</span>, <span class="num">75.0</span>),
+        <span class="str">"claude-<tier>"</span>: (<span class="num">3.0</span>, <span class="num">15.0</span>),
+        <span class="str">"claude-<tier>"</span>: (<span class="num">0.25</span>, <span class="num">1.25</span>),
     }
 
     <span class="kw">def</span> <span class="fn">calculate</span>(<span class="kw">self</span>, model: str, input_tokens: int, output_tokens: int,
@@ -977,9 +983,9 @@ calc = CostCalculator()
 calc.compare_models(input_tokens=<span class="num">2000</span>, output_tokens=<span class="num">500</span>)
 
 <span class="cmt"># 출력:</span>
-<span class="cmt"># claude-4-opus         $0.043500</span>
-<span class="cmt"># claude-4-sonnet       $0.013500</span>
-<span class="cmt"># claude-4-haiku        $0.001125</span>
+<span class="cmt"># claude-<tier>         변동</span>
+<span class="cmt"># claude-<tier>       변동</span>
+<span class="cmt"># claude-<tier>        변동</span>
 </code></pre>
 </div>
 </section>
@@ -1027,9 +1033,29 @@ calc.compare_models(input_tokens=<span class="num">2000</span>, output_tokens=<s
 </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>Claude API 완전 가이드의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>Claude API 개요를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>Claude API 완전 가이드 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>Claude API 개요 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 </div>
 <script src="../js/main.js"></script>

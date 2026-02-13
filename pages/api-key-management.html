@@ -7,13 +7,13 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="API 키 관리 - 보안과 시크릿 관리 완전 가이드">
-<meta property="og:description" content="LLM API 키를 안전하게 관리하고 유출을 방지하는 모범 사례">
+<meta property="og:title" content="API 키 관리">
+<meta property="og:description" content="API 키 관리: LLM API 키를 안전하게 관리하고 유출을 방지하는 완벽한 보안 가이드">
 <meta property="og:url" content="https://minzkn.com/claude/pages/api-key-management.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="API 키 보안 완전 가이드. 환경 변수, 시크릿 관리자, 키 로테이션, 유출 대응까지.">
-<meta name="keywords" content="api key management security 보안 환경변수 시크릿 관리">
+<meta name="description" content="API 키 관리: LLM API 키를 안전하게 관리하고 유출을 방지하는 완벽한 보안 가이드">
+<meta name="keywords" content="Claude, AI, LLM, API 키 관리, API 키 보안이 중요한 이유, 환경 변수 사용, 시크릿 관리자 사용, Git 커밋 방지">
 <meta name="author" content="MINZKN">
 <title>API 키 관리 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -36,6 +36,11 @@
 <p class="lead">LLM API 키를 안전하게 관리하고 유출을 방지하는 완벽한 보안 가이드</p>
 
 <div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
+
+<div class="info-box warning">
   <div class="info-box-title">⚠️ API 키 유출 시 심각한 문제</div>
   <ul>
     <li><strong>금전적 손실</strong>: 무단 사용으로 수천~수만 달러 청구 가능</li>
@@ -54,10 +59,10 @@
   <div class="info-box danger">
     <div class="info-box-title">💸 실제 피해 사례</div>
 
-    <h4>사례 1: GitHub 커밋으로 $72,000 청구</h4>
+    <h4>사례 1: GitHub 커밋으로 변동,000 청구</h4>
     <p>
       한 개발자가 실수로 OpenAI API 키를 GitHub에 커밋.
-      자동화된 봇이 키를 스캔하여 24시간 내에 $72,000 상당의 토큰을 사용했습니다.
+      자동화된 봇이 키를 스캔하여 24시간 내에 변동,000 상당의 토큰을 사용했습니다.
     </p>
 
     <h4>사례 2: .env 파일이 Docker 이미지에 포함</h4>
@@ -713,7 +718,7 @@ app.post(<span class="str">'/api/chat'</span>, <span class="kw">async</span> (re
 
     <span class="cmt">// 3. Claude API 호출</span>
     <span class="kw">const</span> message = <span class="kw">await</span> client.messages.create({
-      model: <span class="str">'claude-sonnet-4'</span>,
+      model: <span class="str">'claude-<tier>'</span>,
       max_tokens: 4096,
       messages: req.body.messages,
     });
@@ -752,7 +757,7 @@ client = Anthropic(api_key=os.getenv(<span class="str">'ANTHROPIC_API_KEY'</span
 
     <span class="cmt"># Claude API 호출</span>
     message = client.messages.create(
-        model=<span class="str">'claude-sonnet-4'</span>,
+        model=<span class="str">'claude-<tier>'</span>,
         max_tokens=4096,
         messages=request.json[<span class="str">'messages'</span>]
     )
@@ -849,8 +854,8 @@ echo <span class="str">"⏰ 1주일 후 구 키를 Anthropic Console에서 삭�
     logging.info(json.dumps(log_entry))
 
 <span class="kw">def</span> <span class="fn">calculate_cost</span>(model, usage):
-    <span class="cmt"># Claude Sonnet 4 가격 (2024년 기준)</span>
-    <span class="kw">if</span> model == <span class="str">'claude-sonnet-4'</span>:
+    <span class="cmt"># Claude Sonnet (균형) 가격 (2024년 기준)</span>
+    <span class="kw">if</span> model == <span class="str">'claude-<tier>'</span>:
         input_cost = usage.input_tokens / 1_000_000 * 3.00
         output_cost = usage.output_tokens / 1_000_000 * 15.00
         <span class="kw">return</span> input_cost + output_cost
@@ -1081,28 +1086,28 @@ jobs:
       <tr>
         <td><strong>1Password</strong></td>
         <td>팀 협업</td>
-        <td>$8/월/인</td>
+        <td>변동/월/인</td>
         <td>⭐⭐</td>
         <td>소규모 팀, 스타트업</td>
       </tr>
       <tr>
         <td><strong>Bitwarden</strong></td>
         <td>팀 협업 (오픈소스)</td>
-        <td>무료/$3/월</td>
+        <td>무료/변동/월</td>
         <td>⭐⭐</td>
         <td>예산 제약 있는 팀</td>
       </tr>
       <tr>
         <td><strong>AWS Secrets Manager</strong></td>
         <td>프로덕션 (AWS)</td>
-        <td>$0.40/시크릿/월</td>
+        <td>변동/시크릿/월</td>
         <td>⭐⭐⭐</td>
         <td>AWS 사용 중인 기업</td>
       </tr>
       <tr>
         <td><strong>GCP Secret Manager</strong></td>
         <td>프로덕션 (GCP)</td>
-        <td>$0.06/시크릿/월</td>
+        <td>변동/시크릿/월</td>
         <td>⭐⭐⭐</td>
         <td>GCP 사용 중인 기업</td>
       </tr>
@@ -1131,10 +1136,30 @@ jobs:
   </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>API 키 관리의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>API 키 보안이 중요한 이유를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>API 키 관리 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>API 키 보안이 중요한 이유 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

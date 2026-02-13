@@ -7,13 +7,13 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="CI/CD와 LLM 통합 - 자동화 파이프라인 구축">
-<meta property="og:description" content="GitHub Actions, GitLab CI로 LLM 기반 자동 코드 리뷰, 테스트, 문서화 파이프라인 구축">
+<meta property="og:title" content="CI/CD & LLM 통합">
+<meta property="og:description" content="CI/CD & LLM 통합: GitHub Actions와 LLM을 활용한 자동 코드 리뷰, 테스트, 문서화 파이프라인 구축 완전 가이드">
 <meta property="og:url" content="https://minzkn.com/claude/pages/ci-cd-llm.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="CI/CD와 LLM 통합 완전 가이드. GitHub Actions, 자동 코드 리뷰, PR 설명 생성, 문서 자동화까지.">
-<meta name="keywords" content="ci cd llm github actions gitlab automation 자동화 코드리뷰">
+<meta name="description" content="CI/CD & LLM 통합: GitHub Actions와 LLM을 활용한 자동 코드 리뷰, 테스트, 문서화 파이프라인 구축 완전 가이드">
+<meta name="keywords" content="Claude, AI, LLM, CI/CD & LLM 통합, GitHub Actions 기본, 자동 코드 리뷰, PR 자동화, 테스트 자동 생성">
 <meta name="author" content="MINZKN">
 <title>CI/CD & LLM 통합 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -34,6 +34,11 @@
 
 <h1 id="top">CI/CD & LLM 통합</h1>
 <p class="lead">GitHub Actions와 LLM을 활용한 자동 코드 리뷰, 테스트, 문서화 파이프라인 구축 완전 가이드</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
   <div class="info-box-title">⚡ LLM을 CI/CD에 통합하는 이유</div>
@@ -172,7 +177,7 @@ Name: GITHUB_TOKEN
           """
 
           message = client.messages.create(
-              model="claude-sonnet-4",
+              model="claude-<tier>",
               max_tokens=4096,
               messages=[{"role": "user", "content": prompt}]
           )
@@ -237,7 +242,7 @@ Name: GITHUB_TOKEN
 중요한 문제만 지적해주세요."""</span>
 
         message = client.messages.create(
-            model=<span class="str">"claude-sonnet-4"</span>,
+            model=<span class="str">"claude-<tier>"</span>,
             max_tokens=4096,
             messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
         )
@@ -334,7 +339,7 @@ Name: GITHUB_TOKEN
                 'anthropic-version': '2023-06-01'
               },
               body: JSON.stringify({
-                model: 'claude-sonnet-4',
+                model: 'claude-<tier>',
                 max_tokens: 2048,
                 messages: [{
                   role: 'user',
@@ -411,7 +416,7 @@ ${diff}
                 'anthropic-version': '2023-06-01'
               },
               body: JSON.stringify({
-                model: 'claude-sonnet-4',
+                model: 'claude-<tier>',
                 max_tokens: 256,
                 messages: [{
                   role: 'user',
@@ -515,7 +520,7 @@ ${diff}
 전체 테스트 코드만 출력해주세요 (마크다운 없이)."""
 
               message = client.messages.create(
-                  model="claude-sonnet-4",
+                  model="claude-<tier>",
                   max_tokens=8192,
                   messages=[{"role": "user", "content": prompt}]
               )
@@ -578,7 +583,7 @@ ${diff}
 완전한 테스트 코드만 출력해주세요."""</span>
 
     message = client.messages.create(
-        model=<span class="str">"claude-sonnet-4"</span>,
+        model=<span class="str">"claude-<tier>"</span>,
         max_tokens=8192,
         messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: prompt}]
     )
@@ -667,7 +672,7 @@ ${diff}
 실용적이고 명확하게 작성해주세요."""
 
           message = client.messages.create(
-              model="claude-sonnet-4",
+              model="claude-<tier>",
               max_tokens=8192,
               messages=[{"role": "user", "content": prompt}]
           )
@@ -731,7 +736,7 @@ ${diff}
 완전한 openapi.json 파일을 생성해주세요."""
 
           message = client.messages.create(
-              model="claude-sonnet-4",
+              model="claude-<tier>",
               max_tokens=8192,
               messages=[{"role": "user", "content": prompt}]
           )
@@ -807,7 +812,7 @@ ${diff}
 Keep A Changelog 형식을 따라주세요."""
 
           message = client.messages.create(
-              model="claude-sonnet-4",
+              model="claude-<tier>",
               max_tokens=4096,
               messages=[{"role": "user", "content": prompt}]
           )
@@ -916,7 +921,7 @@ Keep A Changelog 형식을 따라주세요."""
 "PASS" 또는 "FAIL"로 시작하여 간단히 설명해주세요."""
 
           message = client.messages.create(
-              model="claude-sonnet-4",
+              model="claude-<tier>",
               max_tokens=1024,
               messages=[{"role": "user", "content": prompt}]
           )
@@ -936,7 +941,7 @@ Keep A Changelog 형식을 따라주세요."""
 
 <pre><code><span class="cmt"># 공통 컨텍스트를 캐시하여 비용 절감</span>
 message = client.messages.create(
-    model=<span class="str">"claude-sonnet-4"</span>,
+    model=<span class="str">"claude-<tier>"</span>,
     max_tokens=1024,
     system=[
         {
@@ -1014,10 +1019,30 @@ message = client.messages.create(
   </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>CI/CD & LLM 통합의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>GitHub Actions 기본를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>CI/CD & LLM 통합 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>GitHub Actions 기본 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>

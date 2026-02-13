@@ -3,9 +3,21 @@
 <head>
 <script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
 <meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="MCP 서버 개발">
+<meta property="og:description" content="MCP 서버 개발: MCP 서버는 AI 클라이언트에게 도구, 리소스, 프롬프트를 제공하는 서비스입니다. Python과 TypeScript SDK를 사용하여 강력하고 재사용 가능한 MCP 서버를 개발하는 방법을 학습합니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/mcp-servers.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MCP 서버 개발 - AI Vibe Coding 가이드 /with MINZKN</title>
-<meta name="description" content="Python과 TypeScript로 MCP 서버를 개발하는 완전 가이드">
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<meta name="description" content="MCP 서버 개발: MCP 서버는 AI 클라이언트에게 도구, 리소스, 프롬프트를 제공하는 서비스입니다. Python과 TypeScript SDK를 사용하여 강력하고 재사용 가능한 MCP 서버를 개발하는 방법을 학습합니다.">
+<meta name="keywords" content="Claude, AI, LLM, MCP 서버 개발, Python 서버 개발, TypeScript 서버 개발, 패키징 및 배포, 테스트">
+<meta name="author" content="MINZKN">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
 <link rel="stylesheet" href="../css/themes.css">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/responsive.css">
@@ -13,12 +25,17 @@
 <body>
 <div class="page-wrapper">
 <header class="site-header"></header>
-<nav class="side-nav"></nav>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
 <main class="main-content">
 <nav class="breadcrumb"></nav>
 
 <h1 id="top">MCP 서버 개발</h1>
 <p class="lead">MCP 서버는 AI 클라이언트에게 도구, 리소스, 프롬프트를 제공하는 서비스입니다. Python과 TypeScript SDK를 사용하여 강력하고 재사용 가능한 MCP 서버를 개발하는 방법을 학습합니다.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
 <strong>빠른 시작</strong>
@@ -1379,10 +1396,30 @@ npx @modelcontextprotocol/inspector node dist/index.js
 </ul>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>MCP 서버 개발의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>Python 서버 개발를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>MCP 서버 개발 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>Python 서버 개발 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 </div>
 

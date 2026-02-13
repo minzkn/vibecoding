@@ -41,6 +41,7 @@ var SEARCH_INDEX = [
   { title: "LLM 생태계 개요", url: "pages/llm-landscape.html", description: "주요 LLM, API, 가격 비교", keywords: "llm landscape 생태계 개요 비교" },
   { title: "Claude API 가이드", url: "pages/claude-api.html", description: "Claude API 완전 가이드 (인증, 메시지, 스트리밍, Tool Use)", keywords: "claude api anthropic 가이드 인증" },
   { title: "OpenAI API", url: "pages/openai-api.html", description: "OpenAI API 가이드 (GPT-4, o1)", keywords: "openai api gpt-4 o1 가이드" },
+  { title: "Codex 가이드", url: "pages/codex.html", description: "OpenAI Codex 개요, 작동 방식, 사용 흐름, 보안 고려사항", keywords: "codex openai 코딩 에이전트 워크플로우 보안" },
   { title: "Gemini API", url: "pages/gemini-api.html", description: "Google Gemini API 가이드", keywords: "gemini google api 가이드" },
   { title: "API 추상화 도구", url: "pages/api-abstraction.html", description: "LiteLLM, Portkey 등 API 추상화 도구", keywords: "api abstraction litellm portkey 추상화" },
   { title: "로컬 LLM API", url: "pages/local-api.html", description: "Ollama, LM Studio, LocalAI, vLLM 등 로컬 LLM 서버 완벽 가이드", keywords: "local api ollama lm studio localai vllm 로컬 추론 서버 inference" },
@@ -84,6 +85,7 @@ var NAV_STRUCTURE = [
     { file: 'learning-path.html', title: '학습 경로 가이드' }
   ]},
   { title: 'AI CLI 도구들', pages: [
+    { file: 'codex.html', title: 'Codex 가이드' },
     { file: 'claude-cli.html', title: 'Claude CLI 완전 가이드' },
     { file: 'opencode.html', title: 'OpenCode (아카이브됨)' },
     { file: 'aider.html', title: 'Aider CLI' },

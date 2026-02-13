@@ -5,10 +5,21 @@
 (function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
 </script>
 <meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Ollama 모델 가이드">
+<meta property="og:description" content="Ollama 모델 가이드: Ollama가 지원하는 다양한 오픈소스 LLM 모델들의 특징과 선택 방법을 알아봅니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/ollama-models.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Ollama 지원 모델 전체 가이드 - Llama, Mistral, Phi, Gemma 등 모델별 특징과 선택 방법">
-<meta name="keywords" content="Ollama, 모델, Llama, Mistral, Phi, Gemma, CodeLlama, Qwen, DeepSeek">
+<meta name="description" content="Ollama 모델 가이드: Ollama가 지원하는 다양한 오픈소스 LLM 모델들의 특징과 선택 방법을 알아봅니다.">
+<meta name="keywords" content="Claude, AI, LLM, Ollama 모델 가이드, Ollama 모델 개요, Llama 시리즈, CodeLlama - 코딩 특화 모델, Mistral & Mixtral">
+<meta name="author" content="MINZKN">
 <title>Ollama 모델 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
 <link rel="stylesheet" href="../css/themes.css">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/responsive.css">
@@ -16,12 +27,17 @@
 <body>
 <div class="page-wrapper">
 <header class="site-header"></header>
-<nav class="side-nav"></nav>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
 <main class="main-content">
 <nav class="breadcrumb"></nav>
 
 <h1 id="top">Ollama 모델 가이드</h1>
 <p class="lead">Ollama가 지원하는 다양한 오픈소스 LLM 모델들의 특징과 선택 방법을 알아봅니다.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
   <div class="info-box-title">⚡ 빠른 시작</div>
@@ -1647,181 +1663,11 @@ ollama search llama3.2</code></pre>
 
   <h3 id="overall-comparison">종합 비교</h3>
 
-  <table>
-    <thead>
-      <tr>
-        <th>모델</th>
-        <th>크기</th>
-        <th>RAM</th>
-        <th>속도</th>
-        <th>품질</th>
-        <th>코딩</th>
-        <th>다국어</th>
-        <th>추천도</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Llama 3.2 7B</td>
-        <td>7B</td>
-        <td>4.7 GB</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td>Mistral 7B</td>
-        <td>7B</td>
-        <td>4.1 GB</td>
-        <td>⭐⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td>Mixtral 8x7B</td>
-        <td>47B</td>
-        <td>26 GB</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td>CodeLlama 7B</td>
-        <td>7B</td>
-        <td>3.8 GB</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td>DeepSeek 6.7B</td>
-        <td>6.7B</td>
-        <td>3.8 GB</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td>Phi-3 mini</td>
-        <td>3.8B</td>
-        <td>2.3 GB</td>
-        <td>⭐⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td>Gemma 2 9B</td>
-        <td>9B</td>
-        <td>5.4 GB</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-      </tr>
-      <tr>
-        <td>Qwen 2 7B</td>
-        <td>7B</td>
-        <td>4.4 GB</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐⭐</td>
-        <td>⭐⭐⭐⭐</td>
-      </tr>
-    </tbody>
-  </table>
+  <p>모델 비교는 용도(대화/코딩/다국어), 하드웨어 제약, 지연 시간 목표를 기준으로 판단하는 것이 가장 안전합니다.</p>
 
   <h3 id="benchmark-scores">객관적 벤치마크 점수</h3>
 
-  <table>
-    <thead>
-      <tr>
-        <th>모델</th>
-        <th>MMLU</th>
-        <th>HumanEval</th>
-        <th>GSM8K</th>
-        <th>TruthfulQA</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Llama 3.2 7B</td>
-        <td>69.4</td>
-        <td>62.4</td>
-        <td>72.8</td>
-        <td>49.3</td>
-      </tr>
-      <tr>
-        <td>Llama 3.1 70B</td>
-        <td>82.0</td>
-        <td>80.5</td>
-        <td>93.0</td>
-        <td>58.1</td>
-      </tr>
-      <tr>
-        <td>Mistral 7B v0.2</td>
-        <td>62.5</td>
-        <td>40.2</td>
-        <td>52.2</td>
-        <td>42.2</td>
-      </tr>
-      <tr>
-        <td>Mixtral 8x7B</td>
-        <td>70.6</td>
-        <td>40.2</td>
-        <td>74.4</td>
-        <td>46.8</td>
-      </tr>
-      <tr>
-        <td>CodeLlama 7B</td>
-        <td>45.8</td>
-        <td>53.7</td>
-        <td>28.7</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>DeepSeek-Coder 6.7B</td>
-        <td>-</td>
-        <td>78.6</td>
-        <td>65.4</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Phi-3 mini</td>
-        <td>69.0</td>
-        <td>58.5</td>
-        <td>82.5</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Gemma 2 9B</td>
-        <td>71.3</td>
-        <td>61.4</td>
-        <td>76.6</td>
-        <td>-</td>
-      </tr>
-      <tr>
-        <td>Qwen 2 7B</td>
-        <td>70.3</td>
-        <td>67.9</td>
-        <td>79.5</td>
-        <td>-</td>
-      </tr>
-    </tbody>
-  </table>
+  <p>벤치마크 점수는 모델/버전/환경에 따라 크게 달라질 수 있습니다. 동일 조건에서 직접 테스트해 확인하세요.</p>
 
   <div class="info-box info">
     <div class="info-box-title">📊 벤치마크 설명</div>
@@ -1912,20 +1758,32 @@ ollama search llama3.2</code></pre>
 
   <div class="info-box tip">
     <div class="info-box-title">💡 최종 권장사항</div>
-    <p><strong>일반 개발자에게 가장 추천하는 조합:</strong></p>
-    <ul>
-      <li><strong>범용</strong>: <code>llama3.2:7b-instruct-q5_K_M</code></li>
-      <li><strong>코딩</strong>: <code>deepseek-coder:6.7b-instruct</code></li>
-      <li><strong>경량</strong>: <code>phi3:mini</code></li>
-      <li><strong>임베딩</strong>: <code>nomic-embed-text</code></li>
-    </ul>
-    <p>이 조합으로 16GB RAM 환경에서 대부분의 작업을 커버할 수 있습니다.</p>
-  </div>
+    <p><strong>추천 전략:</strong> 경량 모델로 초기 검증을 하고, 품질이 부족할 때만 더 큰 모델로 단계적으로 확장하세요. GPU/VRAM과 지연 시간 요구를 기준으로 균형점을 찾는 것이 중요합니다.</p></div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>Ollama 모델 가이드의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>Ollama 모델 개요를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>Ollama 모델 가이드 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>Ollama 모델 개요 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 </div>
 <script src="../js/main.js"></script>

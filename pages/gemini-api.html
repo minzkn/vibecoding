@@ -3,9 +3,21 @@
 <head>
 <script>(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();</script>
 <meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Google Gemini API">
+<meta property="og:description" content="Google Gemini API: Google Gemini는 텍스트, 이미지, 비디오, 오디오를 네이티브로 처리하는 멀티모달 AI 모델입니다. 업계 최장인 2M 토큰 컨텍스트와 강력한 무료 티어를 제공하여 다양한 AI 애플리케이션을 구축할 수 있습니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/gemini-api.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Google Gemini API - AI Vibe Coding 가이드 /with MINZKN</title>
-<meta name="description" content="Google Gemini API 개요, 멀티모달, 초장문 컨텍스트, 무료 티어, Python SDK 사용법">
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<meta name="description" content="Google Gemini API: Google Gemini는 텍스트, 이미지, 비디오, 오디오를 네이티브로 처리하는 멀티모달 AI 모델입니다. 업계 최장인 2M 토큰 컨텍스트와 강력한 무료 티어를 제공하여 다양한 AI 애플리케이션을 구축할 수 있습니다.">
+<meta name="keywords" content="Claude, AI, LLM, Google Gemini API, Gemini API 개요, 시작하기, 텍스트 생성, 멀티모달 기능">
+<meta name="author" content="MINZKN">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
 <link rel="stylesheet" href="../css/themes.css">
 <link rel="stylesheet" href="../css/style.css">
 <link rel="stylesheet" href="../css/responsive.css">
@@ -13,12 +25,17 @@
 <body>
 <div class="page-wrapper">
 <header class="site-header"></header>
-<nav class="side-nav"></nav>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
 <main class="main-content">
 <nav class="breadcrumb"></nav>
 
 <h1 id="top">Google Gemini API</h1>
 <p class="lead">Google Gemini는 텍스트, 이미지, 비디오, 오디오를 네이티브로 처리하는 멀티모달 AI 모델입니다. 업계 최장인 2M 토큰 컨텍스트와 강력한 무료 티어를 제공하여 다양한 AI 애플리케이션을 구축할 수 있습니다.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
 <strong>핵심 포인트</strong>
@@ -45,16 +62,16 @@
 ┌─────────────────────┬───────────┬──────────┬───────────────────┐
 │ 모델                │ 컨텍스트  │ 가격     │ 특징              │
 ├─────────────────────┼───────────┼──────────┼───────────────────┤
-│ gemini-1.5-pro      │ 2M tokens │ $1.25/1M │ 최고 성능, 초장문 │
-│ gemini-1.5-flash    │ 1M tokens │ $0.075/1M│ 빠름, 저렴        │
-│ gemini-1.5-flash-8b │ 1M tokens │ $0.0375/1M│ 초저렴           │
+│ gemini-1.5-pro      │ 2M tokens │ 변동/1M │ 최고 성능, 초장문 │
+│ gemini-1.5-flash    │ 1M tokens │ 변동/1M│ 빠름, 저렴        │
+│ gemini-1.5-flash-8b │ 1M tokens │ 변동/1M│ 초저렴           │
 └─────────────────────┴───────────┴──────────┴───────────────────┘
 
 가격 (입력/출력, USD per 1M tokens):
 ┌─────────────────────┬─────────┬──────────┐
-│ gemini-1.5-pro      │ $1.25   │ $5.00    │
-│ gemini-1.5-flash    │ $0.075  │ $0.30    │
-│ gemini-1.5-flash-8b │ $0.0375 │ $0.15    │
+│ gemini-1.5-pro      │ 변동   │ 변동    │
+│ gemini-1.5-flash    │ 변동  │ 변동    │
+│ gemini-1.5-flash-8b │ 변동 │ 변동    │
 └─────────────────────┴─────────┴──────────┘
 
 특수 기능:
@@ -768,9 +785,29 @@ response = model.generate_content(<span class="str">"..."</span>)
 </div>
 </section>
 
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>Google Gemini API의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>Gemini API 개요를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="practice-tips">실무 팁</h2>
+  <ul>
+    <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
+    <li>Google Gemini API 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li>Gemini API 개요 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
 <nav class="page-nav"></nav>
 </main>
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 </div>
 <script src="../js/main.js"></script>

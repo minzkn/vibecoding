@@ -8,13 +8,13 @@
 <meta charset="UTF-8">
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
-<meta property="og:title" content="Cline 완전 가이드 - 자율 AI 코딩 에이전트">
-<meta property="og:description" content="Cline (구 Claude Dev) 완전 가이드. VS Code에서 사용하는 자율 AI 에이전트의 모든 기능과 활용법.">
+<meta property="og:title" content="Cline 완전 가이드">
+<meta property="og:description" content="Cline 완전 가이드: VS Code에서 사용하는 자율 AI 코딩 에이전트. 파일 편집, 터미널 실행, 브라우저 제어까지 가능한 강력한 도구.">
 <meta property="og:url" content="https://minzkn.com/claude/pages/cline.html">
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Cline 완전 가이드. 자율 AI 코딩 에이전트의 모든 기능과 활용법을 배웁니다.">
-<meta name="keywords" content="cline, claude dev, vscode, ai agent, autonomous, coding">
+<meta name="description" content="Cline 완전 가이드: VS Code에서 사용하는 자율 AI 코딩 에이전트. 파일 편집, 터미널 실행, 브라우저 제어까지 가능한 강력한 도구.">
+<meta name="keywords" content="Claude, AI, LLM, Cline 완전 가이드, 소개, 설치, 기본 사용법, 고급 기능">
 <meta name="author" content="MINZKN">
 <title>Cline 완전 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -35,6 +35,11 @@
 
 <h1 id="top">Cline 완전 가이드</h1>
 <p class="lead">VS Code에서 사용하는 자율 AI 코딩 에이전트. 파일 편집, 터미널 실행, 브라우저 제어까지 가능한 강력한 도구.</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> 모델/요금/버전/정책 등 시점에 민감한 정보는 변동될 수 있습니다.
+  최신 내용은 공식 문서를 확인하세요.
+</div>
 
 <div class="info-box tip">
   <div class="info-box-title">⚡ 빠른 시작</div>
@@ -184,7 +189,7 @@ Cline 사이드바 → Settings → API Key 입력
 2. Settings (톱니바퀴 아이콘)
 3. API Provider: Anthropic
 4. API Key 입력
-5. Model: claude-sonnet-4-5-20250929
+5. Model: claude-<tier>
 
 <span class="cmt"># 방법 2: 환경 변수</span>
 export ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxx"</span></code></pre>
@@ -653,7 +658,7 @@ TypeError: Cannot read property 'map' of undefined
   <pre><code><span class="cmt"># Cline Settings</span>
 
 <span class="fn">API Provider:</span> Anthropic
-<span class="fn">Model:</span> claude-sonnet-4-5-20250929
+<span class="fn">Model:</span> claude-<tier>
 <span class="fn">API Key:</span> sk-ant-api03-xxx
 
 <span class="cmt"># 다른 제공자도 지원</span>
@@ -792,7 +797,7 @@ src/
       <tr>
         <td><strong>가격</strong></td>
         <td>종량제</td>
-        <td>$20/월</td>
+        <td>변동/월</td>
       </tr>
       <tr>
         <td><strong>UX</strong></td>
@@ -921,64 +926,21 @@ Browser Enabled: true</code></pre>
 
 <!-- Section 10: 요약 -->
 <section class="content-section">
-  <h2 id="summary">요약</h2>
-
-  <div class="info-box info">
-    <div class="info-box-title">📝 핵심 요약</div>
-    <ul>
-      <li><strong>정체성</strong>: 자율 AI 코딩 에이전트 (VS Code 확장)</li>
-      <li><strong>자율성</strong>: 높음 - 계획, 실행, 에러 처리 자동</li>
-      <li><strong>파일 제어</strong>: 생성, 수정, 삭제 모두 가능</li>
-      <li><strong>터미널</strong>: 명령 실행 및 출력 분석</li>
-      <li><strong>브라우저</strong>: Puppeteer 통합, 스크린샷, 테스트</li>
-      <li><strong>승인 시스템</strong>: 중요 작업은 사용자 확인</li>
-      <li><strong>가격</strong>: 종량제 (Anthropic API 사용량)</li>
-    </ul>
-  </div>
-
-  <h3 id="best-for">최적의 사용 사례</h3>
-
-  <ol>
-    <li><strong>새 프로젝트 빠른 시작</strong>: 전체 설정 자동화</li>
-    <li><strong>복잡한 기능 추가</strong>: 여러 파일 동시 수정</li>
-    <li><strong>디버깅 자동화</strong>: 에러 분석 및 수정</li>
-    <li><strong>브라우저 테스트</strong>: UI 검증 및 스크린샷</li>
-    <li><strong>리팩토링</strong>: 대규모 코드 개선</li>
-  </ol>
-
-  <h3 id="next-learning">다음 학습</h3>
-
-  <div class="card-grid">
-    <div class="doc-card">
-      <h3>🔄 Continue.dev</h3>
-      <p>수동 제어 AI 도구</p>
-      <a href="continue.html" class="card-link">비교하기 →</a>
-    </div>
-
-    <div class="doc-card">
-      <h3>🔧 Cursor IDE</h3>
-      <p>AI 네이티브 IDE</p>
-      <a href="cursor.html" class="card-link">비교하기 →</a>
-    </div>
-
-    <div class="doc-card">
-      <h3>💻 Claude CLI</h3>
-      <p>터미널 AI 도구</p>
-      <a href="claude-cli.html" class="card-link">배우기 →</a>
-    </div>
-
-    <div class="doc-card">
-      <h3>⚙️ CLI 모범 사례</h3>
-      <p>효과적인 도구 활용</p>
-      <a href="cli-best-practices.html" class="card-link">마스터하기 →</a>
-    </div>
-  </div>
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li>Cline 완전 가이드의 핵심 개념과 흐름을 정리합니다.</li>
+    <li>소개를 단계별로 이해합니다.</li>
+    <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
+  </ul>
 </section>
 
 <nav class="page-nav"></nav>
 </main>
 
-<aside class="inline-toc"></aside>
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
 <footer class="site-footer"></footer>
 
 </div>
