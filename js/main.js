@@ -181,6 +181,7 @@ var NAV_STRUCTURE = [
 
     header.innerHTML = `
       <div class="header-left">
+        <a href="https://www.minzkn.com/" class="home-icon" aria-label="MINZKN.COM" target="_top" rel="noopener">&#127968;</a>
         <button class="mobile-menu-toggle" aria-label="메뉴 열기">
           <span></span><span></span><span></span>
         </button>
