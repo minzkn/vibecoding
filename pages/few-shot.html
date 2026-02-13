@@ -136,78 +136,78 @@
       <!-- Zero-shot (상단) -->
       <text x="500" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">Zero-shot: 예제 없이 지시만</text>
 
-      <rect x="50" y="70" width="350" height="100" fill="var(--diagram-warning)" fill-opacity="0.2" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <rect x="50" y="70" width="350" height="100" fill="var(--accent-warning)" fill-opacity="0.2" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
       <text x="225" y="90" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">프롬프트</text>
       <text x="70" y="110" font-size="10" fill="var(--diagram-text)">"다음 리뷰의 감정을 분류하세요:</text>
       <text x="70" y="127" font-size="10" fill="var(--diagram-text)">positive/negative/neutral"</text>
-      <text x="70" y="150" font-size="10" font-weight="bold" fill="var(--diagram-primary)">입력: "이 제품 마음에 들어요!"</text>
+      <text x="70" y="150" font-size="10" font-weight="bold" fill="var(--accent-tertiary)">입력: "이 제품 마음에 들어요!"</text>
 
       <line x1="400" y1="120" x2="470" y2="120" stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#few-shot-1-arrow)"/>
-      <text x="435" y="110" text-anchor="middle" font-size="9" fill="var(--diagram-secondary)">→</text>
+      <text x="435" y="110" text-anchor="middle" font-size="9" fill="var(--text-secondary)">→</text>
 
-      <rect x="470" y="85" width="120" height="70" fill="var(--diagram-primary)" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <rect x="470" y="85" width="120" height="70" fill="var(--accent-tertiary)" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
       <text x="530" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">Claude</text>
       <text x="530" y="130" text-anchor="middle" font-size="9" fill="var(--diagram-text)">패턴 추론</text>
-      <text x="530" y="145" text-anchor="middle" font-size="9" fill="var(--diagram-secondary)">(예제 없음)</text>
+      <text x="530" y="145" text-anchor="middle" font-size="9" fill="var(--text-secondary)">(예제 없음)</text>
 
       <line x1="590" y1="120" x2="660" y2="120" stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#few-shot-1-arrow)"/>
 
-      <rect x="660" y="85" width="290" height="70" fill="var(--diagram-success)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <rect x="660" y="85" width="290" height="70" fill="var(--accent-primary)" fill-opacity="0.3" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
       <text x="805" y="110" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">출력</text>
       <text x="805" y="130" text-anchor="middle" font-size="10" fill="var(--diagram-text)">positive</text>
-      <text x="805" y="145" text-anchor="middle" font-size="9" fill="var(--diagram-warning)">⚠️ 정확도: 보통 (70-80%)</text>
+      <text x="805" y="145" text-anchor="middle" font-size="9" fill="var(--accent-warning)">⚠️ 정확도: 보통 (70-80%)</text>
 
       <!-- 구분선 -->
-      <line x1="50" y1="200" x2="950" y2="200" stroke="var(--diagram-border)" stroke-width="1.5" stroke-dasharray="5,5"/>
+      <line x1="50" y1="200" x2="950" y2="200" stroke="var(--diagram-stroke)" stroke-width="1.5" stroke-dasharray="5,5"/>
 
       <!-- Few-shot (하단) -->
       <text x="500" y="230" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--diagram-text)">Few-shot: 예제로 패턴 학습</text>
 
-      <rect x="50" y="245" width="350" height="180" fill="var(--diagram-cache)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <rect x="50" y="245" width="350" height="180" fill="var(--diagram-fill)" fill-opacity="0.3" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
       <text x="225" y="265" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">프롬프트 + 예제들</text>
 
       <!-- 예제 1 -->
-      <rect x="70" y="275" width="310" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <rect x="70" y="275" width="310" height="30" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="3"/>
       <text x="80" y="293" font-size="9" fill="var(--diagram-text)">예제 1: "정말 좋아요!" → positive</text>
 
       <!-- 예제 2 -->
-      <rect x="70" y="310" width="310" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <rect x="70" y="310" width="310" height="30" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="3"/>
       <text x="80" y="328" font-size="9" fill="var(--diagram-text)">예제 2: "실망이에요." → negative</text>
 
       <!-- 예제 3 -->
-      <rect x="70" y="345" width="310" height="30" fill="var(--diagram-bg-secondary)" stroke="var(--diagram-border)" stroke-width="1" rx="3"/>
+      <rect x="70" y="345" width="310" height="30" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="3"/>
       <text x="80" y="363" font-size="9" fill="var(--diagram-text)">예제 3: "보통입니다." → neutral</text>
 
       <!-- 실제 입력 -->
-      <rect x="70" y="385" width="310" height="30" fill="var(--diagram-primary)" fill-opacity="0.3" stroke="var(--diagram-border)" stroke-width="2" rx="3"/>
+      <rect x="70" y="385" width="310" height="30" fill="var(--accent-tertiary)" fill-opacity="0.3" stroke="var(--diagram-stroke)" stroke-width="2" rx="3"/>
       <text x="80" y="403" font-size="9" font-weight="bold" fill="var(--diagram-text)">입력: "이 제품 마음에 들어요!"</text>
 
       <line x1="400" y1="335" x2="470" y2="335" stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#few-shot-1-arrow)"/>
 
-      <rect x="470" y="290" width="120" height="90" fill="var(--diagram-primary)" stroke="var(--diagram-border)" stroke-width="2" rx="6"/>
+      <rect x="470" y="290" width="120" height="90" fill="var(--accent-tertiary)" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
       <text x="530" y="315" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">Claude</text>
       <text x="530" y="335" text-anchor="middle" font-size="9" fill="var(--diagram-text)">예제로부터</text>
       <text x="530" y="350" text-anchor="middle" font-size="9" fill="var(--diagram-text)">패턴 학습</text>
-      <text x="530" y="370" text-anchor="middle" font-size="8" fill="var(--diagram-success)">✓ 3개 예제 참조</text>
+      <text x="530" y="370" text-anchor="middle" font-size="8" fill="var(--accent-primary)">✓ 3개 예제 참조</text>
 
       <line x1="590" y1="335" x2="660" y2="335" stroke="var(--diagram-arrow)" stroke-width="2.5" marker-end="url(#few-shot-1-arrow)"/>
 
-      <rect x="660" y="290" width="290" height="90" fill="var(--diagram-success)" fill-opacity="0.5" stroke="var(--diagram-success)" stroke-width="3" rx="6"/>
+      <rect x="660" y="290" width="290" height="90" fill="var(--accent-primary)" fill-opacity="0.5" stroke="var(--accent-primary)" stroke-width="3" rx="6"/>
       <text x="805" y="315" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">출력</text>
       <text x="805" y="340" text-anchor="middle" font-size="10" fill="var(--diagram-text)">positive</text>
-      <text x="805" y="360" text-anchor="middle" font-size="9" fill="var(--diagram-success)" font-weight="bold">✅ 정확도: 높음 (85-95%)</text>
-      <text x="805" y="373" text-anchor="middle" font-size="8" fill="var(--diagram-secondary)">예제 패턴과 일치</text>
+      <text x="805" y="360" text-anchor="middle" font-size="9" fill="var(--accent-primary)" font-weight="bold">✅ 정확도: 높음 (85-95%)</text>
+      <text x="805" y="373" text-anchor="middle" font-size="8" fill="var(--text-secondary)">예제 패턴과 일치</text>
 
       <!-- 하단 비교 박스 -->
-      <rect x="80" y="445" width="400" height="60" fill="var(--diagram-bg-tertiary)" stroke="var(--diagram-border)" stroke-width="1.5" rx="6"/>
+      <rect x="80" y="445" width="400" height="60" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
       <text x="280" y="465" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">Zero-shot 장단점</text>
-      <text x="280" y="482" text-anchor="middle" font-size="9" fill="var(--diagram-success)">✓ 빠름 (예제 준비 불필요)</text>
-      <text x="280" y="495" text-anchor="middle" font-size="9" fill="var(--diagram-warning)">✗ 낮은 정확도 (복잡한 작업)</text>
+      <text x="280" y="482" text-anchor="middle" font-size="9" fill="var(--accent-primary)">✓ 빠름 (예제 준비 불필요)</text>
+      <text x="280" y="495" text-anchor="middle" font-size="9" fill="var(--accent-warning)">✗ 낮은 정확도 (복잡한 작업)</text>
 
-      <rect x="520" y="445" width="400" height="60" fill="var(--diagram-bg-tertiary)" stroke="var(--diagram-border)" stroke-width="1.5" rx="6"/>
+      <rect x="520" y="445" width="400" height="60" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
       <text x="720" y="465" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">Few-shot 장단점</text>
-      <text x="720" y="482" text-anchor="middle" font-size="9" fill="var(--diagram-success)">✓ 높은 정확도 (패턴 학습)</text>
-      <text x="720" y="495" text-anchor="middle" font-size="9" fill="var(--diagram-warning)">✗ 예제 준비 필요 (토큰 사용 증가)</text>
+      <text x="720" y="482" text-anchor="middle" font-size="9" fill="var(--accent-primary)">✓ 높은 정확도 (패턴 학습)</text>
+      <text x="720" y="495" text-anchor="middle" font-size="9" fill="var(--accent-warning)">✗ 예제 준비 필요 (토큰 사용 증가)</text>
     </svg>
     <figcaption style="text-align: center; margin-top: 0.8rem; font-size: 0.95rem; color: var(--text-tertiary);">
       그림 1: Zero-shot vs Few-shot 학습 방식 비교 - 예제 제공 시 정확도가 15-25% 향상
