@@ -175,6 +175,18 @@
   </div>
   <div class="code-block">
     <div class="code-header">
+      <span class="language">작업 요청 예시</span>
+      <button class="copy-btn" aria-label="Copy code">Copy</button>
+    </div>
+    <pre><code><span class="cmt"># 목표가 명확한 작업 요청</span>
+목표: 결제 API 타임아웃 개선
+범위: src/payments/, src/config/
+제약: 기존 인터페이스 변경 금지
+검증: 단위 테스트 + 통합 테스트 통과
+기대 결과: 타임아웃 3초 → 8초, 재시도 2회</code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-header">
       <span class="language">CLI 설치 예시</span>
       <button class="copy-btn" aria-label="Copy code">Copy</button>
     </div>
@@ -193,6 +205,34 @@ codex --auto-edit
 
 <span class="cmt"># 샌드박스에서 자율 실행</span>
 codex --full-auto</code></pre>
+  </div>
+  <h3 id="cli-scenario">CLI 실행 시나리오</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="language">실전 흐름</span>
+      <button class="copy-btn" aria-label="Copy code">Copy</button>
+    </div>
+    <pre><code><span class="cmt"># 1) 작업 요청</span>
+codex <span class="str">"auth 모듈에 refresh token 로직 추가해줘"</span>
+
+<span class="cmt"># 2) 변경 제안 검토</span>
+codex --suggest
+
+<span class="cmt"># 3) 자동 수정 + 명령 승인</span>
+codex --auto-edit
+
+<span class="cmt"># 4) 테스트 실행 요청</span>
+codex <span class="str">"npm test 실행하고 실패 원인 요약해줘"</span></code></pre>
+  </div>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="language">검증/리뷰 요청 예시</span>
+      <button class="copy-btn" aria-label="Copy code">Copy</button>
+    </div>
+    <pre><code><span class="cmt"># 변경 사항 검증 요청</span>
+테스트: npm test
+리뷰: 변경된 파일 요약 + 리스크 3개 지적
+추가 요청: 실패한 테스트 원인 분석</code></pre>
   </div>
   <p>
     승인 모드는 기본적으로 제안(Suggest)이며, Auto-edit/Full-auto로 단계적으로 확장할 수 있습니다.
@@ -215,6 +255,18 @@ codex --full-auto</code></pre>
     <pre><code><span class="cmt"># 첫 실행 시 로그인 안내</span>
 codex</code></pre>
   </div>
+  <h3 id="cli-auth">CLI 인증 흐름</h3>
+  <p>
+    CLI는 계정 로그인 또는 API 키로 인증할 수 있습니다. API 키를 사용하는 경우 환경 변수로 설정합니다.
+  </p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="language">API 키 예시</span>
+      <button class="copy-btn" aria-label="Copy code">Copy</button>
+    </div>
+    <pre><code><span class="cmt"># API 키 기반 인증</span>
+<span class="kw">export</span> OPENAI_API_KEY=<span class="str">"sk-proj-xxx"</span></code></pre>
+  </div>
   <p>
     Codex 앱은 macOS에서 제공되며, CLI/IDE 확장과 함께 동일한 계정으로 연결됩니다.
   </p>
@@ -226,6 +278,10 @@ codex</code></pre>
     <li><strong>최소 권한:</strong> 필요한 경로/명령만 허용</li>
     <li><strong>비밀 관리:</strong> 토큰/키는 환경 변수 또는 비밀 저장소 사용</li>
     <li><strong>검증 우선:</strong> 변경 사항과 로그를 리뷰한 뒤 병합</li>
+    <li><strong>승인 모드:</strong> Suggest → Auto-edit → Full-auto 단계적 확장</li>
+    <li><strong>네트워크 제어:</strong> 외부 호출은 필요한 범위만 허용</li>
+    <li><strong>로그/감사:</strong> 실행 로그와 변경 이력을 보존</li>
+    <li><strong>범위 분리:</strong> 작업 단위로 디렉토리/브랜치 분리</li>
   </ul>
   <p>
     Codex 앱은 샌드박싱과 권한 요청 흐름을 제공하며,
@@ -292,6 +348,17 @@ codex</code></pre>
     <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
     <li>Codex 범위를 작게 잡고 단계적으로 확장하세요.</li>
     <li>에러 조건을 문서화해 대응 시간을 줄이세요.</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="related-tools">관련 도구</h2>
+  <ul>
+    <li><a href="cli-tools-overview.html">CLI 도구 개요</a> - 주요 CLI 비교</li>
+    <li><a href="cline.html">Cline 가이드</a> - VS Code 에이전트</li>
+    <li><a href="continue.html">Continue 가이드</a> - IDE 보조형 도구</li>
+    <li><a href="cursor.html">Cursor 가이드</a> - 통합 IDE</li>
+    <li><a href="aider.html">Aider 가이드</a> - Git 중심 CLI</li>
   </ul>
 </section>
 

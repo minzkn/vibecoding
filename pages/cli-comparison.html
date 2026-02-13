@@ -260,6 +260,7 @@
       <tr>
         <th>기능</th>
         <th>Claude CLI</th>
+        <th>Codex</th>
         <th>Aider</th>
         <th>Continue</th>
         <th>Cursor</th>
@@ -272,9 +273,11 @@
         <td>✅</td>
         <td>✅</td>
         <td>✅</td>
+        <td>✅</td>
       </tr>
       <tr>
         <td>Git 자동 커밋</td>
+        <td>❌</td>
         <td>❌</td>
         <td>✅</td>
         <td>❌</td>
@@ -284,11 +287,13 @@
         <td>자동완성</td>
         <td>❌</td>
         <td>❌</td>
+        <td>❌</td>
         <td>✅</td>
         <td>✅</td>
       </tr>
       <tr>
         <td>인라인 편집</td>
+        <td>❌</td>
         <td>❌</td>
         <td>❌</td>
         <td>✅</td>
@@ -300,9 +305,11 @@
         <td>❌</td>
         <td>❌</td>
         <td>❌</td>
+        <td>❌</td>
       </tr>
       <tr>
         <td>다중 LLM</td>
+        <td>❌</td>
         <td>❌</td>
         <td>✅</td>
         <td>✅</td>
@@ -311,6 +318,7 @@
       <tr>
         <td>오프라인</td>
         <td>❌</td>
+        <td>❌</td>
         <td>✅ (Ollama)</td>
         <td>✅ (Ollama)</td>
         <td>✅ (Ollama)</td>
@@ -318,12 +326,20 @@
       <tr>
         <td>프로젝트 설정</td>
         <td>✅</td>
+        <td>제한적</td>
         <td>✅</td>
         <td>✅</td>
         <td>✅</td>
       </tr>
     </tbody>
   </table>
+
+  <p><strong>용어 정의:</strong></p>
+  <ul>
+    <li><strong>제한적</strong>: 도구 전용 설정 파일/폴더는 지원하지만, IDE 수준의 광범위 설정/자동완성 규칙은 제한됨</li>
+    <li><strong>오프라인</strong>: 네트워크 없이 로컬 LLM(Ollama 등)으로 실행 가능</li>
+    <li><strong>다중 LLM</strong>: 단일 도구에서 여러 제공자 모델을 직접 선택 가능</li>
+  </ul>
 </section>
 
 <section class="content-section">

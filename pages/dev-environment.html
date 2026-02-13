@@ -65,7 +65,7 @@
     <li>터미널: Zsh + Oh My Zsh (macOS/Linux) 또는 PowerShell 7 (Windows)</li>
     <li>에디터: VS Code + Continue/Cline 확장</li>
     <li>Git: 설정 파일 + SSH 키 + GPG 서명</li>
-    <li>CLI 도구: Claude CLI 또는 Aider</li>
+    <li>CLI 도구: Claude CLI 또는 Codex CLI 또는 Aider</li>
     <li>Node.js (v18+), Python (3.10+)</li>
   </ol>
   <p><strong>선택 도구:</strong> Docker, Ollama, dotfiles 동기화</p>
@@ -780,6 +780,19 @@ claude-code init
 <span class="cmt"># 사용</span>
 claude-code new <span class="str">"Build a todo app"</span></code></pre>
 
+  <h3 id="codex-cli-install">Codex CLI</h3>
+
+<pre><code><span class="cmt"># 전역 설치</span>
+npm install -g @openai/codex
+
+<span class="cmt"># 로그인 또는 API 키 설정</span>
+codex
+
+<span class="cmt"># 사용 예시</span>
+codex <span class="str">"README 정리해줘"</span></code></pre>
+
+  <p>첫 실행 시 로그인 안내가 나타나며, API 키를 사용할 경우 <code>OPENAI_API_KEY</code>를 환경 변수로 설정합니다. 자세한 흐름은 <a href="codex.html">Codex 가이드</a>를 참고하세요.</p>
+
   <h3 id="aider-install">Aider</h3>
 
 <pre><code><span class="cmt"># pipx로 설치 (권장)</span>
@@ -1215,7 +1228,7 @@ rm -rf ~/Library/Application\ Support/Code/CachedData
 
     <h4>CLI 도구 (필수 중 하나)</h4>
     <ul>
-      <li>Claude CLI 또는 Aider 설치</li>
+      <li>Claude CLI 또는 Codex CLI 또는 Aider 설치</li>
       <li>Ollama 설치 (로컬 LLM용)</li>
       <li>Node.js (v18+), Python (3.10+)</li>
     </ul>
