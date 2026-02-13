@@ -55,6 +55,7 @@ var SEARCH_INDEX = [
   { title: "Chain-of-Thought", url: "pages/chain-of-thought.html", description: "단계별 사고 과정 프롬프팅", keywords: "chain-of-thought reasoning cot 사고 과정 추론" },
   { title: "코딩용 프롬프트", url: "pages/prompt-for-coding.html", description: "Vibe Coding 실전 프롬프트 특화", keywords: "prompt coding vibe 코딩 실전" },
   { title: "프롬프트 최적화", url: "pages/prompt-optimization.html", description: "토큰 절약 및 정확도 향상 기법", keywords: "prompt optimization 최적화 토큰절약" },
+  { title: "Markdown 스타일 가이드와 문서 품질", url: "pages/markdown-style-guide.html", description: "일관된 Markdown 스타일과 문서 품질 체크리스트", keywords: "markdown 스타일 가이드 문서 품질 구조화" },
 
   // 환경 구축 & 도구
   { title: "LLM 개발 환경", url: "pages/dev-environment.html", description: "터미널, 에디터, Git 설정", keywords: "development environment 개발환경 설정" },
@@ -69,6 +70,8 @@ var SEARCH_INDEX = [
   { title: "LLM 제한사항", url: "pages/limitations.html", description: "LLM 제한사항 및 주의사항", keywords: "limitations constraints 제한사항 제약" },
   { title: "FAQ", url: "pages/faq.html", description: "자주 묻는 질문 (CLI, Ollama, MCP 포함)", keywords: "faq frequently asked questions 자주 묻는 질문" },
   { title: "참고 자료", url: "pages/resources.html", description: "공식 문서, 블로그, GitHub, 커뮤니티", keywords: "resources 참고자료 문서 커뮤니티" },
+  { title: "마크업 기초와 Markdown 실전", url: "pages/markup-basics.html", description: "마크업 개념, Markdown 핵심 문법, 문서 구조화", keywords: "마크업 markdown 문법 문서작성 구조화" },
+  { title: "Markdown vs HTML: 언제 무엇을 쓰나", url: "pages/markdown-vs-html.html", description: "Markdown과 HTML의 차이와 선택 기준", keywords: "markdown html 비교 선택 기준" },
   { title: "용어집", url: "pages/glossary.html", description: "LLM, CLI, MCP 등 모든 용어 정리", keywords: "glossary 용어집 용어 정의" }
 ];
 
@@ -129,7 +132,8 @@ var NAV_STRUCTURE = [
     { file: 'few-shot.html', title: 'Few-shot 학습' },
     { file: 'chain-of-thought.html', title: 'Chain-of-Thought' },
     { file: 'prompt-for-coding.html', title: '코딩용 프롬프트' },
-    { file: 'prompt-optimization.html', title: '프롬프트 최적화' }
+    { file: 'prompt-optimization.html', title: '프롬프트 최적화' },
+    { file: 'markdown-style-guide.html', title: 'Markdown 스타일 가이드와 문서 품질' }
   ]},
   { title: '환경 구축 & 도구', pages: [
     { file: 'dev-environment.html', title: 'LLM 개발 환경' },
@@ -143,6 +147,8 @@ var NAV_STRUCTURE = [
     { file: 'model-comparison.html', title: '모델 비교' },
     { file: 'limitations.html', title: 'LLM 제한사항' },
     { file: 'faq.html', title: 'FAQ' },
+    { file: 'markup-basics.html', title: '마크업 기초와 Markdown 실전' },
+    { file: 'markdown-vs-html.html', title: 'Markdown vs HTML: 언제 무엇을 쓰나' },
     { file: 'resources.html', title: '참고 자료' },
     { file: 'glossary.html', title: '용어집' }
   ]}
@@ -503,6 +509,16 @@ var NAV_STRUCTURE = [
       menuToggle.classList.add('active');
       document.body.classList.add('nav-open');
       if (navOverlay) navOverlay.classList.add('active');
+
+      // 모바일에서 메뉴를 열 때 모든 카테고리를 확실히 펼침
+      if (window.innerWidth <= 768) {
+        sideNav.querySelectorAll('.nav-category-toggle').forEach(toggle => {
+          toggle.classList.add('active');
+          toggle.setAttribute('aria-expanded', 'true');
+          const navList = toggle.nextElementSibling;
+          if (navList) navList.classList.add('active');
+        });
+      }
     }
 
     menuToggle.addEventListener('click', () => {

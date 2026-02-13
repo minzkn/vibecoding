@@ -175,6 +175,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://minzkn.com/claude/pages/markdown-style-guide.html</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://minzkn.com/claude/pages/markdown-vs-html.html</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://minzkn.com/claude/pages/markup-basics.html</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://minzkn.com/claude/pages/mcp-advanced.html</loc>
     <lastmod>2026-02-13</lastmod>
     <changefreq>monthly</changefreq>

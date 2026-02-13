@@ -55,6 +55,7 @@
     bottom: 0;
     width: 280px;
     height: calc(100vh - 60px);
+    padding-bottom: 2.5em;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
@@ -85,6 +86,7 @@
 
   .side-nav .nav-list.active {
     opacity: 1;
+    max-height: none;
   }
 
   .main-content {
