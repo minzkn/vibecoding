@@ -10,10 +10,10 @@ var SEARCH_INDEX = [
   { title: "학습 경로 가이드", url: "pages/learning-path.html", description: "초급부터 고급까지 단계별 학습 경로", keywords: "learning path 학습경로 로드맵 단계별" },
 
   // AI CLI 도구들
-  { title: "Claude CLI 완전 가이드", url: "pages/claude-cli.html", description: "Claude Code CLI 설치, 설정, 워크플로우, 고급 기능", keywords: "claude cli code 가이드 설치 설정" },
+  { title: "Claude CLI 가이드", url: "pages/claude-cli.html", description: "Claude Code CLI 설치, 설정, 워크플로우, 고급 기능", keywords: "claude cli code 가이드 설치 설정" },
   { title: "OpenCode (아카이브됨)", url: "pages/opencode.html", description: "OpenCode 터미널 CLI 도구 가이드 - 2025년 9월 아카이브됨", keywords: "opencode cli 아카이브 archived terminal" },
-  { title: "Aider CLI", url: "pages/aider.html", description: "Aider CLI 완전 가이드", keywords: "aider cli git 통합" },
-  { title: "Continue.dev", url: "pages/continue.html", description: "Continue.dev 완전 가이드", keywords: "continue dev vscode 확장" },
+  { title: "Aider CLI", url: "pages/aider.html", description: "Aider CLI 가이드", keywords: "aider cli git 통합" },
+  { title: "Continue.dev", url: "pages/continue.html", description: "Continue.dev 가이드", keywords: "continue dev vscode 확장" },
   { title: "Cursor IDE", url: "pages/cursor.html", description: "Cursor IDE 가이드", keywords: "cursor ide editor 에디터" },
   { title: "GitHub Copilot CLI", url: "pages/github-copilot.html", description: "GitHub Copilot CLI 가이드", keywords: "github copilot cli 깃허브" },
   { title: "Cline", url: "pages/cline.html", description: "Cline VS Code 확장 가이드", keywords: "cline vscode 확장 extension" },
@@ -39,7 +39,7 @@ var SEARCH_INDEX = [
 
   // LLM API & 연동
   { title: "LLM 생태계 개요", url: "pages/llm-landscape.html", description: "주요 LLM, API, 가격 비교", keywords: "llm landscape 생태계 개요 비교" },
-  { title: "Claude API 가이드", url: "pages/claude-api.html", description: "Claude API 완전 가이드 (인증, 메시지, 스트리밍, Tool Use)", keywords: "claude api anthropic 가이드 인증" },
+  { title: "Claude API 가이드", url: "pages/claude-api.html", description: "Claude API 가이드 (인증, 메시지, 스트리밍, Tool Use)", keywords: "claude api anthropic 가이드 인증" },
   { title: "OpenAI API", url: "pages/openai-api.html", description: "OpenAI API 가이드 (GPT-4, o1)", keywords: "openai api gpt-4 o1 가이드" },
   { title: "Codex 가이드", url: "pages/codex.html", description: "OpenAI Codex 개요, 작동 방식, 사용 흐름, 보안 고려사항", keywords: "codex openai 코딩 에이전트 워크플로우 보안" },
   { title: "Gemini API", url: "pages/gemini-api.html", description: "Google Gemini API 가이드", keywords: "gemini google api 가이드" },
@@ -86,7 +86,7 @@ var NAV_STRUCTURE = [
   ]},
   { title: 'AI CLI 도구들', pages: [
     { file: 'codex.html', title: 'Codex 가이드' },
-    { file: 'claude-cli.html', title: 'Claude CLI 완전 가이드' },
+    { file: 'claude-cli.html', title: 'Claude CLI 가이드' },
     { file: 'opencode.html', title: 'OpenCode (아카이브됨)' },
     { file: 'aider.html', title: 'Aider CLI' },
     { file: 'continue.html', title: 'Continue.dev' },
