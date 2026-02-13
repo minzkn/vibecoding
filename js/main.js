@@ -60,7 +60,7 @@ var SEARCH_INDEX = [
   // 환경 구축 & 도구
   { title: "LLM 개발 환경", url: "pages/dev-environment.html", description: "터미널, 에디터, Git 설정", keywords: "development environment 개발환경 설정" },
   { title: "API 키 관리", url: "pages/api-key-management.html", description: "환경 변수, 시크릿, 보안 관리", keywords: "api key management 키관리 보안" },
-  { title: "Docker LLM 환경", url: "pages/docker-llm.html", description: "Docker로 LLM 환경 구축", keywords: "docker llm container 도커 컨테이너" },
+  { title: "Docker LLM 환경", url: "pages/docker-llm.html", description: "Docker, Compose v2, Buildx로 LLM 환경 구축", keywords: "docker compose v2 buildx buildkit llm container 도커 컨테이너" },
   { title: "CI/CD & LLM", url: "pages/ci-cd-llm.html", description: "CI/CD와 LLM 통합", keywords: "ci cd llm integration 통합" },
   { title: "비용 모니터링", url: "pages/monitoring-costs.html", description: "LLM API 비용 모니터링 및 최적화", keywords: "monitoring costs 비용 모니터링 최적화" },
 

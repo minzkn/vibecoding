@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Docker로 LLM 환경 구축: 컨테이너 기반으로 일관되고 이식 가능한 LLM 개발 환경 설정 가이드">
-<meta name="keywords" content="Claude, AI, LLM, Docker로 LLM 환경 구축, Docker 기본 설정, Docker로 Ollama 실행, 개발 환경 컨테이너화, 볼륨 관리">
+<meta name="keywords" content="Claude, AI, LLM, Docker로 LLM 환경 구축, Docker Compose v2, Docker Buildx, BuildKit, Docker 기본 설정, Docker로 Ollama 실행, 개발 환경 컨테이너화, 볼륨 관리">
 <meta name="author" content="MINZKN">
 <title>Docker로 LLM 환경 구축 - AI Vibe Coding 가이드 /with MINZKN</title>
 <link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
@@ -153,6 +153,162 @@ Disk image size: 100 GB+</code></pre>
 
 <span class="cmt"># 적용</span>
 sudo systemctl restart docker</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="compose-v2-buildx">Docker Compose v2와 Buildx 심화</h2>
+
+  <h3 id="compose-v2-core">Compose v2 핵심 정리</h3>
+
+  <p>
+    Compose v2는 별도 바이너리(<code>docker-compose</code>)가 아니라 Docker CLI 플러그인으로 통합됩니다.
+    실무에서는 <code>docker compose</code> 명령을 표준으로 사용하고, 프로젝트/환경별 설정을 파일 분리로 관리하는 패턴이 가장 안정적입니다.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>항목</th>
+        <th>Compose v1</th>
+        <th>Compose v2</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>실행 명령</td>
+        <td><code>docker-compose up -d</code></td>
+        <td><code>docker compose up -d</code></td>
+      </tr>
+      <tr>
+        <td>배포 방식</td>
+        <td>독립 바이너리</td>
+        <td>Docker CLI 플러그인</td>
+      </tr>
+      <tr>
+        <td>기능 연동</td>
+        <td>상대적으로 분리됨</td>
+        <td>Buildx/BuildKit과 연계 용이</td>
+      </tr>
+    </tbody>
+  </table>
+
+<pre><code><span class="cmt"># 버전/플러그인 확인</span>
+docker compose version
+docker buildx version
+
+<span class="cmt"># 현재 Compose 설정 렌더링 (병합 결과 확인)</span>
+docker compose config
+
+<span class="cmt"># 프로젝트 단위 상태 확인</span>
+docker compose ps
+docker compose ls</code></pre>
+
+  <h3 id="compose-v2-patterns">Compose v2 운영 패턴</h3>
+
+  <h4>1. 파일 분리 (기본 + 오버라이드)</h4>
+
+<pre><code><span class="cmt"># 기본 파일</span>
+docker compose -f compose.yml up -d
+
+<span class="cmt"># 운영 파일 병합</span>
+docker compose -f compose.yml -f compose.prod.yml up -d</code></pre>
+
+  <h4>2. 프로필 기반 실행</h4>
+
+<pre><code><span class="cmt"># compose.yml</span>
+<span class="kw">services</span>:
+  <span class="kw">app</span>:
+    <span class="kw">image</span>: my-llm-app:latest
+    <span class="kw">ports</span>:
+      - <span class="str">"8000:8000"</span>
+
+  <span class="kw">monitoring</span>:
+    <span class="kw">image</span>: prom/prometheus:latest
+    <span class="kw">profiles</span>: [<span class="str">"ops"</span>]</code></pre>
+
+<pre><code><span class="cmt"># 기본 서비스만 실행</span>
+docker compose up -d
+
+<span class="cmt"># ops 프로필 포함 실행</span>
+docker compose --profile ops up -d</code></pre>
+
+  <h4>3. 프로젝트명 고정</h4>
+
+<pre><code><span class="cmt"># 같은 서버에서 스택 충돌 방지</span>
+docker compose -p llm-dev up -d
+docker compose -p llm-prod up -d</code></pre>
+
+  <div class="info-box warning">
+    <strong>주의:</strong> Compose 파일의 최상단 <code>version:</code> 키는 최신 Compose v2 워크플로우에서 필수 항목이 아닙니다.
+    팀 표준을 정해서 유지하고, 신규 파일은 가능한 간결한 Compose Spec 형식을 권장합니다.
+  </div>
+
+  <h3 id="buildx-core">Buildx 핵심 개념</h3>
+
+  <p>
+    Buildx는 BuildKit 기반의 고급 빌드 도구입니다. 멀티 아키텍처 이미지 빌드, 원격 캐시, 병렬 빌드, 빌드 결과 내보내기를
+    표준화할 수 있어 CI/CD 환경에서 특히 중요합니다.
+  </p>
+
+<pre><code><span class="cmt"># 빌더 목록 확인</span>
+docker buildx ls
+
+<span class="cmt"># 전용 빌더 생성 및 사용</span>
+docker buildx create --name llm-builder --use
+docker buildx inspect --bootstrap
+
+<span class="cmt"># 단일 플랫폼 테스트 빌드 (로컬 로드)</span>
+docker buildx build --platform linux/amd64 -t my-llm-app:dev --load .</code></pre>
+
+  <h3 id="buildx-multiarch">멀티 아키텍처 이미지 빌드</h3>
+
+<pre><code><span class="cmt"># Docker Hub로 멀티 아키텍처 푸시</span>
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t username/my-llm-app:latest \
+  --push .</code></pre>
+
+  <p>
+    Apple Silicon(M 시리즈) 개발 환경과 x86_64 서버를 함께 쓰는 팀에서는
+    <code>linux/amd64,linux/arm64</code> 멀티 플랫폼 태그를 기본 배포 전략으로 잡으면
+    "내 로컬에선 되는데 서버에서 안 됨" 문제를 크게 줄일 수 있습니다.
+  </p>
+
+  <h3 id="buildx-cache">Buildx 캐시 전략</h3>
+
+<pre><code><span class="cmt"># 레지스트리 캐시 사용 예시</span>
+docker buildx build \
+  --platform linux/amd64 \
+  --cache-from type=registry,ref=username/my-llm-app:buildcache \
+  --cache-to type=registry,ref=username/my-llm-app:buildcache,mode=max \
+  -t username/my-llm-app:latest \
+  --push .</code></pre>
+
+  <p>
+    의존성 설치 단계(<code>npm ci</code>, <code>pip install</code>)를 Dockerfile 상단에 배치하고,
+    앱 소스 복사는 뒤로 미루면 캐시 히트율이 올라 빌드 시간이 줄어듭니다.
+  </p>
+
+  <h3 id="buildx-bake">Buildx Bake로 빌드 선언형 관리</h3>
+
+  <h4>docker-bake.hcl</h4>
+
+<pre><code><span class="kw">group</span> <span class="str">"default"</span> {
+  <span class="kw">targets</span> = [<span class="str">"app"</span>]
+}
+
+<span class="kw">target</span> <span class="str">"app"</span> {
+  <span class="kw">context</span> = <span class="str">"."</span>
+  <span class="kw">dockerfile</span> = <span class="str">"Dockerfile"</span>
+  <span class="kw">platforms</span> = [<span class="str">"linux/amd64"</span>, <span class="str">"linux/arm64"</span>]
+  <span class="kw">tags</span> = [<span class="str">"username/my-llm-app:latest"</span>]
+}</code></pre>
+
+<pre><code><span class="cmt"># Bake 실행</span>
+docker buildx bake --push
+
+<span class="cmt"># 오버라이드 파일과 함께 실행 가능</span>
+docker buildx bake -f docker-bake.hcl -f docker-bake.prod.hcl --push</code></pre>
 </section>
 
 <section class="content-section">
@@ -1103,6 +1259,7 @@ node_modules
   <ul>
     <li>Docker로 LLM 환경 구축의 핵심 개념과 흐름을 정리합니다.</li>
     <li>Docker 기본 설정를 단계별로 이해합니다.</li>
+    <li>Compose v2 운영 패턴과 Buildx 기반 멀티 아키텍처 빌드 전략을 적용합니다.</li>
     <li>실전 적용 시 기준과 주의점을 확인합니다.</li>
   </ul>
 </section>
@@ -1112,6 +1269,8 @@ node_modules
   <ul>
     <li>입력/출력 예시를 고정해 재현성을 확보하세요.</li>
     <li>Docker로 LLM 환경 구축 범위를 작게 잡고 단계적으로 확장하세요.</li>
+    <li><code>docker compose config</code>로 병합 결과를 항상 확인해 배포 차이를 줄이세요.</li>
+    <li><code>buildx</code> 캐시를 CI에 연결해 빌드 시간을 안정적으로 단축하세요.</li>
     <li>Docker 기본 설정 조건을 문서화해 대응 시간을 줄이세요.</li>
   </ul>
 </section>
