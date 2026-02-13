@@ -4,7 +4,7 @@
 
 ## Project Overview
 
-Claude AI 어시스턴트에 대한 **한국어** 정적 문서 사이트.
+AI Vibe Coding 가이드에 대한 **한국어** 정적 문서 사이트.
 빌드 도구/프레임워크 없이 순수 HTML5 + CSS3 + Vanilla JS로 구성.
 
 - 정적 HTML 파일: `index.html` + `pages/*.html`
@@ -175,7 +175,7 @@ cp template.html pages/<name>.html
 <meta property="og:url" content="https://minzkn.com/claude/pages/TEMPLATE_FILE.html">
 <meta name="description" content="TEMPLATE_DESCRIPTION">
 <meta name="keywords" content="TEMPLATE_KEYWORDS">
-<title>TEMPLATE_TITLE - Claude 문서 /with MINZKN</title>
+<title>TEMPLATE_TITLE - AI Vibe Coding 가이드 /with MINZKN</title>
 ```
 
 **`<body>` 섹션:**
@@ -209,9 +209,14 @@ cp template.html pages/<name>.html
 ```
 
 ### Step 4: sitemap.xml 추가
-`</urlset>` 앞에 추가:
+`</urlset>` 앞에 추가 (현재 포맷은 절대 URL + 메타 포함):
 ```xml
-  <url><loc>pages/<name>.html</loc><priority>0.8</priority></url>
+  <url>
+    <loc>https://minzkn.com/claude/pages/<name>.html</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 ```
 
 ## Task: SVG 다이어그램 추가
@@ -372,7 +377,7 @@ var(--accent-primary)    강조색
 ## Content Guidelines
 
 - 모든 문서는 **한국어**로 작성 (코드/기술 용어 제외)
-- Claude AI 어시스턴트 사용자 대상 (초급~고급)
+- AI Vibe Coding 학습자/실무자 대상 (초급~고급)
 - 실제 API 코드 예제 포함 (구문 강조 클래스 적용)
 - 최신 Claude 모델 라인업 기준 (문서 작성 시점)
 

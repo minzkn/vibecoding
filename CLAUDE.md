@@ -4,7 +4,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Project Overview
 
-Claude AI 어시스턴트에 대한 한국어 정적 문서 사이트. 빌드 도구/프레임워크 없이 순수 HTML5 + CSS3 + Vanilla JS로 구성.
+AI Vibe Coding 가이드에 대한 한국어 정적 문서 사이트. 빌드 도구/프레임워크 없이 순수 HTML5 + CSS3 + Vanilla JS로 구성.
 
 - 정적 HTML 파일: `index.html` + `pages/*.html`
 - 3개 CSS, 1개 JS
@@ -24,6 +24,7 @@ python3 -m http.server 8080   # http://localhost:8080
 - CSS Grid 3-컬럼: Nav(260px) | Content(fluid) | TOC(220px)
 - 반응형 브레이크포인트: 1200px (TOC 숨김), 768px (햄버거 메뉴), 480px (소형 모바일)
 - 에셋 경로: **루트(index.html)** prefix 없음, **pages/*.html** `../` prefix
+- sitemap.xml의 `<loc>`는 절대 URL(`https://minzkn.com/claude/...`) 사용
 - 5개 테마: `dark-kernel`(기본), `light`, `solarized`, `nord`, `high-contrast`
   - `<html data-theme="...">` 속성, 쿠키 `claude_theme` (365일 영속)
   - `<head>` 최상단에 Google Adsense/Analytics 스크립트, 그 다음 인라인 스크립트로 flash 방지
@@ -77,7 +78,7 @@ python3 -m http.server 8080   # http://localhost:8080
 ## Content Guidelines
 
 - 모든 문서는 **한국어**로 작성
-- Claude AI 어시스턴트 사용자 대상 (초급~고급)
+- AI Vibe Coding 학습자/실무자 대상 (초급~고급)
 - 실제 API 코드 예제 포함 (구문 강조 클래스 적용)
 - 최신 Claude 모델 라인업 기준 (문서 작성 시점)
 
@@ -86,5 +87,5 @@ python3 -m http.server 8080   # http://localhost:8080
 - 빌드 도구, 번들러, 프레임워크 도입
 - 영어로 문서 작성 (코드/기술 용어 제외)
 - D2Coding 외 다른 폰트 추가
-- HTML 파일에 header/nav/footer/breadcrumb 마크업 직접 작성
+- HTML 파일에 header/nav/footer/breadcrumb/page-nav/inline-toc 마크업 직접 작성
 - `SEARCH_INDEX` / `NAV_STRUCTURE` 형식 변경

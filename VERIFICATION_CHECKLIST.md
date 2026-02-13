@@ -15,9 +15,11 @@ python3 -m http.server 8080
 ```
 
 ## 구조/연결 무결성
+- [ ] `python3 check_nav.py` 실행 통과
+- [ ] `python3 check_links.py` 실행 통과
 - [ ] `js/main.js`의 NAV_STRUCTURE = `pages/*.html` 일치
 - [ ] `js/main.js`의 SEARCH_INDEX = `pages/*.html` 일치
-- [ ] `sitemap.xml`에 모든 `pages/*.html` 포함
+- [ ] `sitemap.xml`에 모든 `pages/*.html` 절대 URL 포함 (`https://minzkn.com/claude/pages/...`)
 - [ ] 내부 링크/앵커 무결성 (`python3 check_links.py`)
 
 ## 핵심 페이지 스모크 테스트

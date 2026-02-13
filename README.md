@@ -61,9 +61,19 @@ python3 -m http.server 8080
 
 ## 📝 페이지 추가
 
-1. `pages/` 디렉토리에 HTML 파일 생성
+1. `template.html`을 복사해 `pages/` 디렉토리에 새 HTML 파일 생성
 2. `js/main.js`의 `SEARCH_INDEX`에 검색 항목 추가
 3. `js/main.js`의 `NAV_STRUCTURE`에 네비게이션 항목 추가
+4. `sitemap.xml`에 절대 URL 항목 추가 (`https://minzkn.com/claude/pages/<name>.html`)
+
+## ✅ 검증
+
+문서 추가/수정 후 아래 스크립트로 무결성을 확인할 수 있습니다:
+
+```bash
+python3 check_nav.py
+python3 check_links.py
+```
 
 ## 🎨 테마
 
