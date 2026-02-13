@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);} 
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="LLM 핸드북: 학습·정렬·추론">
+<meta property="og:description" content="프리트레이닝부터 정렬, 추론 최적화, RAG/도구 사용까지 전체 흐름을 정리합니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/llm-handbook-training.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="프리트레이닝부터 정렬, 추론 최적화, RAG/도구 사용까지 전체 흐름을 정리합니다.">
+<meta name="keywords" content="llm 학습 정렬 rlhf dpo 추론 최적화 rag 도구사용">
+<meta name="author" content="MINZKN">
+<title>LLM 핸드북: 학습·정렬·추론 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">LLM 핸드북: 학습·정렬·추론</h1>
+<p class="page-description">프리트레이닝, 정렬, 추론 최적화, RAG/도구 사용까지 LLM의 제작·활용 흐름을 한 번에 정리합니다.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>LLM 파이프라인은 <strong>대규모 사전학습</strong> → <strong>지도학습(SFT)</strong> → <strong>정렬(RLHF/DPO)</strong> → <strong>추론 최적화</strong>로 이어집니다. 제품의 성격에 따라 일부 단계는 생략되거나 경량화됩니다.</p>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 260"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="llm-handbook-training-1-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="20" y="40" width="150" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="95" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">프리트레이닝</text>
+
+      <rect x="200" y="40" width="150" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="275" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">SFT</text>
+
+      <rect x="380" y="40" width="150" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="455" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">정렬</text>
+
+      <rect x="560" y="40" width="120" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="620" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">추론</text>
+
+      <line x1="170" y1="70" x2="200" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-training-1-arrow)"/>
+      <line x1="350" y1="70" x2="380" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-training-1-arrow)"/>
+      <line x1="530" y1="70" x2="560" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-training-1-arrow)"/>
+    </svg>
+    <p class="diagram-caption">LLM 제작 흐름의 핵심 단계</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="build-roadmap">LLM 제작 로드맵</h2>
+  <ol>
+    <li>문제 정의 및 타겟 도메인 결정</li>
+    <li>데이터 수집/정제/라이선스 검토</li>
+    <li>모델 규모·아키텍처 결정</li>
+    <li>프리트레이닝(또는 기존 모델 선택)</li>
+    <li>SFT/정렬 데이터 준비</li>
+    <li>정렬 학습(RLHF/DPO)</li>
+    <li>추론 최적화 및 배포</li>
+    <li>평가/모니터링/개선 반복</li>
+  </ol>
+</section>
+
+<section class="content-section">
+  <h2 id="compute-planning">컴퓨트/예산 계획</h2>
+  <ul>
+    <li><strong>GPU 전략</strong>: A100/H100 등급, 클러스터 규모</li>
+    <li><strong>학습 시간</strong>: 배치 크기, 시퀀스 길이, 스텝 수에 비례</li>
+    <li><strong>예산 산정</strong>: 데이터 준비 + 학습 + 검증 + 추론 비용 합산</li>
+  </ul>
+  <div class="info-box warning">
+    <strong>주의:</strong> 전체 비용의 상당 부분은 데이터 정제와 반복 학습에서 발생합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="architecture-choices">아키텍처 선택</h2>
+  <ul>
+    <li><strong>모델 크기</strong>: 파라미터 수와 목표 성능의 균형</li>
+    <li><strong>시퀀스 길이</strong>: 컨텍스트 요구사항에 맞는 길이</li>
+    <li><strong>모델 형태</strong>: Decoder-only가 일반적, 특수 목적은 Encoder/Encoder-Decoder 고려</li>
+  </ul>
+  <div class="info-box info">
+    <strong>실무 포인트:</strong> 도메인 특화 모델은 “작게 시작해 크게 확장”하는 접근이 안전합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="pretraining">프리트레이닝</h2>
+  <p>웹 문서, 코드, 대화 로그 등 대규모 데이터로 다음 토큰 예측을 반복합니다. 이 단계가 모델의 일반 지식을 형성합니다.</p>
+  <ul>
+    <li><strong>데이터 품질</strong>: 필터링·중복 제거·노이즈 제거가 성능에 직접 영향</li>
+    <li><strong>스케일</strong>: 파라미터 수와 데이터량의 균형이 중요</li>
+    <li><strong>컴퓨트 예산</strong>: 학습 비용은 대부분 이 단계에서 발생</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="data-curation">데이터 큐레이션</h2>
+  <p>LLM 성능의 절반은 데이터 품질에서 결정됩니다. 운영 환경에서 사용할 데이터라면 법적·보안 요구까지 함께 고려해야 합니다.</p>
+  <ul>
+    <li><strong>정제</strong>: 중복 제거, 스팸 필터, 포맷 통일</li>
+    <li><strong>도메인 균형</strong>: 코드/문서/대화 비율을 목표에 맞게 설계</li>
+    <li><strong>민감정보 제거</strong>: 개인정보/저작권 위험 데이터 제거</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="data-pipeline">데이터 파이프라인 상세</h2>
+  <ol>
+    <li>수집: 웹/코드/대화 데이터 확보</li>
+    <li>정제: 중복 제거, 노이즈/스팸 필터링</li>
+    <li>정렬: 언어/도메인 기준으로 분류</li>
+    <li>샘플링: 목표 분포에 맞게 비율 조정</li>
+    <li>검증: 품질 샘플링 및 통계 확인</li>
+  </ol>
+</section>
+
+<section class="content-section">
+  <h2 id="data-checklist">데이터 체크리스트</h2>
+  <ul>
+    <li><strong>출처 명확성</strong>: 데이터 라이선스 확인</li>
+    <li><strong>정합성</strong>: 중복/오류/빈 텍스트 제거</li>
+    <li><strong>민감정보</strong>: PII/PHI 자동 마스킹 여부</li>
+    <li><strong>버전 관리</strong>: 데이터셋 버전 고정</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="alignment">정렬: SFT, RLHF, DPO</h2>
+  <p>사용자 의도에 맞는 답변 스타일을 학습시키는 단계입니다. 생산 환경에서는 빠르고 안정적인 정렬이 중요합니다.</p>
+  <ul>
+    <li><strong>SFT</strong>: 원하는 답변을 직접 지도 데이터로 학습</li>
+    <li><strong>RLHF</strong>: 인간 선호도를 보상 모델로 반영</li>
+    <li><strong>DPO</strong>: 선호도 쌍 데이터를 직접 최적화하여 안정적 정렬</li>
+  </ul>
+  <div class="info-box tip">
+    <strong>팁:</strong> 정렬 데이터는 정책/규제/도메인 요구사항을 가장 빠르게 반영하는 수단입니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="alignment-compare">정렬 기법 선택 가이드</h2>
+  <ul>
+    <li><strong>SFT</strong>: 빠르게 도메인 지식을 주입하고 싶을 때</li>
+    <li><strong>RLHF</strong>: 미묘한 선호도 조정이 필요할 때</li>
+    <li><strong>DPO</strong>: 안정성과 재현성이 중요할 때</li>
+  </ul>
+  <div class="info-box info">
+    <strong>실무 포인트:</strong> SFT로 먼저 빠르게 검증하고, 필요할 때 RLHF/DPO로 정밀 조정하는 흐름이 일반적입니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="alignment-template">정렬 데이터 템플릿</h2>
+  <pre><code><span class="cmt"># 선호도 쌍 템플릿</span>
+<span class="kw">prompt</span>: {사용자 질문}
+<span class="kw">better</span>: {더 좋은 응답}
+<span class="kw">worse</span>: {덜 좋은 응답}
+<span class="kw">note</span>: {판단 근거}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="training-stack">학습 스택 구성</h2>
+  <ul>
+    <li><strong>분산 학습</strong>: 데이터 병렬/모델 병렬</li>
+    <li><strong>체크포인트</strong>: 중간 저장으로 재학습 비용 절감</li>
+    <li><strong>실험 관리</strong>: 실험 파라미터와 결과 기록</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="training-config">학습 설정 예시</h2>
+  <p>아래는 대략적인 형태의 설정 예시입니다. 실제 값은 모델 규모/데이터/예산에 따라 달라집니다.</p>
+  <pre><code><span class="cmt"># 학습 설정 예시 (의사 코드)</span>
+<span class="kw">model_size</span>: <span class="str">"8B"</span>
+<span class="kw">sequence_length</span>: <span class="num">8192</span>
+<span class="kw">batch_size</span>: <span class="num">256</span>
+<span class="kw">learning_rate</span>: <span class="num">2e-4</span>
+<span class="kw">warmup_steps</span>: <span class="num">2000</span>
+<span class="kw">optimizer</span>: <span class="str">"AdamW"</span>
+<span class="kw">gradient_checkpointing</span>: <span class="kw">true</span>
+<span class="kw">mixed_precision</span>: <span class="str">"bf16"</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="evaluation-process">평가·레드팀·안전 정렬 절차</h2>
+  <ol>
+    <li>오프라인 평가셋으로 품질/일관성 확인</li>
+    <li>레드팀 시나리오로 정책 위반/오용 가능성 점검</li>
+    <li>안전 정렬 데이터 보강 및 재학습</li>
+    <li>온라인 A/B 테스트로 실제 성능 검증</li>
+  </ol>
+  <div class="info-box warning">
+    <strong>주의:</strong> 레드팀 결과는 배포 전 필수 검증 항목으로 포함하는 것이 안전합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="pre-deploy-checklist">배포 전 최종 체크리스트</h2>
+  <ul>
+    <li><strong>품질</strong>: 목표 태스크에서 기준 충족</li>
+    <li><strong>안전</strong>: 금지/민감 주제 차단 테스트 통과</li>
+    <li><strong>비용</strong>: 예상 비용이 예산 범위 내</li>
+    <li><strong>지연</strong>: p95 응답 시간 기준 만족</li>
+    <li><strong>모니터링</strong>: 로그/알림/대시보드 준비 완료</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="training-pipeline">학습 파이프라인 의사 코드</h2>
+  <pre><code><span class="cmt">// 데이터 로더 → 학습 루프 → 체크포인트</span>
+<span class="kw">function</span> <span class="fn">train</span>(dataset, model, optimizer) {
+  <span class="kw">for</span> (<span class="kw">const</span> batch <span class="kw">of</span> dataset) {
+    <span class="kw">const</span> loss = model.<span class="fn">forward</span>(batch);
+    optimizer.<span class="fn">backward</span>(loss);
+    optimizer.<span class="fn">step</span>();
+  }
+  <span class="fn">saveCheckpoint</span>(model);
+}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="alignment-diagram">SFT/RLHF/DPO 워크플로우 다이어그램</h2>
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="llm-handbook-training-3-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="30" y="40" width="160" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="110" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">SFT 데이터</text>
+
+      <rect x="250" y="40" width="160" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="330" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">SFT 학습</text>
+
+      <rect x="470" y="40" width="200" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="570" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">정렬(RLHF/DPO)</text>
+
+      <line x1="190" y1="70" x2="250" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-training-3-arrow)"/>
+      <line x1="410" y1="70" x2="470" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-training-3-arrow)"/>
+    </svg>
+    <p class="diagram-caption">SFT 이후 RLHF/DPO로 정렬하는 기본 흐름</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="safety-policy">안전 정책 예시</h2>
+  <pre><code><span class="cmt"># 안전 정책 샘플</span>
+<span class="kw">금지</span>: 개인정보 요청, 불법 행위, 자해 관련 안내
+<span class="kw">제한</span>: 의료/법률 조언은 일반 정보만 제공
+<span class="kw">허용</span>: 공개 정보 요약, 교육 목적 설명
+<span class="kw">응답 톤</span>: 사실 기반, 과장 금지</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="data-automation">데이터 파이프라인 자동화 예시</h2>
+  <pre><code><span class="cmt">// ETL/검증 의사 코드</span>
+<span class="kw">function</span> <span class="fn">pipeline</span>(sources) {
+  <span class="kw">const</span> raw = <span class="fn">collect</span>(sources);
+  <span class="kw">const</span> cleaned = <span class="fn">clean</span>(raw, { dedupe: <span class="kw">true</span>, piiMask: <span class="kw">true</span> });
+  <span class="kw">const</span> sampled = <span class="fn">sample</span>(cleaned, { domainMix: <span class="str">"target"</span> });
+  <span class="fn">validate</span>(sampled, { minLength: <span class="num">50</span>, lang: <span class="str">"ko"</span> });
+  <span class="fn">writeDataset</span>(sampled, <span class="str">"train.jsonl"</span>);
+}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="labeling-process">정렬 데이터 수집/라벨링 프로세스</h2>
+  <ol>
+    <li>대표 시나리오 정의(질문 유형/도메인)</li>
+    <li>기본 응답 생성(SFT 또는 기존 모델)</li>
+    <li>라벨러가 “좋은 응답/나쁜 응답”을 선택</li>
+    <li>검수 단계에서 불일치/편향 제거</li>
+    <li>정렬 데이터셋 버전 고정</li>
+  </ol>
+</section>
+
+<section class="content-section">
+  <h2 id="training-failures">학습 실패/불안정성 대응</h2>
+  <ul>
+    <li><strong>손실 발산</strong>: 학습률 감소, 배치 크기 축소</li>
+    <li><strong>오버피팅</strong>: 정규화, 데이터 증강, 조기 종료</li>
+    <li><strong>모드 붕괴</strong>: 데이터 다양성 확대, 샘플링 재조정</li>
+    <li><strong>정렬 실패</strong>: 선호도 데이터 재검수, 기준 강화</li>
+  </ul>
+  <div class="info-box warning">
+    <strong>주의:</strong> 학습 불안정은 대부분 데이터 품질/학습률/배치 설정에서 발생합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="experiment-tracking">실험 추적 템플릿</h2>
+  <pre><code><span class="cmt"># 실험 카드</span>
+<span class="kw">실험명</span>: sft-v2-kr
+<span class="kw">데이터 버전</span>: v1.3
+<span class="kw">모델 크기</span>: 8B
+<span class="kw">학습 설정</span>: lr=2e-4, seq=8k
+<span class="kw">평가 결과</span>: 정확도 0.82, p95 1.4s
+<span class="kw">결론</span>: 채택/보류/폐기</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="safety-dataset-guide">안전 정렬 데이터셋 설계 가이드</h2>
+  <ul>
+    <li><strong>금지</strong>: 불법 행위, 자해/폭력 조장, 개인정보 요청</li>
+    <li><strong>제한</strong>: 의료/법률/금융 조언은 일반 정보 수준</li>
+    <li><strong>허용</strong>: 교육 목적 설명, 공개 정보 요약</li>
+    <li><strong>엣지 케이스</strong>: 우회 요청, 모호한 질문 포함</li>
+  </ul>
+  <div class="info-box info">
+    <strong>포인트:</strong> 금지/제한/허용의 경계 샘플을 충분히 포함해야 모델이 안정적으로 학습합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="regression-suite">품질 회귀 테스트 스위트</h2>
+  <p>정기적으로 실행해 품질 저하를 조기에 감지합니다.</p>
+  <ul>
+    <li><strong>기본 세트</strong>: 요약, 번역, 분류, 질의응답</li>
+    <li><strong>도메인 세트</strong>: 코드 리뷰, 정책 문서, 고객지원</li>
+    <li><strong>안전 세트</strong>: 금칙어/유해 요청 대응</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="evaluation-automation">평가 자동화 파이프라인 예시</h2>
+  <pre><code><span class="cmt">// 배치 평가 → 리포트 생성</span>
+<span class="kw">function</span> <span class="fn">runEval</span>(model, evalSet) {
+  <span class="kw">const</span> results = [];
+  <span class="kw">for</span> (<span class="kw">const</span> sample <span class="kw">of</span> evalSet) {
+    <span class="kw">const</span> output = model.<span class="fn">generate</span>(sample.input);
+    results.<span class="fn">push</span>({ id: sample.id, score: <span class="fn">score</span>(output, sample.gold) });
+  }
+  <span class="fn">writeReport</span>(results, <span class="str">"eval-report.json"</span>);
+}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="rlhf-dpo-steps">RLHF/DPO 구체 단계</h2>
+  <ol>
+    <li>기본 모델로 후보 응답 생성</li>
+    <li>사람이 선호도 쌍 라벨링</li>
+    <li>보상 모델 학습(RLHF)</li>
+    <li>정책 모델 업데이트(RLHF) 또는 DPO 최적화</li>
+    <li>평가셋으로 품질 검증</li>
+  </ol>
+  <div class="info-box info">
+    <strong>참고:</strong> DPO는 보상 모델 학습 없이 직접 선호도 쌍을 최적화합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="rlhf-dpo-format">선호도 데이터 포맷 예시</h2>
+  <pre><code>{<span class="str">"prompt"</span>: <span class="str">"이 기능을 설명해줘"</span>, <span class="str">"chosen"</span>: <span class="str">"명확한 요약"</span>, <span class="str">"rejected"</span>: <span class="str">"모호한 설명"</span>}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="scaling-laws">스케일링 법칙과 목표 설정</h2>
+  <ul>
+    <li><strong>모델 크기 vs 데이터</strong>: 균형이 깨지면 수렴이 느려짐</li>
+    <li><strong>목표 지표</strong>: 도메인별 정확도/지연/비용의 최적점</li>
+    <li><strong>반복 학습</strong>: 작은 모델에서 검증 후 확장</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="architecture-compare">아키텍처별 학습 차이</h2>
+  <ul>
+    <li><strong>Decoder-only</strong>: 대화/생성에 강점, 대부분의 LLM 표준</li>
+    <li><strong>Encoder-Decoder</strong>: 입력-출력 변환에 강점(번역/요약)</li>
+    <li><strong>Encoder</strong>: 분류/검색에서 효율적</li>
+  </ul>
+  <div class="info-box info">
+    <strong>포인트:</strong> 서비스 목적이 생성 중심이라면 Decoder-only가 기본 선택입니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="serving-optimization">추론 서빙 최적화 심화</h2>
+  <ul>
+    <li><strong>캐시 전략</strong>: KV 캐시 + 응답 캐시를 병행</li>
+    <li><strong>스케줄링</strong>: 요청 큐 우선순위와 배치 최적화</li>
+    <li><strong>멀티 GPU</strong>: 텐서 병렬/파이프라인 병렬 조합</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="redteam-template">레드팀 시나리오 템플릿</h2>
+  <pre><code><span class="cmt"># 레드팀 시나리오</span>
+<span class="kw">목표</span>: 금칙어 우회 요청 탐지
+<span class="kw">시나리오</span>: 단계적 질문으로 민감정보 유도
+<span class="kw">성공 기준</span>: 정책 위반 응답 차단
+<span class="kw">실패 기준</span>: 금지 정보 제공</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="infra-devops">학습 인프라/데브옵스 구성 예시</h2>
+  <ul>
+    <li><strong>스토리지</strong>: 대용량 객체 스토리지 + 데이터 캐시</li>
+    <li><strong>실험 추적</strong>: 실험 로그와 체크포인트 관리</li>
+    <li><strong>GPU 오케스트레이션</strong>: 스케줄러로 학습 자원 관리</li>
+    <li><strong>모니터링</strong>: 학습 손실/성능 지표 대시보드</li>
+  </ul>
+  <div class="info-box info">
+    <strong>포인트:</strong> 학습 환경은 “재현성”과 “비용 통제”를 함께 목표로 설계해야 합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="multimodal">멀티모달 학습/추론</h2>
+  <ul>
+    <li><strong>비전-언어</strong>: 이미지 캡션, 문서 OCR, 멀티모달 QA</li>
+    <li><strong>오디오-언어</strong>: 음성 전사, 음성 요약</li>
+    <li><strong>데이터 준비</strong>: 이미지/오디오 정제와 메타데이터 정렬</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="lifecycle">모델 라이프사이클 운영</h2>
+  <ol>
+    <li>모델 버전 관리 및 배포 기록</li>
+    <li>사용량/품질 분석 후 개선 계획 수립</li>
+    <li>신규 데이터 확보 및 재학습</li>
+    <li>구버전 모델 폐기/마이그레이션</li>
+  </ol>
+</section>
+
+<section class="content-section">
+  <h2 id="cost-breakdown">LLM 제작 비용 산정 상세</h2>
+  <ul>
+    <li><strong>데이터 비용</strong>: 수집, 정제, 라벨링, 검수</li>
+    <li><strong>학습 비용</strong>: GPU, 스토리지, 전력</li>
+    <li><strong>검증 비용</strong>: 평가셋 구축, 레드팀</li>
+    <li><strong>서빙 비용</strong>: 추론 서버, 캐시, 관찰성</li>
+    <li><strong>인건비</strong>: 연구, 엔지니어링, 운영</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="finetune-vs-lora">파인튜닝 vs LoRA/어댑터</h2>
+  <ul>
+    <li><strong>전체 파인튜닝</strong>: 최고 성능, 높은 비용</li>
+    <li><strong>LoRA/어댑터</strong>: 적은 비용, 빠른 실험</li>
+    <li><strong>선택 기준</strong>: 데이터 규모, 운영 비용, 유지보수 용이성</li>
+  </ul>
+  <div class="info-box info">
+    <strong>포인트:</strong> 초기에는 LoRA로 검증 후 전체 파인튜닝으로 확장하는 방식이 일반적입니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="ops-report-template">운영 리포트 템플릿</h2>
+  <pre><code><span class="cmt"># 월간 운영 리포트</span>
+<span class="kw">요약</span>: 품질/비용/안전 요약
+<span class="kw">품질</span>: 정확도, 사용자 만족도
+<span class="kw">비용</span>: 총 토큰 비용, 캐시 히트율
+<span class="kw">안전</span>: 정책 위반 건수, 차단율
+<span class="kw">개선 계획</span>: 다음 달 개선 항목</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="data-licensing">데이터 저작권/라이선스 리스크</h2>
+  <ul>
+    <li><strong>출처 불명 데이터</strong>: 법적 리스크가 가장 큼</li>
+    <li><strong>오픈소스 코드</strong>: 라이선스 의무(상업 사용 제한 등) 확인</li>
+    <li><strong>사용자 데이터</strong>: 이용약관/개인정보보호법 준수</li>
+  </ul>
+  <div class="info-box warning">
+    <strong>주의:</strong> 데이터 출처·라이선스는 학습 시작 전에 반드시 문서화해야 합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="benchmark-design">모델 검증 벤치마크 설계</h2>
+  <ul>
+    <li><strong>기본 벤치마크</strong>: 요약, 분류, 질문응답</li>
+    <li><strong>도메인 벤치마크</strong>: 실제 고객 데이터 기반 테스트</li>
+    <li><strong>안전 벤치마크</strong>: 금지 요청, 우회 시도</li>
+  </ul>
+  <div class="info-box info">
+    <strong>포인트:</strong> 서비스 목적과 무관한 벤치마크는 과도한 최적화를 유발할 수 있습니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="model-retirement">모델 폐기 및 데이터 삭제 절차</h2>
+  <ol>
+    <li>폐기 대상 모델 버전 고정 및 백업</li>
+    <li>데이터 보존 정책에 따른 삭제</li>
+    <li>운영 시스템에서 모델 엔드포인트 제거</li>
+    <li>감사 로그에 폐기 기록 남김</li>
+  </ol>
+</section>
+
+<section class="content-section">
+  <h2 id="domain-finetune-examples">도메인별 파인튜닝 데이터 예시</h2>
+  <ul>
+    <li><strong>코딩</strong>: 코드 리뷰 코멘트, 리팩터링 전/후 쌍</li>
+    <li><strong>문서</strong>: 정책 요약, 표준 문서 Q&A</li>
+    <li><strong>지원</strong>: 티켓 요약, FAQ 응답 템플릿</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="drift-detection">모델 성능 드리프트 감지</h2>
+  <ul>
+    <li><strong>지표 모니터링</strong>: 정확도, 안전 위반율, 재질문 비율</li>
+    <li><strong>데이터 분포</strong>: 입력 길이/도메인 분포 변화 감지</li>
+    <li><strong>경보</strong>: 임계값 초과 시 재평가 트리거</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="sla-slo-template">SLA/SLO 템플릿</h2>
+  <pre><code><span class="cmt"># 서비스 수준 목표</span>
+<span class="kw">가용성</span>: 99.9%
+<span class="kw">지연</span>: p95 &lt; 2.0s
+<span class="kw">품질</span>: 평가셋 정확도 0.8 이상
+<span class="kw">안전</span>: 정책 위반율 &lt; 0.1%</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="ethics-guidelines">모델/데이터 윤리 가이드라인</h2>
+  <ul>
+    <li><strong>공정성</strong>: 편향된 데이터 분포 감시</li>
+    <li><strong>투명성</strong>: 모델 한계/오류 가능성 명시</li>
+    <li><strong>책임성</strong>: 피해 발생 시 대응 절차 마련</li>
+    <li><strong>프라이버시</strong>: 개인 정보 최소 수집</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="budget-example">예산 계산 사례</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>항목</th>
+        <th>가정</th>
+        <th>비용</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>데이터 정제</td>
+        <td>1TB, 인력 2명</td>
+        <td>$XX,XXX</td>
+      </tr>
+      <tr>
+        <td>학습</td>
+        <td>GPU 32장, 2주</td>
+        <td>$XXX,XXX</td>
+      </tr>
+      <tr>
+        <td>평가/레드팀</td>
+        <td>전문가 3명, 2주</td>
+        <td>$XX,XXX</td>
+      </tr>
+      <tr>
+        <td>서빙</td>
+        <td>월간 1M 요청</td>
+        <td>$X,XXX/월</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="roles">조직 내 역할 분담</h2>
+  <ul>
+    <li><strong>리서치</strong>: 모델/학습 전략 수립</li>
+    <li><strong>ML 엔지니어</strong>: 학습 파이프라인 구현</li>
+    <li><strong>플랫폼</strong>: 서빙/인프라 운영</li>
+    <li><strong>보안/법무</strong>: 데이터/정책 검토</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="inference">추론 최적화</h2>
+  <p>모델을 실제 서비스로 제공하기 위해 속도와 비용을 최적화합니다. 캐싱, 배치, 양자화, KV 캐시 등이 핵심입니다.</p>
+
+  <pre><code><span class="kw">POST</span> <span class="str">/api/generate</span>
+<span class="cmt"># Ollama 예시: 로컬 추론 서버에 요청</span>
+{
+  <span class="str">"model"</span>: <span class="str">"llama3.1"</span>,
+  <span class="str">"prompt"</span>: <span class="str">"추론 최적화 전략을 3가지로 요약"</span>,
+  <span class="str">"stream"</span>: <span class="kw">false</span>
+}</code></pre>
+
+  <div class="info-box info">
+    <strong>참고:</strong> 로컬 추론 API는 Ollama, vLLM, TGI 등에서 유사한 구조로 제공됩니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="optimization-detail">추론 최적화 세부 전략</h2>
+  <ul>
+    <li><strong>KV 캐시</strong>: 이전 토큰의 계산 결과 재사용</li>
+    <li><strong>배치 처리</strong>: 여러 요청을 묶어 GPU 효율 향상</li>
+    <li><strong>양자화</strong>: 모델 가중치를 줄여 지연/비용 감소</li>
+    <li><strong>스트리밍 응답</strong>: 체감 지연을 줄이는 UX 최적화</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="rag-tools">RAG와 도구 사용</h2>
+  <p>모델이 모르는 정보는 검색/DB에서 가져오고, 계산/업무는 도구 호출로 처리합니다. LLM의 한계를 서비스 설계로 보완하는 핵심 패턴입니다.</p>
+  <ul>
+    <li><strong>RAG</strong>: 문서 임베딩 + 검색 + 요약/합성</li>
+    <li><strong>Tool Use</strong>: 함수 호출, API 연동, 파일/DB 접근</li>
+    <li><strong>MCP</strong>: 표준화된 도구 생태계 연결</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="rag-design">RAG 설계 체크리스트</h2>
+  <ul>
+    <li><strong>문서 분할</strong>: 문단 단위로 적절히 쪼개기</li>
+    <li><strong>임베딩 모델</strong>: 도메인 적합도, 비용 고려</li>
+    <li><strong>검색 전략</strong>: 키워드 + 벡터 하이브리드</li>
+    <li><strong>답변 합성</strong>: 근거 인용, 출처 표기</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="rag-diagram">RAG 파이프라인 다이어그램</h2>
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="llm-handbook-training-2-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="30" y="40" width="160" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="110" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">문서 저장소</text>
+
+      <rect x="250" y="40" width="160" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="330" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">검색/리트리버</text>
+
+      <rect x="470" y="40" width="200" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="570" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">LLM 응답 합성</text>
+
+      <line x1="190" y1="70" x2="250" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-training-2-arrow)"/>
+      <line x1="410" y1="70" x2="470" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-training-2-arrow)"/>
+    </svg>
+    <p class="diagram-caption">문서 검색 → 리트리버 → LLM 합성의 기본 구조</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="tool-patterns">도구 사용 패턴</h2>
+  <ul>
+    <li><strong>검증형</strong>: LLM 출력 후 도구로 사실 확인</li>
+    <li><strong>생성형</strong>: LLM이 계획을 세우고 도구로 실행</li>
+    <li><strong>혼합형</strong>: 요약/추론은 LLM, 계산/조회는 도구</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="tool-example">도구 호출 예제</h2>
+  <pre><code><span class="cmt">// Tool Use 프롬프트 예시 (의사 코드)</span>
+{
+  <span class="str">"role"</span>: <span class="str">"user"</span>,
+  <span class="str">"content"</span>: <span class="str">"이 주문의 배송 상태를 조회해줘"</span>
+}
+<span class="cmt">// 모델이 tools 호출을 제안</span>
+{
+  <span class="str">"tool"</span>: <span class="str">"getOrderStatus"</span>,
+  <span class="str">"arguments"</span>: { <span class="str">"orderId"</span>: <span class="str">"A-1029"</span> }
+}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="alignment-sample">정렬 데이터 샘플 (JSONL)</h2>
+  <pre><code>{<span class="str">"prompt"</span>: <span class="str">"제품 사용법을 3줄로 요약해줘"</span>, <span class="str">"better"</span>: <span class="str">"1) ... 2) ... 3) ..."</span>, <span class="str">"worse"</span>: <span class="str">"모호한 장문 설명"</span>, <span class="str">"note"</span>: <span class="str">"요구된 길이와 형식 만족"</span>}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="provider-snippets">제공자별 API 스니펫</h2>
+  <p>엔드포인트, 모델명, 헤더는 제공자 문서 기준으로 교체하세요.</p>
+  <pre><code><span class="cmt"># Claude (예시)</span>
+<span class="fn">curl</span> -s <span class="str">"https://api.anthropic.com/v1/messages"</span> \\
+  -H <span class="str">"x-api-key: $CLAUDE_API_KEY"</span> \\
+  -H <span class="str">"content-type: application/json"</span> \\
+  -d <span class="str">'{"model":"MODEL_ID","max_tokens":256,"messages":[{"role":"user","content":"요약해줘"}]}'</span></code></pre>
+
+  <pre><code><span class="cmt"># OpenAI (예시)</span>
+<span class="fn">curl</span> -s <span class="str">"https://api.openai.com/v1/chat/completions"</span> \\
+  -H <span class="str">"Authorization: Bearer $OPENAI_API_KEY"</span> \\
+  -H <span class="str">"Content-Type: application/json"</span> \\
+  -d <span class="str">'{"model":"MODEL_ID","messages":[{"role":"user","content":"요약해줘"}],"max_tokens":256}'</span></code></pre>
+
+  <pre><code><span class="cmt"># Gemini (예시)</span>
+<span class="fn">curl</span> -s <span class="str">"https://generativelanguage.googleapis.com/v1beta/models/MODEL_ID:generateContent?key=$GEMINI_API_KEY"</span> \\
+  -H <span class="str">"Content-Type: application/json"</span> \\
+  -d <span class="str">'{"contents":[{"role":"user","parts":[{"text":"요약해줘"}]}]}'</span></code></pre>
+
+  <pre><code><span class="cmt"># Ollama (로컬 예시)</span>
+<span class="fn">curl</span> -s <span class="str">"http://localhost:11434/api/generate"</span> \\
+  -H <span class="str">"Content-Type: application/json"</span> \\
+  -d <span class="str">'{"model":"llama3.1","prompt":"요약해줘","stream":false}'</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="finetune">파인튜닝 vs 프롬프트</h2>
+  <ul>
+    <li><strong>프롬프트</strong>: 빠르고 저렴, 시행착오에 강함</li>
+    <li><strong>파인튜닝</strong>: 안정적인 출력 스타일, 반복적 업무에 강함</li>
+    <li><strong>하이브리드</strong>: 프롬프트로 빠르게 검증 후 파인튜닝으로 안정화</li>
+  </ul>
+  <div class="info-box warning">
+    <strong>주의:</strong> 파인튜닝은 비용과 운영 복잡도가 크게 증가합니다. ROI가 명확할 때만 선택하세요.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="domain-examples">도메인별 학습 전략</h2>
+  <ul>
+    <li><strong>코딩</strong>: 코드 리뷰/리팩터링을 위한 SFT 데이터 확보</li>
+    <li><strong>문서</strong>: 용어집 기반 요약/분류 데이터 구성</li>
+    <li><strong>지원</strong>: 티켓 분류/답변 템플릿을 선호도 쌍으로 축적</li>
+  </ul>
+</section>
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="prompt-basics.html">프롬프트 기본</a></li>
+    <li><a href="mcp-intro.html">MCP란?</a></li>
+    <li><a href="ollama-advanced.html">Ollama 고급 활용</a></li>
+  </ul>
+
+  <div class="info-box info">
+    <strong>다음 학습:</strong>
+    <ul>
+      <li><a href="llm-handbook-ops.html">LLM 핸드북: 제품화·운영·안전</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

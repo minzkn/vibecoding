@@ -734,7 +734,7 @@ body.nav-open {
 }
 
 /* ---------- Right-side TOC ---------- */
-.toc-sidebar {
+.inline-toc {
   grid-area: toc;
   position: sticky;
   top: 60px;
@@ -795,23 +795,6 @@ body.nav-open {
 .toc-list .toc-h4 {
   padding-left: 2.4em;
   font-size: 0.75rem;
-}
-
-/* ---------- Inline TOC (for mobile / within content) ---------- */
-.inline-toc {
-  display: none;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
-  border-radius: 8px;
-  padding: 1em 1.5em;
-  margin-bottom: 2em;
-}
-
-.inline-toc-title {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: var(--text-heading);
-  margin-bottom: 0.8em;
 }
 
 .inline-toc .toc-list a {
@@ -1295,7 +1278,7 @@ tr:nth-child(even) {
 
 /* ---------- Print ---------- */
 @media print {
-  .side-nav, .toc-sidebar, .site-header, .site-footer,
+  .side-nav, .inline-toc, .site-header, .site-footer,
   .theme-switcher, .search-container, .back-to-top,
   .mobile-menu-toggle, .page-nav, .ad-container {
     display: none !important;

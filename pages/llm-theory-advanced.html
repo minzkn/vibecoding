@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);} 
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="LLM 이론 심화: 트랜스포머·스케일링·ICL">
+<meta property="og:description" content="Transformer 직관, 스케일링 법칙, In-Context Learning과 추론 이론을 심화 정리합니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/llm-theory-advanced.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Transformer 직관, 스케일링 법칙, In-Context Learning과 추론 이론을 심화 정리합니다.">
+<meta name="keywords" content="llm 이론 transformer attention scaling laws in-context learning">
+<meta name="author" content="MINZKN">
+<title>LLM 이론 심화: 트랜스포머·스케일링·ICL - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">LLM 이론 심화: 트랜스포머·스케일링·ICL</h1>
+<p class="page-description">Transformer, 스케일링 법칙, In-Context Learning과 추론 이론을 심화 관점에서 정리합니다.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>LLM의 성능은 아키텍처, 데이터, 컴퓨트의 상호작용에 의해 결정됩니다. 이 페이지는 핵심 이론을 심화 관점에서 연결합니다.</p>
+</section>
+
+<section class="content-section">
+  <h2 id="transformer">Transformer 직관</h2>
+  <ul>
+    <li><strong>Self-Attention</strong>: 모든 토큰의 관계를 동시에 고려</li>
+    <li><strong>Residual/LayerNorm</strong>: 안정적인 학습을 위한 구조</li>
+    <li><strong>Position Encoding</strong>: 순서 정보를 벡터로 주입</li>
+  </ul>
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 260"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="llm-theory-advanced-1-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="60" y="40" width="160" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="140" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">입력 임베딩</text>
+
+      <rect x="270" y="40" width="170" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="355" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">Self-Attention</text>
+
+      <rect x="490" y="40" width="160" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="570" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">출력</text>
+
+      <line x1="220" y1="70" x2="270" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-advanced-1-arrow)"/>
+      <line x1="440" y1="70" x2="490" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-advanced-1-arrow)"/>
+    </svg>
+    <p class="diagram-caption">Transformer의 기본 흐름(임베딩 → 어텐션 → 출력)</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="attention-math">Attention 수학적 직관</h2>
+  <pre><code><span class="cmt"># Attention 요약식 (직관)</span>
+<span class="kw">Attention</span>(Q, K, V) = softmax(QK^T / sqrt(d)) * V</code></pre>
+  <p>Q, K, V는 각각 질의/키/값이며, 유사도가 높은 키에 더 큰 가중치를 부여합니다.</p>
+</section>
+
+<section class="content-section">
+  <h2 id="scaling">스케일링 법칙</h2>
+  <ul>
+    <li><strong>모델 크기</strong>: 파라미터 증가 시 성능 개선</li>
+    <li><strong>데이터</strong>: 학습 데이터가 충분하지 않으면 한계</li>
+    <li><strong>컴퓨트</strong>: 일정 수준까지는 스케일이 성능을 주도</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="icl">In-Context Learning</h2>
+  <p>모델이 추가 학습 없이도 프롬프트 내 예시를 통해 작업을 수행하는 현상입니다.</p>
+  <ul>
+    <li><strong>Few-shot</strong>: 예시 2~5개로 학습 효과</li>
+    <li><strong>패턴 추론</strong>: 예시의 규칙을 컨텍스트에서 추론</li>
+    <li><strong>컨텍스트 길이</strong>: 더 긴 컨텍스트는 더 복잡한 패턴 학습 가능</li>
+  </ul>
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 260"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="llm-theory-advanced-2-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="40" y="50" width="200" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="140" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">예시 프롬프트</text>
+
+      <rect x="290" y="50" width="200" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="390" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">패턴 추론</text>
+
+      <rect x="540" y="50" width="140" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="610" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">응답 생성</text>
+
+      <line x1="240" y1="80" x2="290" y2="80" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-advanced-2-arrow)"/>
+      <line x1="490" y1="80" x2="540" y2="80" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-advanced-2-arrow)"/>
+    </svg>
+    <p class="diagram-caption">ICL의 흐름(예시 → 패턴 추론 → 응답)</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="reasoning">추론 이론과 한계</h2>
+  <ul>
+    <li><strong>체인 구조</strong>: 긴 추론은 오류 누적 가능성</li>
+    <li><strong>샘플링 전략</strong>: 다중 샘플링으로 정확도 개선</li>
+    <li><strong>검증 루프</strong>: 자기검증/도구 검증 결합</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="theory-to-practice">이론에서 실전으로</h2>
+  <ul>
+    <li><strong>Attention</strong> → 긴 컨텍스트에서 중요한 정보 강조</li>
+    <li><strong>ICL</strong> → Few-shot 예시로 빠른 태스크 적응</li>
+    <li><strong>스케일링</strong> → 비용 대비 성능 목표 설정</li>
+  </ul>
+  <div class="info-box info">
+    <strong>실전 연결:</strong> 이론은 모델 선택과 프롬프트 전략의 근거가 됩니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="case-study">케이스 스터디: ICL 성능 개선</h2>
+  <ol>
+    <li>입력 예시를 2개에서 4개로 늘려 패턴 노출 강화</li>
+    <li>예시 형식을 출력 형식과 동일하게 맞춤</li>
+    <li>컨텍스트 길이 한계 내에서 불필요한 텍스트 제거</li>
+  </ol>
+  <div class="info-box tip">
+    <strong>결과:</strong> 동일 모델에서도 정확도와 일관성이 개선됩니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="llm-theory-foundations.html">LLM 이론 기초</a></li>
+    <li><a href="llm-theory-math-appendix.html">LLM 이론 수학 부록</a></li>
+    <li><a href="prompt-basics.html">프롬프트 기본</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

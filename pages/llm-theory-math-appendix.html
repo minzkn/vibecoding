@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);} 
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="LLM 이론 수학 부록">
+<meta property="og:description" content="LLM 관련 핵심 수식을 간단히 정리한 수학 부록입니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/llm-theory-math-appendix.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="LLM 관련 핵심 수식을 간단히 정리한 수학 부록입니다.">
+<meta name="keywords" content="llm 수학 부록 attention cross entropy perplexity">
+<meta name="author" content="MINZKN">
+<title>LLM 이론 수학 부록 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">LLM 이론 수학 부록</h1>
+<p class="page-description">LLM의 핵심 이론을 이해하는 데 필요한 최소한의 수식을 모아 둡니다.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>수식은 최소한으로 유지하고, 실무에서 자주 마주치는 핵심 관계만 정리합니다.</p>
+</section>
+
+<section class="content-section">
+  <h2 id="linear-algebra">벡터/행렬 기초</h2>
+  <ul>
+    <li><strong>벡터</strong>: 숫자의 배열. 토큰 임베딩을 벡터로 표현</li>
+    <li><strong>행렬</strong>: 벡터를 쌓은 2차원 배열. 어텐션 계산의 기본 단위</li>
+    <li><strong>내적</strong>: 두 벡터의 유사도를 측정하는 연산</li>
+  </ul>
+  <pre><code><span class="cmt"># 내적 예시</span>
+v · w = ∑ v_i w_i</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="cross-entropy">크로스엔트로피</h2>
+  <pre><code><span class="cmt"># Cross Entropy</span>
+H(p, q) = - ∑ p(x) log q(x)</code></pre>
+  <p>모델 예측 분포 q가 실제 분포 p와 얼마나 다른지를 나타냅니다.</p>
+</section>
+
+<section class="content-section">
+  <h2 id="perplexity">퍼플렉서티</h2>
+  <pre><code><span class="cmt"># Perplexity</span>
+PPL = exp(H(p, q))</code></pre>
+  <p>퍼플렉서티가 낮을수록 모델의 예측 정확도가 높습니다.</p>
+</section>
+
+<section class="content-section">
+  <h2 id="attention">Attention</h2>
+  <pre><code><span class="cmt"># Attention</span>
+Attention(Q, K, V) = softmax(QK^T / sqrt(d)) · V</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="attention-example">Attention 수치 예시</h2>
+  <pre><code><span class="cmt"># 간단한 예시 (의사 수치)</span>
+QK^T = [[2.0, 1.0], [0.5, 1.5]]
+softmax → [[0.73, 0.27], [0.27, 0.73]]
+결과 = softmax * V</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="softmax">Softmax</h2>
+  <pre><code><span class="cmt"># Softmax</span>
+softmax(z_i) = exp(z_i) / ∑ exp(z_j)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="loss">학습 손실</h2>
+  <pre><code><span class="cmt"># NLL Loss</span>
+L = - ∑ log p(y_t | y_{&lt;t}, x)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="llm-theory-foundations.html">LLM 이론 기초</a></li>
+    <li><a href="llm-theory-advanced.html">LLM 이론 심화</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

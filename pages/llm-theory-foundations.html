@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);} 
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="LLM 이론 기초: 확률·정보·일반화">
+<meta property="og:description" content="LLM의 확률적 생성, 정보이론, 일반화와 환각의 원리를 기초 수준에서 정리합니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/llm-theory-foundations.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="LLM의 확률적 생성, 정보이론, 일반화와 환각의 원리를 기초 수준에서 정리합니다.">
+<meta name="keywords" content="llm 이론 확률 정보이론 일반화 환각 크로스엔트로피">
+<meta name="author" content="MINZKN">
+<title>LLM 이론 기초: 확률·정보·일반화 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">LLM 이론 기초: 확률·정보·일반화</h1>
+<p class="page-description">확률적 생성의 의미, 정보이론 지표, 일반화와 환각을 기초 수준에서 이해합니다.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>LLM은 “다음 토큰의 확률”을 예측하는 모델입니다. 이 단순한 가정이 정보이론, 일반화, 환각 같은 현상으로 연결됩니다. 이 페이지는 핵심 이론을 실무 관점에서 풀어 설명합니다.</p>
+</section>
+
+<section class="content-section">
+  <h2 id="probability">확률적 생성의 의미</h2>
+  <p>모델은 정답을 “하나”로 내지 않고, 가능한 답변의 분포를 학습합니다. 따라서 응답은 항상 확률적으로 결정됩니다.</p>
+  <ul>
+    <li><strong>온도(temperature)</strong>: 분포를 넓히거나 좁힘</li>
+    <li><strong>Top-k/Top-p</strong>: 후보 토큰의 범위를 제한</li>
+    <li><strong>샘플링 vs 결정론</strong>: 창의성/일관성의 균형</li>
+  </ul>
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 240"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="llm-theory-foundations-1-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="40" y="50" width="170" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="125" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">입력 토큰</text>
+
+      <rect x="270" y="50" width="170" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="355" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">확률 분포</text>
+
+      <rect x="500" y="50" width="160" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="580" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">출력 토큰</text>
+
+      <line x1="210" y1="80" x2="270" y2="80" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-foundations-1-arrow)"/>
+      <line x1="440" y1="80" x2="500" y2="80" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-foundations-1-arrow)"/>
+    </svg>
+    <p class="diagram-caption">입력 → 확률 분포 → 출력의 기본 생성 흐름</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="information-theory">정보이론 관점</h2>
+  <ul>
+    <li><strong>엔트로피</strong>: 불확실성의 정도</li>
+    <li><strong>크로스엔트로피</strong>: 모델 예측과 실제 분포의 차이</li>
+    <li><strong>퍼플렉서티</strong>: 크로스엔트로피를 직관적으로 변환한 지표</li>
+  </ul>
+  <pre><code><span class="cmt"># 직관적 관계</span>
+<span class="kw">낮은</span> 크로스엔트로피 → <span class="kw">높은</span> 예측 정확도</code></pre>
+  <div class="info-box info">
+    <strong>예시:</strong> 같은 질문에 대한 모델 A의 퍼플렉서티가 B보다 낮다면, 보통 A가 더 안정적입니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="generalization">일반화와 과적합</h2>
+  <p>LLM은 학습 데이터와 다른 입력에도 답해야 합니다. 일반화가 좋으면 새로운 입력에 안정적으로 대응합니다.</p>
+  <ul>
+    <li><strong>일반화</strong>: 보지 못한 입력에 대한 성능</li>
+    <li><strong>과적합</strong>: 학습 데이터에만 강함</li>
+    <li><strong>데이터 분포</strong>: 실제 사용자 입력과 일치해야 함</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="hallucination">환각(허위 응답)의 원인</h2>
+  <ul>
+    <li><strong>확률적 생성</strong>: 낮은 확률의 토큰이 선택될 수 있음</li>
+    <li><strong>지식 공백</strong>: 학습 데이터에 없는 정보</li>
+    <li><strong>프롬프트 불명확</strong>: 조건이 모호한 질문</li>
+  </ul>
+  <div class="info-box warning">
+    <strong>주의:</strong> 환각은 “버그”라기보다 확률적 생성의 자연스러운 결과입니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="uncertainty">불확실성 다루기</h2>
+  <ul>
+    <li><strong>자기검증</strong>: 모델이 스스로 근거를 재점검</li>
+    <li><strong>근거 제공</strong>: 출처를 명시하도록 설계</li>
+    <li><strong>RAG</strong>: 외부 지식으로 보강</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="theory-to-practice">이론에서 실전으로</h2>
+  <ul>
+    <li><strong>확률적 생성</strong> → 온도/Top-p 제어로 품질 안정화</li>
+    <li><strong>크로스엔트로피</strong> → 모델 비교 시 퍼플렉서티 활용</li>
+    <li><strong>환각</strong> → RAG/도구 호출로 사실 검증</li>
+  </ul>
+  <div class="info-box info">
+    <strong>실전 연결:</strong> 이론 이해는 프롬프트 설계와 평가 기준 설정으로 직접 이어집니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="case-study">케이스 스터디: 요약 품질 개선</h2>
+  <ol>
+    <li>퍼플렉서티가 낮은 모델을 우선 후보로 선정</li>
+    <li>온도 값을 낮추어 일관성을 강화</li>
+    <li>RAG로 근거 문장을 함께 제공</li>
+  </ol>
+  <div class="info-box tip">
+    <strong>결과:</strong> 환각 빈도가 줄고 요약의 일관성이 향상됩니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="llm-theory-advanced.html">LLM 이론 심화</a></li>
+    <li><a href="llm-theory-math-appendix.html">LLM 이론 수학 부록</a></li>
+    <li><a href="llm-handbook-training.html">LLM 핸드북: 학습·정렬·추론</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

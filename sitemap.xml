@@ -337,6 +337,42 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://minzkn.com/claude/pages/llm-handbook-concepts.html</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://minzkn.com/claude/pages/llm-handbook-training.html</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://minzkn.com/claude/pages/llm-handbook-ops.html</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://minzkn.com/claude/pages/llm-theory-foundations.html</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://minzkn.com/claude/pages/llm-theory-advanced.html</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://minzkn.com/claude/pages/llm-theory-math-appendix.html</loc>
+    <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://minzkn.com/claude/pages/vibe-coding-patterns.html</loc>
     <lastmod>2026-02-13</lastmod>
     <changefreq>monthly</changefreq>

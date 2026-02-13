@@ -13,12 +13,8 @@
       "footer footer";
   }
 
-  .toc-sidebar {
-    display: none;
-  }
-
   .inline-toc {
-    display: block;
+    display: none;
   }
 
   .main-content {

@@ -65,6 +65,12 @@ var SEARCH_INDEX = [
   { title: "비용 모니터링", url: "pages/monitoring-costs.html", description: "LLM API 비용 모니터링 및 최적화", keywords: "monitoring costs 비용 모니터링 최적화" },
 
   // 참고 & 리소스
+  { title: "LLM 이론 기초: 확률·정보·일반화", url: "pages/llm-theory-foundations.html", description: "LLM 확률적 생성, 정보이론, 일반화/환각의 핵심 개념", keywords: "llm theory 확률 정보이론 일반화 환각" },
+  { title: "LLM 이론 심화: 트랜스포머·스케일링·ICL", url: "pages/llm-theory-advanced.html", description: "Transformer, 스케일링 법칙, In-Context Learning 이론", keywords: "llm theory transformer attention scaling icl" },
+  { title: "LLM 이론 수학 부록", url: "pages/llm-theory-math-appendix.html", description: "LLM 핵심 수식 요약: 크로스엔트로피, 퍼플렉서티, 어텐션", keywords: "llm math appendix cross entropy perplexity attention" },
+  { title: "LLM 핸드북: 개념과 구조", url: "pages/llm-handbook-concepts.html", description: "LLM 핵심 개념, 토큰/컨텍스트, 모델 구조와 생태계 지형 정리", keywords: "llm 핸드북 개념 구조 토큰 컨텍스트 생태계" },
+  { title: "LLM 핸드북: 학습·정렬·추론", url: "pages/llm-handbook-training.html", description: "프리트레이닝, 정렬, 추론 최적화, RAG/도구 사용 흐름", keywords: "llm 학습 정렬 rlhf dpo 추론 rag 도구사용" },
+  { title: "LLM 핸드북: 제품화·운영·안전", url: "pages/llm-handbook-ops.html", description: "서비스 배포, 비용/지연 관리, 평가/모니터링, 보안/컴플라이언스", keywords: "llm 운영 배포 모니터링 평가 보안 컴플라이언스" },
   { title: "Vibe Coding 패턴", url: "pages/vibe-coding-patterns.html", description: "Vibe Coding 디자인 패턴 및 실전 사례", keywords: "vibe coding patterns 패턴 사례" },
   { title: "모델 비교", url: "pages/model-comparison.html", description: "Claude, GPT, Gemini, Ollama 모델 비교", keywords: "models comparison opus sonnet haiku gpt gemini 모델 비교" },
   { title: "LLM 제한사항", url: "pages/limitations.html", description: "LLM 제한사항 및 주의사항", keywords: "limitations constraints 제한사항 제약" },
@@ -143,6 +149,12 @@ var NAV_STRUCTURE = [
     { file: 'monitoring-costs.html', title: '비용 모니터링' }
   ]},
   { title: '참고 & 리소스', pages: [
+    { file: 'llm-theory-foundations.html', title: 'LLM 이론 기초: 확률·정보·일반화' },
+    { file: 'llm-theory-advanced.html', title: 'LLM 이론 심화: 트랜스포머·스케일링·ICL' },
+    { file: 'llm-theory-math-appendix.html', title: 'LLM 이론 수학 부록' },
+    { file: 'llm-handbook-concepts.html', title: 'LLM 핸드북: 개념과 구조' },
+    { file: 'llm-handbook-training.html', title: 'LLM 핸드북: 학습·정렬·추론' },
+    { file: 'llm-handbook-ops.html', title: 'LLM 핸드북: 제품화·운영·안전' },
     { file: 'vibe-coding-patterns.html', title: 'Vibe Coding 패턴' },
     { file: 'model-comparison.html', title: '모델 비교' },
     { file: 'limitations.html', title: 'LLM 제한사항' },

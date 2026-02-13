@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);} 
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="LLM 핸드북: 제품화·운영·안전">
+<meta property="og:description" content="서비스 배포, 비용/지연 관리, 평가/모니터링, 보안/컴플라이언스를 통합적으로 정리합니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/llm-handbook-ops.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="서비스 배포, 비용/지연 관리, 평가/모니터링, 보안/컴플라이언스를 통합적으로 정리합니다.">
+<meta name="keywords" content="llm 운영 배포 모니터링 평가 보안 컴플라이언스 비용 최적화">
+<meta name="author" content="MINZKN">
+<title>LLM 핸드북: 제품화·운영·안전 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">LLM 핸드북: 제품화·운영·안전</h1>
+<p class="page-description">LLM을 실제 서비스로 배포하고 유지하기 위한 운영·평가·보안 프레임을 정리합니다.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>실전 환경에서는 품질뿐 아니라 비용, 지연, 안전, 법적 요구사항이 동시에 고려되어야 합니다. 운영은 “모델”이 아니라 “시스템”을 다루는 일입니다.</p>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 260"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="llm-handbook-ops-1-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="30" y="40" width="150" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="105" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">프론트엔드</text>
+
+      <rect x="230" y="40" width="170" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="315" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">오케스트레이션</text>
+
+      <rect x="450" y="40" width="200" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="550" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">LLM/도구/데이터</text>
+
+      <line x1="180" y1="70" x2="230" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-ops-1-arrow)"/>
+      <line x1="400" y1="70" x2="450" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-ops-1-arrow)"/>
+    </svg>
+    <p class="diagram-caption">LLM 서비스 운영 구성의 기본 흐름</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포 전략</h2>
+  <ul>
+    <li><strong>관리형 API</strong>: 빠른 출시, 운영 부담 최소화</li>
+    <li><strong>로컬/온프레미스</strong>: 데이터 통제, 지연 최소화</li>
+    <li><strong>하이브리드</strong>: 고성능 모델은 클라우드, 민감 데이터는 로컬</li>
+  </ul>
+  <div class="info-box tip">
+    <strong>팁:</strong> 서비스 초기에는 관리형 API로 시작해, 비용/보안 요구가 커지면 하이브리드로 이동하는 것이 일반적입니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="architecture">서비스 아키텍처 패턴</h2>
+  <ul>
+    <li><strong>모델 라우터</strong>: 요청 유형에 따라 모델 자동 선택</li>
+    <li><strong>컨텍스트 서비스</strong>: 문서/지식베이스 관리 전담</li>
+    <li><strong>도구 게이트웨이</strong>: 외부 API 호출을 통제/감사</li>
+  </ul>
+  <div class="info-box info">
+    <strong>실무 포인트:</strong> LLM을 단일 엔드포인트로 두지 말고, 주변 서비스로 분리하면 품질과 보안을 함께 개선할 수 있습니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="reliability">신뢰성과 관찰성</h2>
+  <p>LLM은 확률적 시스템입니다. 실패를 전제로 설계해야 합니다.</p>
+  <ul>
+    <li><strong>재시도 정책</strong>: 타임아웃/레이트리밋 대응</li>
+    <li><strong>폴백 모델</strong>: 품질이 낮더라도 응답을 보장</li>
+    <li><strong>로그/트레이싱</strong>: 프롬프트, 응답, 토큰 사용량 기록</li>
+  </ul>
+
+  <pre><code><span class="kw">async</span> <span class="kw">function</span> <span class="fn">callWithRetry</span>(payload) {
+  <span class="kw">for</span> (<span class="kw">let</span> attempt = <span class="num">1</span>; attempt &lt;= <span class="num">3</span>; attempt++) {
+    <span class="kw">try</span> {
+      <span class="kw">return</span> <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"/v1/messages"</span>, {
+        method: <span class="str">"POST"</span>,
+        headers: { <span class="str">"Content-Type"</span>: <span class="str">"application/json"</span> },
+        body: <span class="fn">JSON</span>.<span class="fn">stringify</span>(payload)
+      });
+    } <span class="kw">catch</span> (err) {
+      <span class="kw">if</span> (attempt === <span class="num">3</span>) <span class="kw">throw</span> err;
+      <span class="kw">await</span> <span class="fn">new</span> <span class="fn">Promise</span>(r =&gt; <span class="fn">setTimeout</span>(r, attempt * <span class="num">400</span>));
+    }
+  }
+}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="metrics">핵심 운영 지표</h2>
+  <ul>
+    <li><strong>응답 품질</strong>: 사용자 만족도, 재질문 비율</li>
+    <li><strong>지연</strong>: p50/p95 응답 시간, 스트리밍 첫 토큰 시간</li>
+    <li><strong>비용</strong>: 요청당 평균 토큰, 캐시 히트율</li>
+    <li><strong>안전</strong>: 정책 위반 비율, 차단율</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="ops-checklist">운영 체크리스트</h2>
+  <ul>
+    <li><strong>모델 라우팅</strong>: 요청 유형별 모델 매핑</li>
+    <li><strong>레이트리밋</strong>: 사용자/서비스 단위 제한</li>
+    <li><strong>에러 핸들링</strong>: 폴백 응답 및 재시도 정책</li>
+    <li><strong>로그 정책</strong>: 저장 범위와 보존 기간 명시</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="evaluation">평가와 품질 관리</h2>
+  <ul>
+    <li><strong>오프라인 평가</strong>: 테스트셋으로 모델 비교</li>
+    <li><strong>온라인 평가</strong>: 사용자 피드백, A/B 테스트</li>
+    <li><strong>가드레일</strong>: 금지 주제, 개인정보 노출 방지</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="guardrails">가드레일과 정책 설계</h2>
+  <ul>
+    <li><strong>프롬프트 인젝션 대응</strong>: 시스템 프롬프트 고정, 입력 필터</li>
+    <li><strong>출력 검증</strong>: 금칙어/민감정보 탐지 후 마스킹</li>
+    <li><strong>권한 경계</strong>: 도구 호출 범위 제한</li>
+  </ul>
+  <div class="info-box warning">
+    <strong>주의:</strong> 프롬프트 인젝션은 “사용자 입력”이 아니라 “데이터 입력”에서도 발생할 수 있습니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="guardrails-diagram">가드레일 흐름 다이어그램</h2>
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="llm-handbook-ops-2-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="30" y="40" width="140" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="100" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">입력 검사</text>
+
+      <rect x="220" y="40" width="140" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="290" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">정책 필터</text>
+
+      <rect x="410" y="40" width="140" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="480" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">LLM 호출</text>
+
+      <rect x="580" y="40" width="110" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="635" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">출력 검사</text>
+
+      <line x1="170" y1="70" x2="220" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-ops-2-arrow)"/>
+      <line x1="360" y1="70" x2="410" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-ops-2-arrow)"/>
+      <line x1="550" y1="70" x2="580" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-ops-2-arrow)"/>
+    </svg>
+    <p class="diagram-caption">입력/정책/출력 단계별 가드레일 구조</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="security">보안과 컴플라이언스</h2>
+  <ul>
+    <li><strong>데이터 최소화</strong>: 불필요한 개인정보 제거</li>
+    <li><strong>권한 제어</strong>: 내부 도구 접근 제한</li>
+    <li><strong>감사 로그</strong>: 입력/출력 보존 정책 설계</li>
+  </ul>
+  <div class="info-box warning">
+    <strong>주의:</strong> 고객 데이터가 포함된 프롬프트는 저장/재학습 정책을 반드시 확인해야 합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="privacy">데이터 보존과 거버넌스</h2>
+  <ul>
+    <li><strong>보존 기간</strong>: 로그/프롬프트 저장 기간 정의</li>
+    <li><strong>마스킹</strong>: 개인정보 자동 제거 또는 토큰화</li>
+    <li><strong>감사 대응</strong>: 규제 기관/내부 감사 요청 대비</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="cost">비용 최적화</h2>
+  <ul>
+    <li><strong>모델 라우팅</strong>: 고성능 모델은 필요한 경우에만 사용</li>
+    <li><strong>프롬프트 압축</strong>: 불필요한 컨텍스트 제거</li>
+    <li><strong>캐싱</strong>: 반복 질문/템플릿 응답 캐시</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="cost-template">비용 모델링 템플릿</h2>
+  <pre><code><span class="cmt"># 월간 비용 추정</span>
+<span class="kw">요청수</span>: 1,000,000건
+<span class="kw">평균 입력</span>: 700 tokens
+<span class="kw">평균 출력</span>: 300 tokens
+<span class="kw">모델 단가</span>: $X / 1M tokens
+<span class="kw">캐시 히트율</span>: 25%
+<span class="kw">예상 비용</span>: (입력+출력) * 단가 * (1-캐시율)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="cost-example">비용 계산 시트 예시</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>항목</th>
+        <th>값</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>월간 요청 수</td>
+        <td>1,000,000</td>
+      </tr>
+      <tr>
+        <td>평균 입력/출력</td>
+        <td>700 / 300 tokens</td>
+      </tr>
+      <tr>
+        <td>단가</td>
+        <td>$X / 1M tokens</td>
+      </tr>
+      <tr>
+        <td>캐시 히트율</td>
+        <td>25%</td>
+      </tr>
+      <tr>
+        <td>예상 비용</td>
+        <td>≈ $Y</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="incident">장애 대응 시나리오</h2>
+  <ol>
+    <li>모델 응답 지연 또는 오류율 상승 감지</li>
+    <li>폴백 모델로 자동 전환</li>
+    <li>원인 분석 후 프롬프트/라우팅 정책 수정</li>
+  </ol>
+</section>
+
+<section class="content-section">
+  <h2 id="domain-ops">도메인별 운영 포인트</h2>
+  <ul>
+    <li><strong>코딩</strong>: 리포지토리 접근 권한과 비밀키 보호가 핵심</li>
+    <li><strong>문서</strong>: 최신 문서 동기화와 출처 표기 강화</li>
+    <li><strong>지원</strong>: 민감 정보 마스킹과 이력 추적 강화</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="provider-snippets">제공자별 API 스니펫</h2>
+  <p>실제 운영에서는 키 관리/레이트리밋/재시도 정책을 함께 적용하세요.</p>
+  <pre><code><span class="cmt"># Claude (예시)</span>
+<span class="kw">const</span> payload = {
+  <span class="str">"model"</span>: <span class="str">"MODEL_ID"</span>,
+  <span class="str">"max_tokens"</span>: <span class="num">256</span>,
+  <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"요약해줘"</span> }]
+};
+</code></pre>
+
+  <pre><code><span class="cmt"># OpenAI (예시)</span>
+<span class="kw">const</span> payload = {
+  <span class="str">"model"</span>: <span class="str">"MODEL_ID"</span>,
+  <span class="str">"messages"</span>: [{ <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"요약해줘"</span> }],
+  <span class="str">"max_tokens"</span>: <span class="num">256</span>
+};
+</code></pre>
+
+  <pre><code><span class="cmt"># Gemini (예시)</span>
+<span class="kw">const</span> payload = {
+  <span class="str">"contents"</span>: [
+    { <span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"parts"</span>: [{ <span class="str">"text"</span>: <span class="str">"요약해줘"</span> }] }
+  ]
+};
+</code></pre>
+
+  <pre><code><span class="cmt"># Ollama (로컬 예시)</span>
+<span class="kw">const</span> payload = {
+  <span class="str">"model"</span>: <span class="str">"llama3.1"</span>,
+  <span class="str">"prompt"</span>: <span class="str">"요약해줘"</span>,
+  <span class="str">"stream"</span>: <span class="kw">false</span>
+};
+</code></pre>
+</section>
+<section class="content-section">
+  <h2 id="roadmap">운영 로드맵</h2>
+  <ol>
+    <li>가장 단순한 API 호출로 프로덕트 가설 검증</li>
+    <li>프롬프트 템플릿과 평가셋 구축</li>
+    <li>관찰성/가드레일 적용 후 확장</li>
+  </ol>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="monitoring-costs.html">비용 모니터링</a></li>
+    <li><a href="api-best-practices.html">API 모범 사례</a></li>
+    <li><a href="limitations.html">LLM 제한사항</a></li>
+  </ul>
+
+  <div class="info-box info">
+    <strong>다음 학습:</strong>
+    <ul>
+      <li><a href="llm-handbook-concepts.html">LLM 핸드북: 개념과 구조</a></li>
+      <li><a href="llm-handbook-training.html">LLM 핸드북: 학습·정렬·추론</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

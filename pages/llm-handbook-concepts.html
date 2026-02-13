@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);} 
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="LLM 핸드북: 개념과 구조">
+<meta property="og:description" content="LLM의 핵심 개념, 토큰/컨텍스트, 모델 구조와 생태계 지형을 한눈에 정리합니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/llm-handbook-concepts.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="LLM의 핵심 개념, 토큰/컨텍스트, 모델 구조와 생태계 지형을 한눈에 정리합니다.">
+<meta name="keywords" content="llm 핸드북 개념 토큰 컨텍스트 모델 구조 생태계">
+<meta name="author" content="MINZKN">
+<title>LLM 핸드북: 개념과 구조 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">LLM 핸드북: 개념과 구조</h1>
+<p class="page-description">LLM을 이해하기 위한 기본 언어, 구조, 생태계 지형을 빠르게 정리합니다.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>이 페이지는 LLM이 무엇인지, 어떤 구성 요소로 작동하는지, 그리고 산업 생태계가 어떻게 구성되는지를 한 장의 지도로 정리합니다. 학습·추론·운영은 다음 페이지에서 다룹니다.</p>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 240"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="llm-handbook-concepts-1-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="20" y="40" width="150" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="95" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">데이터</text>
+
+      <rect x="210" y="40" width="150" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="285" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">학습</text>
+
+      <rect x="400" y="40" width="150" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="475" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">모델</text>
+
+      <rect x="580" y="40" width="100" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="630" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="13">앱</text>
+
+      <line x1="170" y1="70" x2="210" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-concepts-1-arrow)"/>
+      <line x1="360" y1="70" x2="400" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-concepts-1-arrow)"/>
+      <line x1="550" y1="70" x2="580" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-handbook-concepts-1-arrow)"/>
+    </svg>
+    <p class="diagram-caption">LLM 파이프라인의 기본 흐름</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="core-terms">핵심 용어와 개념</h2>
+  <ul>
+    <li><strong>토큰</strong>: 텍스트를 모델이 이해할 수 있도록 쪼갠 최소 단위. 비용과 지연을 직접 결정합니다.</li>
+    <li><strong>컨텍스트 윈도우</strong>: 한 번에 처리 가능한 토큰의 총량. 문서 길이, 대화 유지 범위를 결정합니다.</li>
+    <li><strong>모델 파라미터</strong>: 모델의 크기와 표현력. 크기만큼 학습/추론 비용도 증가합니다.</li>
+    <li><strong>추론</strong>: 학습된 모델에 입력을 주고 출력(응답)을 생성하는 단계.</li>
+  </ul>
+  <div class="info-box tip">
+    <strong>포인트:</strong> “모델 성능”은 하나의 숫자가 아니라, 정확도·지연·비용·안전성의 균형입니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="model-structure">모델 구조 이해</h2>
+  <p>대부분의 LLM은 Transformer 아키텍처를 기반으로 합니다. 입력은 임베딩으로 변환되고, 어텐션 층에서 문맥을 확장한 뒤, 디코더가 다음 토큰을 예측합니다.</p>
+
+  <pre><code><span class="fn">curl</span> -s <span class="str">"http://localhost:8000/v1/chat/completions"</span> \
+  -H <span class="str">"Authorization: Bearer $OPENAI_API_KEY"</span> \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d <span class="str">'{"model":"MODEL_ID","messages":[{"role":"user","content":"LLM 구조를 한 문장으로 요약해줘"}],"max_tokens":128}'</span></code></pre>
+
+  <div class="info-box info">
+    <strong>참고:</strong> 위 요청 형식은 OpenAI 호환 API의 대표적인 구조입니다. 실제 엔드포인트/모델명은 제공자별 문서를 확인하세요.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="tokenizer">토크나이저와 텍스트 분해</h2>
+  <p>토크나이저는 문장을 토큰으로 분해하는 규칙을 정의합니다. 같은 문장이라도 모델/제공자에 따라 토큰 수가 달라지므로 비용 추정과 컨텍스트 설계에 직접적인 영향을 줍니다.</p>
+  <ul>
+    <li><strong>공백 기반 분해</strong>: 직관적이지만 한계가 큼</li>
+    <li><strong>BPE/WordPiece</strong>: 자주 등장하는 조합을 학습</li>
+    <li><strong>문자 단위 분해</strong>: 드문 토큰을 줄이지만 길이가 늘어남</li>
+  </ul>
+  <div class="info-box info">
+    <strong>실무 팁:</strong> 프롬프트 템플릿을 고정해두면 토큰 수를 예측하기 쉬워집니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="context-design">컨텍스트 설계</h2>
+  <p>컨텍스트는 “모델이 참고할 수 있는 작업 메모리”입니다. 길이를 늘리면 더 많은 정보를 담을 수 있지만, 비용과 지연이 증가합니다.</p>
+  <ul>
+    <li><strong>시스템 프롬프트</strong>: 역할/정책/톤을 정의</li>
+    <li><strong>작업 컨텍스트</strong>: 입력 문서, 요약, 요건</li>
+    <li><strong>대화 히스토리</strong>: 최근 메시지만 유지하고 이전은 요약</li>
+  </ul>
+  <pre><code><span class="cmt">// 컨텍스트 구성 예시</span>
+{
+  <span class="str">"system"</span>: <span class="str">"당신은 요약 전문가입니다."</span>,
+  <span class="str">"context"</span>: <span class="str">"요청 문서 요약/핵심 키워드"</span>,
+  <span class="str">"messages"</span>: [ ... ]
+}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="evaluation">평가 지표와 측정</h2>
+  <p>LLM은 정확도만으로 평가하기 어렵습니다. 서비스 목적에 맞는 지표를 혼합해야 합니다.</p>
+  <ul>
+    <li><strong>정확도/일관성</strong>: 동일 입력에 대한 응답 품질</li>
+    <li><strong>안전성</strong>: 금지 주제 회피, 개인정보 노출 방지</li>
+    <li><strong>유용성</strong>: 사용자 만족도, 업무 성과 개선</li>
+    <li><strong>비용/지연</strong>: 토큰 사용량, 응답 시간</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="evaluation-template">평가 템플릿</h2>
+  <p>다음 템플릿을 복사해 내부 평가 시트를 구성하면 비교가 쉬워집니다.</p>
+  <pre><code><span class="cmt"># 평가 카드 템플릿</span>
+<span class="kw">목표</span>: 어떤 문제를 해결하는가?
+<span class="kw">시나리오</span>: 실제 사용자 입력 5~10개
+<span class="kw">정답 기준</span>: 기대 응답의 조건
+<span class="kw">실패 기준</span>: 금칙어, 허위 사실, 누락
+<span class="kw">메트릭</span>: 정확도/지연/비용/안전
+<span class="kw">결론</span>: 선택/보류/대체</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="evaluation-example">평가 카드 예시</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>항목</th>
+        <th>내용</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>목표</td>
+        <td>긴 문서 요약 품질 향상</td>
+      </tr>
+      <tr>
+        <td>시나리오</td>
+        <td>정책 문서 5종 요약</td>
+      </tr>
+      <tr>
+        <td>정답 기준</td>
+        <td>핵심 항목 5개 이상 포함</td>
+      </tr>
+      <tr>
+        <td>실패 기준</td>
+        <td>허위 사실, 개인정보 노출</td>
+      </tr>
+      <tr>
+        <td>메트릭</td>
+        <td>정확도, 지연, 비용, 안전</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="ecosystem">LLM 생태계 지형</h2>
+  <p>LLM 생태계는 크게 모델 제공자, 인프라/서빙, 애플리케이션/에이전트로 나뉩니다. 각 계층은 서로 다른 비용 구조와 잠금(lock-in) 지점을 갖습니다.</p>
+  <ul>
+    <li><strong>모델 제공자</strong>: Claude, OpenAI, Gemini, 오픈소스 계열</li>
+    <li><strong>서빙 인프라</strong>: vLLM, TGI, Triton, GPU 클라우드</li>
+    <li><strong>애플리케이션</strong>: 문서 요약, 코딩, 고객지원, 검색 보강(RAG)</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="model-families">모델 패밀리와 특성</h2>
+  <ul>
+    <li><strong>범용 모델</strong>: 대화, 요약, 추론 등 균형형</li>
+    <li><strong>코드 특화</strong>: 코드 생성/수정, 리포지토리 이해</li>
+    <li><strong>멀티모달</strong>: 텍스트+이미지/오디오 처리</li>
+    <li><strong>경량 모델</strong>: 저비용·저지연, 간단한 작업에 적합</li>
+  </ul>
+  <div class="info-box warning">
+    <strong>주의:</strong> 특정 태스크에 최적화된 모델은 일반 대화에서 품질이 낮을 수 있습니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="model-comparison-template">모델 비교 템플릿</h2>
+  <p>아래 구조를 사용하면 팀 내에서 모델 선택 논의를 빠르게 정렬할 수 있습니다.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>항목</th>
+        <th>모델 A</th>
+        <th>모델 B</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>태스크 적합성</td>
+        <td>일반 대화 강점</td>
+        <td>코드/도구 호출 강점</td>
+      </tr>
+      <tr>
+        <td>컨텍스트</td>
+        <td>중간 길이</td>
+        <td>긴 문서 처리</td>
+      </tr>
+      <tr>
+        <td>비용/지연</td>
+        <td>중간 비용</td>
+        <td>저지연</td>
+      </tr>
+      <tr>
+        <td>안전 정책</td>
+        <td>보수적</td>
+        <td>유연</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="selection">모델 선택 기준</h2>
+  <ul>
+    <li><strong>업무 적합성</strong>: 일반 대화 vs 코드, 긴 문서 처리 여부</li>
+    <li><strong>비용 구조</strong>: 입력/출력 토큰, 이미지/도구 호출 비용</li>
+    <li><strong>지연 요구</strong>: 인터랙티브 UX인지, 배치 처리인지</li>
+    <li><strong>거버넌스</strong>: 데이터 보관 정책, 지역 규제, 감사 로그</li>
+  </ul>
+  <div class="info-box warning">
+    <strong>주의:</strong> “가장 강력한 모델”이 항상 최선은 아닙니다. 요구사항에 맞는 균형점이 핵심입니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="prompt-template">프롬프트 템플릿 기본형</h2>
+  <pre><code><span class="cmt"># 프롬프트 골격</span>
+<span class="kw">역할</span>: 당신은 {역할}이다.
+<span class="kw">목표</span>: {목표}를 달성하라.
+<span class="kw">제약</span>: {형식, 길이, 금지사항}
+<span class="kw">컨텍스트</span>: {관련 문서 요약}
+<span class="kw">출력</span>: {정확한 출력 형식}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="prompt-example">프롬프트 템플릿 예시</h2>
+  <pre><code><span class="cmt"># 문서 요약 예시</span>
+<span class="kw">역할</span>: 정책 문서를 요약하는 분석가
+<span class="kw">목표</span>: 8줄 이하로 핵심 조항 요약
+<span class="kw">제약</span>: 원문 용어 유지, 추측 금지
+<span class="kw">컨텍스트</span>: {문서 요약을 위한 핵심 문단}
+<span class="kw">출력</span>: 불릿 5개</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="domain-cases">도메인별 사례 요약</h2>
+  <ul>
+    <li><strong>코딩</strong>: 리포지토리 요약, 코드 리뷰, 패치 제안</li>
+    <li><strong>문서</strong>: 보고서 요약, 정책 문서 질의응답</li>
+    <li><strong>지원</strong>: FAQ 자동 응답, 티켓 분류/요약</li>
+  </ul>
+  <div class="info-box info">
+    <strong>다음 단계:</strong> 도메인별 상세 패턴은 “학습·정렬·추론”, “제품화·운영·안전” 페이지에서 이어집니다.
+  </div>
+</section>
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="llm-landscape.html">LLM 생태계 개요</a></li>
+    <li><a href="model-comparison.html">모델 비교</a></li>
+    <li><a href="glossary.html">용어집</a></li>
+  </ul>
+
+  <div class="info-box info">
+    <strong>다음 학습:</strong>
+    <ul>
+      <li><a href="llm-handbook-training.html">LLM 핸드북: 학습·정렬·추론</a></li>
+      <li><a href="llm-handbook-ops.html">LLM 핸드북: 제품화·운영·안전</a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
