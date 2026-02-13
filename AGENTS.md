@@ -11,7 +11,7 @@ Claude AI 어시스턴트에 대한 **한국어** 정적 문서 사이트.
 - 3개 CSS: `css/style.css`, `css/themes.css`, `css/responsive.css`
 - 1개 JS: `js/main.js`
 - 2개 SEO: `sitemap.xml`, `robots.txt`
-- 7개 카테고리, 27개+ 페이지 (계획)
+- 8개 카테고리, 54개 페이지
 - 5개 테마: `dark-kernel`(기본), `light`, `solarized`, `nord`, `high-contrast`
 
 ## Development
@@ -32,7 +32,7 @@ python3 -m http.server 8080   # http://localhost:8080
 | 메인 페이지 | `index.html` | 카드 그리드 + 소개 |
 | 페이지 템플릿 | `template.html` | 새 페이지 작성 시 기준 템플릿 |
 | SEARCH_INDEX | `js/main.js` | 검색 엔트리 (index.html 미포함) |
-| NAV_STRUCTURE | `js/main.js` | 7개 카테고리, 페이지 항목 (index.html 포함) |
+| NAV_STRUCTURE | `js/main.js` | 8개 카테고리, 페이지 항목 (index.html 포함) |
 | IIFE 시작 | `js/main.js` | 동적 생성/인터랙션 로직 |
 | 테마 변수 | `css/themes.css` | 5개 테마 CSS custom property |
 | 레이아웃 | `css/style.css` | Grid, 타이포그래피, 컴포넌트 |
@@ -96,7 +96,7 @@ JS가 자동으로 생성하는 항목:
 ### JavaScript 구조 (`js/main.js`)
 파일 구성 순서:
 1. `SEARCH_INDEX` 전역 배열 — 모든 페이지의 `{ title, url, description, keywords }`
-2. `NAV_STRUCTURE` 전역 배열 — 7개 카테고리별 페이지 계층 구조
+2. `NAV_STRUCTURE` 전역 배열 — 8개 카테고리별 페이지 계층 구조
 3. 단일 IIFE — 동적 UI 생성, 테마 전환, TOC, 스크롤 스파이, 검색, 모바일 네비게이션
 
 ### 테마 시스템

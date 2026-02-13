@@ -1,15 +1,17 @@
-# Claude 문서 /with MINZKN
+# AI Vibe Coding 가이드 /with MINZKN
 
-Anthropic Claude AI 어시스턴트에 대한 종합 한국어 문서 사이트입니다.
+AI Vibe Coding을 위한 종합 한국어 문서 사이트입니다.
 
 ## 📚 내용
 
-- **API 기본**: Claude API 사용법, 인증, 메시지 API, 스트리밍
-- **고급 기능**: Tool Use, Vision, 긴 컨텍스트, 시스템 프롬프트
-- **프롬프트 엔지니어링**: 효과적인 프롬프트 작성 기법
-- **도구**: Claude Code CLI, Python/TypeScript SDK
-- **활용 사례**: 코드 생성, 문서 분석, 데이터 추출, 챗봇
-- **참고**: 모델 비교, 요금, 제한사항, FAQ
+- **시작하기**: Vibe Coding 개념, CLI 도구 생태계, 학습 경로
+- **AI CLI 도구들**: Codex, Claude CLI, Aider, Continue 등
+- **Ollama & 로컬 LLM**: 로컬 실행, 모델 가이드, 트러블슈팅
+- **MCP**: 서버/클라이언트/생태계/고급 주제
+- **LLM API & 연동**: Claude/OpenAI/Gemini/API 추상화
+- **프롬프트 엔지니어링**: 기본/패턴/Few-shot/최적화
+- **환경 구축 & 도구**: 키 관리, Docker, CI/CD, 비용 모니터링
+- **참고 & 리소스**: 모델 비교, 제한사항, FAQ, 용어집
 
 ## 🛠️ 기술 스택
 
@@ -25,8 +27,8 @@ Anthropic Claude AI 어시스턴트에 대한 종합 한국어 문서 사이트�
 claude/
 ├── index.html              # 메인 페이지
 ├── pages/                  # 콘텐츠 페이지
-│   ├── what-is-claude.html
-│   ├── quickstart.html
+│   ├── codex.html
+│   ├── getting-started.html
 │   └── ...
 ├── css/                    # 스타일시트
 │   ├── themes.css          # 테마 정의
@@ -37,7 +39,7 @@ claude/
 ├── images/                 # 이미지 리소스
 ├── robots.txt
 ├── sitemap.xml
-├── CLAUDE.md               # 프로젝트 가이드 (Claude Code용)
+├── CLAUDE.md               # 프로젝트 가이드
 └── README.md
 ```
 

@@ -8,7 +8,7 @@ Claude AI 어시스턴트에 대한 한국어 정적 문서 사이트. 빌드 �
 
 - 정적 HTML 파일: `index.html` + `pages/*.html`
 - 3개 CSS, 1개 JS
-- 7개 카테고리, 27개 페이지 (계획)
+- 8개 카테고리, 54개 페이지
 - 5개 테마 지원
 
 ## Development
@@ -33,7 +33,7 @@ python3 -m http.server 8080   # http://localhost:8080
 ## JavaScript 구조 (`js/main.js`)
 
 1. `SEARCH_INDEX` 전역 배열 — `{ title, url, description, keywords }`
-2. `NAV_STRUCTURE` 전역 배열 — 7개 카테고리별 페이지 계층
+2. `NAV_STRUCTURE` 전역 배열 — 8개 카테고리별 페이지 계층
 3. 단일 IIFE — 동적 생성, 테마 전환, TOC, 검색, 스크롤 스파이, 모바일 네비게이션
 
 ## 페이지 템플릿 구조
