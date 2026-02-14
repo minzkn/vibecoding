@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Astro Vibe Coding 가이드">
+<meta property="og:description" content="Astro로 Vibe Coding을 활용하는 방법을 배웁니다. 콘텐츠 중심의 현대적 웹 프레임워크를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/astro-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Astro로 Vibe Coding을 활용하는 방법을 배웁니다. 콘텐츠 중심의 현대적 웹 프레임워크를 AI로 구현해보세요.">
+<meta name="keywords" content="Astro Vibe Coding 정적사이트 MDX Islands 아일랜드 아키텍처">
+<meta name="author" content="MINZKN">
+<title>Astro Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">Astro Vibe Coding 가이드</h1>
+<p class="page-description">Astro로 Vibe Coding을 활용하는 방법을 배웁니다. 콘텐츠 중심의 현대적 웹 프레임워크를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Astro는 "콘텐츠 우선" 웹 프레임워크로, 기본적으로 정적 사이트를 생성합니다.
+    Islands 아키텍처로 필요한 영역만 JavaScript로 렌더링하여 최고의 성능을 제공합니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 Astro 장점</div>
+    <ul>
+      <li><strong>Zero JS 기본</strong>: 기본적으로 JavaScript 없이 HTML만 생성</li>
+      <li><strong>Islands</strong>: 필요한 컴포넌트만 interactive로</li>
+      <li><strong>다양한 UI 프레임워크</strong>: React, Vue, Svelte 등 혼용 가능</li>
+      <li><strong>Content Collections</strong>: 타입 안전한 콘텐츠 관리</li>
+      <li><strong>Markdown/MDX</strong>: 편리한 콘텐츠 작성</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>블로그, 문서 사이트</li>
+    <li>마케팅, 랜딩 페이지</li>
+    <li>포트폴리오</li>
+    <li>성능이 중요한 사이트</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">프로젝트 설정</h2>
+  <p>Astro 프로젝트 시작을 위한 프롬프트입니다.</p>
+
+  <h3 id="create-project">프로젝트 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Astro로 기술 블로그를 만들어줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Astro</span>
+<span class="str">- TypeScript</span>
+<span class="str">- Tailwind CSS</span>
+<span class="str">- MDX (마크다운 + 컴포넌트)</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. Content Collections로 블로그 포스트 관리</span>
+<span class="str">2. 태그별 필터링</span>
+<span class="str">3. 다크 모드</span>
+<span class="str">4. SEO 메타 태그</span>
+<span class="str">5. RSS 피드</span></code></pre>
+  </div>
+
+  <h3 id="folder-structure">폴더 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Astro</span>
+    </div>
+    <pre><code><span class="str">src/</span>
+<span class="fn">├── content/</span>
+<span class="fn">│   └── blog/</span>
+<span class="fn">│       ├── post-1.md</span>
+<span class="fn">│       └── post-2.mdx</span>
+<span class="fn">├── components/</span>
+<span class="fn">│   ├── Header.astro</span>
+<span class="fn">│   └── Counter.jsx</span>  <span class="cmt"># React 컴포넌트</span>
+<span class="fn">├── layouts/</span>
+<span class="fn">│   └── BaseLayout.astro</span>
+<span class="fn">├── pages/</span>
+<span class="fn">│   ├── index.astro</span>
+<span class="fn">│   ├── blog/</span>
+<span class="fn">│   │   ├── index.astro</span>
+<span class="fn">│   │   └── [slug].astro</span>
+<span class="fn">│   └── rss.xml.js</span>
+<span class="fn">└── styles/</span>
+<span class="fn">    └── global.css</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="content-collections">Content Collections</h2>
+  <p>Astro의 타입 안전한 콘텐츠 관리 시스템입니다.</p>
+
+  <h3 id="collection-config">설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Astro (src/content/config.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">defineCollection</span>, <span class="fn">z</span> } from <span class="str">'astro:content'</span>;
+
+<span class="kw">const</span> blog = <span class="fn">defineCollection</span>({
+  <span class="fn">type</span>: <span class="str">'content'</span>,
+  <span class="fn">schema</span>: <span class="fn">z</span>.<span class="fn">object</span>({
+    <span class="fn">title</span>: <span class="fn">z</span>.<span class="fn">string</span>(),
+    <span class="fn">description</span>: <span class="fn">z</span>.<span class="fn">string</span>(),
+    <span class="fn">pubDate</span>: <span class="fn">z</span>.<span class="fn">date</span>(),
+    <span class="fn">updatedDate</span>: <span class="fn">z</span>.<span class="fn">date</span>().<span class="fn">optional</span>(),
+    <span class="fn">tags</span>: <span class="fn">z</span>.<span class="fn">array</span>(<span class="fn">z</span>.<span class="fn">string</span>()).<span class="fn">default</span>([]),
+    <span class="fn">draft</span>: <span class="fn">z</span>.<span class="fn">boolean</span>().<span class="fn">default</span>(<span class="kw">false</span>),
+  }),
+});
+
+<span class="kw">export</span> <span class="kw">const</span> collections = { blog };</code></pre>
+  </div>
+
+  <h3 id="get-posts">포스트 조회</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Astro (src/pages/blog/index.astro)</span>
+    </div>
+    <pre><code><span class="pp">---</span>
+<span class="kw">import</span> { <span class="fn">getCollection</span> } from <span class="str">'astro:content'</span>;
+<span class="kw">import</span> BaseLayout from <span class="str">'../../layouts/BaseLayout.astro'</span>;
+
+<span class="cmt">// 모든 포스트 조회 (draft 제외)</span>
+<span class="kw">const</span> posts = (<span class="kw">await</span> <span class="fn">getCollection</span>(<span class="str">'blog'</span>))
+  .<span class="fn">filter</span>((post) => !post.data.draft)
+  .<span class="fn">sort</span>((a, b) => b.data.pubDate.<span class="fn">valueOf</span>() - a.data.pubDate.<span class="fn">valueOf</span>());
+<span class="pp">---</span>
+
+<span class="pp">&lt;BaseLayout&gt;</span>
+  &lt;h1&gt;블로그&lt;/h1&gt;
+  &lt;ul&gt;
+    {posts.<span class="fn">map</span>((post) <span class="kw">=&gt;</span> (
+      &lt;li&gt;
+        &lt;a href={`/blog/${post.slug}`}&gt;{{ post.data.title }}&lt;/a&gt;
+        &lt;span&gt;{{ post.data.pubDate.toLocaleDateString() }}&lt;/span&gt;
+      &lt;/li&gt;
+    ))}
+  &lt;/ul&gt;
+<span class="pp">&lt;/BaseLayout&gt;</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="islands">Islands 아키텍처</h2>
+  <p>Astro의 핵심 개념으로, 필요한 영역만 interactive로 만듭니다.</p>
+
+  <h3 id="islands-example">Islands 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Astro</span>
+    </div>
+    <pre><code><span class="cmt">// 정적 컴포넌트 (JS 없이 HTML만)</span>
+<span class="kw">&lt;Header /&gt;</span>
+
+<span class="cmt">// interactive 컴포넌트 (client:load로 활성화)</span>
+<span class="kw">&lt;Counter client:load /&gt;</span>
+
+<span class="cmt">// 뷰포트에 들어오면 로드 (client:visible)</span>
+<span class="kw">&lt;HeavyComponent client:visible /&gt;</span>
+
+<span class="cmt">// HydrateonIdle (idle وقت에 로드)</span>
+<span class="kw">&lt;Charts client:idle /&gt;</span></code></pre>
+  </div>
+
+  <h3 id="react-component">React 컴포넌트</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Astro (src/components/Counter.jsx)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">useState</span> } from <span class="str">'react'</span>;
+
+<span class="kw">export</span> <span class="kw">default</span> <span class="kw">function</span> <span class="fn">Counter</span>() {
+  <span class="kw">const</span> [count, setCount] = <span class="fn">useState</span>(<span class="num">0</span>);
+
+  <span class="kw">return</span> (
+    &lt;button onClick={() => <span class="fn">setCount</span>(c => c + <span class="num">1</span>)}&gt;
+      카운트: {count}
+    &lt;/button&gt;
+  );
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="mdx">MDX</h2>
+  <p>Markdown에 JSX 컴포넌트를 추가할 수 있습니다.</p>
+
+  <h3 id="mdx-example">MDX 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Markdown + JSX</span>
+    </div>
+    <pre><code><span class="fn">---</span>
+<span class="fn">title</span>: <span class="str">"Astro 너무 재밌어"</span>
+<span class="fn">pubDate</span>: <span class="num">2024-01-01</span>
+<span class="fn">---</span>
+
+<span class="fn">import</span> Counter from <span class="str">'../../components/Counter.jsx'</span>;
+
+<span class="fn"># Welcome</span>
+
+<span class="fn">이것은 일반적인 마크다운입니다.</span>
+
+<span class="fn">&lt;Counter client:load /&gt;</span>
+
+<span class="fn">위 카운터는 interactive합니다!</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>Astro 애플리케이션 배포 가이드입니다.</p>
+
+  <h3 id="deploy-options">배포 옵션</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 배포 플랫폼</div>
+    <ul>
+      <li><strong>Vercel</strong>: zero-config 배포</li>
+      <li><strong>Netlify</strong>: Astro 공식 어댑터</li>
+      <li><strong>Cloudflare Pages</strong>: 엣지 배포</li>
+      <li><strong>GitHub Pages</strong>: astro-gh-pages</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>Islands</strong>: 필요한 곳만 client:* 디렉티브</li>
+    <li><strong>Content Collections</strong>: 타입 안전성 활용</li>
+    <li><strong>Image</strong>: astro:assets로 이미지 최적화</li>
+    <li><strong>Partial Hydration</strong>: 최소한의 JS 로드</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://docs.astro.build" target="_blank" rel="noopener">Astro 공식 문서</a></li>
+    <li><a href="https://astro.build/integrations" target="_blank" rel="noopener">Astro Integrations</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

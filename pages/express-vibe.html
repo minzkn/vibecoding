@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Express.js Vibe Coding 가이드">
+<meta property="og:description" content="Express.js로 Vibe Coding을 활용하는 방법을 배웁니다. Node.js의 가장 인기 있는 웹 프레임워크를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/express-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Express.js로 Vibe Coding을 활용하는 방법을 배웁니다. Node.js의 가장 인기 있는 웹 프레임워크를 AI로 구현해보세요.">
+<meta name="keywords" content="Express Express.js Vibe Coding Node.js REST API 미들웨어">
+<meta name="author" content="MINZKN">
+<title>Express.js Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">Express.js Vibe Coding 가이드</h1>
+<p class="page-description">Express.js로 Vibe Coding을 활용하는 방법을 배웁니다. Node.js의 가장 인기 있는 웹 프레임워크를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Express.js는 Node.js를 위한 빠르고 간결한 웹 프레임워크입니다.
+    미들웨어 기반 구조로 유연하게 확장할 수 있고, Node.js 생태계의 가장 기본이 되는 프레임워크입니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 Express.js 장점</div>
+    <ul>
+      <li><strong>간결함</strong>: 최소한의 핵심 기능</li>
+      <li><strong>유연성</strong>: 미들웨어로 자유롭게 확장</li>
+      <li><strong>미들웨어</strong>: 풍부한 서드파티 미들웨어</li>
+      <li><strong> Routing</strong>: 직관적인 라우팅 시스템</li>
+      <li><strong>템플릿</strong>: 다양한 템플릿 엔진 지원</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>RESTful API 서버</li>
+    <li>단일 페이지 앱 백엔드</li>
+    <li>마이크로서비스</li>
+    <li>프록시 서버</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">프로젝트 설정</h2>
+  <p>Express 프로젝트 시작을 위한 프롬프트입니다.</p>
+
+  <h3 id="create-project">프로젝트 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Express.js로 투두 API 서버를 만들어줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Express.js</span>
+<span class="str">- TypeScript</span>
+<span class="str">- Mongoose (MongoDB)</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. CRUD 엔드포인트</span>
+<span class="str">2. MongoDB Atlas 연동</span>
+<span class="str">3. 에러 처리 미들웨어</span>
+<span class="str">4. TypeScript 타입</span></code></pre>
+  </div>
+
+  <h3 id="folder-structure">폴더 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Express</span>
+    </div>
+    <pre><code><span class="str">src/</span>
+<span class="fn">├── index.ts</span>             <span class="cmt"># 앱 엔트리</span>
+<span class="fn">├── app.ts</span>              <span class="cmt"># Express 앱</span>
+<span class="fn">├── routes/</span>             <span class="cmt"># 라우트</span>
+<span class="fn">│   └── todos.ts</span>
+<span class="fn">├── controllers/</span>        <span class="cmt"># 컨트롤러</span>
+<span class="fn">│   └── todos.ts</span>
+<span class="fn">├── models/</span>            <span class="cmt"># Mongoose 모델</span>
+<span class="fn">│   └── Todo.ts</span>
+<span class="fn">├── middleware/</span>        <span class="cmt"># 미들웨어</span>
+<span class="fn">│   └── error.ts</span>
+<span class="fn">└── types/</span>              <span class="cmt"># 타입 정의</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="basic-usage">기본 사용법</h2>
+  <p>Express의 핵심 문법입니다.</p>
+
+  <h3 id="app-creation">앱 생성</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (src/app.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> express, { <span class="type">Request</span>, <span class="type">Response</span>, <span class="type">NextFunction</span> } from <span class="str">'express'</span>;
+
+<span class="kw">const</span> app = <span class="fn">express</span>();
+
+<span class="cmt">// 미들웨어</span>
+app.<span class="fn">use</span>(express.<span class="fn">json</span>());
+
+<span class="cmt">// 인메모리 DB</span>
+<span class="kw">interface</span> <span class="type">Todo</span> {
+  id: <span class="type">number</span>;
+  title: <span class="type">string</span>;
+  completed: <span class="type">boolean</span>;
+}
+<span class="kw">let</span> todos: <span class="type">Todo[]</span> = [];
+
+<span class="cmt">// GET - 목록 조회</span>
+app.<span class="fn">get</span>(<span class="str">'/api/todos'</span>, (req: <span class="type">Request</span>, res: <span class="type">Response</span>) => {
+  res.<span class="fn">json</span>(todos);
+});
+
+<span class="cmt">// POST - 생성</span>
+app.<span class="fn">post</span>(<span class="str">'/api/todos'</span>, (req: <span class="type">Request</span>, res: <span class="type">Response</span>) => {
+  <span class="kw">const</span> todo: <span class="type">Todo</span> = {
+    id: Date.<span class="fn">now</span>(),
+    title: req.body.title,
+    completed: <span class="kw">false</span>,
+  };
+  todos.<span class="fn">push</span>(todo);
+  res.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>(todo);
+});
+
+<span class="cmt">// PUT - 수정</span>
+app.<span class="fn">put</span>(<span class="str">'/api/todos/:id'</span>, (req: <span class="type">Request</span>, res: <span class="type">Response</span>) => {
+  <span class="kw">const</span> { id } = req.params;
+  <span class="kw">const</span> index = todos.<span class="fn">findIndex</span>(t => t.id === <span class="fn">Number</span>(id));
+  <span class="kw">if</span> (index > <span class="num">-1</span>) {
+    todos[index] = { ...todos[index], ...req.body };
+    res.<span class="fn">json</span>(todos[index]);
+  } <span class="kw">else</span> {
+    res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({<span class="str">"error"</span>: <span class="str">"Not found"</span>});
+  }
+});
+
+<span class="cmt">// DELETE - 삭제</span>
+app.<span class="fn">delete</span>(<span class="str">'/api/todos/:id'</span>, (req: <span class="type">Request</span>, res: <span class="type">Response</span>) => {
+  <span class="kw">const</span> { id } = req.params;
+  todos = todos.<span class="fn">filter</span>(t => t.id !== <span class="fn">Number</span>(id));
+  res.<span class="fn">status</span>(<span class="num">204</span>).<span class="fn">send</span>();
+});
+
+<span class="cmt">// 에러 처리 미들웨어</span>
+app.<span class="fn">use</span>((err: <span class="type">Error</span>, req: <span class="type">Request</span>, res: <span class="type">Response</span>, next: <span class="type">NextFunction</span>) => {
+  console.<span class="fn">error</span>(err.<span class="fn">stack</span>);
+  res.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">json</span>({<span class="str">"error"</span>: <span class="str">"Internal server error"</span>});
+});
+
+<span class="kw">export</span> <span class="kw">default</span> app;</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="middleware">미들웨어</h2>
+  <p>Express의 미들웨어 시스템입니다.</p>
+
+  <h3 id="middleware-example">미들웨어 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript</span>
+    </div>
+    <pre><code><span class="cmt">// 로깅 미들웨어</span>
+<span class="kw">const</span> <span class="fn">logger</span> = (req: <span class="type">Request</span>, res: <span class="type">Response</span>, next: <span class="type">NextFunction</span>) => {
+  console.<span class="fn">log</span>(`${req.method} ${req.url}`);
+  <span class="fn">next</span>();
+};
+
+<span class="cmt">// 인증 미들웨어</span>
+<span class="kw">const</span> <span class="fn">auth</span> = (req: <span class="type">Request</span>, res: <span class="type">Response</span>, next: <span class="type">NextFunction</span>) => {
+  <span class="kw">const</span> token = req.<span class="fn">headers</span>.authorization;
+  <span class="kw">if</span> (token) {
+    <span class="fn">next</span>();
+  } <span class="kw">else</span> {
+    res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({<span class="str">"error"</span>: <span class="str">"Unauthorized"</span>});
+  }
+};
+
+<span class="cmt">// 사용</span>
+app.<span class="fn">use</span>(logger);
+app.<span class="fn">use</span>(<span class="str">'/api'</span>, auth);</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="routing">라우팅</h2>
+  <p>라우터로 모듈화합니다.</p>
+
+  <h3 id="router-example">라우터 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (routes/todos.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">Router</span> } from <span class="str">'express'</span>;
+<span class="kw">import</span> { <span class="fn">getTodos</span>, <span class="fn">createTodo</span> } from <span class="str">'../controllers/todos'</span>;
+
+<span class="kw">const</span> router = <span class="fn">Router</span>();
+
+<span class="fn">router.get</span>(<span class="str">'/'</span>, getTodos);
+<span class="fn">router.post</span>(<span class="str">'/'</span>, createTodo);
+
+<span class="kw">export</span> <span class="kw">default</span> router;</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>Express 애플리케이션 배포 가이드입니다.</p>
+
+  <h3 id="run-server">서버 실행</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 배포 플랫폼</div>
+    <ul>
+      <li><strong>Vercel</strong>: Serverless Functions</li>
+      <li><strong>Railway</strong>: 프로비저닝</li>
+      <li><strong>Render</span>: 무료 호스팅</li>
+    </ul>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash</span>
+    </div>
+    <pre><code><span class="cmt"># 개발 실행</span>
+<span class="fn">npm run dev</span>  <span class="cmt"># nodemon 사용</span>
+
+<span class="cmt"># 프로덕션</span>
+<span class="fn">npm start</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>미들웨어 분리</strong>: 기능별 미들웨어</li>
+    <li><strong>라우터</span>: 모듈화</li>
+    <li><strong>에러 처리</strong>: 중앙 집중식</li>
+    <li><strong>TypeScript</span>: 타입 안전성</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://expressjs.com/ko" target="_blank" rel="noopener">Express 공식 문서</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Next.js Vibe Coding 가이드">
+<meta property="og:description" content="Next.js로 Vibe Coding을 활용하는 방법을 배웁니다. App Router, Server Components, API Routes를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/nextjs-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Next.js로 Vibe Coding을 활용하는 방법을 배웁니다. App Router, Server Components, API Routes를 AI로 구현해보세요.">
+<meta name="keywords" content="Next.js Vibe Coding React SSR SSG App Router Server Components">
+<meta name="author" content="MINZKN">
+<title>Next.js Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">Next.js Vibe Coding 가이드</h1>
+<p class="page-description">Next.js로 Vibe Coding을 활용하는 방법을 배웁니다. App Router, Server Components, API Routes를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Next.js는 React 기반의 풀스택 프레임워크로, SSR(Server-Side Rendering)과 SSG(Static Site Generation)를 지원합니다.
+    Vibe Coding으로 Next.js 프로젝트를 빠르게 구축할 수 있습니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 Next.js 장점</div>
+    <ul>
+      <li><strong>App Router</strong>: 새로운 라우팅 시스템, 중첩 레이아웃</li>
+      <li><strong>Server Components</strong>: 기본 서버 렌더링, 클라이언트 번들 크기 감소</li>
+      <li><strong>API Routes</strong>: 백엔드 엔드포인트 직접 구현</li>
+      <li><strong>Image Optimization</strong>: 자동 이미지 최적화</li>
+      <li><strong>Middleware</strong>: 엣지 레벨 요청 처리</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>SEO가 중요한 웹사이트</li>
+    <li>블로그, 문서, 마케팅 사이트</li>
+    <li>풀스택 애플리케이션</li>
+    <li>E-commerce 플랫폼</li>
+    <li>대시보드 & 관리자 패널</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">프로젝트 설정</h2>
+  <p>Next.js 프로젝트 시작을 위한 프롬프트입니다.</p>
+
+  <h3 id="create-project">프로젝트 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Next.js 14로 블로그 프로젝트를 만들어줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Next.js 14 (App Router)</span>
+<span class="str">- TypeScript</span>
+<span class="str">- Tailwind CSS</span>
+<span class="str">- Markdown 파일 기반 콘텐츠</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. App Router 기반 라우팅</span>
+<span class="str">2. MDX 지원 (rehype, remark 플러그인)</span>
+<span class="str">3. 다크 모드 지원 (next-themes)</span>
+<span class="str">4. 코드 하이라이팅 (shiki)</span>
+<span class="str">5. RSS 피드 생성</span></code></pre>
+  </div>
+
+  <h3 id="folder-structure">폴더 구조 패턴</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Next.js App Router 폴더 구조를 만들어줘:</span>
+
+<span class="str">app/
+├── page.tsx              # 홈 페이지
+├── layout.tsx            # 루트 레이아웃
+├── globals.css           # 전역 스타일
+├── (marketing)/          # маршрут 그룹
+│   ├── page.tsx
+│   └── layout.tsx
+├── blog/
+│   ├── page.tsx          # 블로그 목록
+│   ├── [slug]/          # 동적 라우트
+│   │   └── page.tsx     # 블로그 상세
+│   └── layout.tsx
+├── api/                  # API 라우트
+│   ├── posts/
+│   │   └── route.ts
+│   └── auth/
+│       └── route.ts
+└── components/           # 컴포넌트
+    ├── ui/
+    └── blog/</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="server-components">Server Components</h2>
+  <p>Next.js 14의 Server Components를 효과적으로 활용하는 방법입니다.</p>
+
+  <h3 id="server-vs-client">Server vs Client Components</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Server Component와 Client Component를 적절히 사용하는 예제를 보여줘:</span>
+
+<span class="str">1. Server Component (기본)</span>
+<span class="str">   - 데이터 페칭</span>
+<span class="str">   - SEO 민감한 콘텐츠</span>
+<span class="str">   - 직접적인 백엔드 리소스 접근</span>
+
+<span class="str">2. Client Component ('use client' 지시어)</span>
+<span class="str">   - useState, useEffect 사용</span>
+<span class="str">   - 이벤트 핸들러 (onClick, onChange)</span>
+<span class="str">   - 브라우저 API 사용</span></code></pre>
+  </div>
+
+  <h3 id="data-fetching">데이터 페칭 패턴</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Next.js (page.tsx)</span>
+    </div>
+    <pre><code><span class="cmt">// Server Component에서의 데이터 페칭</span>
+<span class="kw">async</span> <span class="kw">function</span> <span class="fn">getPosts</span>() {
+  <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'https://api.example.com/posts'</span>, {
+    <span class="fn">next</span>: { <span class="fn">revalidate</span>: <span class="num">3600</span> } <span class="cmt">// ISR: 1시간마다 재검증</span>
+  });
+  <span class="kw">return</span> res.<span class="fn">json</span>();
+}
+
+<span class="kw">export default</span> <span class="kw">async function</span> <span class="fn">BlogPage</span>() {
+  <span class="kw">const</span> posts = <span class="kw">await</span> <span class="fn">getPosts</span>();
+
+  <span class="kw">return</span> (
+    &lt;div&gt;
+      {posts.<span class="fn">map</span>((post) <span class="kw">=&gt;</span> (
+        &lt;PostCard key={post.id} post={post} /&gt;
+      )))}
+    &lt;/div&gt;
+  );
+}</code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 Server Components 팁</div>
+    <ul>
+      <li><strong>async/await</strong>: Server Component는 async 함수 가능</li>
+      <li><strong>streaming</strong>: Suspense로 로딩 상태 관리</li>
+      <li><strong>revalidate</strong>: fetch 옵션으로 데이터freshness 조절</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="api-routes">API Routes</h2>
+  <p>Next.js API Routes로 풀스택 기능을 구현합니다.</p>
+
+  <h3 id="api-request">API 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Next.js API Routes를 만들어줘:</span>
+
+<span class="str">1. GET /api/posts - 포스트 목록 (페이지네이션)</span>
+<span class="str">2. GET /api/posts/[id] - 포스트 상세</span>
+<span class="str">3. POST /api/posts - 포스트 생성 (validation 포함)</span>
+<span class="str">4. DELETE /api/posts/[id] - 포스트 삭제</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- Zod로 입력 검증</span>
+<span class="str">- 에러 처리 (try-catch)</span>
+<span class="str">- 적절한 HTTP 상태 코드</span></code></pre>
+  </div>
+
+  <h3 id="api-example">API 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Next.js (app/api/posts/route.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">NextResponse</span> } from <span class="str">'next/server'</span>;
+<span class="kw">import</span> { <span class="fn">z</span> } from <span class="str">'zod'</span>;
+
+<span class="kw">const</span> postSchema = <span class="fn">z</span>.<span class="fn">object</span>({
+  <span class="fn">title</span>: <span class="fn">z</span>.<span class="fn">string</span>().<span class="fn">min</span>(<span class="num">1</span>),
+  <span class="fn">content</span>: <span class="fn">z</span>.<span class="fn">string</span>().<span class="fn">min</span>(<span class="num">10</span>),
+  <span class="fn">published</span>: <span class="fn">z</span>.<span class="fn">boolean</span>().<span class="fn">optional</span>(),
+});
+
+<span class="cmt">// GET /api/posts</span>
+<span class="kw">export</span> <span class="kw">async function</span> <span class="fn">GET</span>() {
+  <span class="kw">const</span> posts = <span class="kw">await</span> <span class="fn">db</span>.post.<span class="fn">findMany</span>({
+    <span class="fn">orderBy</span>: { <span class="fn">createdAt</span>: <span class="str">'desc'</span> },
+  });
+  <span class="kw">return</span> <span class="fn">NextResponse</span>.<span class="fn">json</span>(posts);
+}
+
+<span class="cmt">// POST /api/posts</span>
+<span class="kw">export</span> <span class="kw">async function</span> <span class="fn">POST</span>(request: <span class="type">Request</span>) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> body = <span class="kw">await</span> request.<span class="fn">json</span>();
+    <span class="kw">const</span> { title, content } = <span class="fn">postSchema</span>.<span class="fn">parse</span>(body);
+
+    <span class="kw">const</span> post = <span class="kw">await</span> <span class="fn">db</span>.post.<span class="fn">create</span>({
+      <span class="fn">data</span>: { title, content },
+    });
+
+    <span class="kw">return</span> <span class="fn">NextResponse</span>.<span class="fn">json</span>(post, { <span class="fn">status</span>: <span class="num">201</span> });
+  } <span class="kw">catch</span> (error) {
+    <span class="kw">return</span> <span class="fn">NextResponse</span>.<span class="fn">json</span>(
+      { <span class="fn">error</span>: <span class="str">'유효하지 않은 요청입니다.'</span> },
+      { <span class="fn">status</span>: <span class="num">400</span> }
+    );
+  }
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="styling">스타일링</h2>
+  <p>Next.js에서 다양한 스타일링 방법을 활용합니다.</p>
+
+  <h3 id="tailwind-setup">Tailwind CSS 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Next.js + Tailwind CSS + clsx 설정:</span>
+
+<span class="str">1. tailwind.config.ts 설정</span>
+<span class="str">   - content 경로 설정</span>
+<span class="str">   - 커스텀 색상/폰트</span>
+<span class="str">   - 다크 모드 'class' 전략</span>
+
+<span class="str">2. 유틸리티 함수</span>
+<span class="str">   - cn() 함수 (clsx + tailwind-merge)</span>
+
+<span class="str">3. 전역 CSS</span>
+<span class="str">   - @tailwind 지시어</span>
+<span class="str">   - 커스텀 폰트 (@next/font)</span></code></pre>
+  </div>
+
+  <h3 id="css-modules">CSS Modules</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">CSS Modules로 컴포넌트 스타일링:</span>
+
+<span class="str">1. Navbar.module.css</span>
+<span class="str">   - scoped 스타일</span>
+<span class="str">   - 중복 클래스명 해결</span>
+
+<span class="str">2. Navbar.tsx에서 사용</span>
+<span class="str">   - import styles from './Navbar.module.css'</span>
+<span class="str">   - className={styles.nav}</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>Next.js 애플리케이션 배포 가이드입니다.</p>
+
+  <h3 id="vercel">Vercel 배포</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Vercel에 Next.js 앱을 배포하는 법:</span>
+
+<span class="str">1. Vercel CLI로 배포</span>
+<span class="str">   - vercel login</span>
+<span class="str">   - vercel</span>
+
+<span class="str">2. Git 연동</span>
+<span class="str">   - GitHub/GitLab/Bitbucket 연결</span>
+<span class="str">   - 자동 배포 파이프라인</span>
+
+<span class="str">3. 환경 변수</span>
+<span class="str">   - Vercel Dashboard에서 설정</span>
+<span class="str">   - .env.production</span></code></pre>
+  </div>
+
+  <h3 id="optimization">성능 최적화</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 Next.js 최적화 팁</div>
+    <ul>
+      <li><strong>Image</strong>: next/image로 자동 최적화</li>
+      <li><strong>Font</strong>: next/font로 폰트 최적화</li>
+      <li><strong>Script</strong>: next/script로 스크립트 지연</li>
+      <li><strong>Link</strong>: a 태그 대신 next/link 사용</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>Server Components 우선</strong>: 클라이언트 번들 크기 최소화</li>
+    <li><strong>동적 라우트</strong>: [id], [slug] 패턴 활용</li>
+    <li><strong>미들웨어</strong>: 인증, 리다이렉트에 활용</li>
+    <li><strong>에러 처리</strong>: error.tsx, not-found.tsx 활용</li>
+    <li><strong>로딩 상태</strong>: loading.tsx로 UX 개선</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://nextjs.org/docs" target="_blank" rel="noopener">Next.js 공식 문서</a></li>
+    <li><a href="https://nextjs.org/learn" target="_blank" rel="noopener">Next.js Learn</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

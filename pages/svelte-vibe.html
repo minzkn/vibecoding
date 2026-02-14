@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Svelte/SvelteKit Vibe Coding 가이드">
+<meta property="og:description" content="Svelte와 SvelteKit으로 Vibe Coding을 활용하는 방법을 배웁니다. 컴파일 방식의 프레임워크를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/svelte-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Svelte와 SvelteKit으로 Vibe Coding을 활용하는 방법을 배웁니다. 컴파일 방식의 프레임워크를 AI로 구현해보세요.">
+<meta name="keywords" content="Svelte SvelteKit Vibe Coding 컴파일 웹프레임워크">
+<meta name="author" content="MINZKN">
+<title>Svelte/SvelteKit Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">Svelte/SvelteKit Vibe Coding 가이드</h1>
+<p class="page-description">Svelte와 SvelteKit으로 Vibe Coding을 활용하는 방법을 배웁니다. 컴파일 방식의 프레임워크를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Svelte는 컴파일 방식의 UI 프레임워크로, 가상 DOM 없이 최소한의 코드를 생성합니다.
+    SvelteKit은 Svelte 기반의 풀스택 프레임워크입니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 Svelte 장점</div>
+    <ul>
+      <li><strong>컴파일 방식</strong>: 번들 크기 최소화, 빠른 런타임</li>
+      <li><strong>반응성</strong>: 선언적 변수 할당으로 자동 업데이트</li>
+      <li><strong>간단한 문법</strong>: HTML, CSS, JS가 하나의 파일에</li>
+      <li><strong>Stores</strong>: 간단한 전역 상태 관리</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>성능이 중요한 애플리케이션</li>
+    <li>라이트웨이트 SPA</li>
+    <li>정적 사이트 (SvelteKit + adapter-static)</li>
+    <li>프로토타이핑</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">프로젝트 설정</h2>
+  <p>SvelteKit 프로젝트 시작을 위한 프롬프트입니다.</p>
+
+  <h3 id="create-project">프로젝트 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">SvelteKit으로 Todos 앱을 만들어줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- SvelteKit</span>
+<span class="str">- TypeScript</span>
+<span class="str">- Tailwind CSS</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. CRUD 작업 (생성, 읽기, 수정, 삭제)</span>
+<span class="str">2. 로컬 스토리지 영속</span>
+<span class="str">3. 필터링 (전체, 진행중, 완료)</span>
+<span class="str">4. 서버사이드 로딩</span></code></pre>
+  </div>
+
+  <h3 id="folder-structure">폴더 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">SvelteKit</span>
+    </div>
+    <pre><code><span class="str">src/</span>
+<span class="fn">├── routes/</span>
+<span class="fn">│   ├── +page.svelte</span>      <span class="cmt"># 홈</span>
+<span class="fn">│   ├── +layout.svelte</span>   <span class="cmt"># 레이아웃</span>
+<span class="fn">│   └── blog/</span>
+<span class="fn">│       ├── +page.svelte</span>  <span class="cmt"># /blog</span>
+<span class="fn">│       └── [slug]/</span>
+<span class="fn">│           └── +page.svelte</span> <span class="cmt"># /blog/:slug</span>
+<span class="fn">├── lib/</span>
+<span class="fn">│   ├── components/</span>
+<span class="fn">│   └── server/</span>
+<span class="fn">└── app.html</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="basics">기초 문법</h2>
+  <p>Svelte의 핵심 문법입니다.</p>
+
+  <h3 id="reactivity">반응성</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Svelte</span>
+    </div>
+    <pre><code><span class="pp">&lt;script&gt;</span>
+  <span class="cmt">// 반응형 변수 (let으로 선언 후 할당)</span>
+  <span class="kw">let</span> count = <span class="num">0</span>;
+
+  <span class="cmt">// 함수</span>
+  <span class="kw">function</span> <span class="fn">increment</span>() {
+    count += <span class="num">1</span>;  <span class="cmt">// 자동으로 DOM 업데이트</span>
+  }
+
+  <span class="cmt">// 계산된 값 ($: 로 reactive statement)</span>
+  $: doubled = count * <span class="num">2</span>;
+  $: console.log(<span class="str">`count: ${count}`</span>);
+<span class="pp">&lt;/script&gt;</span>
+
+<span class="pp">&lt;button on:click={increment}&gt;</span>
+  클릭: {{ count }}
+  doubled: {{ doubled }}
+<span class="pp">&lt;/button&gt;</span></code></pre>
+  </div>
+
+  <h3 id="conditionals">조건문 & 반복문</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Svelte</span>
+    </div>
+    <pre><code><span class="pp">&lt;script&gt;</span>
+  <span class="kw">let</span> items = [<span class="str">'a'</span>, <span class="str">'b'</span>, <span class="str">'c'</span>];
+  <span class="kw">let</span> show = <span class="kw">true</span>;
+<span class="pp">&lt;/script&gt;</span>
+
+<span class="cmt">{#if show}</span>
+<span class="cmt">  {#each items as item, i}</span>
+<span class="cmt">    &lt;li&gt;{{ i }}: {{ item }}&lt;/li&gt;</span>
+<span class="cmt">  {/each}</span>
+<span class="cmt">{/if}</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="stores">상태 관리</h2>
+  <p>Svelte Stores로 전역 상태 관리합니다.</p>
+
+  <h3 id="stores-example">Stores 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Svelte (stores.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">writable</span>, <span class="fn">derived</span> } from <span class="str">'svelte/store'</span>;
+
+<span class="cmt">// Writable store</span>
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">count</span> = <span class="fn">writable</span>(<span class="num">0</span>);
+
+<span class="cmt">// Derived store</span>
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">doubled</span> = <span class="fn">derived</span>(count, $count => $count * <span class="num">2</span>);
+
+<span class="cmt">// 사용</span>
+<span class="cmt">// import { count } from '$lib/stores';</span>
+<span class="cmt">// $count (svelte/store의 자동 구독)</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="data-fetching">데이터 페칭</h2>
+  <p>SvelteKit의 데이터 로딩 시스템입니다.</p>
+
+  <h3 id="load-function">Load 함수</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">SvelteKit (routes/+page.server.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">error</span> } from <span class="str">'@sveltejs/kit'</span>;
+
+<span class="cmt">// 서버에서 데이터 로드</span>
+<span class="kw">export</span> <span class="kw">async function</span> <span class="fn">load</span>({ fetch }) {
+  <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">'/api/posts'</span>);
+  
+  <span class="kw">if</span> (!res.ok) {
+    <span class="fn">error</span>(<span class="num">404</span>, <span class="str">'Posts not found'</span>);
+  }
+
+  <span class="kw">return</span> {
+    <span class="fn">posts</span>: <span class="kw">await</span> res.<span class="fn">json</span>()
+  };
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>SvelteKit 애플리케이션 배포 가이드입니다.</p>
+
+  <h3 id="adapters">Adapter 설정</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 SvelteKit Adapters</div>
+    <ul>
+      <li><strong>adapter-auto</strong>: Vercel, Netlify 등 자동 감지</li>
+      <li><strong>adapter-static</strong>: 정적 사이트 생성</li>
+      <li><strong>adapter-node</strong>: Node.js 서버</li>
+      <li><strong>adapter-cloudflare</strong>: Cloudflare Pages</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>반응성</strong>: $: 로 reactive statement 활용</li>
+    <li><strong>Stores</strong>: 복잡한 상태는 stores 사용</li>
+    <li><strong>Actions</strong>: form action으로 서버 처리</li>
+    <li><strong>컴포넌트</strong>: slot으로 composição</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://svelte.dev/docs" target="_blank" rel="noopener">Svelte 공식 문서</a></li>
+    <li><a href="https://kit.svelte.dev/docs" target="_blank" rel="noopener">SvelteKit 공식 문서</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

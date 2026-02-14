@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="AWS Vibe Coding 가이드">
+<meta property="og:description" content="AWS로 Vibe Coding을 활용하는 방법을 배웁니다. 아마존 웹서비스를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/aws-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AWS로 Vibe Coding을 활용하는 방법을 배웁니다. 아마존 웹서비스를 AI로 구현해보세요.">
+<meta name="keywords" content="AWS Vibe Coding Amazon 클라우드 EC2 S3 Lambda RDS">
+<meta name="author" content="MINZKN">
+<title>AWS Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">AWS Vibe Coding 가이드</h1>
+<p class="page-description">AWS로 Vibe Coding을 활용하는 방법을 배웁니다. 아마존 웹서비스를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    AWS(Amazon Web Services)는 세계 최대의 클라우드 컴퓨팅 플랫폼입니다.
+    컴퓨팅, 스토리지, 데이터베이스, ML 등 200개 이상의 서비스를 제공합니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 주요 AWS 서비스</div>
+    <ul>
+      <li><strong>EC2</strong>: 가상 서버</li>
+      <li><strong>S3</strong>: 객체 스토리지</li>
+      <li><strong>Lambda</strong>: 서버리스 컴퓨팅</li>
+      <li><strong>RDS/Aurora</strong>: 관리형 DB</li>
+      <li><strong>CloudFront</strong>: CDN</li>
+      <li><strong>ECS/EKS</strong>: 컨테이너 서비스</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>프로덕션 배포</li>
+    <li>서버리스 아키텍처</li>
+    <li>대용량 데이터 처리</li>
+    <li>ML/AI 서비스</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="compute">컴퓨팅</h2>
+  <p>AWS 컴퓨팅 서비스입니다.</p>
+
+  <h3 id="ec2">EC2 (Elastic Compute Cloud)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">EC2 인스턴스를 생성해줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. t3.micro 인스턴스</span>
+<span class="str">2. Ubuntu 22.04 LTS</span>
+<span class="str">3. SSH 접근 설정</span>
+<span class="str">4. Security Group: 22, 80, 443 포트</span></code></pre>
+  </div>
+
+  <h3 id="lambda">Lambda (서버리스)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Lambda 함수를 생성해줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. Node.js 18 런타임</span>
+<span class="str">2. API Gateway 트리거</span>
+<span class="str">3. 환경 변수 설정</span>
+<span class="str">4. 메모리 256MB</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="storage">스토리지</h2>
+  <p>AWS 스토리지 서비스입니다.</p>
+
+  <h3 id="s3">S3 (Simple Storage Service)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">AWS CLI</span>
+    </div>
+    <pre><code><span class="cmt"># 버킷 생성</span>
+<span class="fn">aws s3 mb</span> s3://my-bucket-name --region us-east-1
+
+<span class="cmt"># 파일 업로드</span>
+<span class="fn">aws s3 cp</span> myfile.txt s3://my-bucket-name/
+
+<span class="cmt"># 정적 웹 호스팅 설정</span>
+<span class="fn">aws s3 website</span> s3://my-bucket-name \
+  --index-document index.html \
+  --error-document error.html
+
+<span class="cmt"># 퍼블릭 읽기 설정</span>
+<span class="fn">aws s3api put-public-access-block</span> \
+  --bucket my-bucket-name \
+  --public-access-block-configuration "BlockPublicAcls=false"</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="database">데이터베이스</h2>
+  <p>AWS 데이터베이스 서비스입니다.</p>
+
+  <h3 id="rds">RDS (Relational Database Service)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">RDS PostgreSQL을 생성해줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. db.t3.micro 인스턴스 클래스</span>
+<span class="str">2. PostgreSQL 15</span>
+<span class="str">3. Multi-AZ 미사용 (개발용)</span>
+<span class="str">4. 자동 백업 활성화</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="networking">네트워킹</h2>
+  <p>AWS 네트워킹 서비스입니다.</p>
+
+  <h3 id="vpc">VPC (Virtual Private Cloud)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">VPC를 설정해줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. 10.0.0.0/16 CIDR 블록</span>
+<span class="str">2. 퍼블릭 서브넷 2개 (가용 영역별)</span>
+<span class="str">3. 프라이빗 서브넷 2개</span>
+<span class="str">4. Internet Gateway 연결</span>
+<span class="str">5. NAT Gateway (프라이빗 서브넷용)</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>AWS 배포 도구입니다.</p>
+
+  <h3 id="codepipeline">CodePipeline</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 CI/CD 서비스</div>
+    <ul>
+      <li><strong>CodeCommit</strong>: Git 저장소</li>
+      <li><strong>CodeBuild</strong>: 빌드 서비스</li>
+      <li><strong>CodeDeploy</strong>: 배포 자동화</li>
+      <li><strong>CodePipeline</strong>: 파이프라인 오케스트레이션</li>
+    </ul>
+  </div>
+
+  <h3 id="elastic-beanstalk">Elastic Beanstalk</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Elastic Beanstalk에 Node.js 앱을 배포해줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. Node.js 18 플랫폼</span>
+<span class="str">2. 로드 밸런싱 활성화</span>
+<span class="str">3.Auto Scaling 설정</span>
+<span class="str">4. 환경 변수 설정</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="cost">비용 관리</h2>
+  <p>AWS 비용 최적화입니다.</p>
+
+  <h3 id="cost-tips">비용 팁</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 비용 관리</div>
+    <ul>
+      <li><strong>Free Tier</strong>: 무료 티어 충분히 활용</li>
+      <li><strong>Reserved Instance</strong>: 장기간 사용 시</li>
+      <li><strong>Spot Instance</strong>: 유연한 워크로드</li>
+      <li><strong>Budgets</strong>: 알림 설정</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>IAM</strong>: 최소 권한 원칙</li>
+    <li><strong>Security Group</strong>: 필요한 포트만</li>
+    <li><strong>백업</strong>: 자동 백업 설정</li>
+    <li><strong>모니터링</strong>: CloudWatch 활용</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://aws.amazon.com/ko/documentation" target="_blank" rel="noopener">AWS 공식 문서</a></li>
+    <li><a href="https://aws.amazon.com/ko/free" target="_blank" rel="noopener">AWS Free Tier</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

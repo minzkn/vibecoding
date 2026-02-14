@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google BEGIN: Google ads adsense -->
+<!--ense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Redis Vibe Coding 가이드">
+<meta property="og:description" content="Redis로 Vibe Coding을 활용하는 방법을 배웁니다. 인메모리 키-값 저장소를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/redis-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Redis로 Vibe Coding을 활용하는 방법을 배웁니다. 인메모리 키-값 저장소를 AI로 구현해보세요.">
+<meta name="keywords" content="Redis Vibe Coding 인메모리 캐시 세션 Pub/Sub">
+<meta name="author" content="MINZKN">
+<title>Redis Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">Redis Vibe Coding 가이드</h1>
+<p class="page-description">Redis로 Vibe Coding을 활용하는 방법을 배웁니다. 인메모리 키-값 저장소를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Redis는 인메모리 데이터 구조 저장소로, 키-값 저장, 캐시, 메시지 브로커,
+    세션 스토어 등 다양한 용도로 사용됩니다. 메모리에 저장되어 매우 빠릅니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 Redis 장점</div>
+    <ul>
+      <li><strong>인메모리</strong>: 마이크로초 단위 응답</li>
+      <li><strong>다양한 자료구조</strong>: String, List, Set, Hash, Zset</li>
+      <li><strong>영구화</strong>: RDB, AOF 지원</li>
+      <li><strong>Pub/Sub</strong>: 메시징</li>
+      <li><strong>클러스터</strong>: 수평적 확장</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>캐시 서버</li>
+    <li>세션 스토어</li>
+    <li>_RATE limiting</li>
+    <li>메시지 큐</li>
+    <li>실시간 분석</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">설치 및 연결</h2>
+  <p>Redis 연결을 위한 프롬프트입니다.</p>
+
+  <h3 id="connection">연결 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Redis 캐시를 설정해줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Node.js + ioredis</span>
+<span class="str">- 또는 Python + redis-py</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. Docker로 Redis 실행</span>
+<span class="str">2. 세션 캐시 구현</span>
+<span class="str">3. TTL 설정</span></code></pre>
+  </div>
+
+  <h3 id="docker">Docker로 실행</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash</span>
+    </div>
+    <pre><code><span class="fn">docker run</span> \
+  --name redis-dev \
+  -p 6379:6379 \
+  -d redis:7 \
+  redis-server --appendonly yes</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="data-structures">자료구조</h2>
+  <p>Redis의 다양한 자료구조입니다.</p>
+
+  <h3 id="strings">String</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">Redis</span> } from <span class="str">'ioredis'</span>;
+<span class="kw">const</span> redis = <span class="kw">new</span> <span class="type">Redis</span>();
+
+<span class="cmt">// String: SET/GET</span>
+<span class="kw">await</span> redis.<span class="fn">set</span>(<span class="str">"user:1:name"</span>, <span class="str">"홍길동"</span>);
+<span class="kw">const</span> name = <span class="kw">await</span> redis.<span class="fn">get</span>(<span class="str">"user:1:name"</span>);
+
+<span class="cmt">// TTL (만료 시간)</span>
+<span class="kw">await</span> redis.<span class="fn">setex</span>(<span class="str">"token:abc"</span>, <span class="num">3600</span>, <span class="str">"jwt-token"</span>);  <span class="cmt">// 1시간</span>
+
+<span class="cmt">// 숫자 증가/감소</span>
+<span class="kw">await</span> redis.<span class="fn">incr</span>(<span class="str">"pageviews"</span>);
+<span class="kw">await</span> redis.<span class="fn">incrby</span>(<span class="str">"count"</span>, <span class="num">10</span>);</code></pre>
+  </div>
+
+  <h3 id="hashes">Hash</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript</span>
+    </div>
+    <pre><code><span class="cmt">// Hash: 객체 저장</span>
+<span class="kw">await</span> redis.<span class="fn">hmset</span>(<span class="str">"user:1"</span>, {
+  <span class="fn">name</span>: <span class="str">"홍길동"</span>,
+  <span class="fn">email</span>: <span class="str">"hong@example.com"</span>,
+  <span class="fn">age</span>: <span class="num">30</span>
+});
+
+<span class="cmt">// 조회</span>
+<span class="kw">const</span> user = <span class="kw">await</span> redis.<span class="fn">hgetall</span>(<span class="str">"user:1"</span>);
+<span class="kw">const</span> email = <span class="kw">await</span> redis.<span class="fn">hget</span>(<span class="str">"user:1"</span>, <span class="str">"email"</span>);</code></pre>
+  </div>
+
+  <h3 id="lists">List</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript</span>
+    </div>
+    <pre><code><span class="cmt">// List: 큐/스택</span>
+<span class="kw">await</span> redis.<span class="fn">lpush</span>(<span class="str">"tasks"</span>, <span class="str">"task3"</span>);
+<span class="kw">await</span> redis.<span class="fn">lpush</span>(<span class="str">"tasks"</span>, <span class="str">"task2"</span>);
+<span class="kw">await</span> redis.<span class="fn">lpush</span>(<span class="str">"tasks"</span>, <span class="str">"task1"</span>);
+
+<span class="cmt">// 조회</span>
+<span class="kw">const</span> tasks = <span class="kw">await</span> redis.<span class="fn">lrange</span>(<span class="str">"tasks"</span>, <span class="num">0</span>, <span class="num">-1</span>);
+<span class="cmt">// ["task1", "task2", "task3"]</span>
+
+<span class="cmt">// 꺼내기</span>
+<span class="kw">const</span> task = <span class="kw">await</span> redis.<span class="fn">rpop</span>(<span class="str">"tasks"</span>);</code></pre>
+  </div>
+
+  <h3 id="sets">Set</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript</span>
+    </div>
+    <pre><code><span class="cmt">// Set: 중복 없는 집합</span>
+<span class="kw">await</span> redis.<span class="fn">sadd</span>(<span class="str">"tags:post:1"</span>, <span class="str">"react"</span>, <span class="str">"javascript"</span>, <span class="str">"frontend"</span>);
+
+<span class="cmt">// 조회</span>
+<span class="kw">const</span> tags = <span class="kw">await</span> redis.<span class="fn">smembers</span>(<span class="str">"tags:post:1"</span>);
+
+<span class="cmt">// 존재 확인</span>
+<span class="kw">const</span> exists = <span class="kw">await</span> redis.<span class="fn">sismember</span>(<span class="str">"tags:post:1"</span>, <span class="str">"react"</span>);</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="caching">캐싱</h2>
+  <p>Redis를 활용한 캐싱 패턴입니다.</p>
+
+  <h3 id="cache-pattern">캐시 패턴</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript</span>
+    </div>
+    <pre><code><span class="kw">async function</span> <span class="fn">getUser</span>(id: <span class="type">number</span>) {
+  <span class="kw">const</span> cacheKey = <span class="str">`user:${id}`</span>;
+
+  <span class="cmt">// 1. 캐시에서 조회</span>
+  <span class="kw">const</span> cached = <span class="kw">await</span> redis.<span class="fn">get</span>(cacheKey);
+  <span class="kw">if</span> (cached) {
+    <span class="kw">return</span> JSON.<span class="fn">parse</span>(cached);
+  }
+
+  <span class="cmt">// 2. DB에서 조회</span>
+  <span class="kw">const</span> user = <span class="kw">await</span> db.user.<span class="fn">findUnique</span>({ <span class="fn">where</span>: { <span class="fn">id</span> } });
+
+  <span class="cmt">// 3. 캐시에 저장 (TTL 10분)</span>
+  <span class="kw">if</span> (user) {
+    <span class="kw">await</span> redis.<span class="fn">setex</span>(cacheKey, <span class="num">600</span>, JSON.<span class="fn">stringify</span>(user));
+  }
+
+  <span class="kw">return</span> user;
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="pub-sub">Pub/Sub</h2>
+  <p>Redis의 메시징 시스템입니다.</p>
+
+  <h3 id="pub-sub-example">Pub/Sub 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript</span>
+    </div>
+    <pre><code><span class="cmt">// 구독자</span>
+redis.<span class="fn">subscribe</span>(<span class="str">"notifications"</span>);
+redis.<span class="fn">on</span>(<span class="str">"message"</span>, (channel, message) => {
+  console.<span class="fn">log</span>(<span class="str">`Received: ${message}`</span>);
+});
+
+<span class="cmt">// 게시자</span>
+<span class="kw">await</span> redis.<span class="fn">publish</span>(<span class="str">"notifications"</span>, <span class="str">"새 메시지가 도착했습니다"</span>);</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">운영</h2>
+  <p>Redis 운영 가이드입니다.</p>
+
+  <h3 id="best-practices">모범 사례</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 운영 팁</div>
+    <ul>
+      <li><strong>TTL</strong>: 적절한 만료 시간 설정</li>
+      <li><strong>키 네이밍</strong>: 체계적인 명명 규칙 (user:1:profile)</li>
+      <li><strong>메모리</strong>: maxmemory 정책 설정</li>
+      <li><strong>영구화</strong>: AOF + RDB 조합</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices-summary">모범 사례</h2>
+  <ul>
+    <li><strong>캐시</strong>: 읽기 intensive 데이터</li>
+    <li><strong>세션</span>: 빠른 세션 스토어</li>
+    <li><strong>_RATE limiting</span>: 접근 빈도 제한</li>
+    <li><strong>Pub/Sub</span>: 실시간 메시징</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://redis.io/docs" target="_blank" rel="noopener">Redis 공식 문서</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

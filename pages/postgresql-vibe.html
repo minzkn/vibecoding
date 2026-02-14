@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="PostgreSQL Vibe Coding 가이드">
+<meta property="og:description" content="PostgreSQL로 Vibe Coding을 활용하는 방법을 배웁니다. 가장 강력한 오픈소스 RDBMS를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/postgresql-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="PostgreSQL로 Vibe Coding을 활용하는 방법을 배웁니다. 가장 강력한 오픈소스 RDBMS를 AI로 구현해보세요.">
+<meta name="keywords" content="PostgreSQL Vibe Coding RDBMS ORM SQL 관계형데이터베이스">
+<meta name="author" content="MINZKN">
+<title>PostgreSQL Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">PostgreSQL Vibe Coding 가이드</h1>
+<p class="page-description">PostgreSQL로 Vibe Coding을 활용하는 방법을 배웁니다. 가장 강력한 오픈소스 RDBMS를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    PostgreSQL은 세계에서 가장 진보된 오픈소스 관계형 데이터베이스입니다.
+    JSON 지원, Full-text Search, 외래 키, 트리거, 뷰 등 풍부한 기능을 제공합니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 PostgreSQL 장점</div>
+    <ul>
+      <li><strong>JSON/JSONB</strong>: 문서 저장 가능</li>
+      <li><strong>복잡한 쿼리</strong>: 서브쿼리, 조인 지원</li>
+      <li><strong>인덱스</strong>: B-tree, GIN, GiST 등</li>
+      <li><strong>트랜잭션</strong>: ACID 준수</li>
+      <li><strong>확장성</strong>: PostGIS, pgvector 등</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>대규모 애플리케이션</li>
+    <li>금융/ERP 시스템</li>
+    <li>GIS 애플리케이션 (PostGIS)</li>
+    <li>AI/ML (pgvector)</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">설치 및 연결</h2>
+  <p>PostgreSQL 연결을 위한 프롬프트입니다.</p>
+
+  <h3 id="connection">연결 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">PostgreSQL 연결을 설정해줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Node.js + Prisma</span>
+<span class="str">- 또는 Python + SQLAlchemy</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. Docker로 PostgreSQL 실행</span>
+<span class="str">2. Prisma 스키마 정의</span>
+<span class="str">3. 마이그레이션 실행</span></code></pre>
+  </div>
+
+  <h3 id="docker">Docker로 실행</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash</span>
+    </div>
+    <pre><code><span class="fn">docker run</span> \
+  --name postgres-dev \
+  -e POSTGRES_USER=dev \
+  -e POSTGRES_PASSWORD=dev \
+  -e POSTGRES_DB=mydb \
+  -p 5432:5432 \
+  -v postgres-data:/var/lib/postgresql/data \
+  -d postgres:15</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="schema-design">스키마 설계</h2>
+  <p>효과적인 PostgreSQL 스키마 설계입니다.</p>
+
+  <h3 id="tables">테이블 설계</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">SQL</span>
+    </div>
+    <pre><code><span class="cmt">-- 사용자 테이블</span>
+<span class="kw">CREATE TABLE</span> users (
+    id <span class="type">SERIAL PRIMARY KEY</span>,
+    email <span class="type">VARCHAR(255) UNIQUE NOT NULL</span>,
+    name <span class="type">VARCHAR(100)</span>,
+    password_hash <span class="type">VARCHAR(255) NOT NULL</span>,
+    created_at <span class="type">TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>,
+    updated_at <span class="type">TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="cmt">-- 게시물 테이블</span>
+<span class="kw">CREATE TABLE</span> posts (
+    id <span class="type">SERIAL PRIMARY KEY</span>,
+    user_id <span class="type">INTEGER REFERENCES users(id) ON DELETE CASCADE</span>,
+    title <span class="type">VARCHAR(200) NOT NULL</span>,
+    content <span class="type">TEXT</span>,
+    published <span class="type">BOOLEAN DEFAULT FALSE</span>,
+    created_at <span class="type">TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span>
+);
+
+<span class="cmt">-- 인덱스</span>
+<span class="kw">CREATE INDEX</span> idx_posts_user_id <span class="kw">ON</span> posts(user_id);
+<span class="kw">CREATE INDEX</span> idx_posts_published <span class="kw">ON</span> posts(published) <span class="kw">WHERE</span> published = <span class="kw">TRUE</span>;</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="prisma">Prisma와 사용</h2>
+  <p>Prisma ORM으로 PostgreSQL 사용합니다.</p>
+
+  <h3 id="prisma-schema">Prisma 스키마</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Prisma (schema.prisma)</span>
+    </div>
+    <pre><code><span class="fn">datasource</span> db {
+  <span class="fn">provider</span> = <span class="str">"postgresql"</span>
+  <span class="fn">url</span>      = <span class="fn">env</span>(<span class="str">"DATABASE_URL"</span>)
+}
+
+<span class="fn">generator</span> client {
+  <span class="fn">provider</span> = <span class="str">"prisma-client-js"</span>
+}
+
+<span class="kw">model</span> <span class="type">User</span> {
+  id        <span class="type">Int      @id @default(autoincrement())</span>
+  email     <span class="type">String   @unique</span>
+  name      <span class="type">String?</span>
+  posts     <span class="type">Post[]</span>
+  createdAt <span class="type">DateTime @default(now())</span>
+}
+
+<span class="kw">model</span> <span class="type">Post</span> {
+  id        <span class="type">Int      @id @default(autoincrement())</span>
+  title     <span class="type">String</span>
+  content   <span class="type">String?</span>
+  published <span class="type">Boolean  @default(false)</span>
+  author    <span class="type">User     @relation(fields: [userId], references: [id])</span>
+  userId    <span class="type">Int</span>
+  createdAt <span class="type">DateTime @default(now())</span>
+
+  <span class="type">@@index([userId])</span>
+}</code></pre>
+  </div>
+
+  <h3 id="prisma-queries">쿼리 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">PrismaClient</span> } from <span class="str">'@prisma/client'</span>;
+<span class="kw">const</span> prisma = <span class="kw">new</span> <span class="type">PrismaClient</span>();
+
+<span class="cmt">// 사용자별 게시물 조회</span>
+<span class="kw">const</span> userPosts = <span class="kw">await</span> prisma.user.<span class="fn">findUnique</span>({
+  <span class="fn">where</span>: { <span class="fn">id</span>: <span class="num">1</span> },
+  <span class="fn">include</span>: { <span class="fn">posts</span>: <span class="kw">true</span> },
+});
+
+<span class="cmt">// 게시물 생성</span>
+<span class="kw">const</span> newPost = <span class="kw">await</span> prisma.post.<span class="fn">create</span>({
+  <span class="fn">data</span>: {
+    <span class="fn">title</span>: <span class="str">"새 게시물"</span>,
+    <span class="fn">content</span>: <span class="str">"내용"</span>,
+    <span class="fn">userId</span>: <span class="num">1</span>,
+  },
+});</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="json">JSON/JSONB</h2>
+  <p>PostgreSQL의 JSON 지원입니다.</p>
+
+  <h3 id="json-example">JSON 컬럼 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">SQL</span>
+    </div>
+    <pre><code><span class="cmt">-- JSONB 컬럼</span>
+<span class="kw">CREATE TABLE</span> products (
+    id <span class="type">SERIAL PRIMARY KEY</span>,
+    name <span class="type">VARCHAR(200)</span>,
+    attributes <span class="type">JSONB</span>  <span class="cmt">-- JSONB 저장</span>
+);
+
+<span class="cmt">-- 인덱스 (GIN)</span>
+<span class="kw">CREATE INDEX</span> idx_products_attrs <span class="kw">ON</span> products <span class="fn">USING</span> GIN(attributes);
+
+<span class="cmt">-- JSON 쿼리</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> products
+<span class="kw">WHERE</span> attributes @&gt; <span class="str">'{"color": "red"}'</span>;</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">운영</h2>
+  <p>PostgreSQL 운영 가이드입니다.</p>
+
+  <h3 id="best-practices">모범 사례</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 운영 팁</div>
+    <ul>
+      <li><strong>백업</strong>: pg_dump 정기 실행</li>
+      <li><strong>인덱스</strong>: 필요한 곳에만</li>
+      <li><strong>쿼리 최적화</span>: EXPLAIN ANALYZE 사용</li>
+      <li><strong>연결 풀</span>: PgBouncer 활용</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices-summary">모범 사례</h2>
+  <ul>
+    <li><strong>정규화</strong>: 적절한 테이블 분리</li>
+    <li><strong>인덱스</span>:WHERE/ORDER BY 기준</li>
+    <li><strong>마이그레이션</span>: 버전 관리</li>
+    <li><strong>시드 데이터</span>: 테스트용</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://www.postgresql.org/docs" target="_blank" rel="noopener">PostgreSQL 공식 문서</a></li>
+    <li><a href="https://www.prisma.io/docs" target="_blank" rel="noopener">Prisma 문서</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Docker Vibe Coding 가이드">
+<meta property="og:description" content="Docker로 Vibe Coding을 활용하는 방법을 배웁니다. 컨테이너화 표준 도구를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/docker-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Docker로 Vibe Coding을 활용하는 방법을 배웁니다. 컨테이너화 표준 도구를 AI로 구현해보세요.">
+<meta name="keywords" content="Docker Vibe Coding 컨테이너 Docker Compose 이미지 Dockerfile">
+<meta name="author" content="MINZKN">
+<title>Docker Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">Docker Vibe Coding 가이드</h1>
+<p class="page-description">Docker로 Vibe Coding을 활용하는 방법을 배웁니다. 컨테이너화 표준 도구를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Docker는 애플리케이션을 컨테이너로 패키징하고 실행할 수 있는 플랫폼입니다.
+    일관된 환경, 빠른 배포, 리소스 격리가 장점입니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 Docker 장점</div>
+    <ul>
+      <li><strong>일관된 환경</strong>: 개발/운영 동일</li>
+      <li><strong>빠른 배포</strong>: 컨테이너 순식간에 실행</li>
+      <li><strong>리소스 격리</strong>: 프로세스 격리</li>
+      <li><strong>이식성</strong>: 어디서나 실행</li>
+      <li><strong>Docker Compose</strong>: 멀티 컨테이너</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>개발 환경 구축</li>
+    <li>CI/CD 파이프라인</li>
+    <li>마이크로서비스</li>
+    <li>클라우드 배포</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="dockerfile">Dockerfile</h2>
+  <p>이미지를 만들기 위한 설정 파일입니다.</p>
+
+  <h3 id="dockerfile-example">Dockerfile 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Dockerfile</span>
+    </div>
+    <pre><code><span class="cmt"># Node.js 앱</span>
+<span class="fn">FROM</span> node:20-alpine
+
+<span class="fn">WORKDIR</span> /app
+
+<span class="cmt"># 패키지 설치</span>
+<span class="fn">COPY</span> package*.json ./
+<span class="fn">RUN</span> npm ci --only=production
+
+<span class="cmt"># 소스 복사</span>
+<span class="fn">COPY</span> . .
+
+<span class="cmt"># 포트 노출</span>
+<span class="fn">EXPOSE</span> 3000
+
+<span class="cmt"># 실행</span>
+<span class="fn">CMD</span> [<span class="str">"node", "server.js"</span>]</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="commands">기본 명령어</h2>
+  <p>자주 사용하는 Docker 명령어입니다.</p>
+
+  <h3 id="common-commands">명령어 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash</span>
+    </div>
+    <pre><code><span class="cmt"># 이미지 빌드</span>
+<span class="fn">docker build</span> -t myapp:latest .
+
+<span class="cmt"># 컨테이너 실행</span>
+<span class="fn">docker run</span> -d -p 3000:3000 --name myapp myapp:latest
+
+<span class="cmt"># 실행 중인 컨테이너 확인</span>
+<span class="fn">docker ps</span>
+
+<span class="cmt"># 로그 확인</span>
+<span class="fn">docker logs</span> myapp
+
+<span class="cmt"># 컨테이너 중지/삭제</span>
+<span class="fn">docker stop</span> myapp
+<span class="fn">docker rm</span> myapp
+
+<span class="cmt"># 이미지 목록</span>
+<span class="fn">docker images</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="compose">Docker Compose</h2>
+  <p>멀티 컨테이너 애플리케이션 정의입니다.</p>
+
+  <h3 id="compose-example">docker-compose.yml</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">YAML</span>
+    </div>
+    <pre><code><span class="fn">version</span>: <span class="str">'3.8'</span>
+
+<span class="fn">services</span>:
+  <span class="fn">app</span>:
+    <span class="fn">build</span>: .
+    <span class="fn">ports</span>:
+      - <span class="str">"3000:3000"</span>
+    <span class="fn">depends_on</span>:
+      - <span class="str">db</span>
+    <span class="fn">environment</span>:
+      - <span class="str">DATABASE_URL=postgresql://db:5432/mydb</span>
+
+  <span class="fn">db</span>:
+    <span class="fn">image</span>: postgres:15-alpine
+    <span class="fn">environment</span>:
+      - <span class="str">POSTGRES_USER=dev</span>
+      - <span class="str">POSTGRES_PASSWORD=dev</span>
+      - <span class="str">POSTGRES_DB=mydb</span>
+    <span class="fn">volumes</span>:
+      - <span class="str">postgres-data:/var/lib/postgresql/data</span>
+
+<span class="fn">volumes</span>:
+  <span class="fn">postgres-data</span>:</code></pre>
+  </div>
+
+  <h3 id="compose-commands">Compose 명령어</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash</span>
+    </div>
+    <pre><code><span class="cmt"># 서비스 시작</span>
+<span class="fn">docker-compose up</span> -d
+
+<span class="cmt"># 서비스 중지</span>
+<span class="fn">docker-compose down</span>
+
+<span class="cmt"># 로그 확인</span>
+<span class="fn">docker-compose logs</span> -f
+
+<span class="cmt"># 특정 서비스만 실행</span>
+<span class="fn">docker-compose up</span> db</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="nodejs-example">Node.js + DB 예시</h2>
+  <p>Node.js 앱과 PostgreSQL을 함께 실행합니다.</p>
+
+  <h3 id="full-example">전체 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">YAML</span>
+    </div>
+    <pre><code><span class="fn">services</span>:
+  <span class="fn">app</span>:
+    <span class="fn">build</span>: .
+    <span class="fn">ports</span>:
+      - <span class="str">"3000:3000"</span>
+    <span class="fn">environment</span>:
+      - <span class="str">DATABASE_URL=postgresql://user:pass@db:5432/mydb</span>
+    <span class="fn">restart</span>: always
+
+  <span class="fn">db</span>:
+    <span class="fn">image</span>: postgres:15-alpine
+    <span class="fn">environment</span>:
+      - <span class="str">POSTGRES_USER=user</span>
+      - <span class="str">POSTGRES_PASSWORD=pass</span>
+      - <span class="str">POSTGRES_DB=mydb</span>
+    <span class="fn">volumes</span>:
+      - <span class="str">pgdata:/var/lib/postgresql/data</span>
+    <span class="fn">restart</span>: always
+
+  <span class="fn">redis</span>:
+    <span class="fn">image</span>: redis:7-alpine
+    <span class="fn">restart</span>: always
+
+<span class="fn">volumes</span>:
+  <span class="fn">pgdata</span>:</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>.multistage-build</strong>: 빌드 결과물만 포함</li>
+    <li><strong>.dockerignore</strong>: 불필요 파일 제외</li>
+    <li><strong>태그</strong>: 버전 명시 (latest 피하기)</li>
+    <li><strong>시크릿</strong>: 민감 정보는 환경 변수 사용</li>
+  </ul>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 팁</div>
+    <ul>
+      <li><strong> alpine </strong>: 경량 이미지 권장</li>
+      <li><strong> cach </strong>: 레이어 캐싱으로 빌드 속도 향상</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://docs.docker.com" target="_blank" rel="noopener">Docker 공식 문서</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

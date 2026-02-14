@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Django Vibe Coding 가이드">
+<meta property="og:description" content="Django로 Vibe Coding을 활용하는 방법을 배웁니다. Python의 풀스택 프레임워크를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/django-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Django로 Vibe Coding을 활용하는 방법을 배웁니다. Python의 풀스택 프레임워크를 AI로 구현해보세요.">
+<meta name="keywords" content="Django Vibe Coding Python 풀스택 ORM 관리자 admin MTV">
+<meta name="author" content="MINZKN">
+<title>Django Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">Django Vibe Coding 가이드</h1>
+<p class="page-description">Django로 Vibe Coding을 활용하는 방법을 배웁니다. Python의 풀스택 프레임워크를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Django는 Python의 풀스택 웹 프레임워크로, "Batteries Included" Philosophy가 특징입니다.
+    ORM, Admin, 인증, 보안 등 기본 기능이 내장되어 있습니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 Django 장점</div>
+    <ul>
+      <li><strong>Admin</strong>: 관리자 페이지 자동 생성</li>
+      <li><strong>ORM</strong>: 데이터베이스 추상화</li>
+      <li><strong>보안</strong>: XSS, CSRF, SQL Injection 방지</li>
+      <li><strong>REST</strong>: Django REST Framework</li>
+      <li><strong>확장성</strong>: 큰 커뮤니티</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>대규모 웹 애플리케이션</li>
+    <li>E-commerce</li>
+    <li>소셜 네트워크</li>
+    <li>CMS</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">프로젝트 설정</h2>
+  <p>Django 프로젝트 시작을 위한 프롬프트입니다.</p>
+
+  <h3 id="create-project">프로젝트 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Django로 블로그 프로젝트를 만들어줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Django 5</span>
+<span class="str">- Django REST Framework</span>
+<span class="str">- SQLite (개발), PostgreSQL (운영)</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. Post 모델 (제목, 내용, 작성일)</span>
+<span class="str">2. Django Admin 연동</span>
+<span class="str">3. CBV (Class-Based Views)</span>
+<span class="str">4. URL 라우팅</span></code></pre>
+  </div>
+
+  <h3 id="folder-structure">폴더 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Django</span>
+    </div>
+    <pre><code><span class="str">project/</span>
+<span class="fn">├── manage.py</span>
+<span class="fn">├── project/</span>              <span class="cmt"># 프로젝트 설정</span>
+<span class="fn">│   ├── __init__.py</span>
+<span class="fn">│   ├── settings.py</span>
+<span class="fn">│   ├── urls.py</span>
+<span class="fn">│   └── wsgi.py</span>
+<span class="fn">└── blog/</span>                 <span class="cmt"># 앱</span>
+<span class="fn">    ├── __init__.py</span>
+<span class="fn">    ├── models.py</span>
+<span class="fn">    ├── views.py</span>
+<span class="fn">    ├── urls.py</span>
+<span class="fn">    ├── admin.py</span>
+<span class="fn">    ├── serializers.py</span>
+<span class="fn">    └── migrations/</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="models">모델</h2>
+  <p>Django ORM으로 데이터베이스 모델 정의합니다.</p>
+
+  <h3 id="model-example">모델 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python (blog/models.py)</span>
+    </div>
+    <pre><code><span class="kw">from</span> django.db <span class="kw">import</span> models
+<span class="kw">from</span> django.utils <span class="kw">import</span> timezone
+
+<span class="kw">class</span> <span class="type">Post</span>(models.Model):
+    <span class="fn">title</span> = models.<span class="type">CharField</span>(max_length=<span class="num">200</span>)
+    <span class="fn">slug</span> = models.<span class="type">SlugField</span>(unique=<span class="kw">True</span>)
+    <span class="fn">content</span> = models.<span class="type">TextField</span>()
+    <span class="fn">created_at</span> = models.<span class="type">DateTimeField</span>(default=timezone.now)
+    <span class="fn">published_at</span> = models.<span class="type">DateTimeField</span>(blank=<span class="kw">True</span>, null=<span class="kw">True</span>)
+    <span class="fn">author</span> = models.<span class="type">ForeignKey</span>(<span class="str">'auth.User'</span>, on_delete=models.CASCADE)
+
+    <span class="kw">class</span> <span class="type">Meta</span>:
+        <span class="fn">ordering</span> = [<span class="str">'-published_at'</span>]
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(self):
+        <span class="kw">return</span> self.title
+
+    <span class="kw">def</span> <span class="fn">publish</span>(self):
+        self.published_at = timezone.now()
+        self.save()</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="views">뷰</h2>
+  <p>Django의 뷰 시스템입니다.</p>
+
+  <h3 id="cbv-example">Class-Based Views</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python (blog/views.py)</span>
+    </div>
+    <pre><code><span class="kw">from</span> django.views.generic <span class="kw">import</span> (
+    <span class="type">ListView</span>, <span class="type">DetailView</span>,
+    <span class="type">CreateView</span>, <span class="type">UpdateView</span>, <span class="type">DeleteView</span>
+)
+<span class="kw">from</span> django.urls <span class="kw">import</span> reverse_lazy
+<span class="kw">from</span> .models <span class="kw">import</span> Post
+
+<span class="kw">class</span> <span class="type">PostListView</span>(ListView):
+    <span class="fn">model</span> = Post
+    <span class="fn">template_name</span> = <span class="str">'blog/post_list.html'</span>
+    <span class="fn">context_object_name</span> = <span class="str">'posts'</span>
+    <span class="fn">paginate_by</span> = <span class="num">5</span>
+
+<span class="kw">class</span> <span class="type">PostDetailView</span>(DetailView):
+    <span class="fn">model</span> = Post
+    <span class="fn">template_name</span> = <span class="str">'blog/post_detail.html'</span>
+
+<span class="kw">class</span> <span class="type">PostCreateView</span>(CreateView):
+    <span class="fn">model</span> = Post
+    <span class="fn">template_name</span> = <span class="str">'blog/post_form.html'</span>
+    <span class="fn">fields</span> = [<span class="str">'title'</span>, <span class="str">'slug'</span>, <span class="str">'content'</span>]
+
+<span class="kw">class</span> <span class="type">PostDeleteView</span>(DeleteView):
+    <span class="fn">model</span> = Post
+    <span class="fn">template_name</span> = <span class="str">'blog/post_confirm_delete.html'</span>
+    <span class="fn">success_url</span> = reverse_lazy(<span class="str">'post_list'</span>)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="admin">Admin</h2>
+  <p>Django의 관리자 페이지입니다.</p>
+
+  <h3 id="admin-example">Admin 등록</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python (blog/admin.py)</span>
+    </div>
+    <pre><code><span class="kw">from</span> django.contrib <span class="kw">import</span> admin
+<span class="kw">from</span> .models <span class="kw">import</span> Post
+
+<span class="kw">class</span> <span class="type">PostAdmin</span>(admin.ModelAdmin):
+    <span class="fn">list_display</span> = [<span class="str">'title'</span>, <span class="str">'author'</span>, <span class="str">'published_at'</span>]
+    <span class="fn">list_filter</span> = [<span class="str">'published_at'</span>, <span class="str">'created_at'</span>]
+    <span class="fn">search_fields</span> = [<span class="str">'title'</span>, <span class="str">'content'</span>]
+    <span class="fn">prepopulated_fields</span> = {<span class="str">'slug'</span>: (<span class="str">'title'</span>,)}
+    <span class="fn">date_hierarchy</span> = <span class="str">'published_at'</span>
+
+<span class="fn">admin.site.register</span>(Post, PostAdmin)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="urls">URL 라우팅</h2>
+  <p>Django의 URL 패턴입니다.</p>
+
+  <h3 id="urls-example">URL 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python (blog/urls.py)</span>
+    </div>
+    <pre><code><span class="kw">from</span> django.urls <span class="kw">import</span> path
+<span class="kw">from</span> . <span class="kw">import</span> views
+
+<span class="fn">urlpatterns</span> = [
+    <span class="fn">path</span>(<span class="str">''</span>, views.PostListView.as_view(), name=<span class="str">'post_list'</span>),
+    <span class="fn">path</span>(<span class="str">'&lt;slug:slug&gt;/'</span>, views.PostDetailView.as_view(), name=<span class="str">'post_detail'</span>),
+    <span class="fn">path</span>(<span class="str">'create/'</span>, views.PostCreateView.as_view(), name=<span class="str">'post_create'</span>),
+    <span class="fn">path</span>(<span class="str">'&lt;slug:slug&gt;/edit/'</span>, views.PostUpdateView.as_view(), name=<span class="str">'post_edit'</span>),
+    <span class="fn">path</span>(<span class="str">'&lt;slug:slug&gt;/delete/'</span>, views.PostDeleteView.as_view(), name=<span class="str">'post_delete'</span>),
+]</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>Django 애플리케이션 배포 가이드입니다.</p>
+
+  <h3 id="deploy">WSGI 서버</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 배포 플랫폼</div>
+    <ul>
+      <li><strong>Render</strong>: Django 호환</li>
+      <li><strong>Heroku</strong>: classic Django 호스팅</li>
+      <li><strong>AWS Elastic Beanstalk</strong>: AWS</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>CBV</strong>: Class-Based Views 활용</li>
+    <li><strong>MTV</span>: Model-Template-View 패턴</li>
+    <li><strong>Migrations</span>: 항상 migrations 폴더 유지</li>
+    <li><strong>Settings</span>: 개발/운영 설정 분리</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://docs.djangoproject.com" target="_blank" rel="noopener">Django 공식 문서</a></li>
+    <li><a href="https://www.django-rest-framework.org" target="_blank" rel="noopener">Django REST Framework</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

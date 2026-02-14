@@ -223,7 +223,7 @@
 
 <span class="cmt">// 주요 레코드 타입</span>
 <span class="num">1</span>  FCGI_BEGIN_REQUEST     <span class="cmt">// 요청 시작</span>
-<span class="num">2</span>  FCGI_ABORT_REQUEST    <span class="cmt">// 요청中止</span>
+<span class="num">2</span>  FCGI_ABORT_REQUEST    <span class="cmt">// 요청 중지</span>
 <span class="num">3</span>  FCGI_PARAMS           <span class="cmt">// 환경 변수</span>
 <span class="num">4</span>  FCGI_STDIN            <span class="cmt">// 표준 입력</span>
 <span class="num">5</span>  FCGI_STDOUT           <span class="cmt">// 표준 출력</span>
@@ -316,7 +316,7 @@
   <div class="info-box tip">
     <div class="info-box-title">💡 Nginx FastCGI 팁</div>
     <ul>
-      <li><strong>ソケット vs TCP</strong>: 로컬에서는 Unixソケット, 분산 환경에서는 TCP</li>
+      <li><strong>소켓 vs TCP</strong>: 로컬에서는 Unix소켓, 분산 환경에서는 TCP</li>
       <li><strong>버퍼 크기</strong>: 큰 응답은 버퍼 크기 조정 필요</li>
       <li><strong>Keep-Alive</strong>: 연결 재사용으로 성능 향상</li>
       <li><strong>Gzip 압축</strong>: 응답 데이터 압축으로 대역폭 절약</li>
@@ -432,11 +432,11 @@ php -v
     <pre><code><span class="cmt">; Pool 이름</span>
 [<span class="str">www</span>]
 
-<span class="cmt">; Unixソケット 또는 TCP</span>
+<span class="cmt">; Unix소켓 또는 TCP</span>
 <span class="fn">listen</span> = /run/php/php-fpm.sock
 <span class="cmt">; listen = 127.0.0.1:9000</span>
 
-<span class="cmt">;ソ켓 권한</span>
+<span class="cmt">; 소켓 권한</span>
 <span class="fn">listen.owner</span> = www-data
 <span class="fn">listen.group</span> = www-data
 <span class="fn">listen.mode</span> = <span class="num">0660</span>
@@ -470,7 +470,7 @@ php -v
     <tbody>
       <tr>
         <td>static</td>
-        <td>고정数量的 프로세스 유지</td>
+        <td>고정적인 프로세스 유지</td>
         <td>높은 트래픽, 예측 가능한 메모리 사용</td>
       </tr>
       <tr>
@@ -658,7 +658,7 @@ app = Flask(__name__)
     <div class="info-box-title">💡 연결 풀링 팁</div>
     <ul>
       <li><strong>Keep-Alive</strong>: TCP 연결 재사용으로 핸드셰이킹 비용 절감</li>
-      <li><strong>Unixソケット</strong>: 로컬 통신에서 TCP보다 효율적</li>
+      <li><strong>Unix소켓</strong>: 로컬 통신에서 TCP보다 효율적</li>
       <li><strong>프리로드</strong>: PHP 코드 프리로딩으로 초기 로딩 시간 단축</li>
       <li><strong>OPcache</strong>: PHP 바이트코드 캐싱</li>
     </ul>
@@ -692,12 +692,12 @@ app = Flask(__name__)
   <h2 id="troubleshooting">트러블슈팅</h2>
   <p>FastCGI 관련 자주 발생하는 문제와 해결 방법입니다.</p>
 
-  <h3 id="common-errors">常见 오류</h3>
+  <h3 id="common-errors">일반적인 오류</h3>
   <div class="info-box warning">
     <div class="info-box-title">⚠️ 502 Bad Gateway</div>
     <ul>
       <li><strong>원인</strong>: Nginx가 FastCGI 서버에 연결할 수 없음</li>
-      <li><strong>해결</strong>: PHP-FPM 실행 확인,ソ켓/포트 경로 확인, 권한 확인</li>
+      <li><strong>해결</strong>: PHP-FPM 실행 확인, 소켓/포트 경로 확인, 권한 확인</li>
       <li><code>sudo systemctl status php-fpm</code>로 상태 확인</li>
     </ul>
   </div>
@@ -706,7 +706,7 @@ app = Flask(__name__)
     <div class="info-box-title">⚠️ 504 Gateway Timeout</div>
     <ul>
       <li><strong>원인</strong>: FastCGI 응답 시간 초과</li>
-      <li><strong>해결</strong>: fastcgi_read_timeout 증가,，慢 쿼리 최적화</li>
+      <li><strong>해결</strong>: fastcgi_read_timeout 증가,,느린 쿼리 최적화</li>
       <li><code>fastcgi_read_timeout 300;</code>으로 설정</li>
     </ul>
   </div>
@@ -730,7 +730,7 @@ app = Flask(__name__)
 <span class="cmt"># PHP-FPM 로그</span>
 <span class="fn">tail -f</span> /var/log/php<span class="num">8.1</span>-fpm.log
 
-<span class="cmt"># PHP慢 쿼리 로그 (php.ini)</span>
+<span class="cmt"># PHP느린 쿼리 로그 (php.ini)</span>
 <span class="fn">slowlog</span> = /var/log/php-fpm/slow.log
 <span class="fn">request_slowlog_timeout</span> = <span class="num">5s</span></code></pre>
   </div>

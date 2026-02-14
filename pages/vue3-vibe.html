@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Vue 3 Vibe Coding 가이드">
+<meta property="og:description" content="Vue 3 Composition API로 Vibe Coding을 활용하는 방법을 배웁니다. script setup, Pinia, Vue Router를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/vue3-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Vue 3 Composition API로 Vibe Coding을 활용하는 방법을 배웁니다. script setup, Pinia, Vue Router를 AI로 구현해보세요.">
+<meta name="keywords" content="Vue 3 Vibe Coding Composition API Pinia Vue Router">
+<meta name="author" content="MINZKN">
+<title>Vue 3 Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">Vue 3 Vibe Coding 가이드</h1>
+<p class="page-description">Vue 3 Composition API로 Vibe Coding을 활용하는 방법을 배웁니다. script setup, Pinia, Vue Router를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Vue 3는 Progressive JavaScript Framework로, React보다 학습 곡선이 낮고 Angular보다 가벼운 것이 특징입니다.
+    Composition API와 script setup으로 더욱 간결한 코드를 작성할 수 있습니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 Vue 3 장점</div>
+    <ul>
+      <li><strong>Composition API</strong>: 로직 재사용성 향상</li>
+      <li><strong>script setup</strong>: 간결한 문법</li>
+      <li><strong>반응성 시스템</strong>: Proxy 기반 효율적인 변경 감지</li>
+      <li><strong>Single File Component</strong>: HTML, CSS, JS 하나의 파일</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>중소규모 SPA</li>
+    <li>프로그레시브 웹 앱 (PWA)</li>
+    <li>기존 프로젝트에 점진적 도입</li>
+    <li>모바일 웹 앱</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">프로젝트 설정</h2>
+  <p>Vue 3 프로젝트 시작을 위한 프롬프트입니다.</p>
+
+  <h3 id="create-project">프로젝트 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Vue 3로 날씨 앱을 만들어줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Vue 3 + TypeScript</span>
+<span class="str">- Vite</span>
+<span class="str">- Pinia (상태 관리)</span>
+<span class="str">- Vue Router</span>
+<span class="str">- Tailwind CSS</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. 도시 검색</span>
+<span class="str">2. 현재 날씨 표시 (온도, 날씨 상황, 습도)</span>
+<span class="str">3. 5일 예보</span>
+<span class="str">4. 즐겨찾기 도시 저장</span></code></pre>
+  </div>
+
+  <h3 id="folder-structure">폴더 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Vue 3</span>
+    </div>
+    <pre><code><span class="str">src/</span>
+<span class="fn">├── main.ts</span>
+<span class="fn">├── App.vue</span>
+<span class="fn">├── router/</span>
+<span class="fn">│   └── index.ts</span>
+<span class="fn">├── stores/</span>
+<span class="fn">│   └── weather.ts</span>
+<span class="fn">├── views/</span>
+<span class="fn">│   ├── HomeView.vue</span>
+<span class="fn">│   └── WeatherView.vue</span>
+<span class="fn">├── components/</span>
+<span class="fn">│   ├── WeatherCard.vue</span>
+<span class="fn">│   └── SearchBar.vue</span>
+<span class="fn">└── composables/</span>
+<span class="fn">    └── useWeather.ts</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="composition-api">Composition API</h2>
+  <p>Vue 3의 핵심인 Composition API입니다.</p>
+
+  <h3 id="script-setup">script setup</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Vue 3 (WeatherCard.vue)</span>
+    </div>
+    <pre><code><span class="pp">&lt;script setup lang="ts"&gt;</span>
+<span class="kw">import</span> { <span class="fn">ref</span>, <span class="fn">computed</span> } from <span class="str">'vue'</span>;
+
+<span class="cmt">// Props 정의</span>
+<span class="kw">interface</span> <span class="type">Props</span> {
+  <span class="fn">city</span>: <span class="type">string</span>;
+  <span class="fn">temp</span>: <span class="type">number</span>;
+  <span class="fn">condition</span>: <span class="type">string</span>;
+}
+
+<span class="kw">const</span> props = <span class="fn">defineProps</span>&lt;<span class="type">Props</span>&gt;();
+
+<span class="cmt">// Emits 정의</span>
+<span class="kw">const</span> emit = <span class="fn">defineEmits</span>&lt;{
+  <span class="fn">refresh</span>: []
+}&gt;();
+
+<span class="cmt">// Reactive state</span>
+<span class="kw">const</span> isLoading = <span class="fn">ref</span>(<span class="kw">false</span>);
+
+<span class="cmt">// Computed</span>
+<span class="kw">const</span> tempClass = <span class="fn">computed</span>(() <span class="kw">=&gt;</span> {
+  <span class="kw">if</span> (props.temp <span class="kw">&lt;</span> <span class="num">10</span>) <span class="kw">return</span> <span class="str">'cold'</span>;
+  <span class="kw">if</span> (props.temp > <span class="num">25</span>) <span class="kw">return</span> <span class="str">'hot'</span>;
+  <span class="kw">return</span> <span class="str">'normal'</span>;
+});
+
+<span class="cmt">// Methods</span>
+<span class="kw">function</span> <span class="fn">handleRefresh</span>() {
+  isLoading.<span class="fn">value</span> = <span class="kw">true</span>;
+  <span class="fn">emit</span>(<span class="str">'refresh'</span>);
+  <span class="fn">setTimeout</span>(() => isLoading.<span class="fn">value</span> = <span class="kw">false</span>, <span class="num">1000</span>);
+}
+<span class="pp">&lt;/script&gt;</span>
+
+<span class="pp">&lt;template&gt;</span>
+  &lt;div :class=<span class="str">"['weather-card', tempClass]"</span>&gt;
+    &lt;h3&gt;{{ city }}&lt;/h3&gt;
+    &lt;p&gt;{{ temp }}°C - {{ condition }}&lt;/p&gt;
+    &lt;button @click=<span class="str">"handleRefresh"</span>&gt;🔄&lt;/button&gt;
+  &lt;/div&gt;
+<span class="pp">&lt;/template&gt;</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="composables">Composables</h2>
+  <p>Vue 3의 로직 재사용 패턴입니다.</p>
+
+  <h3 id="composables-example">Composables 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Vue 3 (composables/useWeather.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">ref</span> } from <span class="str">'vue'</span>;
+
+<span class="kw">export</span> <span class="kw">function</span> <span class="fn">useWeather</span>() {
+  <span class="kw">const</span> weather = <span class="fn">ref</span>(<span class="kw">null</span>);
+  <span class="kw">const</span> loading = <span class="fn">ref</span>(<span class="kw">false</span>);
+  <span class="kw">const</span> error = <span class="fn">ref</span>(<span class="kw">null</span>);
+
+  <span class="kw">async</span> <span class="kw">function</span> <span class="fn">fetchWeather</span>(city: <span class="type">string</span>) {
+    loading.<span class="fn">value</span> = <span class="kw">true</span>;
+    error.<span class="fn">value</span> = <span class="kw">null</span>;
+
+    <span class="kw">try</span> {
+      <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`/api/weather/${city}`</span>);
+      weather.<span class="fn">value</span> = <span class="kw">await</span> res.<span class="fn">json</span>();
+    } <span class="kw">catch</span> (e) {
+      error.<span class="fn">value</span> = e.<span class="fn">message</span>;
+    } <span class="kw">finally</span> {
+      loading.<span class="fn">value</span> = <span class="kw">false</span>;
+    }
+  }
+
+  <span class="kw">return</span> { weather, loading, error, fetchWeather };
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="pinia">Pinia 상태 관리</h2>
+  <p>Vue 3의 공식 상태 관리 라이브러리입니다.</p>
+
+  <h3 id="pinia-example">Pinia 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Vue 3 (stores/user.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">defineStore</span> } from <span class="str">'pinia'</span>;
+
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">useUserStore</span> = <span class="fn">defineStore</span>(<span class="str">'user'</span>, {
+  <span class="fn">state</span>: () <span class="kw">=&gt;</span> ({
+    <span class="fn">user</span>: <span class="kw">null</span>,
+    <span class="fn">token</span>: <span class="kw">null</span>,
+  }),
+
+  <span class="fn">getters</span>: {
+    <span class="fn">isLoggedIn</span>: (state) <span class="kw">=&gt;</span> !!state.token,
+  },
+
+  <span class="fn">actions</span>: {
+    <span class="kw">async</span> <span class="fn">login</span>(credentials: <span class="type">Credentials</span>) {
+      <span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">$fetch</span>(<span class="str">'/api/login'</span>, {
+        <span class="fn">method</span>: <span class="str">'POST'</span>,
+        <span class="fn">body</span>: credentials,
+      });
+      <span class="kw">this</span>.token = res.token;
+      <span class="kw">this</span>.user = res.user;
+    },
+    <span class="fn">logout</span>() {
+      <span class="kw">this</span>.token = <span class="kw">null</span>;
+      <span class="kw">this</span>.user = <span class="kw">null</span>;
+    },
+  },
+});</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="router">Vue Router</h2>
+  <p>Vue의 공식 라우터 라이브러리입니다.</p>
+
+  <h3 id="router-example">Router 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Vue 3 (router/index.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">createRouter</span>, <span class="fn">createWebHistory</span> } from <span class="str">'vue-router'</span>;
+<span class="kw">import</span> HomeView from <span class="str">'../views/HomeView.vue'</span>;
+
+<span class="kw">const</span> router = <span class="fn">createRouter</span>({
+  <span class="fn">history</span>: <span class="fn">createWebHistory</span>(),
+  <span class="fn">routes</span>: [
+    {
+      <span class="fn">path</span>: <span class="str">'/'</span>,
+      <span class="fn">name</span>: <span class="str">'home'</span>,
+      <span class="fn">component</span>: HomeView,
+    },
+    {
+      <span class="fn">path</span>: <span class="str">'/weather/:city'</span>,
+      <span class="fn">name</span>: <span class="str">'weather'</span>,
+      <span class="fn">component</span>: () <span class="kw">=&gt;</span> <span class="fn">import</span>(<span class="str">'../views/WeatherView.vue'</span>),
+    },
+  ],
+});
+
+<span class="kw">export</span> <span class="kw">default</span> router;</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>Vue 3 애플리케이션 배포 가이드입니다.</p>
+
+  <h3 id="build">빌드 및 배포</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 배포 플랫폼</div>
+    <ul>
+      <li><strong>Vercel</strong>: Vite preset으로 원클릭 배포</li>
+      <li><strong>Netlify</strong>: vue-cli 또는 Vite 플러그인</li>
+      <li><strong>GitHub Pages</strong>: vue-cli-gh-pages</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>script setup</strong>: Composition API 권장</li>
+    <li><strong>Composables</strong>: 로직 재사용에 활용</li>
+    <li><strong>Pinia</span>: 전역 상태 관리</li>
+    <li><strong>TypeScript</strong>: 타입 안전성 확보</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://vuejs.org/guide" target="_blank" rel="noopener">Vue 공식 문서</a></li>
+    <li><a href="https://vuejs.org/api" target="_blank" rel="noopener">Vue Composition API</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

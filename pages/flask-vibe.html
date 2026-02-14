@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Flask Vibe Coding 가이드">
+<meta property="og:description" content="Flask로 Vibe Coding을 활용하는 방법을 배웁니다. 경량 Python 마이크로프레임워크를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/flask-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Flask로 Vibe Coding을 활용하는 방법을 배웁니다. 경량 Python 마이크로프레임워크를 AI로 구현해보세요.">
+<meta name="keywords" content="Flask Vibe Coding Python 마이크로프레임워크 REST API Jinja2">
+<meta name="author" content="MINZKN">
+<title>Flask Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">Flask Vibe Coding 가이드</h1>
+<p class="page-description">Flask로 Vibe Coding을 활용하는 방법을 배웁니다. 경량 Python 마이크로프레임워크를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Flask는 Python의 경량 마이크로프레임워크입니다. "마이크로"는 핵심이 단순하다는 의미로,
+    필요한 기능을 확장해서 사용할 수 있는 유연성이 특징입니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 Flask 장점</div>
+    <ul>
+      <li><strong>경량</strong>: 핵심은 단 몇 줄</li>
+      <li><strong>유연성</strong>: 필요한 것만 선택</li>
+      <li><strong>Jinja2</strong>: 강력한 템플릿 엔진</li>
+      <li><strong>확장성</strong>: 다양한 플러그인</li>
+      <li><strong>학습 곡선</strong>: 낮은 진입 장벽</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>작은 REST API</li>
+    <li>프로토타이핑</li>
+    <li>간단한 웹앱</li>
+    <li>마이크로서비스</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">프로젝트 설정</h2>
+  <p>Flask 프로젝트 시작을 위한 프롬프트입니다.</p>
+
+  <h3 id="create-project">프로젝트 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Flask로 메모 앱을 만들어줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Flask</span>
+<span class="str">- Flask-SQLAlchemy</span>
+<span class="str">- Flask-Migrate</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. CRUD 엔드포인트</span>
+<span class="str">2. SQLite DB 연동</span>
+<span class="str">3. REST API 반환</span></code></pre>
+  </div>
+
+  <h3 id="folder-structure">폴더 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Flask</span>
+    </div>
+    <pre><code><span class="str">project/</span>
+<span class="fn">├── app.py</span>              <span class="cmt"># 앱 엔트리</span>
+<span class="fn">├── config.py</span>           <span class="cmt"># 설정</span>
+<span class="fn">├── models.py</span>           <span class="cmt"># DB 모델</span>
+<span class="fn">├── routes/</span>            <span class="cmt"># 라우트</span>
+<span class="fn">│   ├── __init__.py</span>
+<span class="fn">│   └── notes.py</span>
+<span class="fn">├── templates/</span>         <span class="cmt"># Jinja2 템플릿</span>
+<span class="fn">├── static/</span>            <span class="cmt"># 정적 파일</span>
+<span class="fn">└── requirements.txt</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="basic-usage">기본 사용법</h2>
+  <p>Flask의 핵심 문법입니다.</p>
+
+  <h3 id="app-creation">앱 생성</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python (app.py)</span>
+    </div>
+    <pre><code><span class="kw">from</span> flask <span class="kw">import</span> Flask, jsonify, request
+
+<span class="fn">app</span> = <span class="fn">Flask</span>(__name__)
+
+<span class="cmt"># 인메모리 DB</span>
+<span class="fn">notes</span> = []
+
+<span class="cmt"># GET - 목록 조회</span>
+<span class="fn">@app.route</span>(<span class="str">'/notes'</span>, methods=[<span class="str">'GET'</span>])
+<span class="kw">def</span> <span class="fn">get_notes</span>():
+    <span class="kw">return</span> <span class="fn">jsonify</span>(notes)
+
+<span class="cmt"># POST - 생성</span>
+<span class="fn">@app.route</span>(<span class="str">'/notes'</span>, methods=[<span class="str">'POST'</span>])
+<span class="kw">def</span> <span class="fn">create_note</span>():
+    <span class="kw">data</span> = request.<span class="fn">get_json</span>()
+    <span class="kw">note</span> = {<span class="str">"id"</span>: <span class="fn">len</span>(notes) + <span class="num">1</span>, <span class="str">"content"</span>: data[<span class="str">"content"</span>]}
+    notes.<span class="fn">append</span>(note)
+    <span class="kw">return</span> <span class="fn">jsonify</span>(note), <span class="num">201</span>
+
+<span class="cmt"># PUT - 수정</span>
+<span class="fn">@app.route</span>(<span class="str">'/notes/<int:note_id>'</span>, methods=[<span class="str">'PUT'</span>])
+<span class="kw">def</span> <span class="fn">update_note</span>(note_id):
+    <span class="kw">data</span> = request.<span class="fn">get_json</span>()
+    <span class="kw">for</span> note <span class="kw">in</span> notes:
+        <span class="kw">if</span> note[<span class="str">"id"</span>] == note_id:
+            note[<span class="str">"content"</span>] = data[<span class="str">"content"</span>]
+            <span class="kw">return</span> <span class="fn">jsonify</span>(note)
+    <span class="kw">return</span> <span class="fn">jsonify</span>({<span class="str">"error"</span>: <span class="str">"Not found"</span>}), <span class="num">404</span>
+
+<span class="cmt"># DELETE - 삭제</span>
+<span class="fn">@app.route</span>(<span class="str">'/notes/<int:note_id>'</span>, methods=[<span class="str">'DELETE'</span>])
+<span class="kw">def</span> <span class="fn">delete_note</span>(note_id):
+    <span class="kw">global</span> notes
+    notes = [n <span class="kw">for</span> n <span class="kw">in</span> notes <span class="kw">if</span> n[<span class="str">"id"</span>] != note_id]
+    <span class="kw">return</span> <span class="fn">jsonify</span>({<span class="str">"message"</span>: <span class="str">"Deleted"</span>})
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    <span class="fn">app.run</span>(debug=<span class="kw">True</span>)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="blueprints">Blueprints</h2>
+  <p>Flask의 모듈화 패턴입니다.</p>
+
+  <h3 id="blueprint-example">Blueprint 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+    </div>
+    <pre><code><span class="cmt"># routes/__init__.py</span>
+<span class="kw">from</span> flask <span class="kw">import</span> Blueprint
+
+<span class="fn">notes_bp</span> = <span class="fn">Blueprint</span>(<span class="str">'notes'</span>, __name__)
+
+<span class="cmt"># routes/notes.py</span>
+<span class="kw">from</span> . <span class="kw">import</span> notes_bp
+
+<span class="fn">@notes_bp.route</span>(<span class="str">'/notes'</span>)
+<span class="kw">def</span> <span class="fn">get_notes</span>():
+    <span class="kw">return</span> <span class="fn">jsonify</span>([])
+
+<span class="cmt"># app.py에서 등록</span>
+<span class="kw">from</span> routes <span class="kw">import</span> notes_bp
+app.<span class="fn">register_blueprint</span>(notes_bp)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="templates">Jinja2 템플릿</h2>
+  <p>서버 사이드 렌더링입니다.</p>
+
+  <h3 id="template-example">템플릿 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">HTML (templates/index.html)</span>
+    </div>
+    <pre><code><span class="cmt">{# templates/index.html #}</span>
+<span class="fn">&lt;!DOCTYPE html&gt;</span>
+<span class="fn">&lt;html&gt;</span>
+<span class="fn">&lt;head&gt;</span>
+  <span class="fn">&lt;title&gt;</span>{{ title }}<span class="fn">&lt;/title&gt;</span>
+<span class="fn">&lt;/head&gt;</span>
+<span class="fn">&lt;body&gt;</span>
+  <span class="fn">&lt;h1&gt;</span>{{ title }}<span class="fn">&lt;/h1&gt;</span>
+  
+  <span class="fn">&lt;ul&gt;</span>
+  {% for note in notes %}
+    <span class="fn">&lt;li&gt;</span>{{ note.content }}<span class="fn">&lt;/li&gt;</span>
+  {% endfor %}
+  <span class="fn">&lt;/ul&gt;</span>
+<span class="fn">&lt;/body&gt;</span>
+<span class="fn">&lt;/html&gt;</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>Flask 애플리케이션 배포 가이드입니다.</p>
+
+  <h3 id="wsgi">WSGI 서버</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 WSGI 서버</div>
+    <ul>
+      <li><strong>Gunicorn</strong>: 프로덕션 권장</li>
+      <li><strong>Waitress</strong>: 순수 Python WSGI 서버</li>
+      <li><strong>uWSGI</strong>: 고성능</li>
+    </ul>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash</span>
+    </div>
+    <pre><code><span class="cmt"># Gunicorn으로 실행</span>
+<span class="fn">gunicorn -w 4 app:app</span>
+
+<span class="cmt"># 개발 서버</span>
+<span class="fn">flask run</span> --debug</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>Blueprints</strong>: 모듈화</li>
+    <li><strong>config</span>: 설정 분리</li>
+    <li><strong>extensions</span>: Flask-SQLAlchemy 등</li>
+    <li><strong>factory pattern</span>: 앱 팩토리 패턴</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://flask.palletsprojects.com" target="_blank" rel="noopener">Flask 공식 문서</a></li>
+    <li><a href="https://flask.palletsprojects.com/extensions" target="_blank" rel="noopener">Flask Extensions</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

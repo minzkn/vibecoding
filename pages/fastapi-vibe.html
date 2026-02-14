@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="FastAPI Vibe Coding 가이드">
+<meta property="og:description" content="FastAPI로 Vibe Coding을 활용하는 방법을 배웁니다. Python의 최신 비동기 프레임워크를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/fastapi-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FastAPI로 Vibe Coding을 활용하는 방법을 배웁니다. Python의 최신 비동기 프레임워크를 AI로 구현해보세요.">
+<meta name="keywords" content="FastAPI Vibe Coding Python 비동기 REST API uvicorn Pydantic">
+<meta name="author" content="MINZKN">
+<title>FastAPI Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">FastAPI Vibe Coding 가이드</h1>
+<p class="page-description">FastAPI로 Vibe Coding을 활용하는 방법을 배웁니다. Python의 최신 비동기 프레임워크를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    FastAPI는 Python의 최신 웹 프레임워크로, 비동기 처리, 자동 문서 생성, 타입 힌트 지원이 특징입니다.
+    Starlette 기반의 고성능 프레임워크입니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 FastAPI 장점</div>
+    <ul>
+      <li><strong>비동기</strong>: async/await 지원, 높은 성능</li>
+      <li><strong>자동 문서</strong>: OpenAPI, Swagger 자동 생성</li>
+      <li><strong>Pydantic</strong>: 데이터 검증 내장</li>
+      <li><strong>타입 힌트</strong>: IDE 자동완성 지원</li>
+      <li><strong>의존성 주입</strong>: 느슨한 결합</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>RESTful API 서버</li>
+    <li>마이크로서비스</li>
+    <li>실시간 앱 (WebSocket)</li>
+    <li>ML/AI 모델 서빙</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">프로젝트 설정</h2>
+  <p>FastAPI 프로젝트 시작을 위한 프롬프트입니다.</p>
+
+  <h3 id="create-project">프로젝트 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">FastAPI로 투두 API 서버를 만들어줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- FastAPI</span>
+<span class="str">- Pydantic v2</span>
+<span class="str">- SQLAlchemy (ORM)</span>
+<span class="str">- SQLite (개발), PostgreSQL (운영)</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. CRUD 엔드포인트 (CREATE, READ, UPDATE, DELETE)</span>
+<span class="str">2. Pydantic 모델로 입력 검증</span>
+<span class="str">3. SQLite DB 연동</span>
+<span class="str">4. 자동 문서 생성 확인</span></code></pre>
+  </div>
+
+  <h3 id="folder-structure">폴더 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">FastAPI</span>
+    </div>
+    <pre><code><span class="str">project/</span>
+<span class="fn">├── main.py</span>              <span class="cmt"># 앱 엔트리</span>
+<span class="fn">├── models/</span>              <span class="cmt"># SQLAlchemy 모델</span>
+<span class="fn">│   └── todo.py</span>
+<span class="fn">├── schemas/</span>             <span class="cmt"># Pydantic 스키마</span>
+<span class="fn">│   └── todo.py</span>
+<span class="fn">├── routers/</span>             <span class="cmt"># API 라우트</span>
+<span class="fn">│   └── todos.py</span>
+<span class="fn">├── crud/</span>               <span class="cmt"># DB operations</span>
+<span class="fn">├── database.py</span>         <span class="cmt"># DB 설정</span>
+<span class="fn">└── requirements.txt</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="basic-usage">기본 사용법</h2>
+  <p>FastAPI의 핵심 문법입니다.</p>
+
+  <h3 id="app-creation">앱 생성</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python (main.py)</span>
+    </div>
+    <pre><code><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
+<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
+
+<span class="fn">app</span> = <span class="fn">FastAPI</span>(title=<span class="str">"Todo API"</span>)
+
+<span class="cmt"># Pydantic 모델</span>
+<span class="kw">class</span> <span class="type">Todo</span>(BaseModel):
+    <span class="fn">title</span>: <span class="type">str</span>
+    <span class="fn">completed</span>: <span class="type">bool</span> = <span class="kw">False</span>
+
+<span class="cmt"># 인메모리 DB (실제 프로젝트에서는 SQLAlchemy 사용)</span>
+<span class="fn">todos</span> = []
+
+<span class="cmt"># GET - 목록 조회</span>
+<span class="fn">@app.get</span>(<span class="str">"/todos"</span>)
+<span class="kw">async def</span> <span class="fn">get_todos</span>():
+    <span class="kw">return</span> todos
+
+<span class="cmt"># POST - 생성</span>
+<span class="fn">@app.post</span>(<span class="str">"/todos"</span>)
+<span class="kw">async def</span> <span class="fn">create_todo</span>(todo: <span class="type">Todo</span>):
+    todos.<span class="fn">append</span>(todo)
+    <span class="kw">return</span> todo
+
+<span class="cmt"># PUT - 수정</span>
+<span class="fn">@app.put</span>(<span class="str">"/todos/{todo_id}"</span>)
+<span class="kw">async def</span> <span class="fn">update_todo</span>(todo_id: <span class="type">int</span>, todo: <span class="type">Todo</span>):
+    todos[todo_id] = todo
+    <span class="kw">return</span> todo
+
+<span class="cmt"># DELETE - 삭제</span>
+<span class="fn">@app.delete</span>(<span class="str">"/todos/{todo_id}"</span>)
+<span class="kw">async def</span> <span class="fn">delete_todo</span>(todo_id: <span class="type">int</span>):
+    todos.<span class="fn">pop</span>(todo_id)
+    <span class="kw">return</span> {<span class="str">"message"</span>: <span class="str">"Deleted"</span>}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="pydantic">Pydantic 모델</h2>
+  <p>데이터 검증과 직렬화입니다.</p>
+
+  <h3 id="pydantic-example">모델 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python (schemas/todo.py)</span>
+    </div>
+    <pre><code><span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel, Field, EmailStr
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+<span class="cmt"># 생성 스키마</span>
+<span class="kw">class</span> <span class="type">TodoCreate</span>(BaseModel):
+    <span class="fn">title</span>: <span class="type">str</span> = <span class="fn">Field</span>(..., min_length=<span class="num">1</span>, max_length=<span class="num">100</span>)
+    <span class="fn">description</span>: Optional[<span class="type">str</span>] = <span class="kw">None</span>
+    <span class="fn">completed</span>: <span class="type">bool</span> = <span class="kw">False</span>
+
+<span class="cmt"># 응답 스키마</span>
+<span class="kw">class</span> <span class="type">TodoResponse</span>(TodoCreate):
+    <span class="fn">id</span>: <span class="type">int</span>
+    <span class="fn">created_at</span>: <span class="type">datetime</span>
+
+    <span class="kw">class</span> <span class="type">Config</span>:
+        <span class="fn">from_attributes</span> = <span class="kw">True</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="database">데이터베이스 연동</h2>
+  <p>SQLAlchemy로 DB 연동합니다.</p>
+
+  <h3 id="sqlalchemy">SQLAlchemy 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+    </div>
+    <pre><code><span class="kw">from</span> sqlalchemy <span class="kw">import</span> create_engine
+<span class="kw">from</span> sqlalchemy.ext.declarative <span class="kw">import</span> declarative_base
+<span class="kw">from</span> sqlalchemy.orm <span class="kw">import</span> sessionmaker
+
+<span class="fn">SQLALCHEMY_DATABASE_URL</span> = <span class="str">"sqlite:///./todos.db"</span>
+
+<span class="fn">engine</span> = <span class="fn">create_engine</span>(
+    <span class="fn">SQLALCHEMY_DATABASE_URL</span>,
+    <span class="fn">connect_args</span>={<span class="str">"check_same_thread"</span>: <span class="kw">False</span>}
+)
+
+<span class="fn">SessionLocal</span> = <span class="fn">sessionmaker</span>(<span class="fn">autocommit</span>=<span class="kw">False</span>, <span class="fn">bind</span>=engine)
+<span class="fn">Base</span> = <span class="fn">declarative_base</span>()
+
+<span class="cmt"># 모델 정의</span>
+<span class="kw">class</span> <span class="type">Todo</span>(Base):
+    <span class="fn">__tablename__</span> = <span class="str">"todos"</span>
+    <span class="fn">id</span> = <span class="type">Column(Integer, primary_key=True, index=True)</span>
+    <span class="fn">title</span> = <span class="type">Column(String, index=True)</span>
+    <span class="fn">completed</span> = <span class="type">Column(Boolean, default=False)</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>FastAPI 애플리케이션 배포 가이드입니다.</p>
+
+  <h3 id="run-server">서버 실행</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash</span>
+    </div>
+    <pre><code><span class="cmt"># uvicorn으로 실행</span>
+<span class="fn">uvicorn main:app</span> --reload
+
+<span class="cmt"># 문서 확인</span>
+<span class="fn"># Swagger: http://localhost:8000/docs</span>
+<span class="fn"># ReDoc: http://localhost:8000/redoc</span></code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 배포 플랫폼</div>
+    <ul>
+      <li><strong>Render</strong>: 무료 호스팅</li>
+      <li><strong>Railway</strong>: 프로비저닝 기반</li>
+      <li><strong>AWS ECS</strong>: 컨테이너 배포</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>Pydantic</strong>: 입력 검증에 필수</li>
+    <li><strong>SQLAlchemy</span>: ORM으로 DB 추상화</li>
+    <li><strong>의존성 주입</span>: Depends()로 재사용</li>
+    <li><strong>async/await</span>: blocking I/O 피하기</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://fastapi.tiangolo.com/ko" target="_blank" rel="noopener">FastAPI 공식 문서</a></li>
+    <li><a href="https://docs.pydantic.dev" target="_blank" rel="noopener">Pydantic 문서</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

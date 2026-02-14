@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Kubernetes Vibe Coding 가이드">
+<meta property="og:description" content="Kubernetes로 Vibe Coding을 활용하는 방법을 배웁니다. 컨테이너 오케스트레이션을 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/kubernetes-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Kubernetes로 Vibe Coding을 활용하는 방법을 배웁니다. 컨테이너 오케스트레이션을 AI로 구현해보세요.">
+<meta name="keywords" content="Kubernetes K8s Vibe Coding 컨테이너오케스트레이션 Pod Deployment Service">
+<meta name="author" content="MINZKN">
+<title>Kubernetes Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">Kubernetes Vibe Coding 가이드</h1>
+<p class="page-description">Kubernetes로 Vibe Coding을 활용하는 방법을 배웁니다. 컨테이너 오케스트레이션을 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Kubernetes(K8s)는 컨테이너화된 애플리케이션을 자동 배포, 스케일링, 관리하는 오픈소스 플랫폼입니다.
+    노드 클러스터에서 컨테이너를 오케스트레이션합니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 Kubernetes 장점</div>
+    <ul>
+      <li><strong>자동 복구</strong>: 장애 시 자동 재시작</li>
+      <li><strong>오토 스케일링</strong>: 트래픽에 따른 확장</li>
+      <li><strong>롤링 업데이트</strong>: 무중상 배포</li>
+      <li><strong>서비스 디스커버리</strong>: 자동 로드밸런싱</li>
+      <li><strong>선언적 설정</strong>: 원하는 상태 정의</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>마이크로서비스 아키텍처</li>
+    <li>대규모 애플리케이션</li>
+    <li>CI/CD 파이프라인</li>
+    <li>하이브리드 클라우드</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="basic-concepts">기본 개념</h2>
+  <p>Kubernetes의 핵심 리소스입니다.</p>
+
+  <h3 id="pods">Pod</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">YAML</span>
+    </div>
+    <pre><code><span class="fn">apiVersion</span>: v1
+<span class="fn">kind</span>: Pod
+<span class="fn">metadata</span>:
+  <span class="fn">name</span>: myapp-pod
+  <span class="fn">labels</span>:
+    <span class="fn">app</span>: myapp
+<span class="fn">spec</span>:
+  <span class="fn">containers</span>:
+  - <span class="fn">name</span>: myapp
+    <span class="fn">image</span>: myapp:latest
+    <span class="fn">ports</span>:
+    - <span class="fn">containerPort</span>: 3000</code></pre>
+  </div>
+
+  <h3 id="deployment">Deployment</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">YAML</span>
+    </div>
+    <pre><code><span class="fn">apiVersion</span>: apps/v1
+<span class="fn">kind</span>: Deployment
+<span class="fn">metadata</span>:
+  <span class="fn">name</span>: myapp-deployment
+<span class="fn">spec</span>:
+  <span class="fn">replicas</span>: 3
+  <span class="fn">selector</span>:
+    <span class="fn">matchLabels</span>:
+      <span class="fn">app</span>: myapp
+  <span class="fn">template</span>:
+    <span class="fn">metadata</span>:
+      <span class="fn">labels</span>:
+        <span class="fn">app</span>: myapp
+    <span class="fn">spec</span>:
+      <span class="fn">containers</span>:
+      - <span class="fn">name</span>: myapp
+        <span class="fn">image</span>: myapp:latest
+        <span class="fn">resources</span>:
+          <span class="fn">limits</span>:
+            <span class="fn">memory</span>: <span class="str">"256Mi"</span>
+            <span class="fn">cpu</span>: <span class="str">"500m"</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="service">Service</h2>
+  <p>네트워크 서비스 정의입니다.</p>
+
+  <h3 id="service-example">Service 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">YAML</span>
+    </div>
+    <pre><code><span class="fn">apiVersion</span>: v1
+<span class="fn">kind</span>: Service
+<span class="fn">metadata</span>:
+  <span class="fn">name</span>: myapp-service
+<span class="fn">spec</span>:
+  <span class="fn">type</span>: LoadBalancer
+  <span class="fn">selector</span>:
+    <span class="fn">app</span>: myapp
+  <span class="fn">ports</span>:
+  - <span class="fn">protocol</span>: TCP
+    <span class="fn">port</span>: 80
+    <span class="fn">targetPort</span>: 3000</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="configmap-secret">ConfigMap & Secret</h2>
+  <p>설정과 시크릿 관리입니다.</p>
+
+  <h3 id="configmap-example">ConfigMap</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">YAML</span>
+    </div>
+    <pre><code><span class="fn">apiVersion</span>: v1
+<span class="fn">kind</span>: ConfigMap
+<span class="fn">metadata</span>:
+  <span class="fn">name</span>: myapp-config
+<span class="fn">data</span>:
+  <span class="fn">DATABASE_URL</span>: <span class="str">"postgresql://db:5432/mydb"</span>
+  <span class="fn">LOG_LEVEL</span>: <span class="str">"info"</span></code></pre>
+  </div>
+
+  <h3 id="secret-example">Secret</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">YAML</span>
+    </div>
+    <pre><code><span class="fn">apiVersion</span>: v1
+<span class="fn">kind</span>: Secret
+<span class="fn">metadata</span>:
+  <span class="fn">name</span>: myapp-secret
+<span class="fn">type</span>: Opaque
+<span class="fn">stringData</span>:
+  <span class="fn">DB_PASSWORD</span>: <span class="str">"mypassword"</span>
+  <span class="fn">API_KEY</span>: <span class="str">"myapikey"</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="ingress">Ingress</h2>
+  <p>HTTP/HTTPS 라우팅입니다.</p>
+
+  <h3 id="ingress-example">Ingress 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">YAML</span>
+    </div>
+    <pre><code><span class="fn">apiVersion</span>: networking.k8s.io/v1
+<span class="fn">kind</span>: Ingress
+<span class="fn">metadata</span>:
+  <span class="fn">name</span>: myapp-ingress
+<span class="fn">spec</span>:
+  <span class="fn">rules</span>:
+  - <span class="fn">host</span>: myapp.example.com
+    <span class="fn">http</span>:
+      <span class="fn">paths</span>:
+      - <span class="fn">path</span>: /
+        <span class="fn">pathType</span>: Prefix
+        <span class="fn">backend</span>:
+          <span class="fn">service</span>:
+            <span class="fn">name</span>: myapp-service
+            <span class="fn">port</span>:
+              <span class="fn">number</span>: 80</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="commands">기본 명령어</h2>
+  <p>자주 사용하는 kubectl 명령어입니다.</p>
+
+  <h3 id="kubectl-commands">명령어 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash</span>
+    </div>
+    <pre><code><span class="cmt"># Apply 설정</span>
+<span class="fn">kubectl apply</span> -f deployment.yaml
+
+<span class="cmt"># 상태 확인</span>
+<span class="fn">kubectl get</span> pods
+<span class="fn">kubectl get</span> services
+<span class="fn">kubectl get</span> deployments
+
+<span class="cmt"># 상세 정보</span>
+<span class="fn">kubectl describe</span> pod myapp-pod
+
+<span class="cmt"># 로그 확인</span>
+<span class="fn">kubectl logs</span> -f myapp-pod
+
+<span class="cmt"># 포트 포워딩</span>
+<span class="fn">kubectl port-forward</span> svc/myapp-service 3000:80
+
+<span class="cmt"># 스케일링</span>
+<span class="fn">kubectl scale</span> deployment myapp-deployment --replicas=5</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>Deployment</strong>: Pod 직접 생성 대신</li>
+    <li><strong>리소스 제한</span>: limits/requests 설정</li>
+    <li><strong>Health Checks</span>: liveness/readiness 프로브</li>
+    <li><strong>시크릿</span>: 민감 정보는 Secret에</li>
+  </ul>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 팁</div>
+    <ul>
+      <li><strong>Minikube</strong>: 로컬 테스트</li>
+      <li><strong>Kind</span>: Docker로 K8s 클러스터</li>
+      <li><strong>Lens</span>: GUI 클라이언트</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://kubernetes.io/docs" target="_blank" rel="noopener">Kubernetes 공식 문서</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

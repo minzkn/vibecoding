@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="NestJS Vibe Coding 가이드">
+<meta property="og:description" content="NestJS로 Vibe Coding을 활용하는 방법을 배웁니다. Angular-inspired Node.js 프레임워크를 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/nestjs-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="NestJS로 Vibe Coding을 활용하는 방법을 배웁니다. Angular-inspired Node.js 프레임워크를 AI로 구현해보세요.">
+<meta name="keywords" content="NestJS Vibe Coding Node.js TypeScript DI 의존성주입 모듈">
+<meta name="author" content="MINZKN">
+<title>NestJS Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">NestJS Vibe Coding 가이드</h1>
+<p class="page-description">NestJS로 Vibe Coding을 활용하는 방법을 배웁니다. Angular-inspired Node.js 프레임워크를 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    NestJS는 Angular에서 영감을 받은 Node.js 프레임워크입니다.
+    의존성 주입, 모듈화, TypeScript 지원이 특징이며, 확장 가능한 아키텍처를 제공합니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 NestJS 장점</div>
+    <ul>
+      <li><strong>의존성 주입</strong>: 느슨한 결합, 테스트 용이</li>
+      <li><strong>모듈 시스템</strong>: 명확한 구조</li>
+      <li><strong>TypeScript</strong>: 기본 지원</li>
+      <li><strong> Guards/Interceptors</strong>: 공통 기능</li>
+      <li><strong>WebSockets</strong>: 실시간 지원</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>대규모 엔터프라이즈 앱</li>
+    <li>마이크로서비스</li>
+    <li>실시간 채팅</li>
+    <li>REST/GraphQL API</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">프로젝트 설정</h2>
+  <p>NestJS 프로젝트 시작을 위한 프롬프트입니다.</p>
+
+  <h3 id="create-project">프로젝트 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">NestJS로 투두 API 서버를 만들어줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- NestJS</span>
+<span class="str">- TypeScript</span>
+<span class="str">- TypeORM + PostgreSQL</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. CRUD 엔드포인트</span>
+<span class="str">2. DTO with class-validator</span>
+<span class="str">3. TypeORM 엔티티</span>
+<span class="str">4. 모듈 구조</span></code></pre>
+  </div>
+
+  <h3 id="folder-structure">폴더 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">NestJS</span>
+    </div>
+    <pre><code><span class="str">src/</span>
+<span class="fn">├── main.ts</span>             <span class="cmt"># 엔트리</span>
+<span class="fn">├── app.module.ts</span>       <span class="cmt"># 루트 모듈</span>
+<span class="fn">├── todos/</span>              <span class="cmt"># 피처 모듈</span>
+<span class="fn">│   ├── todos.module.ts</span>
+<span class="fn">│   ├── todos.controller.ts</span>
+<span class="fn">│   ├── todos.service.ts</span>
+<span class="fn">│   ├── dto/</span>
+<span class="fn">│   │   └── create-todo.dto.ts</span>
+<span class="fn">│   └── entities/</span>
+<span class="fn">│       └── todo.entity.ts</span>
+<span class="fn">└── common/</span>             <span class="cmt"># 공통</span>
+<span class="fn">    ├── guards/</span>
+<span class="fn">    └── filters/</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="controllers">컨트롤러</h2>
+  <p>NestJS의 라우팅 시스템입니다.</p>
+
+  <h3 id="controller-example">컨트롤러 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (todos.controller.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">Controller</span>, <span class="fn">Get</span>, <span class="fn">Post</span>, <span class="fn">Body</span>, <span class="fn">Param</span>, <span class="fn">Delete</span>, <span class="fn">ParseIntPipe</span> } from <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { <span class="fn">TodosService</span> } from <span class="str">'./todos.service'</span>;
+<span class="kw">import</span> { <span class="fn">CreateTodoDto</span> } from <span class="str">'./dto/create-todo.dto'</span>;
+
+<span class="fn">@Controller</span>(<span class="str">'todos'</span>)
+<span class="kw">export</span> <span class="kw">class</span> <span class="type">TodosController</span> {
+  <span class="fn">constructor</span>(<span class="kw">private readonly</span> todosService: <span class="type">TodosService</span>) {}
+
+  <span class="fn">@Get</span>()
+  <span class="fn">findAll</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.todosService.<span class="fn">findAll</span>();
+  }
+
+  <span class="fn">@Get</span>(<span class="str">':id'</span>)
+  <span class="fn">findOne</span>(<span class="fn">@Param</span>(<span class="str">'id'</span>, <span class="fn">ParseIntPipe</span>) id: <span class="type">number</span>) {
+    <span class="kw">return</span> <span class="kw">this</span>.todosService.<span class="fn">findOne</span>(id);
+  }
+
+  <span class="fn">@Post</span>()
+  <span class="fn">create</span>(<span class="fn">@Body</span>() createTodoDto: <span class="type">CreateTodoDto</span>) {
+    <span class="kw">return</span> <span class="kw">this</span>.todosService.<span class="fn">create</span>(createTodoDto);
+  }
+
+  <span class="fn">@Delete</span>(<span class="str">':id'</span>)
+  <span class="fn">remove</span>(<span class="fn">@Param</span>(<span class="str">'id'</span>, <span class="fn">ParseIntPipe</span>) id: <span class="type">number</span>) {
+    <span class="kw">return</span> <span class="kw">this</span>.todosService.<span class="fn">remove</span>(id);
+  }
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="services">서비스</h2>
+  <p>비즈니스 로직입니다.</p>
+
+  <h3 id="service-example">서비스 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (todos.service.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">Injectable</span>, <span class="fn">NotFoundException</span> } from <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { <span class="fn">Todo</span> } from <span class="str">'./entities/todo.entity'</span>;
+<span class="kw">import</span> { <span class="fn">CreateTodoDto</span> } from <span class="str">'./dto/create-todo.dto'</span>;
+
+<span class="fn">@Injectable</span>()
+<span class="kw">export</span> <span class="kw">class</span> <span class="type">TodosService</span> {
+  <span class="kw">private</span> todos: <span class="type">Todo[]</span> = [];
+
+  <span class="fn">findAll</span>(): <span class="type">Todo[]</span> {
+    <span class="kw">return</span> <span class="kw">this</span>.todos;
+  }
+
+  <span class="fn">findOne</span>(id: <span class="type">number</span>): <span class="type">Todo</span> {
+    <span class="kw">const</span> todo = <span class="kw">this</span>.todos.<span class="fn">find</span>(t => t.id === id);
+    <span class="kw">if</span> (!todo) {
+      <span class="kw">throw new</span> <span class="type">NotFoundException</span>(<span class="str">`Todo #${id} not found`</span>);
+    }
+    <span class="kw">return</span> todo;
+  }
+
+  <span class="fn">create</span>(createTodoDto: <span class="type">CreateTodoDto</span>): <span class="type">Todo</span> {
+    <span class="kw">const</span> todo: <span class="type">Todo</span> = {
+      id: Date.<span class="fn">now</span>(),
+      ...createTodoDto,
+    };
+    <span class="kw">this</span>.todos.<span class="fn">push</span>(todo);
+    <span class="kw">return</span> todo;
+  }
+
+  <span class="fn">remove</span>(id: <span class="type">number</span>): <span class="type">void</span> {
+    <span class="kw">const</span> index = <span class="kw">this</span>.todos.<span class="fn">findIndex</span>(t => t.id === id);
+    <span class="kw">if</span> (index === <span class="num">-1</span>) {
+      <span class="kw">throw new</span> <span class="type">NotFoundException</span>(<span class="str">`Todo #${id} not found`</span>);
+    }
+    <span class="kw">this</span>.todos.<span class="fn">splice</span>(index, <span class="num">1</span>);
+  }
+}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="modules">모듈</h2>
+  <p>NestJS의 모듈 시스템입니다.</p>
+
+  <h3 id="module-example">모듈 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (todos.module.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">Module</span> } from <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { <span class="fn">TodosController</span> } from <span class="str">'./todos.controller'</span>;
+<span class="kw">import</span> { <span class="fn">TodosService</span> } from <span class="str">'./todos.service'</span>;
+
+<span class="fn">@Module</span>({
+  <span class="fn">controllers</span>: [TodosController],
+  <span class="fn">providers</span>: [TodosService],
+  <span class="fn">exports</span>: [TodosService],
+})
+<span class="kw">export</span> <span class="kw">class</span> <span class="type">TodosModule</span> {}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="dtos">DTO와 검증</h2>
+  <p>데이터 전송 객체입니다.</p>
+
+  <h3 id="dto-example">DTO 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (dto/create-todo.dto.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">IsString</span>, <span class="fn">IsNotEmpty</span>, <span class="fn">IsOptional</span>, <span class="fn">IsBoolean</span> } from <span class="str">'class-validator'</span>;
+
+<span class="kw">export</span> <span class="kw">class</span> <span class="type">CreateTodoDto</span> {
+  <span class="fn">@IsString</span>()
+  <span class="fn">@IsNotEmpty</span>()
+  <span class="fn">title</span>: <span class="type">string</span>;
+
+  <span class="fn">@IsString</span>()
+  <span class="fn">@IsOptional</span>()
+  <span class="fn">description</span>?: <span class="type">string</span>;
+
+  <span class="fn">@IsBoolean</span>()
+  <span class="fn">@IsOptional</span>()
+  <span class="fn">completed</span>?: <span class="type">boolean</span>;
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>NestJS 애플리케이션 배포 가이드입니다.</p>
+
+  <h3 id="build">빌드 및 실행</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 배포 플랫폼</div>
+    <ul>
+      <li><strong>Vercel</strong>: NestJS 지원</li>
+      <li><strong>Railway</strong>: 프로비저닝</li>
+      <li><strong>AWS ECS</strong>: Docker 배포</li>
+    </ul>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash</span>
+    </div>
+    <pre><code><span class="cmt"># 빌드</span>
+<span class="fn">npm run build</span>
+
+<span class="cmt"># 실행</span>
+<span class="fn">node dist/main</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>모듈</strong>: 기능별 모듈화</li>
+    <li><strong>DTO</strong>: class-validator로 검증</li>
+    <li><strong>의존성 주입</strong>: constructor 주입</li>
+    <li><strong>Guards</strong>: 인증/인가</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://docs.nestjs.com" target="_blank" rel="noopener">NestJS 공식 문서</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

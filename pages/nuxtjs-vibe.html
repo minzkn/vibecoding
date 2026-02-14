@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="Nuxt.js Vibe Coding 가이드">
+<meta property="og:description" content="Nuxt.js로 Vibe Coding을 활용하는 방법을 배웁니다. Nuxt 3, Vue 3, SSR을 AI로 구현해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/nuxtjs-vibe.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Nuxt.js로 Vibe Coding을 활용하는 방법을 배웁니다. Nuxt 3, Vue 3, SSR을 AI로 구현해보세요.">
+<meta name="keywords" content="Nuxt.js Vibe Coding Vue 3 SSR SSG Nuxt 3">
+<meta name="author" content="MINZKN">
+<title>Nuxt.js Vibe Coding 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">Nuxt.js Vibe Coding 가이드</h1>
+<p class="page-description">Nuxt.js로 Vibe Coding을 활용하는 방법을 배웁니다. Nuxt 3, Vue 3, SSR을 AI로 구현해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    Nuxt.js는 Vue.js 기반의 풀스택 프레임워크입니다. SSR, SSG, SPA 모드를 지원하며,
+    자동 라우팅, 컴포넌트 자동 임포트 등 개발 생산성을 높이는 기능이 포함되어 있습니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 Nuxt 3 장점</div>
+    <ul>
+      <li><strong>Nitro 엔진</strong>: 고성능 서버 사이드 렌더링</li>
+      <li><strong>Vue 3</strong>: Composition API, script setup</li>
+      <li><strong> automatiques Imports</strong>: 컴포넌트/유틸 자동 임포트</li>
+      <li><strong>파일 기반 라우팅</strong>: pages/ 디렉토리 자동 라우팅</li>
+      <li><strong>SSR/SSG/SPA</strong>: 다양한 렌더링 모드 지원</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한 상황</h3>
+  <ul>
+    <li>Vue 기반 풀스택 애플리케이션</li>
+    <li>SEO가 중요한 Vue 프로젝트</li>
+    <li>정적 사이트 생성 (블로그, 문서)</li>
+    <li>E-commerce 플랫폼</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="setup">프로젝트 설정</h2>
+  <p>Nuxt 3 프로젝트 시작을 위한 프롬프트입니다.</p>
+
+  <h3 id="create-project">프로젝트 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Nuxt 3로 블로그 프로젝트를 만들어줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Nuxt 3</span>
+<span class="str">- TypeScript</span>
+<span class="str">- Pinia (상태 관리)</span>
+<span class="str">- Tailwind CSS</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. 파일 기반 라우팅</span>
+<span class="str">2. Nuxt Content로 마크다운 블로그</span>
+<span class="str">3. 다크 모드 지원</span>
+<span class="str">4. SEO 메타 태그 자동 생성</span></code></pre>
+  </div>
+
+  <h3 id="folder-structure">폴더 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Nuxt 3</span>
+    </div>
+    <pre><code><span class="str">nuxt-project/</span>
+<span class="fn">├── app.vue</span>              <span class="cmt"># 앱 엔트리</span>
+<span class="fn">├── nuxt.config.ts</span>      <span class="cmt"># Nuxt 설정</span>
+<span class="fn">├── pages/</span>              <span class="cmt"># 라우트</span>
+<span class="fn">│   ├── index.vue</span>
+<span class="fn">│   ├── blog/
+<span class="fn">│   │   ├── index.vue</span>  <span class="cmt"># /blog</span>
+<span class="fn">│   │   └── [slug].vue</span> <span class="cmt"># /blog/:slug</span>
+<span class="fn">├── components/</span>         <span class="cmt"># 자동 임포트</span>
+<span class="fn">├── composables/</span>        <span class="cmt"># Composition 함수</span>
+<span class="fn">├── server/</span>             <span class="cmt"># 서버 API</span>
+<span class="fn">│   └── api/
+<span class="fn">│       └── posts.ts</span>
+<span class="fn">└── assets/</span>            <span class="cmt"># 정적 에셋</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="data-fetching">데이터 페칭</h2>
+  <p>Nuxt 3의 데이터 페칭 방법을 배웁니다.</p>
+
+  <h3 id="use-fetch">useFetch 활용</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Nuxt 3 (pages/blog/[id].vue)</span>
+    </div>
+    <pre><code><span class="pp">&lt;script setup lang="ts"&gt;</span>
+<span class="kw">const</span> route = <span class="fn">useRoute</span>()
+
+<span class="cmt">// useFetch: 데이터 페칭 + 타입 추론</span>
+<span class="kw">const</span> { data: post, pending, error } = <span class="fn">await</span> <span class="fn">useFetch</span>(
+  <span class="fn">`/api/posts/${route.params.id}`</span>
+)
+
+<span class="cmt">// SEO 메타</span>
+<span class="fn">useSeoMeta</span>({
+  <span class="fn">title</span>: () <span class="kw">=&gt;</span> post.value?.title,
+  <span class="fn">description</span>: () <span class="kw">=&gt;</span> post.value?.excerpt,
+})
+<span class="pp">&lt;/script&gt;</span>
+
+<span class="pp">&lt;template&gt;</span>
+  &lt;div&gt;
+    &lt;div v-if=<span class="str">"pending"</span>&gt;로딩 중...&lt;/div&gt;
+    &lt;div v-else-if=<span class="str">"error"</span>&gt;에러: {{ error }}&lt;/div&gt;
+    &lt;article v-else&gt;
+      &lt;h1&gt;{{ post.title }}&lt;/h1&gt;
+      &lt;div v-html=<span class="str">"post.content"</span>&gt;&lt;/div&gt;
+    &lt;/article&gt;
+  &lt;/div&gt;
+<span class="pp">&lt;/template&gt;</span></code></pre>
+  </div>
+
+  <h3 id="server-routes">서버 API Routes</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Nuxt 3 (server/api/posts.ts)</span>
+    </div>
+    <pre><code><span class="kw">export default</span> <span class="fn">defineEventHandler</span>(<span class="kw">async</span> (event) => {
+  <span class="cmt">// GET 쿼리 파라미터</span>
+  <span class="kw">const</span> query = <span class="fn">getQuery</span>(event)
+
+  <span class="cmt">// 데이터베이스에서 posts 가져오기</span>
+  <span class="kw">const</span> posts = <span class="kw">await</span> <span class="fn">db</span>.post.<span class="fn">findMany</span>({
+    <span class="fn">take</span>: query.limit ? <span class="fn">Number</span>(query.limit) : <span class="num">10</span>,
+  })
+
+  <span class="kw">return</span> posts
+})</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="components">컴포넌트</h2>
+  <p>Nuxt 3의 컴포넌트 시스템입니다.</p>
+
+  <h3 id="auto-imports">자동 임포트</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Nuxt 3 컴포넌트 구조를 만들어줘:</span>
+
+<span class="str">1. components/</span>
+<span class="str">   - AppHeader.vue</span>
+<span class="str">   - AppFooter.vue</span>
+<span class="str">   - BlogCard.vue</span>
+
+<span class="str">2. components/content/</span>
+<span class="str">   - ProseCode.vue (Nuxt Content용)</span>
+<span class="str">   - ProseImg.vue</span>
+
+<span class="str">3. 사용</span>
+<span class="str">   - 자동 임포트되어 import 없이 사용</span>
+<span class="str">   - &lt;AppHeader /&gt;</span>
+<span class="str">   - &lt;BlogCard :post="post" /&gt;</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="state-management">상태 관리</h2>
+  <p>Pinia를 활용한 상태 관리입니다.</p>
+
+  <h3 id="pinia-setup">Pinia 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Nuxt 3 (stores/user.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">defineStore</span> } from <span class="str">'pinia'</span>
+
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">useUserStore</span> = <span class="fn">defineStore</span>(<span class="str">'user'</span>, {
+  <span class="fn">state</span>: () <span class="kw">=&gt;</span> ({
+    <span class="fn">user</span>: <span class="kw">null</span> <span class="kw">as</span> <span class="type">User</span> | <span class="kw">null</span>,
+    <span class="fn">isLoggedIn</span>: <span class="kw">false</span>,
+  }),
+
+  <span class="fn">actions</span>: {
+    <span class="kw">async</span> <span class="fn">login</span>(credentials: <span class="type">Credentials</span>) {
+      <span class="kw">const</span> user = <span class="kw">await</span> <span class="fn">$fetch</span>(<span class="str">'/api/auth/login'</span>, {
+        <span class="fn">method</span>: <span class="str">'POST'</span>,
+        <span class="fn">body</span>: credentials,
+      })
+      <span class="kw">this</span>.user = user
+      <span class="kw">this</span>.isLoggedIn = <span class="kw">true</span>
+    },
+
+    <span class="fn">logout</span>() {
+      <span class="kw">this</span>.user = <span class="kw">null</span>
+      <span class="kw">this</span>.isLoggedIn = <span class="kw">false</span>
+    },
+  },
+})</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>Nuxt 3 애플리케이션 배포 가이드입니다.</p>
+
+  <h3 id="deploy-options">배포 옵션</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 배포 플랫폼</div>
+    <ul>
+      <li><strong>Vercel</strong>: zero-config, 자동 최적화</li>
+      <li><strong>Netlify</strong>: Nuxt 모듈 제공</li>
+      <li><strong>Cloudflare Pages</strong>: 엣지 배포</li>
+      <li><strong>AWS Amplify</strong>: 풀스택 AWS</li>
+    </ul>
+  </div>
+
+  <h3 id="static-generation">정적 생성 (SSG)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">nuxt.config.ts</span>
+    </div>
+    <pre><code><span class="cmt">// 정적 사이트 생성 설정</span>
+<span class="kw">export</span> <span class="kw">default</span> <span class="fn">defineNuxtConfig</span>({
+  <span class="fn">ssr</span>: <span class="kw">true</span>,
+  <span class="fn">nitro</span>: {
+    <span class="fn">preset</span>: <span class="str">'static'</span>,
+  },
+  <span class="cmt">// 또는</span>
+  <span class="fn">target</span>: <span class="str">'static'</span>,
+})</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <ul>
+    <li><strong>script setup</strong>: Composition API 권장</li>
+    <li><strong>자동 임포트</strong>: util 함수에 use 접두사</li>
+    <li><strong> nitro server</strong>: API 로직은 서버 디렉토리에</li>
+    <li><strong>useSeoMeta</strong>: SEO 메타 태그 필수</li>
+  </ul>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://nuxt.com/docs" target="_blank" rel="noopener">Nuxt 공식 문서</a></li>
+    <li><a href="https://nuxt.com/modules" target="_blank" rel="noopener">Nuxt 모듈</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

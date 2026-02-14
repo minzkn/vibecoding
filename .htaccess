@@ -15,6 +15,7 @@
     RewriteEngine On
     RewriteRule ^\.claude(/.*)?$ - [F,L]
     RewriteRule ^\.opencode(/.*)?$ - [F,L]
+    RewriteRule ^\scripts(/.*)?$ - [F,L]
 </IfModule>
 
 # gzip compression

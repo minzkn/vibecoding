@@ -83,6 +83,34 @@ var SEARCH_INDEX = [
   { title: "API 디자인", url: "pages/api-design.html", description: "AI 도움으로 API 설계하기", keywords: "api design 설계 rest" },
   { title: "데이터베이스 프롬프트", url: "pages/database-prompt.html", description: "데이터베이스 설계 및 SQL 생성 프롬프트", keywords: "database sql 프롬프트 설계" },
 
+  // 모던 프론트엔드
+  { title: "Next.js Vibe Coding", url: "pages/nextjs-vibe.html", description: "Next.js로 Vibe Coding 활용, App Router, Server Components", keywords: "Next.js Vibe Coding React SSR SSG" },
+  { title: "Nuxt.js Vibe Coding", url: "pages/nuxtjs-vibe.html", description: "Nuxt.js로 Vibe Coding 활용, Nuxt 3, SSR", keywords: "Nuxt.js Vibe Coding Vue 3 SSR" },
+  { title: "Svelte/SvelteKit Vibe Coding", url: "pages/svelte-vibe.html", description: "Svelte로 Vibe Coding 활용, 컴파일 방식", keywords: "Svelte SvelteKit Vibe Coding 컴파일" },
+  { title: "Vue 3 Vibe Coding", url: "pages/vue3-vibe.html", description: "Vue 3 Composition API로 Vibe Coding 활용", keywords: "Vue 3 Vibe Coding Composition API" },
+  { title: "Astro Vibe Coding", url: "pages/astro-vibe.html", description: "Astro로 Vibe Coding 활용, Islands 아키텍처", keywords: "Astro Vibe Coding 정적사이트 Islands" },
+
+  // Python 백엔드
+  { title: "FastAPI Vibe Coding", url: "pages/fastapi-vibe.html", description: "FastAPI로 Vibe Coding 활용, 비동기 Python", keywords: "FastAPI Vibe Coding Python 비동기" },
+  { title: "Flask Vibe Coding", url: "pages/flask-vibe.html", description: "Flask로 Vibe Coding 활용, 마이크로프레임워크", keywords: "Flask Vibe Coding Python 마이크로" },
+  { title: "Django Vibe Coding", url: "pages/django-vibe.html", description: "Django로 Vibe Coding 활용, 풀스택", keywords: "Django Vibe Coding Python 풀스택" },
+
+  // Node.js 백엔드
+  { title: "Express.js Vibe Coding", url: "pages/express-vibe.html", description: "Express.js로 Vibe Coding 활용, Node.js", keywords: "Express Express.js Vibe Coding Node.js" },
+  { title: "NestJS Vibe Coding", url: "pages/nestjs-vibe.html", description: "NestJS로 Vibe Coding 활용, 의존성 주입", keywords: "NestJS Vibe Coding Node.js DI" },
+  { title: "Fastify Vibe Coding", url: "pages/fastify-vibe.html", description: "Fastify로 Vibe Coding 활용,高性能", keywords: "Fastify Vibe Coding Node.js高性能" },
+
+  // 데이터베이스
+  { title: "PostgreSQL Vibe Coding", url: "pages/postgresql-vibe.html", description: "PostgreSQL로 Vibe Coding 활용, RDBMS", keywords: "PostgreSQL Vibe Coding RDBMS ORM" },
+  { title: "MongoDB Vibe Coding", url: "pages/mongodb-vibe.html", description: "MongoDB로 Vibe Coding 활용, NoSQL", keywords: "MongoDB Vibe Coding NoSQL 문서" },
+  { title: "Redis Vibe Coding", url: "pages/redis-vibe.html", description: "Redis로 Vibe Coding 활용, 인메모리 캐시", keywords: "Redis Vibe Coding 인메모리 캐시" },
+  { title: "SQLite Vibe Coding", url: "pages/sqlite-vibe.html", description: "SQLite로 Vibe Coding 활용, 경량 DB", keywords: "SQLite Vibe Coding 경량 파일기반" },
+
+  // 인프라 & 클라우드
+  { title: "Docker Vibe Coding", url: "pages/docker-vibe.html", description: "Docker로 Vibe Coding 활용, 컨테이너", keywords: "Docker Vibe Coding 컨테이너 Docker Compose" },
+  { title: "Kubernetes Vibe Coding", url: "pages/kubernetes-vibe.html", description: "Kubernetes로 Vibe Coding 활용, 오케스트레이션", keywords: "Kubernetes K8s Vibe Coding 오케스트레이션" },
+  { title: "AWS Vibe Coding", url: "pages/aws-vibe.html", description: "AWS로 Vibe Coding 활용, 클라우드", keywords: "AWS Vibe Coding Amazon 클라우드 EC2 Lambda" },
+
   // 환경 구축 & 도구
   { title: "LLM 개발 환경", url: "pages/dev-environment.html", description: "터미널, 에디터, Git 설정", keywords: "development environment 개발환경 설정" },
   { title: "API 키 관리", url: "pages/api-key-management.html", description: "환경 변수, 시크릿, 보안 관리", keywords: "api key management 키관리 보안" },
@@ -192,7 +220,25 @@ var NAV_STRUCTURE = [
     { file: 'react-prompt.html', title: 'React 프롬프트' },
     { file: 'backend-vibe.html', title: '백엔드 Vibe Coding' },
     { file: 'api-design.html', title: 'API 디자인' },
-    { file: 'database-prompt.html', title: '데이터베이스 프롬프트' }
+    { file: 'database-prompt.html', title: '데이터베이스 프롬프트' },
+    { file: 'nextjs-vibe.html', title: 'Next.js' },
+    { file: 'nuxtjs-vibe.html', title: 'Nuxt.js' },
+    { file: 'svelte-vibe.html', title: 'Svelte/SvelteKit' },
+    { file: 'vue3-vibe.html', title: 'Vue 3' },
+    { file: 'astro-vibe.html', title: 'Astro' },
+    { file: 'fastapi-vibe.html', title: 'FastAPI' },
+    { file: 'flask-vibe.html', title: 'Flask' },
+    { file: 'django-vibe.html', title: 'Django' },
+    { file: 'express-vibe.html', title: 'Express.js' },
+    { file: 'nestjs-vibe.html', title: 'NestJS' },
+    { file: 'fastify-vibe.html', title: 'Fastify' },
+    { file: 'postgresql-vibe.html', title: 'PostgreSQL' },
+    { file: 'mongodb-vibe.html', title: 'MongoDB' },
+    { file: 'redis-vibe.html', title: 'Redis' },
+    { file: 'sqlite-vibe.html', title: 'SQLite' },
+    { file: 'docker-vibe.html', title: 'Docker' },
+    { file: 'kubernetes-vibe.html', title: 'Kubernetes' },
+    { file: 'aws-vibe.html', title: 'AWS' }
   ]},
   { title: '환경 구축 & 도구', pages: [
     { file: 'dev-environment.html', title: 'LLM 개발 환경' },
