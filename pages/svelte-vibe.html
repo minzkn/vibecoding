@@ -74,6 +74,8 @@
       <li><strong>반응성</strong>: 선언적 변수 할당으로 자동 업데이트</li>
       <li><strong>간단한 문법</strong>: HTML, CSS, JS가 하나의 파일에</li>
       <li><strong>Stores</strong>: 간단한 전역 상태 관리</li>
+      <li><strong>작은 번들</strong>: Vue/React보다 작은 출력</li>
+      <li><strong>진화적</strong>: 점진적 채택 가능</li>
     </ul>
   </div>
 
@@ -83,7 +85,47 @@
     <li>라이트웨이트 SPA</li>
     <li>정적 사이트 (SvelteKit + adapter-static)</li>
     <li>프로토타이핑</li>
+    <li>대시보드/관리자 페이지</li>
+    <li>하이브리드 앱 (Svelte Native)</li>
   </ul>
+
+  <h3 id="vs-react-vue">React/Vue와 비교</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>특성</th>
+        <th>Svelte</th>
+        <th>React</th>
+        <th>Vue</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>가상 DOM</td>
+        <td>없음</td>
+        <td>있음</td>
+        <td>있음</td>
+      </tr>
+      <tr>
+        <td>번들 크기</td>
+        <td>가장 작음</td>
+        <td>중간</td>
+        <td>중간</td>
+      </tr>
+      <tr>
+        <td>학습 곡선</td>
+        <td>낮음</td>
+        <td>중간</td>
+        <td>중간</td>
+      </tr>
+      <tr>
+        <td>상태 관리</td>
+        <td>Stores</td>
+        <td>Context/Redux</td>
+        <td>Pinia/Vuex</td>
+      </tr>
+    </tbody>
+  </table>
 </section>
 
 <section class="content-section">
@@ -222,6 +264,100 @@
     <span class="fn">posts</span>: <span class="kw">await</span> res.<span class="fn">json</span>()
   };
 }</code></pre>
+  </div>
+
+  <h3 id="form-actions">Form Actions</h3>
+  <p>서버 사이드 폼 처리입니다.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">SvelteKit (routes/+page.server.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">fail</span>, <span class="fn">redirect</span> } from <span class="str">'@sveltejs/kit'</span>;
+
+<span class="kw">export</span> <span class="kw">const</span> actions = {
+  <span class="fn">default</span>: <span class="kw">async</span> ({ request }) => {
+    <span class="kw">const</span> data = <span class="kw">await</span> request.<span class="fn">formData</span>();
+    <span class="kw">const</span> email = data.<span class="fn">get</span>(<span class="str">'email'</span>);
+    <span class="kw">const</span> password = data.<span class="fn">get</span>(<span class="str">'password'</span>);
+
+    <span class="cmt">// 검증</span>
+    <span class="kw">if</span> (!email || !password) {
+      <span class="kw">return</span> <span class="fn">fail</span>(<span class="num">400</span>, { <span class="fn">email</span>, <span class="fn">missing</span>: <span class="kw">true</span> });
+    }
+
+    <span class="cmt">// DB 처리...</span>
+    <span class="kw">throw</span> <span class="fn">redirect</span>(<span class="num">303</span>, <span class="str">'/dashboard'</span>);
+  }
+};</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="ssr-csr">SSR과 CSR</h2>
+  <p>SvelteKit의 렌더링 옵션입니다.</p>
+
+  <h3 id="page-options">페이지 옵션</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">SvelteKit (routes/+page.ts)</span>
+    </div>
+    <pre><code><span class="cmt">// CSR만 (클라이언트 사이드 렌더링)</span>
+<span class="kw">export</span> <span class="kw">const</span> csr = <span class="kw">true</span>;
+<span class="kw">export</span> <span class="kw">const</span> ssr = <span class="kw">false</span>;
+
+<span class="cmt">// SSR만 (서버 사이드 렌더링)</span>
+<span class="kw">export</span> <span class="kw">const</span> csr = <span class="kw">false</span>;
+<span class="kw">export</span> <span class="kw">const</span> ssr = <span class="kw">true</span>;
+
+<span class="cmt">// 기본값: 둘 다 활성화 (하이브리드)</span>
+<span class="kw">export</span> <span class="kw">const</span> csr = <span class="kw">true</span>;
+<span class="kw">export</span> <span class="kw">const</span> ssr = <span class="kw">true</span>;</code></pre>
+  </div>
+
+  <h3 id=" prerender">Prerendering</h3>
+  <p>정적 페이지 생성을 위한 사전 렌더링입니다.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">SvelteKit (routes/+page.ts)</span>
+    </div>
+    <pre><code><span class="cmt">// 정적 페이지로 사전 렌더링</span>
+<span class="kw">export</span> <span class="kw">const</span> prerender = <span class="kw">true</span>;
+
+<span class="cmt">// ISR (증분 정적 재생성)</span>
+<span class="kw">export</span> <span class="kw">const</span> prerender = <span class="kw">true</span>;
+<span class="kw">export</span> <span class="kw">const</span> entries = <span class="kw">async</span> () => {
+  <span class="kw">const</span> posts = <span class="kw">await</span> <span class="fn">fetchPosts</span>();
+  <span class="kw">return</span> posts.<span class="fn">map</span>(p => ({ <span class="fn">slug</span>: p.slug }));
+};</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="animation">애니메이션</h2>
+  <p>Svelte의 내장 애니메이션 기능입니다.</p>
+
+  <h3 id="svelte-motion">svelte/motion, svelte/transition</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Svelte</span>
+    </div>
+    <pre><code><span class="pp">&lt;script&gt;</span>
+  <span class="kw">import</span> { <span class="fn">fade</span>, <span class="fn">fly</span> } from <span class="str">'svelte/transition'</span>;
+  <span class="kw">import</span> { <span class="fn">tweened</span> } from <span class="str">'svelte/motion'</span>;
+
+  <span class="kw">let</span> show = <span class="kw">true</span>;
+  <span class="kw">const</span> progress = <span class="fn">tweened</span>(<span class="num">0</span>);
+<span class="pp">&lt;/script&gt;</span>
+
+<span class="cmt">{#if show}</span>
+<span class="cmt">  {#key item}</span>
+    <span class="cmt">    &lt;div in:fly={{ y: 20 }} out:fade&gt;</span>
+      <span class="cmt">      콘텐츠</span>
+    <span class="cmt">    &lt;/div&gt;</span>
+<span class="cmt">  {/key}</span>
+<span class="cmt">{/if}</span>
+
+<span class="cmt">&lt;progress value={$progress}&gt;&lt;/progress&gt;</span></code></pre>
   </div>
 </section>
 

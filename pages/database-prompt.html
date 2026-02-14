@@ -74,13 +74,35 @@
       <li><strong>SQL 쿼리</strong>: SELECT, INSERT, UPDATE, DELETE</li>
       <li><strong>마이그레이션</strong>: 스키마 변경 스크립트</li>
       <li><strong>최적화</strong>: 인덱스, 쿼리 최적화</li>
+      <li><strong>ORM 모델</strong>: Prisma, TypeORM, SQLAlchemy</li>
+      <li><strong>데이터 마이그레이션</strong>: 데이터 변환, 이전 스크립트</li>
+    </ul>
+  </div>
+
+  <h3 id="supported-databases">지원 데이터베이스</h3>
+  <p>AI는 다양한 데이터베이스 시스템에서 활용할 수 있습니다.</p>
+  <ul>
+    <li><strong>관계형 데이터베이스</strong>: PostgreSQL, MySQL, MariaDB, SQLite, Oracle</li>
+    <li><strong>문서 데이터베이스</strong>: MongoDB, CouchDB</li>
+    <li><strong>키-값 저장소</strong>: Redis, Amazon DynamoDB</li>
+    <li><strong>시계열 데이터베이스</strong>: InfluxDB, TimescaleDB</li>
+    <li><strong>그래프 데이터베이스</strong>: Neo4j, ArangoDB</li>
+  </ul>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 데이터베이스 선택 가이드</div>
+    <ul>
+      <li><strong>트랜잭션 필수</strong>: PostgreSQL, MySQL (ACID 준수)</li>
+      <li><strong>유연한 스키마</strong>: MongoDB (다양한 데이터 구조)</li>
+      <li><strong>고속 캐시</strong>: Redis (메모리 기반)</li>
+      <li><strong>간단한 프로토타이프</strong>: SQLite (파일 기반, 설정 불필요)</li>
     </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="schema-design">스키마 설계</h2>
-  <p>데이터베이스 스키마를 설계합니다.</p>
+  <p>데이터베이스 스키마를 설계합니다. AI는 요구사항을 분석하여 최적의 테이블 구조를 제안합니다.</p>
 
   <h3 id="table-request">테이블 설계 요청</h3>
   <div class="code-block">
@@ -102,11 +124,55 @@
 <span class="str">- 인덱스</span>
 <span class="str">- 데이터 타입</span></code></pre>
   </div>
+
+  <h3 id="erd-generation">ERD 생성 요청</h3>
+  <p>텍스트 기반 ERD나 다이어그램을 요청할 수 있습니다.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">전자상거래 데이터베이스 ERD를 설계해줘.</span>
+
+<span class="str">엔티티:</span>
+<span class="str">- customers: 고객 정보 (id, name, email, phone, address)</span>
+<span class="str">- products: 상품 정보 (id, name, price, stock, category_id)</span>
+<span class="str">- orders: 주문 (id, customer_id, order_date, status, total_amount)</span>
+<span class="str">- order_items: 주문 상세 (id, order_id, product_id, quantity, price)</span>
+<span class="str">- categories: 카테고리 (id, name, parent_id)</span>
+<span class="str">- reviews: 리뷰 (id, product_id, customer_id, rating, comment)</span>
+
+<span class="str">출력:</span>
+<span class="str">- Mermaid 다이어그램 형식</span>
+<span class="str">- 각 관계의 Cardinality 명시</span>
+<span class="str">- 권장 인덱스 목록</span></code></pre>
+  </div>
+
+  <h3 id="normalization">정규화 요구사항</h3>
+  <p>AI에게 정규화 수준을 명시하면 더 정확한 설계를 받을 수 있습니다.</p>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 정규화 수준 지정</div>
+    <ul>
+      <li><strong>1NF (제1정규형)</strong>: 원자값のみ (복합 값禁止)</li>
+      <li><strong>2NF (제2정규형)</strong>: 部分 함수 종속 제거</li>
+      <li><strong>3NF (제3정규형</strong>): 이행 함수 종속 제거</li>
+      <li><strong>BCNF (보이스-코드 정규형)</strong>: 결정자 함수 종속 보장</li>
+    </ul>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">3NF 정규화를 적용한 스키마를 설계해줘:</span>
+<span class="str">- 직원 테이블 (부서, 직책, 급여 정보 포함)</span>
+<span class="str">- 부서별 급여 등급 테이블</span>
+<span class="str">- 각 정규화 단계별 설명 포함</span></code></pre>
+  </div>
 </section>
 
 <section class="content-section">
   <h2 id="sql-queries">SQL 쿼리 생성</h2>
-  <p>다양한 SQL 쿼리를 생성합니다.</p>
+  <p>다양한 SQL 쿼리를 생성합니다. 구체적인 요구사항을 명시할수록 더 정확한 결과를 얻습니다.</p>
 
   <h3 id="select-query">SELECT 쿼리 요청</h3>
   <div class="code-block">
@@ -135,11 +201,70 @@
 <span class="str">- 카테고리 이름</span>
 <span class="str">- 댓글 수</span></code></pre>
   </div>
+
+  <h3 id="aggregation-query">집계 쿼리 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">주문 데이터를 분석하는 쿼리를 작성해줘:</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. 일별 주문 수와 총 금액</span>
+<span class="str">2. 카테고리별 매출 순위 (상위 5개)</span>
+<span class="str">3. 고객별 총 주문 금액 (VIP 고객 추출)</span>
+<span class="str">4. 평균 주문 금액, 최대/최소 주문 금액</span>
+<span class="str">5. 월별 성장률 (전월 대비)</span>
+
+<span class="str">사용 테이블: orders, order_items, products, categories</span></code></pre>
+  </div>
+
+  <h3 id="subquery">서브쿼리 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">다음 조건의 서브쿼리를 작성해줘:</span>
+
+<span class="str">1. 평균보다 많은 주문을 한 고객 조회</span>
+<span class="str">2. 최근 6개월内有 거래 없는 비활성 고객 조회</span>
+<span class="str">3. 재고가 없는 상품의 주문 건 조회</span>
+<span class="str">4. 각 카테고리에서 가장 판매량이 많은 상품 조회</span>
+
+<span class="str">테이블: customers, orders, order_items, products</span></code></pre>
+  </div>
+
+  <h3 id="window-function">Window 함수 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Window 함수를 사용한 분석 쿼리를 작성해줘:</span>
+
+<span class="str">1. 행 번호: 주문 내림차순 정렬, 번호 부여</span>
+<span class="str">2. 누적 합계: 일별 매출의 누적 합계</span>
+<span class="str">3. 이동 평균: 최근 3개월 평균 매출</span>
+<span class="str">4. 순위: 카테고리별 매출 순위</span>
+<span class="str">5. 비율: 전체 매출 대비 점유율</span>
+
+<span class="str">데이터베이스: PostgreSQL</span></code></pre>
+  </div>
+
+  <h3 id="database-specific">데이터베이스별 차이점</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 데이터베이스별 SQL 차이</div>
+    <ul>
+      <li><strong>MySQL</strong>: LIMIT 지원, 문자열 연결 CONCAT()</li>
+      <li><strong>PostgreSQL</strong>: LIMIT/OFFSET, 문자열 연결 || 또는 CONCAT()</li>
+      <li><strong>SQLite</strong>: LIMIT 지원, 표현식 제한적</li>
+      <li><strong>SQL Server</strong>: TOP, OFFSET-FETCH</li>
+    </ul>
+  </div>
 </section>
 
 <section class="content-section">
   <h2 id="migration">마이그레이션</h2>
-  <p>스키마 마이그레이션 스크립트를 생성합니다.</p>
+  <p>스키마 마이그레이션 스크립트를 생성합니다. 데이터베이스 종류와 ORM을 명시하면 해당 환경에 맞는 스크립트를 생성합니다.</p>
 
   <h3 id="migration-request">마이그레이션 요청</h3>
   <div class="code-block">
@@ -155,11 +280,64 @@
 <span class="str">- 기본값: NULL</span>
 <span class="str">- ALTER TABLE 문으로</span></code></pre>
   </div>
+
+  <h3 id="prisma-migration">Prisma 마이그레이션</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Prisma 스키마를 다음과 같이 변경하는 마이그레이션:</span>
+
+<span class="str">1. User 모델에 role 필드 추가 (기본값: 'user')</span>
+<span class="str">2. Post 모델에 published 필드 추가 (기본값: false)</span>
+<span class="str">3. Comment 모델 추가</span>
+<span class="str">4. 기존 데이터 마이그레이션 스크립트 포함</span>
+
+<span class="str">환경: PostgreSQL + Prisma</span></code></pre>
+  </div>
+
+  <h3 id="data-migration">데이터 마이그레이션</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">데이터 마이그레이션 스크립트를 작성해줘:</span>
+
+<span class="str">시나리오:</span>
+<span class="str">- users 테이블의 name 필드를 first_name, last_name으로 분리</span>
+<span class="str">- email을 소문자로统一</span>
+<span class="str">- created_at이 NULL인 레코드에 현재 시간 설정</span>
+<span class="str">- 마이그레이션前后 데이터 검증 쿼리 포함</span>
+
+<span class="str">데이터베이스: MySQL</span></code></pre>
+  </div>
+
+  <h3 id="migration-rollback">롤백 스크립트</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 롤백 계획 필수</div>
+    <ul>
+      <li><strong>백업</strong>: 마이그레이션 전 데이터 백업</li>
+      <li><strong>순서</strong>: 마이그레이션 → 검증 → 롤백 스크립트 순서</li>
+      <li><strong>테스트</strong>: 개발 환경에서 충분한 테스트</li>
+    </ul>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">users 테이블에 email_verified 컬럼을 추가하는</span>
+<span class="str">마이그레이션과对应的 롤백 스크립트를 작성해줘:</span>
+
+<span class="str">- 컬럼: email_verified (BOOLEAN, 기본값 FALSE)</span>
+<span class="str">- 롤백: 컬럼 삭제</span>
+<span class="str">- 검증 쿼리 포함</span></code></pre>
+  </div>
 </section>
 
 <section class="content-section">
   <h2 id="orm-models">ORM 모델</h2>
-  <p>ORM 모델 코드를 생성합니다.</p>
+  <p>ORM 모델 코드를 생성합니다. 사용 중인 ORM과 프로그래밍 언어를 명시하면 해당 환경에 맞는 코드를 생성합니다.</p>
 
   <h3 id="prisma-model">Prisma 모델 요청</h3>
   <div class="code-block">
@@ -178,11 +356,68 @@
 <span class="str">- User 1:N Comment</span>
 <span class="str">- Post 1:N Comment</span></code></pre>
   </div>
+
+  <h3 id="typeorm-model">TypeORM 모델 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">TypeORM Entity 클래스를 작성해줘:</span>
+
+<span class="str">환경: TypeScript + PostgreSQL</span>
+
+">엔<span class="str티티:</span>
+<span class="str">- @Entity('users')</span>
+<span class="str">- @PrimaryGeneratedColumn()</span>
+<span class="str">- @Column() with type, length, nullable</span>
+<span class="str">- @OneToMany(), @ManyToOne() 관계</span>
+<span class="str">- @CreateDateColumn(), @UpdateDateColumn()</span></code></pre>
+  </div>
+
+  <h3 id="sqlalchemy-model">SQLAlchemy 모델 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">SQLAlchemy 모델 클래스를 작성해줘:</span>
+
+<span class="str">환경: Python + PostgreSQL</span>
+
+<span class="str">테이블:</span>
+<span class="str">- User: id, email, name, password_hash, created_at</span>
+<span class="str">- Post: id, title, content, author_id, created_at</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- Base 상속</span>
+<span class="str">- Column, Integer, String, DateTime 타입</span>
+<span class="str">- relationship(), backref()</span>
+<span class="str">- relationship 정의 (lazy='select')</span></code></pre>
+  </div>
+
+  <h3 id="drizzle-model">Drizzle ORM 모델 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Drizzle ORM 스키마를 작성해줘:</span>
+
+<span class="str">환경: TypeScript + drizzle-orm + PostgreSQL</span>
+
+<span class="str">테이블:</span>
+<span class="str">- users: id, email, name, createdAt</span>
+<span class="str">- posts: id, title, content, authorId, createdAt</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- pgTable 사용</span>
+<span class="str">- serial, varchar, timestamp 타입</span>
+<span class="str">- primaryKey, references()</span>
+<span class="str">- relations 정의</span></code></pre>
+  </div>
 </section>
 
 <section class="content-section">
   <h2 id="optimization">최적화</h2>
-  <p>쿼리 최적화권장을 받습니다.</p>
+  <p>쿼리 최적화 권장을 받습니다. EXPLAIN 결과나 Slow Query Log를 공유하면 더 정확한 진단이 가능합니다.</p>
 
   <h3 id="optimize-request">최적화 요청</h3>
   <div class="code-block">
@@ -200,6 +435,163 @@
 <span class="str">```</span>
 
 <span class="str">인덱스 제안과 함께</span></code></pre>
+  </div>
+
+  <h3 id="index-design">인덱스 설계 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">게시판 기능에 대한 인덱스 전략을 설계해줘.</span>
+
+<span class="str">주요 쿼리:</span>
+<span class="str">1. SELECT * FROM posts WHERE category_id = ? ORDER BY created_at DESC</span>
+<span class="str">2. SELECT * FROM posts WHERE author_id = ?</span>
+<span class="str">3. SELECT * FROM posts WHERE title LIKE '%검색어%'</span>
+<span class="str">4. SELECT COUNT(*) FROM posts WHERE status = 'published'</span>
+<span class="str">5. SELECT * FROM posts WHERE created_at BETWEEN ? AND ?</span>
+
+<span class="str">데이터 특성:</span>
+<span class="str">- 전체 게시물 수: 약 100만 건</span>
+<span class="str">- 일일 신규 게시물: 약 1,000건</span>
+<span class="str">- 검색 기능 자주 사용</span></code></pre>
+  </div>
+
+  <h3 id="query-analysis">쿼리 분석 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">다음 EXPLAIN 결과를 분석해줘:</span>
+
+<span class="str">```sql</span>
+<span class="str">EXPLAIN ANALYZE</span>
+<span class="str">SELECT u.name, COUNT(o.id) as order_count</span>
+<span class="str">FROM users u</span>
+<span class="str">LEFT JOIN orders o ON u.id = o.user_id</span>
+<span class="str">WHERE u.created_at > '2024-01-01'</span>
+<span class="str">GROUP BY u.id;</span>
+<span class="str">```</span>
+
+<span class="str">결과:</span>
+<span class="str">-> Aggregate  (cost=1500.25..1500.30 rows=1 width=16)</span>
+<span class="str">   -> Nested Loop Left Join  (cost=5.50..1200.00 rows=50000 width=24)</span></code></pre>
+  </div>
+
+  <h3 id="partitioning">파티셔닝 설계</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 파티셔닝이 필요한 상황</div>
+    <ul>
+      <li><strong>대용량 테이블</strong>: 수천만 건 이상</li>
+      <li><strong>범위 쿼리</strong>: 날짜/지역별 조회 빈번</li>
+      <li><strong>데이터 보관</strong>: 과거 데이터 별도 관리</li>
+      <li><strong>성능 이슈</strong>: 인덱스 크기肥大</li>
+    </ul>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">PostgreSQL 파티셔닝 전략을 설계해줘:</span>
+
+<span class="str">테이블: logs</span>
+<span class="str">- id, event_type, payload, created_at</span>
+<span class="str">- 일일 약 100만 건 INSERT</span>
+<span class="str">- 주로 최근 30일 데이터 조회</span>
+<span class="str">- 1년 경과 후 삭제</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- 파티션 키: created_at (월별)</span>
+<span class="str">- 파티션 관리 스크립트</span>
+<span class="str">- 인덱스 전략</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="security">보안</h2>
+  <p>데이터베이스 보안 설계를 요청합니다.</p>
+
+  <h3 id="privilege-management">권한 관리</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">PostgreSQL 권한设计方案을 작성해줘:</span>
+
+<span class="str">역할:</span>
+<span class="str">- admin: 전체 권한</span>
+<span class="str">- developer: 스키마 생성, 자신의 테이블 관리</span>
+<span class="str">- application: SELECT, INSERT, UPDATE, DELETE만</span>
+<span class="str">- readonly: SELECT only</span>
+
+<span class="str">요구사항:</span>
+<span class="str">-ROLLEN 생성 스크립트</span>
+<span class="str">- GRANT/REVOKE 문</span>
+<span class="str">- 행 수준 보안 (RLS) 포함</span></code></pre>
+  </div>
+
+  <h3 id="sql-injection">SQL 인젝션 방지</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ SQL 인젝션 주의사항</div>
+    <ul>
+      <li><strong>파라미터화 쿼리</strong>: Prepared Statement 사용</li>
+      <li><strong>입력 검증</strong>: 화이트리스트 방식으로 검증</li>
+      <li><strong>ORM 사용</strong>: ORM이 자동으로 이스케이프</li>
+      <li><strong>최소 권한</strong>: 애플리케이션 계정 권한 최소화</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="backup-restore">백업 및 복원</h2>
+  <p>백업 및 복원 전략을 설계합니다.</p>
+
+  <h3 id="backup-strategy">백업 전략 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">PostgreSQL 백업 전략을 설계해줘:</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- 일일 전체 백업 (凌晨 2시)</span>
+<span class="str">- 시간별 증분 백업</span>
+<span class="str">- 30일 보관</span>
+<span class="str">-异地 저장 (S3)</span>
+<span class="str">- 복원 시간 목표 (RTO): 4시간</span>
+<span class="str">- 복원 지점 목표 (RPO): 1시간</span>
+
+<span class="str">출력:</span>
+<span class="str">- 백업 스크립트 (cron)</span>
+<span class="str">- 복원 테스트 절차</span>
+<span class="str">- 검증 쿼리</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="transaction">트랜잭션 관리</h2>
+  <p>트랜잭션 처리 패턴을 요청합니다.</p>
+
+  <h3 id="transaction-pattern">트랜잭션 패턴</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">주문 처리 트랜잭션을 작성해줘:</span>
+
+<span class="str">시나리오:</span>
+<span class="str">1. 재고 확인</span>
+<span class="str">2. 재고 차감</span>
+<span class="str">3. 주문 생성</span>
+<span class="str">4. 결제 처리</span>
+<span class="str">5. 재고 부족 시 전체 롤백</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- 격리 수준: SERIALIZABLE</span>
+<span class="str">-Deadlock 방지</span>
+<span class="str">- 재시도 로직</span>
+<span class="str">- TypeScript + TypeORM</span></code></pre>
   </div>
 </section>
 

@@ -74,13 +74,35 @@
       <li><strong>HTTP 메서드 적절히 사용</strong>: GET, POST, PUT, DELETE</li>
       <li><strong>계층적 URL</strong>: /users/123/posts</li>
       <li><strong>일관된 응답 형식</strong>: JSON</li>
+      <li><strong>무상태 (Stateless)</strong>: 각 요청이 독립적</li>
+      <li><strong>클라이언트-서버 분리</strong>: 관심사 분리</li>
+    </ul>
+  </div>
+
+  <h3 id="api-types">API 유형</h3>
+  <p>프로젝트에 맞는 API 유형을 선택하세요.</p>
+  <ul>
+    <li><strong>REST API</strong>: 가장 널리 사용, HTTP 캐시 활용</li>
+    <li><strong>GraphQL</strong>: 클라이언트想要的 데이터 선택, Over-fetching 방지</li>
+    <li><strong>gRPC</strong>: 고성능, Protocol Buffers, 마이크로서비스</li>
+    <li><strong>WebSocket</strong>: 실시간 양방향 통신</li>
+    <li><strong>Webhook</strong>: 이벤트 기반 알림</li>
+  </ul>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 API 유형 선택 가이드</div>
+    <ul>
+      <li><strong>단순 CRUD</strong>: REST API</li>
+      <li><strong>복잡한 데이터 관계</strong>: GraphQL</li>
+      <li><strong>실시간 업데이트</strong>: WebSocket</li>
+      <li><strong>마이크로서비스</strong>: gRPC</li>
     </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="endpoint-design">엔드포인트 설계</h2>
-  <p>API 엔드포인트를 설계합니다.</p>
+  <p>API 엔드포인트를 설계합니다. 자원과 행동을 명확히 분리하면 일관된 API를 만들 수 있습니다.</p>
 
   <h3 id="endpoint-request">엔드포인트 설계 요청</h3>
   <div class="code-block">
@@ -101,11 +123,102 @@
 <span class="str">- 필터링</span>
 <span class="str">- 정렬</span></code></pre>
   </div>
+
+  <h3 id="naming-conventions">명명 규칙</h3>
+  <p>일관된 명명 규칙을 적용하세요.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">RESTful 명명 규칙을 적용한 엔드포인트를 작성해줘:</span>
+
+<span class="str">리소스: orders (주문)</span>
+
+<span class="str">기본 CRUD:</span>
+<span class="str">- GET    /orders          # 전체 조회</span>
+<span class="str">- GET    /orders/:id      # 단일 조회</span>
+<span class="str">- POST   /orders          # 생성</span>
+<span class="str">- PUT    /orders/:id      # 전체 수정</span>
+<span class="str">- PATCH  /orders/:id      # 부분 수정</span>
+<span class="str">- DELETE /orders/:id      # 삭제</span>
+
+<span class="str">특정 행동:</span>
+<span class="str">- POST   /orders/:id/cancel    # 주문 취소</span>
+<span class="str">- POST   /orders/:id/refund   # 환불 요청</span>
+
+<span class="str">관계 리소스:</span>
+<span class="str">- GET /orders/:id/items        # 주문 상품 목록</span>
+<span class="str">- GET /users/:id/orders        # 사용자의 주문 목록</span></code></pre>
+  </div>
+
+  <h3 id="query-parameters">쿼리 파라미터</h3>
+  <p>필터링, 정렬, 페이지네이션을 위한 표준 파라미터를 정의하세요.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">쿼리 파라미터 표준을 설계해줘:</span>
+
+<span class="str">페이지네이션:</span>
+<span class="str">- page: 페이지 번호 (기본값 1)</span>
+<span class="str">- limit: 페이지당 항목 수 (기본값 20, 최대 100)</span>
+<span class="str">- 예: /posts?page=2&limit=10</span>
+
+<span class="str">필터링:</span>
+<span class="str">- 필드명=값 형식</span>
+<span class="str">- 여러 필터: &로 연결</span>
+<span class="str">- 예: /posts?status=published&author_id=1</span>
+
+<span class="str">정렬:</span>
+<span class="str">- sort: 필드명</span>
+<span class="str">- order: asc | desc</span>
+<span class="str">- 예: /posts?sort=created_at&order=desc</span>
+
+<span class="str">검색:</span>
+<span class="str">- q: 검색어</span>
+<span class="str">- 예: /posts?q=안녕하세요</span></code></pre>
+  </div>
+
+  <h3 id="rest-vs-graphql">REST vs GraphQL</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ REST와 GraphQL 선택</div>
+    <table>
+      <thead>
+        <tr>
+          <th>기준</th>
+          <th>REST</th>
+          <th>GraphQL</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>데이터_fetching</td>
+          <td>엔드포인트당 고정</td>
+          <td>클라이언트가 선택</td>
+        </tr>
+        <tr>
+          <td>Over-fetching</td>
+          <td>많을 수 있음</td>
+          <td>없음</td>
+        </tr>
+        <tr>
+          <td>캐시</td>
+          <td>HTTP 캐시 활용</td>
+          <td>커스텀 필요</td>
+        </tr>
+        <tr>
+          <td>학습 곡선</td>
+          <td>낮음</td>
+          <td>보통</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </section>
 
 <section class="content-section">
   <h2 id="request-response">요청/응답 형식</h2>
-  <p>API 요청과 응답의 형식을 정의합니다.</p>
+  <p>API 요청과 응답의 형식을 정의합니다. 일관된 형식은 개발자 경험을 크게 향상시킵니다.</p>
 
   <h3 id="response-format">응답 형식 요청</h3>
   <div class="code-block">
@@ -127,11 +240,85 @@
 <span class="str">  - message: string</span>
 <span class="str">  - details: object (선택)</span></code></pre>
   </div>
+
+  <h3 id="success-response">성공 응답 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">단일 리소스 응답</span>
+    </div>
+    <pre><code><span class="str">{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "첫 번째 게시물",
+    "content": "내용...",
+    "author": {
+      "id": 1,
+      "name": "홍길동"
+    },
+    "createdAt": "2024-01-15T10:30:00Z"
+  }
+}</span></code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">목록 응답 (페이지네이션)</span>
+    </div>
+    <pre><code><span class="str">{
+  "success": true,
+  "data": [
+    { "id": 1, "title": "게시물 1" },
+    { "id": 2, "title": "게시물 2" }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 100,
+    "totalPages": 10
+  }
+}</span></code></pre>
+  </div>
+
+  <h3 id="error-response">에러 응답 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">유효성 검사 에러</span>
+    </div>
+    <pre><code><span class="str">{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "입력 데이터가 유효하지 않습니다",
+    "details": [
+      { "field": "email", "message": "올바른 이메일을 입력해주세요" },
+      { "field": "password", "message": "비밀번호는 8자 이상이어야 합니다" }
+    ]
+  }
+}</span></code></pre>
+  </div>
+
+  <h3 id="request-body">요청 본문Validation</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">사용자 생성 API의 요청 스키마를 작성해줘:</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- email: 필수, 유효한 이메일 형식</span>
+<span class="str">- password: 필수, 8~20자, 영문+숫자+특수문자</span>
+<span class="str">- name: 필수, 2~50자</span>
+<span class="str">- age: 선택, 1~150 사이의 숫자</span>
+<span class="str">- role: 선택, 기본값 'user', enum ['user', 'admin']</span>
+
+<span class="str">도구: Zod 스키마로</span></code></pre>
+  </div>
 </section>
 
 <section class="content-section">
   <h2 id="error-handling">에러 처리</h2>
-  <p>일관된 에러 처리를 설계합니다.</p>
+  <p>일관된 에러 처리는 문제 진단과 디버깅을 쉽게 만듭니다.</p>
 
   <h3 id="error-codes">HTTP 상태 코드</h3>
   <table>
@@ -154,9 +341,14 @@
         <td>리소스 생성 성공</td>
       </tr>
       <tr>
+        <td>204</td>
+        <td>No Content</td>
+        <td>DELETE 성공, 응답 본문 없음</td>
+      </tr>
+      <tr>
         <td>400</td>
         <td>Bad Request</td>
-        <td>잘못된 요청</td>
+        <td>잘못된 요청 구문</td>
       </tr>
       <tr>
         <td>401</td>
@@ -164,22 +356,79 @@
         <td>인증 필요</td>
       </tr>
       <tr>
+        <td>403</td>
+        <td>Forbidden</td>
+        <td>권한 없음</td>
+      </tr>
+      <tr>
         <td>404</td>
         <td>Not Found</td>
         <td>리소스 없음</td>
       </tr>
       <tr>
+        <td>409</td>
+        <td>Conflict</td>
+        <td>데이터 충돌 (중복 등)</td>
+      </tr>
+      <tr>
+        <td>422</td>
+        <td>Unprocessable Entity</td>
+        <td>유효성 검사 실패</td>
+      </tr>
+      <tr>
+        <td>429</td>
+        <td>Too Many Requests</td>
+        <td>Rate Limit 초과</td>
+      </tr>
+      <tr>
         <td>500</td>
         <td>Server Error</td>
-        <td>서버 오류</td>
+        <td>서버 내부 오류</td>
+      </tr>
+      <tr>
+        <td>503</td>
+        <td>Service Unavailable</td>
+        <td>서비스 일시 중단</td>
       </tr>
     </tbody>
   </table>
+
+  <h3 id="error-code-system">에러 코드 시스템</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">API 에러 코드 시스템을 설계해줘:</span>
+
+<span class="str">카테고리:</span>
+<span class="str">- AUTH_*: 인증/인가 관련</span>
+<span class="str">- VALIDATION_*: 유효성 검사</span>
+<span class="str">- RESOURCE_*: 리소스 관련</span>
+<span class="str">- INTERNAL_*: 서버 내부</span>
+
+<span class="str">예시:</span>
+<span class="str">- AUTH_TOKEN_EXPIRED</span>
+<span class="str">- AUTH_INVALID_CREDENTIALS</span>
+<span class="str">- VALIDATION_EMAIL_INVALID</span>
+<span class="str">- RESOURCE_NOT_FOUND</span>
+<span class="str">- RESOURCE_ALREADY_EXISTS</span></code></pre>
+  </div>
+
+  <h3 id="error-handling-best-practices">에러 처리 베스트 프랙티스</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 에러 처리 원칙</div>
+    <ul>
+      <li><strong>일관성</strong>: 모든 에러 응답 동일한 구조</li>
+      <li><strong>정보 제공</strong>: 디버깅에 필요한 정보 포함</li>
+      <li><strong>보안</strong>: 민감한 정보는 제외</li>
+      <li><strong>로깅</strong>: 서버 측 에러는 반드시 로깅</li>
+    </ul>
+  </div>
 </section>
 
 <section class="content-section">
   <h2 id="versioning">API 버전 관리</h2>
-  <p>API 버전을 관리하는 전략입니다.</p>
+  <p>API 버전을 관리하는 전략입니다. 클라이언트에게 호환성을 유지하면서 API를 발전시킬 수 있습니다.</p>
 
   <h3 id="version-request">버전 관리 요청</h3>
   <div class="code-block">
@@ -194,11 +443,59 @@
 <span class="str">3.이전 버전은 최소 6개월 지원</span>
 <span class="str">4. deprecation 알림 헤더</span></code></pre>
   </div>
+
+  <h3 id="versioning-strategies">버전 관리 전략 비교</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>전략</th>
+        <th>장점</th>
+        <th>단점</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>URL 경로 (v1/users)</td>
+        <td>명확함, 캐시 용이</td>
+        <td>코드 중복 가능성</td>
+      </tr>
+      <tr>
+        <td>헤더 (Accept: v1+json)</td>
+        <td>URL 간결</td>
+        <td>캐시 어려움</td>
+      </tr>
+      <tr>
+        <td>쿼리 파라미터 (?version=1)</td>
+        <td>간편함</td>
+        <td>캐시 어려움</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="deprecation-policy">Deprecation 정책</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Deprecation 헤더 예시</span>
+    </div>
+    <pre><code><span class="str">Deprecation: true</span>
+<span class="str">Link: &lt;https://api.example.com/v2/users&gt;; rel="successor-version"</span>
+<span class="str">Sunset: Sat, 01 Jun 2024 00:00:00 GMT</span></code></pre>
+  </div>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 호환성 유지 원칙</div>
+    <ul>
+      <li><strong>추가만</strong>: 기존 필드 제거 금지</li>
+      <li><strong>필드명 변경</strong>: 새 필드 추가, 기존 필드 비권장 처리</li>
+      <li><strong>응답 형식</strong>: 기존 구조 유지</li>
+      <li><strong>기능 제거</strong>: Deprecation 기간 후에만</li>
+    </ul>
+  </div>
 </section>
 
 <section class="content-section">
   <h2 id="documentation">API 문서화</h2>
-  <p>API 문서를 자동으로 생성합니다.</p>
+  <p>API 문서를 자동으로 생성합니다. 좋은 문서는 개발자 경험의 핵심입니다.</p>
 
   <h3 id="swagger-request">문서 생성 요청</h3>
   <div class="code-block">
@@ -212,6 +509,145 @@
 <span class="str">- 요청/응답 스키마</span>
 <span class="str">- 에러 응답 예시</span>
 <span class="str">- 인증 요구사항</span></code></pre>
+  </div>
+
+  <h3 id="openapi-example">OpenAPI 스키마 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">OpenAPI 3.0 스키마를 작성해줘:</span>
+
+<span class="str">엔드포인트: POST /api/users</span>
+<span class="str">요청:</span>
+<span class="str">- email: string, required, format email</span>
+<span class="str">- password: string, required, minLength 8</span>
+<span class="str">- name: string, required</span>
+
+<span class="str">응답:</span>
+<span class="str">- 201: user object</span>
+<span class="str">- 400: validation error</span>
+<span class="str">- 409: duplicate email error</span>
+
+<span class="str">스키마:</span>
+<span class="str">- components/schemas/User</span>
+<span class="str">- components/schemas/Error</span>
+<span class="str">- components/securitySchemes/BearerAuth</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="authentication">인증 및 권한</h2>
+  <p>API 인증 및 권한 관리를 설계합니다.</p>
+
+  <h3 id="auth-strategies">인증 전략</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>방식</th>
+        <th>장점</th>
+        <th>사용 상황</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>JWT</td>
+        <td>무상태, 확장성</td>
+        <td>모바일, SPA</td>
+      </tr>
+      <tr>
+        <td>OAuth 2.0</td>
+        <td>타사 인증 가능</td>
+        <td>소셜 로그인</td>
+      </tr>
+      <tr>
+        <td>API Key</td>
+        <td>단순함</td>
+        <td>서버 간 통신</td>
+      </tr>
+      <tr>
+        <td>Session</td>
+        <td>서버 통제</td>
+        <td>전통적 웹 앱</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="auth-request">인증 구현 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">JWT 인증 시스템을 설계해줘:</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- Access Token: 15분 유효</span>
+<span class="str">- Refresh Token: 7일 유효</span>
+<span class="str">- 저장소: httpOnly Cookie</span>
+<span class="str">- 보안: httpOnly, secure, sameSite</span>
+<span class="str">- 갱신 엔드포인트 포함</span>
+
+<span class="str">환경: Express.js + TypeScript</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="rate-limiting">Rate Limiting</h2>
+  <p>API 요청 제한을 설계합니다.</p>
+
+  <h3 id="rate-limit-request">Rate Limit 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Rate Limiting 전략을 설계해줘:</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- 일반 사용자: 100 req/min</span>
+<span class="str">- 프리미엄 사용자: 1000 req/min</span>
+<span class="str">- 특정 엔드포인트: 별도 제한</span>
+<span class="str">- Rate Limit 헤더 포함</span>
+
+<span class="str">헤더:</span>
+<span class="str">- X-RateLimit-Limit</span>
+<span class="str">- X-RateLimit-Remaining</span>
+<span class="str">- X-RateLimit-Reset</span>
+
+<span class="str">환경: Express.js</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="caching">캐싱 전략</h2>
+  <p>API 응답 캐싱을 설계합니다.</p>
+
+  <h3 id="cache-strategies">캐싱 전략</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 캐싱 적용 가이드</div>
+    <ul>
+      <li><strong>CDN</strong>: 정적 자산, 공개 데이터</li>
+      <li><strong>API Gateway</strong>: 응답 캐싱</li>
+      <li><strong>애플리케이션</strong>:Redis 활용</li>
+      <li><strong>HTTP 캐시</strong>: ETags, Last-Modified</li>
+    </ul>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">캐싱 전략을 설계해줘:</span>
+
+<span class="str">시나리오:</span>
+<span class="str">- 사용자 프로필: 5분 캐시</span>
+<span class="str">- 상품 목록: 1분 캐시</span>
+<span class="str">- 실시간 재고: 캐시 안 함</span>
+<span class="str">- 인기 검색어: 10분 캐시</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- Redis 사용</span>
+<span class="str">- Cache-Control 헤더</span>
+<span class="str">-Invalidation策略</span></code></pre>
   </div>
 </section>
 
