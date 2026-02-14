@@ -376,6 +376,9 @@ var NAV_STRUCTURE = [
     const footer = document.querySelector('.site-footer');
     if (!footer) return;
 
+    const existingGiscus = footer.querySelector('.giscus');
+    if (existingGiscus) return;
+
     const year = new Date().getFullYear();
     footer.innerHTML = `
       <div class="footer-content">
