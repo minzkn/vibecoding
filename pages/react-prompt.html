@@ -65,16 +65,34 @@
   <p>
     React는 컴포넌트 기반의 UI 라이브러리입니다.
     AI에게 React 코드를 요청할 때에는 React의 특성을 반영한 프롬프트를 작성하면 더 좋은 결과를 얻을 수 있습니다.
+    이 가이드는 효과적인 React 프롬프트 기법을 다룹니다.
   </p>
 
   <div class="info-box info">
     <div class="info-box-title">📋 React 프롬프트 특징</div>
     <ul>
       <li><strong>컴포넌트 구조</strong>: 컴포넌트 분리 명시</li>
-      <li><strong>Hooks</strong>: useState, useEffect 등 명시</li>
+      <li><strong>Hooks</strong>: useState, useEffect, useCallback 등 명시</li>
       <li><strong>스타일링</strong>: CSS Modules, styled-components 등</li>
       <li><strong>상태 관리</strong>: props, context, 상태 관리 라이브러리</li>
+      <li><strong>TypeScript</strong>: 타입 명시로 더 정확한 코드 생성</li>
     </ul>
+  </div>
+
+  <h3 id="prompt-structure">프롬프트 구조</h3>
+  <p>효과적인 React 프롬프트는 다음 구조를 따르세요:</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">프롬프트 템플릿</span>
+    </div>
+    <pre><code><span class="str">[기술 스택]로 [기능/컴포넌트]을 만들어줘.</span>
+
+<span class="str">[요구사항]:</span>
+<span class="str">1. [구체적인 기능 설명]</span>
+<span class="str">2. [props/상태 정의]</span>
+<span class="str">3. [스타일링 방식]</span>
+<span class="str">4. [TypeScript 타입 정의]</span>
+<span class="str">5. [예외 처리]</span></code></pre>
   </div>
 </section>
 
@@ -90,11 +108,24 @@
     <pre><code><span class="str">React 함수형 컴포넌트를 만들어줘.</span>
 
 <span class="str">컴포넌트 이름: UserCard</span>
+<span class="str">기술 스택: TypeScript, CSS Modules</span>
+
 <span class="str">기능:</span>
 <span class="str">- 사용자 이름, 이메일, 아바타 이미지 표시</span>
 <span class="str">- 프로필 페이지 링크 버튼</span>
 <span class="str">- 호버 시 배경색 변경</span>
-<span class="str">스타일: CSS Modules</span></code></pre>
+<span class="str">- aria-label로 접근성 보장</span>
+
+<span class="str">props:</span>
+<span class="str">interface Props {</span>
+<span class="str">  user: {</span>
+<span class="str">    id: number;</span>
+<span class="str">    name: string;</span>
+<span class="str">    email: string;</span>
+<span class="str">    avatarUrl?: string;</span>
+<span class="str">  };</span>
+<span class="str">  onProfileClick?: (userId: number) => void;</span>
+<span class="str">}</span></code></pre>
   </div>
 
   <h3 id="form-component">폼 컴포넌트</h3>
@@ -104,19 +135,67 @@
     </div>
     <pre><code><span class="str">React 로그인 폼 컴포넌트를 만들어줘.</span>
 
+<span class="str">기술 스택: TypeScript, React Hook Form, Zod</span>
+
 <span class="str">요구사항:</span>
 <span class="str">1. 이메일, 비밀번호 입력 필드</span>
-<span class="str">2. 입력 검증 (이메일 형식, 비밀번호 길이)</span>
+<span class="str">2. 입력 검증 (react-hook-form + zod)</span>
+<span class="str">   - 이메일: 유효한 형식</span>
+<span class="str">   - 비밀번호: 8자 이상</span>
 <span class="str">3. submit 버튼 (로딩 상태 표시)</span>
-<span class="str">4. 에러 메시지 표시</span>
-<span class="str">5. useState로 상태 관리</span>
-<span class="str">6. TypeScript 사용</span></code></pre>
+<span class="str">4. 에러 메시지 표시 (FormField 컴포넌트)</span>
+<span class="str">5. useState로 로딩/에러 상태 관리</span>
+<span class="str">6. TypeScript 사용</span>
+<span class="str">7. 접근성: label, aria-invalid, role="alert"</span></code></pre>
+  </div>
+
+  <h3 id="list-component">리스트 컴포넌트</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React 사용자 목록 컴포넌트를 만들어줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. 사용자 배열 렌더링 (User[])</span>
+<span class="str">2. 검색 입력 필드 (이름으로 필터)</span>
+<span class="str">3. 정렬 기능 (이름 asc/desc)</span>
+<span class="str">4. pagination (10개씩)</span>
+<span class="str">5. 로딩 스keleleton 표시</span>
+<span class="str">6. 빈 상태 UI</span>
+<span class="str">7. 각 사용자 클릭 시 상세 페이지 이동</span></code></pre>
+  </div>
+
+  <h3 id="modal-component">모달 컴포넌트</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React 모달 컴포넌트를 만들어줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. Portal로 렌더링 (document.body)</span>
+<span class="str">2. backdrop 클릭 시 닫기</span>
+<span class="str">3. ESC 키로 닫기</span>
+<span class="str">4. 애니메이션 (fade in, scale)</span>
+<span class="str">5. 접근성: focus trap, aria-modal</span>
+<span class="str">6. children으로 콘텐츠插槽</span></code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 컴포넌트 프롬프트 팁</div>
+    <ul>
+      <li><strong>props 명시</strong>: 필수/선택 props 구분, 기본값 설정</li>
+      <li><strong>컴포넌트 분리</strong>: 단일 책임 원칙, 재사용성 고려</li>
+      <li><strong>접근성</strong>: aria 속성, 키보드 네비게이션</li>
+      <li><strong>에러 처리</strong>: 로딩, 빈 상태, 에러 상태 처리</li>
+    </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="hooks-prompt">Hooks 사용</h2>
-  <p>React Hooks를 활용한 코드를 요청합니다.</p>
+  <p>React Hooks를 활용한 코드를 요청합니다. 각 Hook의 용도를 명확히 하세요.</p>
 
   <h3 id="use-state">useState 예시</h3>
   <div class="code-block">
@@ -125,11 +204,14 @@
     </div>
     <pre><code><span class="str">useState를 사용하는 카운터 컴포넌트를 만들어줘.</span>
 
+<span class="str">기술: TypeScript</span>
+
 <span class="str">요구사항:</span>
 <span class="str">1. 증가, 감소, 초기화 버튼</span>
 <span class="str">2. 현재 카운트 값 표시</span>
-<span class="str">3. 값이 0以下时 빨간색, 10 이상일 때 파란색</span>
-<span class="str">4. CSS Modules로 스타일링</span></code></pre>
+<span class="str">3. 값이 0 이하时 빨간색, 10 이상일 때 파란색</span>
+<span class="str">4. CSS Modules로 스타일링</span>
+<span class="str">5. 초기값 0, 최대값 100, 최소값 0</span></code></pre>
   </div>
 
   <h3 id="use-effect">useEffect 예시</h3>
@@ -139,12 +221,62 @@
     </div>
     <pre><code><span class="str">useEffect를 사용하는 데이터 페치 컴포넌트를 만들어줘.</span>
 
+<span class="str">기술: TypeScript, fetch API</span>
+
 <span class="str">요구사항:</span>
-<span class="str">1. API에서 사용자 목록 가져오기</span>
+<span class="str">1. API에서 사용자 목록 가져오기 (/api/users)</span>
 <span class="str">2. 로딩 상태 표시</span>
-<span class="str">3. 에러 상태 처리</span>
-<span class="str">4. 컴포넌트 언마운트 시 클린업</span>
-<span class="str">5. fetch API 사용</span></code></pre>
+<span class="str">3. 에러 상태 처리 (try-catch)</span>
+<span class="str">4. 컴포넌트 언마운트 시 클린업 (AbortController)</span>
+<span class="str">5. useEffect 의존성 배열 정확히 명시</span>
+<span class="str">6. 데이터 타입 정의 (User interface)</span></code></pre>
+  </div>
+
+  <h3 id="use-callback">useCallback 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">useCallback을 사용하는 최적화된 컴포넌트를 만들어줘:</span>
+
+<span class="str">1. 부모 컴포넌트에서 함수 생성 후 자식에게 전달</span>
+<span class="str">2. useCallback으로 함수 메모이제이션</span>
+<span class="str">3. 의존성 배열 명시</span>
+<span class="str">4. React.memo로 자식 컴포넌트 최적화</span>
+<span class="str">5. DevTools로 렌더링 횟수 확인</span></code></pre>
+  </div>
+
+  <h3 id="custom-hooks">Custom Hooks</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Custom Hooks를 만들어줘:</span>
+
+<span class="str">1. useLocalStorage</span>
+<span class="str">   - localStorage에서 값 불러오기/저장하기</span>
+<span class="str">   - 타입 파라미터 지원</span>
+<span class="str">   - JSON 직렬화</span>
+
+<span class="str">2. useFetch</span>
+<span class="str">   - 제네릭 타입 지원</span>
+<span class="str">   - { data, loading, error } 객체 반환</span>
+<span class="str">   - refetch 함수 제공</span>
+
+<span class="str">3. useDebounce</span>
+<span class="str">   - 입력 디바운싱</span>
+<span class="str">   - 지연 시간 설정 가능 (기본 500ms)</span></code></pre>
+  </div>
+
+  <h3 id="hooks-best-practices">Hooks 베스트 프랙티스</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ Hooks 규칙</div>
+    <ul>
+      <li><strong>의존성 배열</strong>: 모든 외부 값은 의존성에 포함</li>
+      <li><strong>클린업</strong>: useEffect에서 구독 취소, 타이머 정리</li>
+      <li><strong>불변성</strong>: 상태 직접 변경 금지, 새 객체/배열 생성</li>
+      <li><strong>최적화</strong>: 불필요한 useCallback, useMemo 사용 금지</li>
+    </ul>
   </div>
 </section>
 
@@ -154,16 +286,72 @@
 
   <h3 id="context-example">Context 생성 요청</h3>
   <div class="code-block">
-    <div class="code-lang">Claude에게 요청</span>
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
     </div>
     <pre><code><span class="str">React Theme Context를 만들어줘.</span>
 
+<span class="str">기술: TypeScript, createContext, useContext</span>
+
 <span class="str">요구사항:</span>
 <span class="str">1. ThemeProvider 컴포넌트</span>
-<span class="str">2. 다크/라이트 모드 토글 기능</span>
-<span class="str">3. 현재 테마 상태 제공</span>
-<span class="str">4. useContext 훅 사용</span>
-<span class="str">5. localStorage에 테마 저장</span></code></pre>
+<span class="str">   - 다크/라이트 모드 토글 기능</span>
+<span class="str">   - 현재 테마 상태 제공</span>
+<span class="str">2. useTheme Hook 내보내기</span>
+<span class="str">3. localStorage에 테마 저장 (초기값: 'light')</span>
+<span class="str">4. system preference 감지 (prefers-color-scheme)</span>
+<span class="str">5. 타입 정의 (Theme, ThemeContextType)</span></code></pre>
+  </div>
+
+  <h3 id="auth-context">인증 Context</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React Auth Context를 만들어줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. AuthProvider</span>
+<span class="str">   - user: User | null</span>
+<span class="str">   - isAuthenticated: boolean</span>
+<span class="str">   - login(email, password) 함수</span>
+<span class="str">   - logout() 함수</span>
+<span class="str">   - register(email, password, name) 함수</span>
+<span class="str">2. Protected Route 컴포넌트</span>
+<span class="str">3. 로컬 스토리지로 세션 유지</span>
+<span class="str">4. Axios 인스턴스 자동 토큰 첨부</span></code></pre>
+  </div>
+
+  <h3 id="context-structure">Context 구조 패턴</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Context 파일 구조를 만들어줘:</span>
+
+<span class="str">src/</span>
+<span class="str">├── context/</span>
+<span class="str">│   ├── ThemeContext.tsx    # createContext + Provider</span>
+<span class="str">│   ├── AuthContext.tsx     # 인증 상태 + 함수</span>
+<span class="str">│   └── CartContext.tsx    # 장바구니 상태</span>
+<span class="str">├── hooks/</span>
+<span class="str">│   ├── useTheme.ts        # useContext 래퍼</span>
+<span class="str">│   ├── useAuth.ts</span>
+<span class="str">│   └── useCart.ts</span>
+<span class="str">└── providers/</span>
+<span class="str">    ├── ThemeProvider.tsx   # 실제 Provider 래핑</span>
+<span class="str">    ├── AuthProvider.tsx</span>
+<span class="str">    └── index.ts           # 모든 Provider 조합</span></code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 Context 사용 기준</div>
+    <ul>
+      <li><strong>적합한 경우</strong>: 테마, 인증, 언어 설정 등 전역 상태</li>
+      <li><strong>부적합한 경우</strong>: 빈번히 변경되는 상태 (이때는 Zustand/Redux)</li>
+      <li><strong>최적화</strong>: Context 분리하여 필요한 컴포넌트만 리렌더링</li>
+      <li><strong>타입</strong>: Context의 타입을 명확히 정의</li>
+    </ul>
   </div>
 </section>
 
@@ -178,18 +366,80 @@
     </div>
     <pre><code><span class="str">React Router v6을 사용하는 라우팅을 만들어줘.</span>
 
+<span class="str">기술: react-router-dom v6, TypeScript</span>
+
 <span class="str">요구사항:</span>
-<span class="str">1. / - 홈 페이지</span>
-<span class="str">2. /about - 소개 페이지</span>
-<span class="str">3. /posts/:id - 게시물 상세 페이지</span>
-<span class="str">4. 404 페이지</span>
-<span class="str">5. 네비게이션 바 컴포넌트</span></code></pre>
+<span class="str">1. 라우트 정의</span>
+<span class="str">   - / - 홈 페이지 (HomePage)</span>
+<span class="str">   - /about - 소개 페이지</span>
+<span class="str">   - /posts - 게시물 목록</span>
+<span class="str">   - /posts/:id - 게시물 상세</span>
+<span class="str">   - /login - 로그인 페이지</span>
+<span class="str">   - /* - 404 페이지 (wildcard)</span>
+<span class="str">2. 중첩 라우트 + Outlet 사용</span>
+<span class="str">3. NavLink로 활성 링크 스타일</span>
+<span class="str">4. useParams, useLocation, useNavigate Hooks</span></code></pre>
+  </div>
+
+  <h3 id="protected-routes">Protected Routes</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React Router v6에서 Protected Route를 만들어줘:</span>
+
+<span class="str">1. RequireAuth 컴포넌트</span>
+<span class="str">   - 인증 상태 확인</span>
+<span class="str">   - 미인증 시 로그인 페이지로 리다이렉트</span>
+<span class="str">   - 원래 페이지 URL 저장 (state)</span>
+<span class="str">2. AuthRedirect 컴포�ONENT</span>
+<span class="str">   - 인증 상태 확인</span>
+<span class="str">   - 인증 시 메인 페이지로 리다이렉트</span>
+<span class="str">3. 사용 예시</span>
+<span class="str">   - &lt;Route element={&lt;RequireAuth /&gt;}&gt;</span>
+<span class="str">   - &lt;Route element={&lt;AuthRedirect /&gt;}&gt;</span></code></pre>
+  </div>
+
+  <h3 id="lazy-loading">코드 분할 (Lazy Loading)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React Router에서 Lazy Loading을 구현해줘:</span>
+
+<span class="str">1. React.lazy로 컴포넌트 지연 로드</span>
+<span class="str">2. Suspense로 로딩 상태 표시</span>
+<span class="str">3. ErrorBoundary로 에러 처리</span>
+<span class="str">4. 각 페이지별 번들 분할</span>
+<span class="str">5. Prefetch 비활성화 (선택)</span></code></pre>
+  </div>
+
+  <h3 id="router-structure">라우터 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React Router v6 구조를 만들어줘:</span>
+
+<span class="str">src/</span>
+<span class="str">├── pages/</span>
+<span class="str">│   ├── Home.tsx</span>
+<span class="str">│   ├── About.tsx</span>
+<span class="str">│   ├── Posts.tsx</span>
+<span class="str">│   └── NotFound.tsx</span>
+<span class="str">├── components/</span>
+<span class="str">│   ├── Layout.tsx        # Outlet 사용</span>
+<span class="str">│   ├── Navbar.tsx</span>
+<span class="str">│   └── PrivateRoute.tsx</span>
+<span class="str">├── routes/</span>
+<span class="str">│   └── index.tsx        # 라우트 설정</span>
+<span class="str">└── App.tsx</span></code></pre>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="typescript">TypeScript 활용</h2>
-  <p>TypeScript와 함께 React를 사용합니다.</p>
+  <p>TypeScript와 함께 React를 사용하면 타입 안전성을 보장받을 수 있습니다.</p>
 
   <h3 id="ts-example">TypeScript 요청</h3>
   <div class="code-block">
@@ -198,18 +448,102 @@
     </div>
     <pre><code><span class="str">TypeScript로 React 컴포넌트를 만들어줘.</span>
 
+<span class="str">기술: TypeScript, strict 모드</span>
+
 <span class="str">타입 정의:</span>
 <span class="str">interface User {</span>
 <span class="str">  id: number;</span>
 <span class="str">  name: string;</span>
 <span class="str">  email: string;</span>
+<span class="str">  role: 'admin' | 'user' | 'guest';</span>
+<span class="str">  profile?: Profile;</span>
+<span class="str">}</span>
+
+<span class="str">interface Profile {</span>
+<span class="str">  bio: string;</span>
+<span class="str">  avatar: string;</span>
 <span class="str">}</span>
 
 <span class="str">요구사항:</span>
 <span class="str">1. User 타입 사용</span>
 <span class="str">2. props 타입 정의</span>
-<span class="str">3. 상태 타입 정의</span>
-<span class="str">4.严格的 타입 지정</span></code></pre>
+<span class="str">3. 상태 타입 정의 (useState&lt;User[]&gt;)</span>
+<span class="str">4. strict 모드 compatible</span>
+<span class="str">5. 제네릭 활용</span></code></pre>
+  </div>
+
+  <h3 id="generic-components">제네릭 컴포넌트</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">제네릭 List 컴포넌트를 만들어줘:</span>
+
+<span class="str">interface Props&lt;T&gt; {</span>
+<span class="str">  items: T[];</span>
+<span class="str">  renderItem: (item: T) => React.ReactNode;</span>
+<span class="str">  keyExtractor: (item: T) => string;</span>
+<span class="str">  emptyMessage?: string;</span>
+<span class="str">}</span>
+
+<span class="str">사용 예시:</span>
+<span class="str">&lt;List&lt;User&gt;</span>
+<span class="str">  items={users}</span>
+<span class="str">  renderItem={(user) => &lt;UserCard user={user} /&gt;}</span>
+<span class="str">  keyExtractor={(user) => user.id.toString()}</span>
+<span class="str">/&gt;</span></code></pre>
+  </div>
+
+  <h3 id="ts-tips">TypeScript 팁</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 TypeScript 활용</div>
+    <ul>
+      <li><strong>any 피하기</strong>: unknown 또는 구체적인 타입 사용</li>
+      <li><strong>optional chain</span>: ?. 로 null/undefined 안전하게 접근</li>
+      <li><strong>utility types</span>: Partial, Pick, Omit 활용</li>
+      <li><strong>interface vs type</span>: 객체 타입은 interface, 유니온은 type</li>
+      <li><strong>strict 모드</strong>: 가능한 strict 설정 유지</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="state-management">상태 관리</h2>
+  <p>React에서 다양한 상태 관리 방법을 배웁니다.</p>
+
+  <h3 id="zustand-request">Zustand</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Zustand로 장바구니 스토어를 만들어줘.</span>
+
+<span class="str">기술: TypeScript, zustand, persist 미들웨어</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. CartItem 타입 정의</span>
+<span class="str">2. addToCart, removeFromCart, updateQuantity 함수</span>
+<span class="str">3. totalPrice, itemCount computed 값</span>
+<span class="str">4. localStorage에 영속 (persist)</span>
+<span class="str">5. 타입 안전한 Hook 반환</span></code></pre>
+  </div>
+
+  <h3 id="tanstack-query">TanStack Query</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">TanStack Query로 데이터 페칭을 구현해줘:</span>
+
+<span class="str">기술: @tanstack/react-query, TypeScript</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. QueryClientProvider 설정</span>
+<span class="str">2. useQuery로 데이터 페치</span>
+<span class="str">3. useMutation으로 데이터 생성/수정/삭제</span>
+<span class="str">4. staleTime, cacheTime 설정</span>
+<span class="str">5. onSuccess/onError 콜백</span>
+<span class="str">6. invalidQueries로 캐시 무효화</span></code></pre>
   </div>
 </section>
 
@@ -217,14 +551,132 @@
   <h2 id="best-practices">모범 사례</h2>
   <p>효과적인 React 프롬프트를 위한 모범 사례입니다.</p>
 
+  <h3 id="prompt-tips">프롬프트 작성 팁</h3>
   <div class="info-box tip">
     <div class="info-box-title">💡 React 프롬프트 팁</div>
     <ul>
-      <li><strong>컴포넌트 명명</strong>: 명확하고 일관된 이름 사용</li>
+      <li><strong>컴포넌트 명명</strong>: 명확하고 일관된 이름 사용 (PascalCase)</li>
       <li><strong>props 명시</strong>: 필요한 props를 구체적으로 설명</li>
-      <li><strong>스타일링 방식</strong>: CSS Modules, styled-components 등 명시</li>
+      <li><strong>스타일링 방식</strong>: CSS Modules, styled-components, Tailwind 등 명시</li>
       <li><strong>TypeScript</strong>: 타입 안전한 코드 요청</li>
+      <li><strong>기술 스택 명시</strong>: Vite, Next.js, React Native 등</li>
+      <li><strong>접근성</strong>: aria 속성, 키보드 지원 명시</li>
     </ul>
+  </div>
+
+  <h3 id="code-quality">코드 품질 체크리스트</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React 컴포넌트에 다음을 포함해줘:</span>
+
+<span class="str">1. Prop Types / TypeScript 타입</span>
+<span class="str">2. Default Props (필요시)</span>
+<span class="str">3. Memo (React.memo)</span>
+<span class="str">4. 테스트 가능한 구조</span>
+<span class="str">5. Storybook Stories (선택)</span>
+<span class="str">6. JSDoc 주석 (선택)</span></code></pre>
+  </div>
+
+  <h3 id="performance">성능 최적화</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 성능 고려사항</div>
+    <ul>
+      <li><strong>불필요한 렌더링</strong>: React.memo, useMemo, useCallback 적절히 사용</li>
+      <li><strong>대列表 렌더링</strong>: windowing (react-window), pagination</li>
+      <li><strong>이미지 최적화</strong>: lazy loading, next/image</li>
+      <li><strong>번들 크기</strong>: code splitting, tree shaking</li>
+      <li><strong>DevTools Profiler</strong>: 정기적으로 렌더링 성능 확인</li>
+    </ul>
+  </div>
+
+  <h3 id="testing">테스트</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React 컴포넌트 테스트를 만들어줘:</span>
+
+<span class="str">기술: Vitest, React Testing Library</span>
+
+<span class="str">1. 단위 테스트</span>
+<span class="str">   - props 전달 후 렌더링 확인</span>
+<span class="str">   - 이벤트 핸들러 호출 확인</span>
+
+<span class="str">2. 통합 테스트</span>
+<span class="str">   - 컨텍스트와 함께 렌더링</span>
+<span class="str">   - 라우터와 함께 테스트</span>
+
+<span class="str">3. Mocking</span>
+<span class="str">   - fetch/axios Mock</span>
+<span class="str">   - 모듈 Mock</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="advanced-patterns">고급 패턴</h2>
+  <p>React의 고급 패턴을 활용하세요.</p>
+
+  <h3 id="compound-components">Compound Components</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Compound Component 패턴을 사용해줘:</span>
+
+<span class="str">Tabs 컴포넌트:</span>
+<span class="str">- Tabs (Provider)</span>
+<span class="str">- Tabs.List</span>
+<span class="str">- Tabs.Tab</span>
+<span class="str">- Tabs.Panel</span>
+<span class="str">- useTabs Hook</span>
+
+<span class="str">사용:</span>
+<span class="str">&lt;Tabs defaultValue="tab1"&gt;</span>
+<span class="str">  &lt;Tabs.List&gt;</span>
+<span class="str">    &lt;Tabs.Tab value="tab1"&gt;Tab 1&lt;/Tabs.Tab&gt;</span>
+<span class="str">    &lt;Tabs.Tab value="tab2"&gt;Tab 2&lt;/Tabs.Tab&gt;</span>
+<span class="str">  &lt;/Tabs.List&gt;</span>
+<span class="str">  &lt;Tabs.Panel value="tab1"&gt;Content 1&lt;/Tabs.Panel&gt;</span>
+<span class="str">&lt;/Tabs&gt;</span></code></pre>
+  </div>
+
+  <h3 id="render-props">Render Props</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Render Props 패턴을 사용해줘:</span>
+
+<span class="str">MouseTracker 컴포넌트:</span>
+<span class="str">interface Props {</span>
+<span class="str">  render: (state: { x: number; y: number }) => React.ReactNode;</span>
+<span class="str">}</span>
+
+<span class="str">사용:</span>
+<span class="str">&lt;MouseTracker render={({ x, y }) => (</span>
+<span class="str">  &lt;p&gt;Mouse position: {x}, {y}&lt;/p&gt;</span>
+<span class="str">)} /&gt;</span></code></pre>
+  </div>
+
+  <h3 id="hoc">Higher-Order Components</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">HOC 패턴을 사용해줘:</span>
+
+<span class="str">withLoading HOC:</span>
+<span class="str">- isLoading prop 감지</span>
+<span class="str">- 로딩 중이면 스피너 표시</span>
+<span class="str">- 아니면 실제 컴포넌트 렌더링</span>
+<span class="str">- 원래 props 전달</span>
+
+<span class="str">withAuth HOC:</span>
+<span class="str">- 인증 상태 확인</span>
+<span class="str">- 미인증 시 로그인 페이지로 리다이렉트</span>
+<span class="str">- 인증 통과 시 children 렌더링</span></code></pre>
   </div>
 </section>
 
@@ -256,12 +708,29 @@
 <section class="content-section">
   <h2 id="summary">핵심 정리</h2>
   <ul>
-    <li><strong>컴포넌트</strong>: 함수형 컴포넌트, props 명시</li>
-    <li><strong>Hooks</strong>: useState, useEffect, useContext 등</li>
-    <li><strong>상태 관리</strong>: local state, Context API</li>
-    <li><strong>라우팅</strong>: React Router v6</li>
-    <li><strong>TypeScript</strong>: 타입 안전한 코드</li>
+    <li><strong>컴포넌트</strong>: 함수형 컴포넌트, props 명확히, 접근성 고려</li>
+    <li><strong>Hooks</strong>: useState, useEffect, useCallback, useMemo, custom hooks</li>
+    <li><strong>상태 관리</strong>: local state, Context API, Zustand, TanStack Query</li>
+    <li><strong>라우팅</strong>: React Router v6, protected routes, lazy loading</li>
+    <li><strong>TypeScript</strong>: 타입 안전한 코드, 제네릭, strict 모드</li>
+    <li><strong>성능</strong>: React.memo, useMemo, code splitting</li>
+    <li><strong>테스트</strong>: Vitest, React Testing Library</li>
+    <li><strong>고급 패턴</strong>: Compound Components, Render Props, HOC</li>
   </ul>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 React Vibe Coding 체크리스트</div>
+    <ul>
+      <li>☑️ 기술 스택 명시 (Vite, TypeScript 등)</li>
+      <li>☑️ 컴포넌트 분리 기준 전달</li>
+      <li>☑️ props 타입 명확히</li>
+      <li>☑️ 스타일링 방식 지정</li>
+      <li>☑️ 상태 관리 전략 포함</li>
+      <li>☑️ 접근성 요구사항 추가</li>
+      <li>☑️ 테스트 요구사항 포함</li>
+      <li>☑️ 에러 처리/로딩 상태 명시</li>
+    </ul>
+  </div>
 </section>
 
 <!-- Page Navigation (이전/다음) -->

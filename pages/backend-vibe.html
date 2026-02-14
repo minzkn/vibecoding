@@ -64,6 +64,7 @@
   <h2 id="overview">개요</h2>
   <p>
     백엔드 개발도 Vibe Coding으로 시작할 수 있습니다.
+    API 설계, 데이터베이스 모델, 인증 로직 등을 AI의 도움을 받아 빠르게 구축할 수 있습니다.
     이 가이드에서는 다양한 백엔드 기술 스택에서 AI를 활용하는 방법을 배웁니다.
   </p>
 
@@ -74,13 +75,34 @@
       <li><strong>인증</strong>: JWT, OAuth 구현</li>
       <li><strong>데이터베이스</strong>: 모델, 마이그레이션</li>
       <li><strong>마이크로서비스</strong>: 서비스 설계</li>
+      <li><strong>GraphQL</strong>: gqlgen, Apollo 서버</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한场景</h3>
+  <ul>
+    <li>REST API 서버 구축</li>
+    <li>CRUD 중심의 애플리케이션</li>
+    <li>인증/인가 시스템</li>
+    <li>데이터베이스 설계</li>
+    <li>마이크로서비스 프로토타입</li>
+  </ul>
+
+  <h3 id="limitations">주의사항</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 백엔드 Vibe Coding 한계</div>
+    <ul>
+      <li><strong>복잡한 비즈니스 로직</strong>: 수동 코드 리뷰 필수</li>
+      <li><strong>보안</strong>: 입력 검증, SQL 인젝션 방어 수동 확인</li>
+      <li><strong>성능 튜닝</strong>: 인덱싱, 캐싱은 직접 최적화</li>
+      <li><strong>인프라</strong>: 배포, 스케일링 설계는 별도 필요</li>
     </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="express-api">Express.js API</h2>
-  <p>Node.js Express로 REST API를 만듭니다.</p>
+  <p>Node.js Express로 REST API를 만듭니다. 가장 널리 사용되는 Node.js 프레임워크입니다.</p>
 
   <h3 id="express-request">Express API 요청</h3>
   <div class="code-block">
@@ -89,18 +111,99 @@
     </div>
     <pre><code><span class="str">Express.js로 사용자 관리 REST API를 만들어줘.</span>
 
+<span class="str">기술 스택:</span>
+<span class="str">- Express.js + TypeScript</span>
+<span class="str">- SQLite (better-sqlite3)</span>
+<span class="str">- JWT (jsonwebtoken)</span>
+
 <span class="str">요구사항:</span>
-<span class="str">1. 사용자 CRUD 엔드포인트 (/api/users)</span>
-<span class="str">2. JWT 인증</span>
-<span class="str">3. SQLite 데이터베이스</span>
-<span class="str">4. Express Router 사용</span>
-<span class="str">5. 에러 미들웨어</span></code></pre>
+<span class="str">1. API 엔드포인트 (/api/users)</span>
+<span class="str">   - GET /users (전체 조회, pagination)</span>
+<span class="str">   - GET /users/:id (단일 조회)</span>
+<span class="str">   - POST /users (생성)</span>
+<span class="str">   - PUT /users/:id (수정)</span>
+<span class="str">   - DELETE /users/:id (삭제)</span>
+<span class="str">2. Express Router로 라우트 분리</span>
+<span class="str">3. 에러 미들웨어 (ErrorRequestHandler)</span>
+<span class="str">4. 입력 검증 (zod)</span>
+<span class="str">5. 로깅 (morgan)</span></code></pre>
+  </div>
+
+  <h3 id="express-structure">Express 프로젝트 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Express.js 프로젝트 구조를 만들어줘:</span>
+
+<span class="str">src/</span>
+<span class="str">├── app.ts              # Express 앱 설정</span>
+<span class="str">├── server.ts           # 서버 실행</span>
+<span class="str">├── routes/             # 라우트</span>
+<span class="str">│   ├── index.ts</span>
+<span class="str">│   └── users.ts</span>
+<span class="str">├── controllers/        # 비즈니스 로직</span>
+<span class="str">│   └── userController.ts</span>
+<span class="str">├── models/             # 데이터베이스 모델</span>
+<span class="str">│   └── user.ts</span>
+<span class="str">├── middleware/         # 미들웨어</span>
+<span class="str">│   ├── auth.ts</span>
+<span class="str">│   └── errorHandler.ts</span>
+<span class="str">├── dto/                # Data Transfer Objects</span>
+<span class="str">│   └── userDto.ts</span>
+<span class="str">└── types/              # 타입 정의</span>
+<span class="str">    └── user.ts</span></code></pre>
+  </div>
+
+  <h3 id="express-middleware">미들웨어 패턴</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (middleware/auth.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">Request</span>, <span class="fn">Response</span>, <span class="fn">NextFunction</span> } from <span class="str">'express'</span>;
+<span class="kw">import</span> jwt from <span class="str">'jsonwebtoken'</span>;
+
+<span class="kw">export</span> <span class="kw">interface</span> <span class="type">AuthRequest</span> <span class="kw">extends</span> <span class="type">Request</span> {
+  <span class="fn">user</span>?: { <span class="fn">id</span>: <span class="type">number</span> };
+}
+
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">authenticate</span> = (
+  req: <span class="type">AuthRequest</span>,
+  res: <span class="type">Response</span>,
+  next: <span class="type">NextFunction</span>
+) <span class="kw">=&gt;</span> {
+  <span class="kw">const</span> token = req.<span class="fn">headers</span>.authorization?.<span class="fn">split</span>(<span class="str">' '</span>)[<span class="num">1</span>];
+  
+  <span class="kw">if</span> (!token) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ <span class="fn">error</span>: <span class="str">'토큰이 필요합니다'</span> });
+  }
+
+  <span class="kw">try</span> {
+    <span class="kw">const</span> decoded = jwt.<span class="fn">verify</span>(token, process.env.JWT_SECRET!);
+    req.user = decoded <span class="kw">as</span> { <span class="fn">id</span>: <span class="type">number</span> };
+    <span class="fn">next</span>();
+  } <span class="kw">catch</span> {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">403</span>).<span class="fn">json</span>({ <span class="fn">error</span>: <span class="str">'유효하지 않은 토큰'</span> });
+  }
+};</code></pre>
+  </div>
+
+  <h3 id="express-best-practices">Express 베스트 프랙티스</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 Express 개발 팁</div>
+    <ul>
+      <li><strong>라우트 분리</strong>: Router로 파일별 분리,太大的 router 파일 피하기</li>
+      <li><strong>에러 처리</strong>: 동기/비동기 에러 모두 catch, 중앙 집중식 에러 미들웨어</li>
+      <li><strong>입력 검증</strong>: zod, joi, express-validator 중 하나 선택</li>
+      <li><strong>환경 변수</strong>: dotenv로 설정 관리, 민감 정보는 환경 변수</li>
+      <li><strong>async/await</strong>: try-catch로 에러 처리, express-async-errors 활용</li>
+    </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="python-backend">Python 백엔드</h2>
-  <p>Python으로 백엔드를 만듭니다.</p>
+  <p>Python으로 백엔드를 만듭니다. FastAPI는 현대적인 고성능 API 구축에, Django는 풀스택 웹 프레임워크로 활용됩니다.</p>
 
   <h3 id="fastapi-request">FastAPI 요청</h3>
   <div class="code-block">
@@ -109,12 +212,69 @@
     </div>
     <pre><code><span class="str">FastAPI로 투두 API를 만들어줘.</span>
 
+<span class="str">기술 스택:</span>
+<span class="str">- FastAPI</span>
+<span class="str">- SQLAlchemy + SQLite</span>
+<span class="str">- Pydantic v2</span>
+
 <span class="str">요구사항:</span>
 <span class="str">1. Pydantic 모델 정의</span>
-<span class="str">2. SQLite 데이터베이스 (SQLAlchemy)</span>
+<span class="str">   - TodoCreate: title, description, completed</span>
+<span class="str">   - TodoResponse: id, title, description, completed, created_at</span>
+<span class="str">2. SQLAlchemy 모델 정의</span>
 <span class="str">3. CRUD 엔드포인트</span>
-<span class="str">4. Swagger 자동 생성</span>
-<span class="str">5. 의존성 주입</span></code></pre>
+<span class="str">   - GET /todos (전체, 필터)</span>
+<span class="str">   - GET /todos/{id}</span>
+<span class="str">   - POST /todos</span>
+<span class="str">   - PUT /todos/{id}</span>
+<span class="str">   - DELETE /todos/{id}</span>
+<span class="str">4. Swagger 자동 생성 (OpenAPI)</span>
+<span class="str">5. 예외 처리 (HTTPException)</span></code></pre>
+  </div>
+
+  <h3 id="fastapi-example">FastAPI 예시 코드</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python (main.py)</span>
+    </div>
+    <pre><code><span class="pp">from</span> fastapi <span class="pp">import</span> FastAPI, HTTPException, Depends
+<span class="pp">from</span> pydantic <span class="pp">import</span> BaseModel
+<span class="pp">from</span> typing <span class="pp">import</span> List, Optional
+<span class="pp">from</span> datetime <span class="pp">import</span> datetime
+
+app = FastAPI(title=<span class="str">"Todo API"</span>)
+
+<span class="cmt"># Pydantic 모델</span>
+<span class="kw">class</span> <span class="type">TodoBase</span>(BaseModel):
+    <span class="fn">title</span>: <span class="type">str</span>
+    <span class="fn">description</span>: <span class="type">Optional</span>[<span class="type">str</span>] = <span class="kw">None</span>
+    <span class="fn">completed</span>: <span class="type">bool</span> = <span class="kw">False</span>
+
+<span class="kw">class</span> <span class="type">Todo</span>(TodoBase):
+    <span class="fn">id</span>: <span class="type">int</span>
+    <span class="fn">created_at</span>: <span class="type">datetime</span>
+
+    <span class="kw">class</span> <span class="type">Config</span>:
+        <span class="fn">from_attributes</span> = <span class="kw">True</span>
+
+<span class="cmt"># 인메모리 데이터베이스</span>
+todos: <span class="type">List</span>[<span class="type">Todo</span>] = []
+next_id = <span class="num">1</span>
+
+<span class="cmt"># 엔드포인트</span>
+<span class="pp">@app</span>.<span class="fn">get</span>(<span class="str">"/todos"</span>, response_model=<span class="type">List</span>[<span class="type">Todo</span>])
+<span class="kw">async</span> <span class="fn">read_todos</span>(completed: <span class="type">Optional</span>[<span class="type">bool</span>] = <span class="kw">None</span>):
+    <span class="kw">if</span> completed <span class="kw">is</span> <span class="kw">None</span>:
+        <span class="kw">return</span> todos
+    <span class="kw">return</span> [t <span class="kw">for</span> t <span class="kw">in</span> todos <span class="kw">if</span> t.completed == completed]
+
+<span class="pp">@app</span>.<span class="fn">post</span>(<span class="str">"/todos"</span>, response_model=<span class="type">Todo</span>)
+<span class="kw">async</span> <span class="fn">create_todo</span>(todo: <span class="type">TodoBase</span>):
+    <span class="kw">global</span> next_id
+    new_todo = <span class="type">Todo</span>(id=next_id, **todo.<span class="fn">model_dump</span>(), created_at=datetime.now())
+    todos.<span class="fn">append</span>(new_todo)
+    next_id += <span class="num">1</span>
+    <span class="kw">return</span> new_todo</code></pre>
   </div>
 
   <h3 id="django-request">Django 요청</h3>
@@ -124,18 +284,34 @@
     </div>
     <pre><code><span class="str">Django로 블로그 프로젝트를 만들어줘.</span>
 
+<span class="str">기술 스택:</span>
+<span class="str">- Django 5</span>
+<span class="str">- Django REST Framework</span>
+<span class="str">- SQLite</span>
+
 <span class="str">요구사항:</span>
-<span class="str">1. Post 모델 (title, content, created_at)</span>
-<span class="str">2. Admin 페이지 설정</span>
-<span class="str">3. CBV로 CRUD 뷰</span>
-<span class="str">4. 템플릿 기본 구조</span>
-<span class="str">5. migrate 및 fixtures</span></code></pre>
+<span class="str">1. Post 모델 (title, content, author, created_at, updated_at)</span>
+<span class="str">2. Admin 페이지 설정 (list_display, search_fields)</span>
+<span class="str">3. CBV (ListView, DetailView, CreateView, UpdateView, DeleteView)</span>
+<span class="str">4. 템플릿 기본 구조 (base.html, post_list.html, post_detail.html)</span>
+<span class="str">5. REST API 엔드포인트 (ModelViewSet)</span>
+<span class="str">6. migrate 및 fixtures</span></code></pre>
+  </div>
+
+  <h3 id="python-comparison">FastAPI vs Django 비교</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 Python 프레임워크 선택</div>
+    <ul>
+      <li><strong>FastAPI</strong>: 고성능, 자동 문서화, 가벼움, 마이크로서비스에 적합</li>
+      <li><strong>Django</strong>: 풀스택,-admin内置, ORM的强大, 대규모 프로젝트에 적합</li>
+      <li><strong>Flask</strong>: 마이크로, 유연성 높음, 커스터마이징 자유로움</li>
+    </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="authentication">인증 구현</h2>
-  <p>다양한 인증 방식을 구현합니다.</p>
+  <p>다양한 인증 방식을 구현합니다. JWT가 가장 널리 사용되는 방식입니다.</p>
 
   <h3 id="jwt-request">JWT 인증 요청</h3>
   <div class="code-block">
@@ -145,17 +321,126 @@
     <pre><code><span class="str">Express.js에 JWT 인증을 추가해줘.</span>
 
 <span class="str">요구사항:</span>
-<span class="str">1. 로그인 엔드포인트 (/auth/login)</span>
-<span class="str">2. 회원가입 엔드포인트 (/auth/register)</span>
-<span class="str">3. JWT 토큰 생성 및 검증</span>
-<span class="str">4. 비밀번호 bcrypt 해시</span>
-<span class="str">5. 미들웨어로 인증 검사</span></code></pre>
+<span class="str">1. authRoutes.ts 생성</span>
+<span class="str">   - POST /auth/register (회원가입)</span>
+<span class="str">     * 이메일, 비밀번호, 이름 입력</span>
+<span class="str">     * 비밀번호 bcrypt 해시 (cost factor 12)</span>
+<span class="str">     * 중복 이메일 확인</span>
+<span class="str">   - POST /auth/login (로그인)</span>
+<span class="str">     * 이메일/비밀번호 검증</span>
+<span class="str">     * JWT Access Token + Refresh Token 발급</span>
+<span class="str">   - POST /auth/refresh (토큰 재발급)</span>
+<span class="str">   - GET /auth/me (현재 사용자 정보)</span>
+<span class="str">2. authMiddleware.ts</span>
+<span class="str">   - JWT 검증 미들웨어</span>
+<span class="str">   - 토큰 만료 시 재발급 로직</span>
+<span class="str">3. 환경 변수: JWT_SECRET, JWT_EXPIRE, REFRESH_SECRET</span></code></pre>
+  </div>
+
+  <h3 id="jwt-example">JWT 구현 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (authController.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">Request</span>, <span class="fn">Response</span> } from <span class="str">'express'</span>;
+<span class="kw">import</span> bcrypt from <span class="str">'bcryptjs'</span>;
+<span class="kw">import</span> jwt from <span class="str">'jsonwebtoken'</span>;
+<span class="kw">import</span> { <span class="fn">User</span> } from <span class="str">'../models/user'</span>;
+
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">register</span> = <span class="kw">async</span> (req: <span class="type">Request</span>, res: <span class="type">Response</span>) <span class="kw">=&gt;</span> {
+  <span class="kw">const</span> { email, password, name } = req.body;
+  
+  <span class="cmt">// 중복 확인</span>
+  <span class="kw">const</span> existingUser = <span class="kw">await</span> <span class="type">User</span>.<span class="fn">findOne</span>({ where: { email } });
+  <span class="kw">if</span> (existingUser) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">400</span>).<span class="fn">json</span>({ <span class="fn">error</span>: <span class="str">'이미 사용 중인 이메일'</span> });
+  }
+
+  <span class="cmt">// 비밀번호 해시</span>
+  <span class="kw">const</span> hashedPassword = <span class="kw">await</span> bcrypt.<span class="fn">hash</span>(password, <span class="num">12</span>);
+  
+  <span class="cmt">// 사용자 생성</span>
+  <span class="kw">const</span> user = <span class="kw">await</span> <span class="type">User</span>.<span class="fn">create</span>({
+    email,
+    password: hashedPassword,
+    name
+  });
+
+  <span class="cmt">// 토큰 발급</span>
+  <span class="kw">const</span> accessToken = jwt.<span class="fn">sign</span>(
+    { <span class="fn">id</span>: user.id, email: user.email },
+    process.env.JWT_SECRET!,
+    { <span class="fn">expiresIn</span>: <span class="str">'15m'</span> }
+  );
+
+  <span class="kw">const</span> refreshToken = jwt.<span class="fn">sign</span>(
+    { <span class="fn">id</span>: user.id },
+    process.env.REFRESH_SECRET!,
+    { <span class="fn">expiresIn</span>: <span class="str">'7d'</span> }
+  );
+
+  <span class="fn">res</span>.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>({ accessToken, refreshToken, user: { <span class="fn">id</span>: user.id, email: user.email, name: user.name } });
+};
+
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">login</span> = <span class="kw">async</span> (req: <span class="type">Request</span>, res: <span class="type">Response</span>) <span class="kw">=&gt;</span> {
+  <span class="kw">const</span> { email, password } = req.body;
+  
+  <span class="kw">const</span> user = <span class="kw">await</span> <span class="type">User</span>.<span class="fn">findOne</span>({ where: { email } });
+  <span class="kw">if</span> (!user) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ <span class="fn">error</span>: <span class="str>'이메일 또는 비밀번호가 올바르지 않습니다'</span> });
+  }
+
+  <span class="kw">const</span> isValid = <span class="kw">await</span> bcrypt.<span class="fn">compare</span>(password, user.password);
+  <span class="kw">if</span> (!isValid) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ <span class="fn">error</span>: <span class="str">'이메일 또는 비밀번호가 올바르지 않습니다'</span> });
+  }
+
+  <span class="kw">const</span> accessToken = jwt.<span class="fn">sign</span>(
+    { <span class="fn">id</span>: user.id, email: user.email },
+    process.env.JWT_SECRET!,
+    { <span class="fn">expiresIn</span>: <span class="str">'15m'</span> }
+  );
+
+  <span class="kw">const</span> refreshToken = jwt.<span class="fn">sign</span>(
+    { <span class="fn">id</span>: user.id },
+    process.env.REFRESH_SECRET!,
+    { <span class="fn">expiresIn</span>: <span class="str">'7d'</span> }
+  );
+
+  <span class="fn">res</span>.<span class="fn">json</span>({ accessToken, refreshToken });
+};</code></pre>
+  </div>
+
+  <h3 id="oauth-request">OAuth 소셜 로그인</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Google OAuth 2.0 소셜 로그인을 추가해줘:</span>
+
+<span class="str">1. passport-google-oauth20 사용</span>
+<span class="str">2. Google Cloud Console 설정 가이드</span>
+<span class="str">3. callback URL 처리</span>
+<span class="str">4. 사용자 정보 저장/조회</span>
+<span class="str">5. 세션 또는 JWT 발급</span></code></pre>
+  </div>
+
+  <h3 id="auth-best-practices">인증 베스트 프랙티스</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 보안 팁</div>
+    <ul>
+      <li><strong>비밀번호 저장</strong>: bcryptArgon2 사용, salt rounds 10+</li>
+      <li><strong>토큰 관리</strong>: Access Token 짧게, Refresh Token으로 재발급</li>
+      <li><strong>HTTPS 필수</strong>: 프로덕션에서는 HTTPS 사용</li>
+      <li><strong> Rate Limiting</strong>: 로그인 시도에 제한</li>
+      <li><strong>입력 검증</strong>: 이메일 형식, 비밀번호 강도 확인</li>
+    </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="database-models">데이터베이스 모델</h2>
-  <p>ORM을 사용한 데이터베이스 모델을 생성합니다.</p>
+  <p>ORM을 사용한 데이터베이스 모델을 생성합니다. Prisma, Sequelize, SQLAlchemy 등 다양한 ORM을 지원합니다.</p>
 
   <h3 id="prisma-request">Prisma 모델 요청</h3>
   <div class="code-block">
@@ -164,13 +449,114 @@
     </div>
     <pre><code><span class="str">Prisma 스키마를 만들어줘.</span>
 
-<span class="str">모델:</span>
-<span class="str">- User: id, email, password, name, posts</span>
-<span class="str">- Post: id, title, content, author, createdAt</span>
-<span class="str">- Comment: id, content, post, author, createdAt</span>
+<span class="str">기술 스택:</span>
+<span class="str">- Prisma + PostgreSQL</span>
+<span class="str">- TypeScript</span>
+
+<span class="str">모델 정의:</span>
+<span class="str">- User: id, email(unique), password, name, createdAt, updatedAt</span>
+<span class="str">- Post: id, title, content, published, authorId, createdAt, updatedAt</span>
+<span class="str">- Comment: id, content, postId, authorId, createdAt</span>
+<span class="str">- Profile: id, bio, avatar, userId(unique)</span>
+
 <span class="str">관계:</span>
-<span class="str">- User는 여러 Post 작성</span>
-<span class="str">- Post는 여러 Comment 가짐</span></code></pre>
+<span class="str">- User는 여러 Post 작성 (1:N)</span>
+<span class="str">- Post는 여러 Comment 가짐 (1:N)</span>
+<span class="str">- User는 하나의 Profile 가짐 (1:1)</span>
+
+<span class="str">추가:</span>
+<span class="str">- @updatedAt 자동 관리</span>
+<span class="str">- 인덱스 설정 (email unique)</span>
+<span class="str">- cascade 삭제 설정</span></code></pre>
+  </div>
+
+  <h3 id="prisma-example">Prisma 스키마 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Prisma (schema.prisma)</span>
+    </div>
+    <pre><code><span class="kw">generator</span> client {
+  <span class="fn">provider</span> = <span class="str">"prisma-client-js"</span>
+}
+
+<span class="kw">datasource</span> db {
+  <span class="fn">provider</span> = <span class="str">"postgresql"</span>
+  <span class="fn">url</span>      = <span class="fn">env</span>(<span class="str">"DATABASE_URL"</span>)
+}
+
+<span class="kw">model</span> <span class="type">User</span> {
+  <span class="fn">id</span>        <span class="type">Int</span>      <span class="fn">@id</span> @<span class="fn">default</span>(autoincrement())
+  <span class="fn">email</span>     <span class="type">String</span>   @<span class="fn">unique</span>
+  <span class="fn">name</span>      <span class="type">String</span>?
+  <span class="fn">password</span>  <span class="type">String</span>
+  <span class="fn">posts</span>     <span class="type">Post[]</span>
+  <span class="fn">comments</span>  <span class="type">Comment[]</span>
+  <span class="fn">profile</span>   <span class="type">Profile?</span>
+  <span class="fn">createdAt</span> <span class="type">DateTime</span> @<span class="fn">default</span>(now())
+  <span class="fn">updatedAt</span> <span class="type">DateTime</span> @<span class="fn">updatedAt</span>
+}
+
+<span class="kw">model</span> <span class="type">Post</span> {
+  <span class="fn">id</span>        <span class="type">Int</span>       @<span class="fn">id</span> @<span class="fn">default</span>(autoincrement())
+  <span class="fn">title</span>     <span class="type">String</span>
+  <span class="fn">content</span>   <span class="type">String?</span>
+  <span class="fn">published</span> <span class="type">Boolean</span>  @<span class="fn">default</span>(false)
+  <span class="fn">author</span>    <span class="type">User</span>     @<span class="fn">relation</span>(fields: [<span class="fn">authorId</span>], references: [<span class="fn">id</span>], onDelete: Cascade)
+  <span class="fn">authorId</span>  <span class="type">Int</span>
+  <span class="fn">comments</span>  <span class="type">Comment[]</span>
+  <span class="fn">createdAt</span> <span class="type">DateTime</span>  @<span class="fn">default</span>(now())
+  <span class="fn">updatedAt</span> <span class="type">DateTime</span>  @<span class="fn">updatedAt</span>
+
+  <span class="fn">index</span>([<span class="fn">authorId</span>])
+  <span class="fn">index</span>([<span class="fn">published</span>])
+}</code></pre>
+  </div>
+
+  <h3 id="sqlalchemy-request">SQLAlchemy 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">SQLAlchemy 모델을 만들어줘:</span>
+
+<span class="str">1. User 모델</span>
+<span class="str">   - id (Integer, Primary Key)</span>
+<span class="str">   - email (String, Unique, Not Null)</span>
+<span class="str">   - password (String, Not Null)</span>
+<span class="str">   - created_at (DateTime, default=now)</span>
+
+<span class="str">2. Post 모델</span>
+<span class="str">   - id, title, content, user_id (FK)</span>
+<span class="str">   - relationship 설정</span>
+
+<span class="str">3. Base 클래스</span>
+<span class="str">   - declarative_base()</span>
+<span class="str">   - 마이그레이션 스크립트 생성</span></code></pre>
+  </div>
+
+  <h3 id="migration-request">마이그레이션 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Prisma 마이그레이션을 만들어줘:</span>
+
+<span class="str">1. 초기 스키마 마이그레이션</span>
+<span class="str">2. 필드 추가 마이그레이션 (nickname)</span>
+<span class="str">3. 인덱스 생성 마이그레이션</span>
+<span class="str">4. 데이터 마이그레이션 (기본값 설정)</span>
+<span class="str">5. 롤백 마이그레이션 예시</span></code></pre>
+  </div>
+
+  <h3 id="orm-comparison">ORM 비교</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 ORM 선택 가이드</div>
+    <ul>
+      <li><strong>Prisma</strong>: TypeScript 완벽 지원, 학습 곡선 낮음, 마이그레이션 강점</li>
+      <li><strong>SQLAlchemy</strong>: Python, 유연성 높음, 복잡한 쿼리 지원</li>
+      <li><strong>Sequelize</strong>: Node.js, 다양한 데이터베이스, 콜백 기반</li>
+      <li><strong>Django ORM</strong>: Django에서만 사용, 생산성 높음</li>
+    </ul>
   </div>
 </section>
 
@@ -196,18 +582,135 @@
       <p>DB 설계도 AI로!</p>
       <a href="database-prompt.html" class="card-link">데이터베이스 프롬프트 →</a>
     </div>
+
+    <div class="doc-card">
+      <h3>CI/CD + LLM</h3>
+      <p>지속적 통합 자동화</p>
+      <a href="ci-cd-llm.html" class="card-link">CI/CD + LLM →</a>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="graphql">GraphQL</h2>
+  <p>GraphQL은 REST의 대안으로 flexibility한 데이터 요청이 가능합니다.</p>
+
+  <h3 id="graphql-request">GraphQL 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Apollo Server로 GraphQL API를 만들어줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Apollo Server 4</span>
+<span class="str">- GraphQL SDL</span>
+<span class="str">- Prisma (데이터 소스)</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. Schema 정의</span>
+<span class="str">   - Query: users, user(id), posts, post(id)</span>
+<span class="str">   - Mutation: createUser, createPost, updatePost, deletePost</span>
+<span class="str">   - Types: User, Post, Comment</span>
+<span class="str">2. Resolver 구현</span>
+<span class="str">3. Pagination 지원</span>
+<span class="str">4. Playground 활성화</span></code></pre>
+  </div>
+
+  <h3 id="graphql-vs-rest">GraphQL vs REST</h3>
+  <div class="info-box info">
+    <div class="info-box-title">📋 선택 기준</div>
+    <ul>
+      <li><strong>GraphQL 선택</strong>: 다양한 클라이언트, 과도한 데이터-fetching 문제, 모바일</li>
+      <li><strong>REST 선택</strong>: 단순한 API, 캐싱 중요, 기존 시스템 활용</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="testing">백엔드 테스트</h2>
+  <p>백엔드 코드도 테스트가 필수입니다. 단위 테스트, 통합 테스트를 요청하세요.</p>
+
+  <h3 id="testing-request">테스트 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Express.js API에 테스트를 추가해줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Jest + Supertest</span>
+<span class="str">- TypeScript</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. 단위 테스트</span>
+<span class="str">   - authController.register</span>
+<span class="str">   - authController.login</span>
+<span class="str">2. 통합 테스트</span>
+<span class="str">   - GET /api/users</span>
+<span class="str">   - POST /api/users (생성)</span>
+<span class="str">3. 테스트 데이터</span>
+<span class="str">   - beforeAll/afterAll로 데이터베이스 설정</span>
+<span class="str">   - 테스트용 더미 데이터</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="deployment">배포</h2>
+  <p>백엔드 애플리케이션 배포 옵션입니다.</p>
+
+  <h3 id="deployment-options">배포 플랫폼</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 배포 가이드 요청 예시</div>
+    <ul>
+      <li><strong>Vercel/Netlify</strong>: Serverless, 함수형 배포</li>
+      <li><strong>Railway/Render</strong>:托管서버, 프로토타입</li>
+      <li><strong>AWS/GCP/Cloudflare</strong>:서버, 대규모 서비스</li>
+      <li><strong>Docker</strong>: 컨테이너화, 일관된 환경</li>
+    </ul>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Express.js 앱을 Docker로 배포해줘:</span>
+
+<span class="str">1. Dockerfile 작성</span>
+<span class="str">   - Node.js 20 Alpine</span>
+<span class="str">   - 프로덕션 빌드</span>
+<span class="str">   - Non-root 사용자</span>
+<span class="str">2. docker-compose.yml</span>
+<span class="str">   - Express + PostgreSQL</span>
+<span class="str">3. .dockerignore 설정</span></code></pre>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="summary">핵심 정리</h2>
   <ul>
-    <li><strong>Express.js</strong>: Node.js REST API</li>
-    <li><strong>FastAPI</strong>: Python 고성능 API</li>
-    <li><strong>Django</strong>: Python 풀스택 웹 프레임워크</li>
-    <li><strong>인증</strong>: JWT, bcrypt</li>
-    <li><strong>데이터베이스</strong>: Prisma, SQLAlchemy ORM</li>
+    <li><strong>Express.js</strong>: Node.js REST API, 라우터 분리, 미들웨어 패턴</li>
+    <li><strong>FastAPI</strong>: Python 고성능 API, 자동 문서화, Pydantic</li>
+    <li><strong>Django</strong>: Python 풀스택 웹 프레임워크,-admin内置</li>
+    <li><strong>인증</strong>: JWT, bcrypt, OAuth 소셜 로그인</li>
+    <li><strong>데이터베이스</strong>: Prisma, SQLAlchemy ORM, 마이그레이션</li>
+    <li><strong>GraphQL</strong>: Apollo Server, flexible 데이터 요청</li>
+    <li><strong>테스트</strong>: Jest + Supertest, 단위/통합 테스트</li>
+    <li><strong>배포</strong>: Docker, Serverless,托管플랫폼</li>
   </ul>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 백엔드 Vibe Coding 체크리스트</div>
+    <ul>
+      <li>☑️ 기술 스택 명시 (Express, FastAPI 등)</li>
+      <li>☑️ 데이터베이스 선택 (PostgreSQL, SQLite 등)</li>
+      <li>☑️ ORM 명시 (Prisma, Sequelize 등)</li>
+      <li>☑️ 인증 방식 선택 (JWT, OAuth 등)</li>
+      <li>☑️ 프로젝트 구조 전달</li>
+      <li>☑️ 입력 검증 라이브러리 지정</li>
+      <li>☑️ 테스트 요구사항 포함</li>
+    </ul>
+  </div>
 </section>
 
 <!-- Page Navigation (이전/다음) -->

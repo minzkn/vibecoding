@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="FastCGI - 기술 스택 가이드">
+<meta property="og:description" content="FastCGI 프로토콜의 원리, 구현, Apache/Nginx 연동, 성능 최적화까지 상세한 가이드입니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/fastcgi.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="FastCGI 프로토콜의 원리, 구현, Apache/Nginx 연동, 성능 최적화까지 상세한 가이드입니다.">
+<meta name="keywords" content="fastcgi cgi webserver nginx apache performance">
+<meta name="author" content="MINZKN">
+<title>FastCGI - 기술 스택 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">FastCGI - 기술 스택 가이드</h1>
+<p class="page-description">FastCGI 프로토콜의 원리부터 구현, 웹 서버 연동, 성능 최적화까지 상세한 가이드입니다.</p>
+
+<section class="content-section">
+  <h2 id="overview">FastCGI 개요</h2>
+  <p>
+    FastCGI는 웹 서버와 외부 애플리케이션 사이의 인터페이스를 제공하는 프로토콜입니다.
+    전통적인 CGI의 단점을 해결하기 위해 개발되었으며, 높은 성능과 확장성을 제공합니다.
+    PHP, Python, Ruby 등 다양한 언어로 작성된 웹 애플리케이션을 실행하는 데 널리 사용됩니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 FastCGI가 필요한 이유</div>
+    <ul>
+      <li><strong>CGI의 한계 극복</strong>: 요청마다 새 프로세스를 생성하는 CGI의 비효율성 해결</li>
+      <li><strong>지속적 프로세스</strong>: 프로세스가 메모리에 유지되어 반복적인 초기화 비용 절감</li>
+      <li><strong>동시 처리</strong>: 여러 요청을 동시에 처리 가능한 다중 스레드 지원</li>
+      <li><strong>분산 아키텍처</strong>: 웹 서버와 애플리케이션 서버를 분리 가능</li>
+    </ul>
+  </div>
+
+  <h3 id="cgi-vs-fastcgi">CGI vs FastCGI 비교</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>특징</th>
+        <th>CGI</th>
+        <th>FastCGI</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>프로세스 생성</td>
+        <td>매 요청마다 새 프로세스</td>
+        <td>프로세스 재사용</td>
+      </tr>
+      <tr>
+        <td>성능</td>
+        <td>낮음</td>
+        <td>높음</td>
+      </tr>
+      <tr>
+        <td>동시성</td>
+        <td>제한적</td>
+        <td>높음 (다중 스레드)</td>
+      </tr>
+      <tr>
+        <td>메모리 사용</td>
+        <td>요청마다 새 메모리</td>
+        <td>프로세스당 한 번</td>
+      </tr>
+      <tr>
+        <td>확장성</td>
+        <td>제한적</td>
+        <td>높음</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="how-it-works">FastCGI 작동 원리</h2>
+  <p>FastCGI는 클라이언트 요청을 처리하기 위해 다음과 같은 과정으로 작동합니다.</p>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 350"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="fcgi-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Client -->
+      <rect x="50" y="30" width="120" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="110" y="60" text-anchor="middle" fill="var(--diagram-text)" font-size="13">
+        Browser/Client
+      </text>
+
+      <!-- Web Server -->
+      <rect x="250" y="30" width="150" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="325" y="60" text-anchor="middle" fill="var(--diagram-text)" font-size="13">
+        Web Server
+      </text>
+      <text x="325" y="75" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        (Nginx/Apache)
+      </text>
+
+      <!-- Arrow: Client -> Web Server -->
+      <line x1="170" y1="55" x2="245" y2="55"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fcgi-arrow)"/>
+      <text x="207" y="45" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        HTTP Request
+      </text>
+
+      <!-- FastCGI Process Manager -->
+      <rect x="250" y="130" width="150" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--diagram-accent)" stroke-width="2"/>
+      <text x="325" y="160" text-anchor="middle" fill="var(--diagram-text)" font-size="13">
+        FastCGI Process
+      </text>
+
+      <!-- Arrow: Web Server -> FastCGI -->
+      <line x1="325" y1="80" x2="325" y2="125"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fcgi-arrow)"/>
+      <text x="340" y="107" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        FastCGI Protocol
+      </text>
+
+      <!-- Application -->
+      <rect x="450" y="130" width="150" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--diagram-accent)" stroke-width="2"/>
+      <text x="525" y="160" text-anchor="middle" fill="var(--diagram-text)" font-size="13">
+        Application
+      </text>
+      <text x="525" y="175" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        (PHP/Python/Ruby)
+      </text>
+
+      <!-- Arrow: FastCGI -> Application -->
+      <line x1="400" y1="155" x2="445" y2="155"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fcgi-arrow)"/>
+
+      <!-- Database -->
+      <rect x="500" y="230" width="100" height="40" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="550" y="255" text-anchor="middle" fill="var(--diagram-text)" font-size="11">
+        Database
+      </text>
+
+      <!-- Arrow: Application -> Database -->
+      <line x1="525" y1="180" x2="550" y2="225"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fcgi-arrow)"/>
+
+      <!-- Arrow: Response path -->
+      <line x1="525" y1="90" x2="175" y2="90"
+            stroke="var(--diagram-accent)" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#fcgi-arrow)"/>
+      <text x="350" y="80" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        HTTP Response
+      </text>
+    </svg>
+    <p class="diagram-caption">그림 1: FastCGI 아키텍처</p>
+  </div>
+
+  <h3 id="protocol-details">프로토콜 상세</h3>
+  <p>FastCGI 프로토콜은 레코드 기반 통신을 사용합니다. 각 레코드는 다음과 같은 구조를 가집니다:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">FastCGI Record Structure</span>
+    </div>
+    <pre><code><span class="cmt">// FastCGI 레코드 헤더 (8바이트)</span>
+<span class="kw">typedef</span> <span class="kw">struct</span> {
+  <span class="type">uint8</span>  version;           <span class="cmt">// 프로토콜 버전</span>
+  <span class="type">uint8</span>  type;              <span class="cmt">// 레코드 타입</span>
+  <span class="type">uint16</span> requestId;        <span class="cmt">// 요청 ID</span>
+  <span class="type">uint16</span> contentLength;    <span class="cmt">// 본문 길이</span>
+  <span class="type">uint8</span>  paddingLength;    <span class="cmt">// 패딩 길이</span>
+  <span class="type">uint8</span>  reserved;         <span class="cmt">// 예약 영역</span>
+} <span class="type">FCGI_Header</span>;
+
+<span class="cmt">// 주요 레코드 타입</span>
+<span class="num">1</span>  FCGI_BEGIN_REQUEST     <span class="cmt">// 요청 시작</span>
+<span class="num">2</span>  FCGI_ABORT_REQUEST    <span class="cmt">// 요청中止</span>
+<span class="num">3</span>  FCGI_PARAMS           <span class="cmt">// 환경 변수</span>
+<span class="num">4</span>  FCGI_STDIN            <span class="cmt">// 표준 입력</span>
+<span class="num">5</span>  FCGI_STDOUT           <span class="cmt">// 표준 출력</span>
+<span class="num">6</span>  FCGI_STDERR           <span class="cmt">// 표준 에러</span>
+<span class="num">7</span>  FCGI_DATA            <span class="cmt">// 데이터</span>
+<span class="num">10</span> FCGI_END_REQUEST     <span class="cmt">// 요청 종료</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="nginx-integration">Nginx + FastCGI</h2>
+  <p>Nginx에서 FastCGI를 설정하는 방법을 다룹니다. Nginx는 기본적으로 정적 파일 서빙에 최적화되어 있어, 동적 콘텐츠는 FastCGI를 통해 외부 애플리케이션에서 처리합니다.</p>
+
+  <h3 id="nginx-install">Nginx 설치</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Ubuntu/Debian</span>
+    </div>
+    <pre><code><span class="cmt"># Nginx 설치</span>
+<span class="fn">sudo apt update</span>
+<span class="fn">sudo apt install nginx</span>
+
+<span class="cmt"># PHP-FPM 설치 (PHP를 사용하는 경우)</span>
+<span class="fn">sudo apt install php-fpm php-mysql</span>
+
+<span class="cmt"># 서비스 시작</span>
+<span class="fn">sudo systemctl start nginx</span>
+<span class="fn">sudo systemctl enable nginx</span></code></pre>
+  </div>
+
+  <h3 id="nginx-config">Nginx 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Nginx Config (/etc/nginx/sites-available/default)</span>
+    </div>
+    <pre><code><span class="kw">server</span> {
+    <span class="fn">listen</span> <span class="num">80</span>;
+    <span class="fn">server_name</span> example.com www.example.com;
+    <span class="fn">root</span> /var/www/html;
+    <span class="fn">index</span> index.php index.html;
+
+    <span class="cmt"># 정적 파일 캐싱</span>
+    <span class="fn">location</span> ~* \.(jpg|jpeg|png|gif|ico|css|js)$ {
+        <span class="fn">expires</span> <span class="num">30d</span>;
+        <span class="fn">add_header</span> Cache-Control <span class="str">"public, no-transform"</span>;
+    }
+
+    <span class="cmt"># PHP-FPM으로 프록시</span>
+    <span class="fn">location</span> ~ \.php$ {
+        <span class="fn">include</span> snippets/fastcgi-php.conf;
+        <span class="fn">fastcgi_pass</span> unix:/run/php/php-fpm.sock;
+        <span class="fn">fastcgi_param</span> SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        <span class="fn">include</span> fastcgi_params;
+    }
+
+    <span class="cmt"># FastCGI 버퍼 설정</span>
+    <span class="fn">fastcgi_buffer_size</span> <span class="num">128k</span>;
+    <span class="fn">fastcgi_buffers</span> <span class="num">4</span> <span class="num">256k</span>;
+    <span class="fn">fastcgi_busy_buffers_size</span> <span class="num">256k</span>;
+
+    <span class="cmt"># 타임아웃 설정</span>
+    <span class="fn">fastcgi_connect_timeout</span> <span class="num">60s</span>;
+    <span class="fn">fastcgi_send_timeout</span> <span class="num">60s</span>;
+    <span class="fn">fastcgi_read_timeout</span> <span class="num">60s</span>;
+}</code></pre>
+  </div>
+
+  <h3 id="nginx-upstream">Upstream 설정</h3>
+  <p>다중 서버 또는 로드밸런싱이 필요한 경우 upstream 블록을 사용합니다.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Nginx Upstream Config</span>
+    </div>
+    <pre><code><span class="cmt"># 다중 FastCGI 서버 설정</span>
+<span class="kw">upstream</span> php_backend {
+    <span class="fn">server</span> <span class="num">127.0.0.1</span>:<span class="num">9000</span> weight=<span class="num">5</span>;
+    <span class="fn">server</span> <span class="num">127.0.0.1</span>:<span class="num">9001</span> weight=<span class="num">3</span>;
+    <span class="fn">server</span> <span class="num">127.0.0.1</span>:<span class="num">9002</span> backup;
+    <span class="fn">keepalive</span> <span class="num">32</span>;
+}
+
+<span class="kw">server</span> {
+    <span class="fn">location</span> ~ \.php$ {
+        <span class="fn">fastcgi_pass</span> php_backend;
+        <span class="fn">fastcgi_keep_conn</span> on;
+    }
+}</code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 Nginx FastCGI 팁</div>
+    <ul>
+      <li><strong>ソケット vs TCP</strong>: 로컬에서는 Unixソケット, 분산 환경에서는 TCP</li>
+      <li><strong>버퍼 크기</strong>: 큰 응답은 버퍼 크기 조정 필요</li>
+      <li><strong>Keep-Alive</strong>: 연결 재사용으로 성능 향상</li>
+      <li><strong>Gzip 압축</strong>: 응답 데이터 압축으로 대역폭 절약</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="apache-integration">Apache + FastCGI</h2>
+  <p>Apache에서 FastCGI를 설정하는 방법입니다. Apache는 mod_fcgid 또는 mod_proxy_fcgi 모듈을 사용합니다.</p>
+
+  <h3 id="apache-install">Apache 설치</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Ubuntu/Debian</span>
+    </div>
+    <pre><code><span class="cmt"># Apache 설치</span>
+<span class="fn">sudo apt install apache2</span>
+
+<span class="cmt"># 필수 모듈 활성화</span>
+<span class="fn">sudo a2enmod proxy</span>
+<span class="fn">sudo a2enmod proxy_fcgi</span>
+<span class="fn">sudo a2enmod setenvif</span>
+
+<span class="cmt"># PHP-FPM 설치</span>
+<span class="fn">sudo apt install php-fpm</span>
+
+<span class="cmt"># Apache 재시작</span>
+<span class="fn">sudo systemctl restart apache2</span></code></pre>
+  </div>
+
+  <h3 id="apache-config">Apache 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Apache Config (/etc/apache2/sites-available/example.conf)</span>
+    </div>
+    <pre><code><span class="kw">&lt;VirtualHost *:80&gt;</span>
+    <span class="fn">ServerName</span> example.com
+    <span class="fn">DocumentRoot</span> /var/www/html
+
+    <span class="cmt"># PHP-FPM으로 프록시</span>
+    <span class="kwMatch \">&lt;Files.php$&gt;</span>
+        <span class="fn">SetHandler</span> "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"
+    <span class="kw">&lt;/FilesMatch&gt;</span>
+
+    <span class="cmt"># 또는 TCP로 연결</span>
+    <span class="cmt"># SetHandler "proxy:fcgi://127.0.0.1:9000"</span>
+
+    <span class="cmt"># 디렉토리 설정</span>
+    <span class="kw">&lt;Directory /var/www/html&gt;</span>
+        <span class="fn">AllowOverride</span> All
+        <span class="fn">Require</span> all granted
+    <span class="kw">&lt;/Directory&gt;</span>
+
+    <span class="cmt"># FastCGIExternalServer 설정 (mod_fcgid 사용시)</span>
+    <span class="cmt"># FastCgiExternalServer /var/www/cgi-bin -socket /run/php/php-fpm.sock</span>
+<span class="kw">&lt;/VirtualHost&gt;</span></code></pre>
+  </div>
+
+  <h3 id="apache-fcgid">mod_fcgid 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Apache mod_fcgid Config</span>
+    </div>
+    <pre><code><span class="cmt"># mod_fcgid 설정 (/etc/apache2/mods-available/fcgid.conf)</span>
+<span class="fn">FcgidInitialEnv</span> PHPRC <span class="str">"/etc/php/8.1/fpm"</span>
+<span class="fn">FcgidInitialEnv</span> PHP_FCGI_MAX_REQUESTS <span class="str">"5000"</span>
+<span class="fn">FcgidIOTimeout</span> <span class="num">120</span>
+<span class="fn">FcgidConnectTimeout</span> <span class="num">16</span>
+<span class="fn">FcgidMaxRequestsPerProcess</span> <span class="num">500</span>
+<span class="fn">FcgidMaxProcesses</span> <span class="num">150</span>
+<span class="fn">FcgidMaxRequestLen</span> <span class="num">8131072</span>
+<span class="fn">ProcessLifeTime</span> <span class="num">240</span>
+<span class="fn">FcgidInitialEnv</span> PHP_VALUE <span class="str">"upload_max_filesize = 100M"</span>
+<span class="fn">FcgidInitialEnv</span> PHP_VALUE <span class="str">"post_max_size = 100M"</span></code></pre>
+  </div>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ Apache vs Nginx 선택</div>
+    <ul>
+      <li><strong>Apache 선택</strong>: .htaccess, 모듈 시스템, 기존 호환성</li>
+      <li><strong>Nginx 선택</strong>: 높은 동시 접속 처리, 낮은 메모리 사용</li>
+      <li><strong>성능</strong>: 동적 콘텐츠가 많다면 Nginx가 일반적으로 우수</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="php-fpm">PHP-FPM</h2>
+  <p>PHP-FPM(FastCGI Process Manager)은 PHP의 FastCGI 구현체입니다. 고급 프로세스 관리 기능을 제공합니다.</p>
+
+  <h3 id="php-fpm-install">PHP-FPM 설치</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Ubuntu/Debian</span>
+    </div>
+    <pre><code><span class="cmt"># PHP 8.x와 FPM 설치</span>
+<span class="fn">sudo apt install</span> php<span class="num">8.1</span>-fpm php<span class="num">8.1</span>-mysql php<span class="num">8.1</span>-curl php<span class="num">8.1</span>-gd php<span class="num">8.1</span>-mbstring
+
+<span class="cmt"># PHP 버전 확인</span>
+php -v
+
+<span class="cmt"># FPM 상태 확인</span>
+<span class="fn">sudo systemctl status php</span><span class="num">8.1</span>-fpm</code></pre>
+  </div>
+
+  <h3 id="php-fpm-pools">Pool 설정</h3>
+  <p>PHP-FPM은 여러 풀(Pool)을 구성하여 서로 다른 사이트에 다른 설정을 적용할 수 있습니다.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">PHP-FPM Pool (/etc/php/8.1/fpm/pool.d/www.conf)</span>
+    </div>
+    <pre><code><span class="cmt">; Pool 이름</span>
+[<span class="str">www</span>]
+
+<span class="cmt">; Unixソケット 또는 TCP</span>
+<span class="fn">listen</span> = /run/php/php-fpm.sock
+<span class="cmt">; listen = 127.0.0.1:9000</span>
+
+<span class="cmt">;ソ켓 권한</span>
+<span class="fn">listen.owner</span> = www-data
+<span class="fn">listen.group</span> = www-data
+<span class="fn">listen.mode</span> = <span class="num">0660</span>
+
+<span class="cmt">; 프로세스 관리자 설정</span>
+<span class="fn">pm</span> = dynamic
+<span class="fn">pm.max_children</span> = <span class="num">50</span>
+<span class="fn">pm.start_servers</span> = <span class="num">5</span>
+<span class="fn">pm.min_spare_servers</span> = <span class="num">5</span>
+<span class="fn">pm.max_spare_servers</span> = <span class="num">35</span>
+<span class="fn">pm.max_requests</span> = <span class="num">500</span>
+
+<span class="cmt">; 타임아웃</span>
+<span class="fn">request_terminate_timeout</span> = <span class="num">60s</span>
+
+<span class="cmt">; 환경 변수</span>
+<span class="fn">env</span>[<span class="str">'HOSTNAME'</span>] = $HOSTNAME
+<span class="fn">env</span>[<span class="str">'PATH'</span>] = /usr/local/bin:/usr/bin:/bin
+<span class="fn">env</span>[<span class="str">'TMP'</span>] = /tmp</code></pre>
+  </div>
+
+  <h3 id="php-fpm-modes">PM(Process Manager) 모드</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>모드</th>
+        <th>설명</th>
+        <th>적합한 상황</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>static</td>
+        <td>고정数量的 프로세스 유지</td>
+        <td>높은 트래픽, 예측 가능한 메모리 사용</td>
+      </tr>
+      <tr>
+        <td>dynamic</td>
+        <td>요청에 따라 프로세스 증감</td>
+        <td>중간 트래픽, 제한된 메모리</td>
+      </tr>
+      <tr>
+        <td>ondemand</td>
+        <td>요청 시에만 프로세스 생성</td>
+        <td>낮은 트래픽, 메모리 절약</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="php-fpm-status">상태 페이지</h3>
+  <p>PHP-FPM 상태 페이지를 활성화하여 모니터링할 수 있습니다.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Pool 설정</span>
+    </div>
+    <pre><code>[<span class="str">www</span>]
+<span class="fn">listen</span> = /run/php/php-fpm.sock
+
+<span class="cmt">; 상태 페이지 활성화</span>
+<span class="fn">pm.status_path</span> = /status
+<span class="fn">ping.path</span> = /ping
+<span class="fn">ping.response</span> = pong</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Nginx 설정</span>
+    </div>
+    <pre><code><span class="fn">location</span> ~ ^/(status|ping)$ {
+    <span class="fn">access_log</span> off;
+    <span class="fn">allow</span> <span class="num">127.0.0.1</span>;
+    <span class="fn">deny</span> all;
+    <span class="fn">fastcgi_pass</span> unix:/run/php/php-fpm.sock;
+    <span class="fn">include</span> fastcgi_params;
+    <span class="fn">fastcgi_param</span> SCRIPT_FILENAME $document_root$fastcgi_script_name;
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="python-fastcgi">Python + FastCGI</h2>
+  <p>Python 애플리케이션을 FastCGI로 실행하는 방법입니다.</p>
+
+  <h3 id="flup-install">Flup 설치</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+    </div>
+    <pre><code><span class="cmt"># Flup 설치 (FastCGI 서버)</span>
+<span class="fn">pip install flup</span>
+
+<span class="cmt"># Django/Flask와 함께 사용</span>
+<span class="fn">pip install django</span>
+<span class="fn">pip install flask</span></code></pre>
+  </div>
+
+  <h3 id="django-fcgi">Django FastCGI</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Django + FastCGI</span>
+    </div>
+    <pre><code><span class="cmt"># Django 프로젝트 생성</span>
+<span class="fn">django-admin startproject myproject</span>
+<span class="fn">cd myproject</span>
+
+<span class="cmt"># fcgi.py 생성</span>
+<span class="fn">cat > fcgi.py << 'EOF</span>
+<span class="kw">import</span> os
+<span class="kw">from</span> django.core.management <span class="kw">import</span> execute_from_command_line
+
+<span class="fn">os.environ.setdefault</span>(<span class="str">'DJANGO_SETTINGS_MODULE'</span>, <span class="str">'myproject.settings'</span>)
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    <span class="fn">execute_from_command_line</span>()
+<span class="num">EOF</span>
+
+<span class="cmt"># FastCGI 서버 실행</span>
+<span class="fn">python fcgi.py runfcgi</span> \
+    <span class="fn">method</span>=threaded \
+    <span class="fn">host</span>=<span class="num">127.0.0.1</span> \
+    <span class="fn">port</span>=<span class="num">8000</span> \
+    <span class="fn">daemonize</span>=true \
+    <span class="fn">pidfile</span>=/var/run/fcgi.pid</code></pre>
+  </div>
+
+  <h3 id="flask-fcgi">Flask FastCGI</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Flask + FastCGI</span>
+    </div>
+    <pre><code><span class="cmt"># app.py</span>
+<span class="kw">from</span> flask <span class="kw">import</span> Flask
+<span class="kw">import</span> os
+
+app = Flask(__name__)
+
+<span class="fn">app.wsgi_app</span> = <span class="fn">app.wsgi_app</span>
+
+<span class="kw">@app.route</span>(<span class="str">'/'</span>)
+<span class="kw">def</span> <span class="fn">hello</span>():
+    <span class="kw">return</span> <span class="str">"Hello, FastCGI!"</span>
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    <span class="cmt"># Flask 내장 서버 (개발용)</span>
+    <span class="fn">app.run</span>(host=<span class="str">'127.0.0.1'</span>, port=<span class="num">8000</span>)</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Flask.fcgi</span>
+    </div>
+    <pre><code><span class="cmt"># fcgi.py (프로덕션용)</span>
+<span class="kw">#!/usr/bin/env python</span>
+<span class="kw">from</span> flup.server.fcgi <span class="kw">import</span> WSGIServer
+<span class="kw">from</span> app <span class="kw">import</span> app
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    <span class="fn">WSGIServer</span>(app, bindAddress=<span class="str">'/tmp/fcgi.sock'</span>).run()
+    <span class="cmt"># 또는 TCP: WSGIServer(app, bindAddress=('127.0.0.1', 8000)).run()</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="performance-tuning">성능 최적화</h2>
+  <p>FastCGI의 성능을 최적화하는 방법을 다룹니다.</p>
+
+  <h3 id="buffer-tuning">버퍼 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Nginx 버퍼 최적화</span>
+    </div>
+    <pre><code><span class="cmt"># fastcgi_buffer_size: 한 번에 읽는 버퍼 크기</span>
+<span class="cmt"># fastcgi_buffers: 전체 버퍼 수와 크기</span>
+<span class="cmt"># fastcgi_busy_buffers_size: 사용 중인 버퍼 크기</span>
+
+<span class="fn">fastcgi_buffer_size</span> <span class="num">256k</span>;
+<span class="fn">fastcgi_buffers</span> <span class="num">8</span> <span class="num">256k</span>;
+<span class="fn">fastcgi_busy_buffers_size</span> <span class="num">256k</span>;
+<span class="fn">fastcgi_temp_file_write_size</span> <span class="num">256k</span>;</code></pre>
+  </div>
+
+  <h3 id="caching">캐싱 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Nginx 캐싱</span>
+    </div>
+    <pre><code><span class="cmt"># FastCGI 캐시 설정</span>
+<span class="fn">fastcgi_cache_path</span> /var/cache/nginx/fcgi levels=<span class="num">1</span>:<span class="num">2</span> 
+    <span class="fn">keys_zone</span>=fcgi_cache:<span class="num">10m</span> 
+    <span class="fn">max_size</span>=<span class="num">1g</span> 
+    <span class="fn">inactive</span>=<span class="num">60m</span> 
+    <span class="fn">use_temp_path</span>=off;
+
+<span class="fn">fastcgi_cache</span> fcgi_cache;
+<span class="fn">fastcgi_cache_valid</span> <span class="num">200</span> <span class="num">60m</span>;
+<span class="fn">fastcgi_cache_valid</span> <span class="num">404</span> <span class="num">1m</span>;
+<span class="fn">fastcgi_cache_use_stale</span> error timeout updating http_500 http_502 http_503 http_504;
+<span class="fn">fastcgi_cache_lock</span> on;
+<span class="fn">add_header</span> X-Cache-Status $upstream_cache_status;</code></pre>
+  </div>
+
+  <h3 id="compression">압축 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Gzip 압축</span>
+    </div>
+    <pre><code><span class="fn">gzip</span> on;
+<span class="fn">gzip_vary</span> on;
+<span class="fn">gzip_proxied</span> any;
+<span class="fn">gzip_comp_level</span> <span class="num">6</span>;
+<span class="fn">gzip_types</span> text/plain text/css text/xml 
+    application/json application/javascript 
+    application/xml+rss application/atom+xml 
+    image/svg+xml;</code></pre>
+  </div>
+
+  <h3 id="connection-pooling">연결 풀링</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 연결 풀링 팁</div>
+    <ul>
+      <li><strong>Keep-Alive</strong>: TCP 연결 재사용으로 핸드셰이킹 비용 절감</li>
+      <li><strong>Unixソケット</strong>: 로컬 통신에서 TCP보다 효율적</li>
+      <li><strong>프리로드</strong>: PHP 코드 프리로딩으로 초기 로딩 시간 단축</li>
+      <li><strong>OPcache</strong>: PHP 바이트코드 캐싱</li>
+    </ul>
+  </div>
+
+  <h3 id="php-opcache">PHP OPcache 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">PHP Config (php.ini)</span>
+    </div>
+    <pre><code><span class="cmt">; OPcache 활성화</span>
+<span class="fn">opcache.enable</span>=<span class="num">1</span>
+<span class="fn">opcache.enable_cli</span>=<span class="num">0</span>
+
+<span class="cmt">; 메모리 설정</span>
+<span class="fn">opcache.memory_consumption</span>=<span class="num">256</span>
+<span class="fn">opcache.interned_strings_buffer</span>=<span class="num">16</span>
+<span class="fn">opcache.max_accelerated_files</span>=<span class="num">10000</span>
+
+<span class="cmt">; 성능 설정</span>
+<span class="fn">opcache.revalidate_freq</span>=<span class="num">2</span>
+<span class="fn">opcache.fast_shutdown</span>=<span class="num">1</span>
+<span class="fn">opcache.enable_file_override</span>=<span class="num">1</span>
+
+<span class="cmt">; 프리로드 (PHP 7.4+)</span>
+<span class="fn">opcache.preload</span>=/var/www/html/preload.php</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="troubleshooting">트러블슈팅</h2>
+  <p>FastCGI 관련 자주 발생하는 문제와 해결 방법입니다.</p>
+
+  <h3 id="common-errors">常见 오류</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 502 Bad Gateway</div>
+    <ul>
+      <li><strong>원인</strong>: Nginx가 FastCGI 서버에 연결할 수 없음</li>
+      <li><strong>해결</strong>: PHP-FPM 실행 확인,ソ켓/포트 경로 확인, 권한 확인</li>
+      <li><code>sudo systemctl status php-fpm</code>로 상태 확인</li>
+    </ul>
+  </div>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 504 Gateway Timeout</div>
+    <ul>
+      <li><strong>원인</strong>: FastCGI 응답 시간 초과</li>
+      <li><strong>해결</strong>: fastcgi_read_timeout 증가,，慢 쿼리 최적화</li>
+      <li><code>fastcgi_read_timeout 300;</code>으로 설정</li>
+    </ul>
+  </div>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 403 Forbidden</div>
+    <ul>
+      <li><strong>원인</strong>: 파일/디렉토리 접근 권한 부족</li>
+      <li><strong>해결</strong>: 파일 권한 확인 (chmod 755), SELinux/AppArmor 설정 확인</li>
+    </ul>
+  </div>
+
+  <h3 id="debugging">디버깅 방법</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">로그 확인</span>
+    </div>
+    <pre><code><span class="cmt"># Nginx 에러 로그</span>
+<span class="fn">tail -f</span> /var/log/nginx/error.log
+
+<span class="cmt"># PHP-FPM 로그</span>
+<span class="fn">tail -f</span> /var/log/php<span class="num">8.1</span>-fpm.log
+
+<span class="cmt"># PHP慢 쿼리 로그 (php.ini)</span>
+<span class="fn">slowlog</span> = /var/log/php-fpm/slow.log
+<span class="fn">request_slowlog_timeout</span> = <span class="num">5s</span></code></pre>
+  </div>
+
+  <h3 id="monitoring">모니터링</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">모니터링 도구</span>
+    </div>
+    <pre><code><span class="cmt"># PHP-FPM 상태 페이지 확인</span>
+<span class="fn">curl</span> http://localhost/status
+<span class="cmt"># 또는</span>
+<span class="fn">curl</span> http://localhost/status?full
+
+<span class="cmt"># 프로세스 확인</span>
+<span class="fn">ps aux</span> | grep php-fpm
+<span class="fn">htop</span> 또는 <span class="fn">top</span>
+
+<span class="cmt"># 네트워크 연결 확인</span>
+<span class="fn">netstat -tlnp</span> | grep php</code></pre>
+  </div>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 PHP-FPM Status 출력</div>
+    <ul>
+      <li><strong>pool</strong>: 풀 이름</li>
+      <li><strong>process manager</strong>: pm 유형 (static/dynamic/ondemand)</li>
+      <li><strong>idle</strong>: 유휴 프로세스 수</li>
+      <li><strong>active</strong>: 활성 요청 수</li>
+      <li><strong>total</strong>: 전체 요청 수</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="security">보안 설정</h2>
+  <p>FastCGI 보안 강화 방법입니다.</p>
+
+  <h3 id="sandbox">샌드박스 격리</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">PHP-FPM Pool 격리</span>
+    </div>
+    <pre><code>[<span class="str">site1</span>]
+<span class="fn">listen</span> = /var/run/php-site1.sock
+<span class="fn">user</span> = site1_user
+<span class="fn">group</span> = site1_group
+<span class="fn">listen.owner</span> = nginx
+<span class="fn">listen.group</span> = nginx
+<span class="fn">php_admin_value</span>[open_basedir] = /var/www/site1:/tmp
+<span class="fn">php_admin_value</span>[disable_functions] = exec,passthru,shell_exec,system</code></pre>
+  </div>
+
+  <h3 id="rate-limiting">레이트 리밋</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Nginx rate limiting</span>
+    </div>
+    <pre><code><span class="cmt"># 요청 속도 제한</span>
+<span class="fn">limit_req_zone</span> $binary_remote_addr zone=api_limit:10m rate=<span class="num">10r/s</span>;
+
+<span class="fn">location</span> /api/ {
+    <span class="fn">limit_req</span> zone=api_limit burst=<span class="num">20</span> nodelay;
+    <span class="fn">fastcgi_pass</span> unix:/run/php/php-fpm.sock;
+}</code></pre>
+  </div>
+
+  <h3 id="ssl-tls">SSL/TLS 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">HTTPS 설정</span>
+    </div>
+    <pre><code><span class="fn">server</span> {
+    <span class="fn">listen</span> <span class="num">443</span> ssl http2;
+    <span class="fn">server_name</span> example.com;
+
+    <span class="fn">ssl_certificate</span> /etc/ssl/certs/example.crt;
+    <span class="fn">ssl_certificate_key</span> /etc/ssl/private/example.key;
+
+    <span class="cmt"># TLS 버전</span>
+    <span class="fn">ssl_protocols</span> TLSv1.2 TLSv1.3;
+    <span class="fn">ssl_ciphers</span> HIGH:!aNULL:!MD5;
+    <span class="fn">ssl_prefer_server_ciphers</span> on;
+
+    <span class="fn">location</span> ~ \.php$ {
+        <span class="fn">fastcgi_pass</span> unix:/run/php/php-fpm.sock;
+    }
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="docker">Docker와 FastCGI</h2>
+  <p>Docker 환경에서 FastCGI를 사용하는 방법입니다.</p>
+
+  <h3 id="dockerfile">Dockerfile 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Dockerfile</span>
+    </div>
+    <pre><code><span class="cmt"># PHP-FPM Docker 이미지</span>
+<span class="kw">FROM</span> php:<span class="num">8.1</span>-fpm
+
+<span class="cmt"># 필수 확장 설치</span>
+<span class="fn">RUN</span> docker-php-ext-install pdo pdo_mysql
+
+<span class="cmt"># Nginx 설치</span>
+<span class="fn">RUN</span> apt-get update && apt-get install -y \
+    nginx \
+    && rm -rf /var/lib/apt/lists/*
+
+<span class="cmt"># 설정 복사</span>
+<span class="fn">COPY</span> nginx.conf /etc/nginx/nginx.conf
+<span class="fn">COPY</span> php.ini /usr/local/etc/php/conf.d/
+
+<span class="cmt"># 소스 코드 복사</span>
+<span class="fn">COPY</span> --chown=www-data:www-data . /var/www/html
+
+<span class="cmt"># 포트 노출</span>
+<span class="kw">EXPOSE</span> <span class="num">80</span>
+
+<span class="cmt"># Nginx + PHP-FPM 실행</span>
+<span class="fn">CMD</span> service php<span class="num">8.1</span>-fpm start && nginx -g <span class="str">'daemon off;'</span></code></pre>
+  </div>
+
+  <h3 id="docker-compose">Docker Compose</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">docker-compose.yml</span>
+    </div>
+    <pre><code><span class="kw">version</span>: <span class="str">'3.8'</span>
+
+<span class="kw">services</span>:
+  <span class="fn">web</span>:
+    <span class="fn">image</span>: nginx:alpine
+    <span class="fn">ports</span>:
+      - <span class="str">"80:80"</span>
+    <span class="fn">volumes</span>:
+      - ./html:/var/www/html
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    <span class="fn">depends_on</span>:
+      - php
+
+  <span class="fn">php</span>:
+    <span class="fn">build</span>: .
+    <span class="fn">volumes</span>:
+      - ./html:/var/www/html
+    <span class="fn">environment</span>:
+      - PHP_MEMORY_LIMIT=256M
+
+  <span class="fn">db</span>:
+    <span class="fn">image</span>: mysql:8.0
+    <span class="fn">environment</span>:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=app</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="alternatives">대안 기술</h2>
+  <p>FastCGI 외의 다른 인터페이스 기술입니다.</p>
+
+  <h3 id="compared-technologies">기술 비교</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>기술</th>
+        <th>장점</th>
+        <th>단점</th>
+        <th>적합한 상황</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>FastCGI</td>
+        <td>높은 성능, 프로세스 재사용</td>
+        <td>설정 복잡</td>
+        <td>프로덕션 PHP</td>
+      </tr>
+      <tr>
+        <td>PSGI/Plack</td>
+        <td>Perl 통합, 유연성</td>
+        <td>Perl 필요</td>
+        <td>Perl 애플리케이션</td>
+      </tr>
+      <tr>
+        <td>uWSGI</td>
+        <td>다양한 언어 지원</td>
+        <td>복잡한 설정</td>
+        <td>Python/WSGI</td>
+      </tr>
+      <tr>
+        <td>gunicorn</td>
+        <td>단순, Python 기본</td>
+        <td>Python만</td>
+        <td>Python Flask/Django</td>
+      </tr>
+      <tr>
+        <td>Unicorn</td>
+        <td>높은 성능, Ruby 기본</td>
+        <td>Ruby만</td>
+        <td>Ruby on Rails</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="when-to-use">언제 무엇을 사용할까?</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 선택 가이드</div>
+    <ul>
+      <li><strong>PHP</strong>: PHP-FPM (FastCGI) - 가장 일반적인 선택</li>
+      <li><strong>Python</strong>: uWSGI 또는 gunicorn</li>
+      <li><strong>Ruby</strong>: Unicorn 또는 Puma</li>
+      <li><strong>Perl</strong>: PSGI/Plack</li>
+      <li><strong>Node.js</strong>: 내장 클러스터 모드 (FastCGI 불필요)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li><strong>FastCGI</strong>: CGI의 성능 문제를 해결한 프로토콜</li>
+    <li><strong>Nginx 연동</strong>: fastcgi_pass로 PHP-FPM 연결</li>
+    <li><strong>Apache 연동</strong>: mod_proxy_fcgi 또는 mod_fcgid 사용</li>
+    <li><strong>PHP-FPM</strong>: 고급 프로세스 관리, 다중 풀 지원</li>
+    <li><strong>성능 최적화</strong>: 버퍼, 캐싱, 압축, 연결 풀링</li>
+    <li><strong>보안</strong>: 샌드박스 격리, SSL/TLS, 레이트 리밋</li>
+    <li><strong>모니터링</strong>: 상태 페이지, 로그 분석</li>
+  </ul>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 FastCGI 체크리스트</div>
+    <ul>
+      <li>☑️ 웹 서버(FastCGI 클라이언트) 설치 및 설정</li>
+      <li>☑️ 애플리케이션 서버(FastCGI 서버) 설치</li>
+      <li>☑️ 소켓/TCP 연결 확인</li>
+      <li>☑️ 버퍼 및 타임아웃 최적화</li>
+      <li>☑️ 캐싱 및 압축 설정</li>
+      <li>☑️ 로그 모니터링 구성</li>
+      <li>☑️ 보안 설정 (권한, SSL)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="https://www.fastcgi.com/" target="_blank" rel="noopener">FastCGI 공식 문서</a></li>
+    <li><a href="https://nginx.org/en/docs/http/ngx_http_fastcgi_module.html" target="_blank" rel="noopener">Nginx FastCGI Module</a></li>
+    <li><a href="https://www.php.net/manual/en/install.fpm.php" target="_blank" rel="noopener">PHP-FPM Manual</a></li>
+    <li><a href="https://httpd.apache.org/docs/2.4/mod/mod_fcgid.html" target="_blank" rel="noopener">Apache mod_fcgid</a></li>
+  </ul>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>Nginx</h3>
+      <p>웹 서버 설정 가이드</p>
+      <a href="docker-llm.html" class="card-link">Docker + LLM →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>CI/CD</h3>
+      <p>지속적 통합 가이드</p>
+      <a href="project-ci-cd.html" class="card-link">CI/CD 구축 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>REST API</h3>
+      <p>API 설계 가이드</p>
+      <a href="api-design.html" class="card-link">API 디자인 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

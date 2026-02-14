@@ -64,6 +64,7 @@
   <h2 id="overview">개요</h2>
   <p>
     프론트엔드 개발은 Vibe Coding에 가장 적합한 영역 중 하나입니다.
+    시각적인 결과가 빠르게 확인되고, 컴포넌트 단위로 분리할 수 있어 AI와의 협업이 효과적입니다.
     이 가이드에서는 다양한 프론트엔드 기술 스택에서 AI를 활용하는 방법을 배웁니다.
   </p>
 
@@ -74,13 +75,34 @@
       <li><strong>반응형 디자인</strong>: 모바일/데스크톱 자동 대응</li>
       <li><strong>애니메이션</strong>: 복잡한 모션도 쉽게 구현</li>
       <li><strong>상태 관리</strong>: React/Vue 상태 관리 지원</li>
+      <li><strong>즉시 피드백</strong>: 브라우저에서 바로 결과 확인</li>
+    </ul>
+  </div>
+
+  <h3 id="when-to-use">적합한场景</h3>
+  <ul>
+    <li>랜딩 페이지, 포트폴리오 사이트</li>
+    <li>단일 페이지 애플리케이션 (SPA)</li>
+    <li>관리자 대시보드</li>
+    <li>프론트엔드 컴포넌트 라이브러리</li>
+    <li>반응형 웹사이트</li>
+  </ul>
+
+  <h3 id="limitations">주의사항</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 프론트엔드 Vibe Coding 한계</div>
+    <ul>
+      <li><strong>복잡한 상태 관리</strong>: 대규모 상태 로직은 수동 개입 필요</li>
+      <li><strong>성능 최적화</strong>: 렌더링 최적화는 직접 튜닝</li>
+      <li><strong>브라우저 호환성</strong>: 폴리필, 호환성 확인 필요</li>
+      <li><strong>접근성</strong>: WCAG 가이드라인 수동 검증</li>
     </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="basic-web">기본 웹 페이지</h2>
-  <p>HTML, CSS, JavaScript로 기본 웹 페이지를 만듭니다.</p>
+  <p>HTML, CSS, JavaScript로 기본 웹 페이지를 만듭니다. Vibe Coding으로 가장 쉽게 시작할 수 있는 영역입니다.</p>
 
   <h3 id="basic-request">생성 요청 예시</h3>
   <div class="code-block">
@@ -90,18 +112,53 @@
     <pre><code><span class="str">HTML, CSS, JavaScript로 포트폴리오 웹 페이지를 만들어줘.</span>
 
 <span class="str">요구사항:</span>
-<span class="str">1. 헤더에 이름과 내비게이션</span>
-<span class="str">2. 자기소개 섹션</span>
-<span class="str">3. 프로젝트 그리드 (3열)</span>
-<span class="str">4. 연락처 폼</span>
-<span class="str">5. 다크 모드 토글</span>
-<span class="str">6. 반응형 디자인 (모바일/데스크톱)</span></code></pre>
+<span class="str">1. 헤더에 이름과 내비게이션 (Home, About, Projects, Contact)</span>
+<span class="str">2. 자기소개 섹션: 프로필 이미지, 이름, 역할, 한 줄 소개</span>
+<span class="str">3. 프로젝트 그리드 (3열, 모바일 1열)</span>
+<span class="str">4. 연락처 폼 (이름, 이메일, 메시지 필드)</span>
+<span class="str">5. 다크 모드 토글 (localStorage에 저장)</span>
+<span class="str">6. 반응형 디자인 (모바일/데스크톱)</span>
+<span class="str">7. 부드러운 스크롤 효과</span></code></pre>
+  </div>
+
+  <h3 id="basic-structure">기본 구조 패턴</h3>
+  <p>AI에게 명확한 구조를 전달하면 더 나은 결과를 얻을 수 있습니다.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">다음 구조로 웹 페이지를 만들어줘:</span>
+
+<span class="str">&lt;!-- HTML 구조 --&gt;</span>
+<span class="str">&lt;header&gt; 로고 + 네비게이션 &lt;/header&gt;</span>
+<span class="str">&lt;section id="hero"&gt; 히어로 섹션 &lt;/section&gt;</span>
+<span class="str">&lt;section id="about"&gt; 소개 섹션 &lt;/section&gt;</span>
+<span class="str">&lt;section id="projects"&gt; 프로젝트 섹션 &lt;/section&gt;</span>
+<span class="str">&lt;section id="contact"&gt; 연락처 섹션 &lt;/section&gt;</span>
+<span class="str">&lt;footer&gt; 푸터 &lt;/footer&gt;</span>
+
+<span class="str">&lt;!-- CSS 요구사항 --&gt;</span>
+<span class="str">- CSS Variables로 색상 관리</span>
+<span class="str">- Flexbox/Grid 레이아웃</span>
+<span class="str">- 모바일 우선 반응형</span>
+<span class="str">- 다크 모드 지원</span></code></pre>
+  </div>
+
+  <h3 id="common-errors">常见 오류 해결</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 자주 발생하는 문제</div>
+    <ul>
+      <li><strong>레이아웃 깨짐</strong>: flex-wrap, grid-template-columns 명시적으로 지정</li>
+      <li><strong>반응형 미작동</strong>: meta viewport 태그 확인, media query 순서 확인</li>
+      <li><strong>이미지 로딩 실패</strong>: alt 텍스트 필수, lazy loading 추가</li>
+      <li><strong>모바일 터치 문제</strong>: touch-action, hover 상태 디자인 별도 구현</li>
+    </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="react-app">React 프로젝트</h2>
-  <p>React로 컴포넌트 기반 애플리케이션을 만듭니다.</p>
+  <p>React로 컴포넌트 기반 애플리케이션을 만듭니다. Vibe Coding으로 React 프로젝트를 시작할 때 다음과 같은 프롬프트를 활용하세요.</p>
 
   <h3 id="react-request">React 프로젝트 요청</h3>
   <div class="code-block">
@@ -110,23 +167,40 @@
     </div>
     <pre><code><span class="str">React로 간단한 투두 앱을 만들어줘.</span>
 
+<span class="str">기술 스택:</span>
+<span class="str">- Vite + React + TypeScript</span>
+<span class="str">- CSS Modules</span>
+
 <span class="str">요구사항:</span>
-<span class="str">1. Create React App 또는 Vite 사용</span>
-<span class="str">2. 기능: 추가, 완료, 삭제, 필터</span>
-<span class="str">3. localStorage에 데이터 저장</span>
-<span class="str">4. 스타일은 CSS Modules 사용</span>
-<span class="str">5. 컴포넌트 분리: TodoList, TodoItem, TodoForm</span></code></pre>
+<span class="str">1. 기능: 추가, 완료, 삭제, 필터 (전체/진행중/완료)</span>
+<span class="str">2. localStorage에 데이터 영속</span>
+<span class="str">3. 컴포넌트 분리: App, TodoList, TodoItem, TodoForm, FilterButtons</span>
+<span class="str">4. 입력 검증: 빈 문자열 불가</span>
+<span class="str">5.键盘 단축키: Enter로 추가, Escape로 입력 취소</span></code></pre>
   </div>
 
   <h3 id="react-components">React 컴포넌트 예시</h3>
+  <p>컴포넌트 구조를 명확히 하면 AI가 더 잘 이해합니다.</p>
   <div class="code-block">
     <div class="code-header">
-      <span class="code-lang">React (TodoItem.jsx)</span>
+      <span class="code-lang">React (TodoItem.tsx)</span>
     </div>
     <pre><code><span class="kw">import</span> React from <span class="str">'react'</span>;
 <span class="kw">import</span> styles from <span class="str">'./TodoItem.module.css'</span>;
 
-<span class="kw">function</span> <span class="fn">TodoItem</span>({ todo, onToggle, onDelete }) {
+<span class="kw">interface</span> <span class="type">Todo</span> {
+  <span class="fn">id</span>: <span class="type">number</span>;
+  <span class="fn">text</span>: <span class="type">string</span>;
+  <span class="fn">completed</span>: <span class="type">boolean</span>;
+}
+
+<span class="kw">interface</span> <span class="type">Props</span> {
+  <span class="fn">todo</span>: <span class="type">Todo</span>;
+  <span class="fn">onToggle</span>: <span class="kw">(id</span>: <span class="type">number</span>) <span class="kw">=&gt;</span> <span class="type">void</span>;
+  <span class="fn">onDelete</span>: <span class="kw">(id</span>: <span class="type">number</span>) <span class="kw">=&gt;</span> <span class="type">void</span>;
+}
+
+<span class="kw">function</span> <span class="fn">TodoItem</span>({ todo, onToggle, onDelete }: <span class="type">Props</span>) {
   <span class="kw">return</span> (
     &lt;li className={`${styles.item} ${todo.completed ? styles.completed : <span class="str">''</span>}`}&gt;
       &lt;input
@@ -139,8 +213,9 @@
       &lt;button 
         onClick={() => <span class="fn">onDelete</span>(todo.id)}
         className={styles.deleteBtn}
+        aria-label=<span class="str">"삭제"</span>
       &gt;
-        삭제
+        🗑️
       &lt;/button&gt;
     &lt;/li&gt;
   );
@@ -148,11 +223,55 @@
 
 <span class="kw">export default</span> <span class="fn">TodoItem</span>;</code></pre>
   </div>
+
+  <h3 id="react-hooks-patterns">Hooks 패턴 활용</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">useCustomHooks를 활용한 React 패턴을 보여줘:</span>
+
+<span class="str">1. useLocalStorage Hook</span>
+<span class="str">   - localStorage에서 값 불러오기/저장하기</span>
+<span class="str">   - 타입 파라미터 지원</span>
+
+<span class="str">2. useFetch Hook</span>
+<span class="str">   - 비동기 데이터 페치</span>
+<span class="str">   - 로딩/에러 상태 관리</span>
+<span class="str">   - abort controller로 클린업</span>
+
+<span class="str">3. useDebounce Hook</span>
+<span class="str">   - 입력 디바운싱</span>
+<span class="str">   - 지연 시간 설정 가능</span></code></pre>
+  </div>
+
+  <h3 id="react-best-practices">React 베스트 프랙티스</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 React Vibe Coding 팁</div>
+    <ul>
+      <li><strong>컴포넌트 분리</strong>: 단일 책임 원칙 적용, 하나의 컴포넌트는 하나의 역할</li>
+      <li><strong>props 명확화</strong>: required/optional props 구분, 기본값 설정</li>
+      <li><strong>상태 위치</strong>: 필요한 가장 가까운 컴포넌트에 상태 배치</li>
+      <li><strong>useEffect 의존성</strong>: 배열 의존성 정확히 명시, 클린업 함수 필수</li>
+      <li><strong>렌더링 최적화</strong>: React.memo, useMemo, useCallback 적절히 사용</li>
+    </ul>
+  </div>
+
+  <h3 id="react-debugging">常见 오류 해결</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ React 디버깅</div>
+    <ul>
+      <li><strong>무한 루프</strong>: useEffect 의존성 배열 확인, useCallback으로 함수 감싸기</li>
+      <li><strong>컴포넌트 렌더링 안됨</strong>: key prop 확인, React DevTools로 상태 검사</li>
+      <li><strong>스타일 적용 안됨</strong>: CSS Modules 클래스명 확인, 캐시クリア</li>
+      <li><strong>타입 에러</span>: TypeScript strict 모드, any 타입 최소화</li>
+    </ul>
+  </div>
 </section>
 
 <section class="content-section">
   <h2 id="vue-app">Vue 프로젝트</h2>
-  <p>Vue.js로 Reactive 애플리케이션을 만듭니다.</p>
+  <p>Vue.js로 Reactive 애플리케이션을 만듭니다. Vue 3 Composition API를 중심으로 프롬프트를 작성하세요.</p>
 
   <h3 id="vue-request">Vue 프로젝트 요청</h3>
   <div class="code-block">
@@ -161,18 +280,85 @@
     </div>
     <pre><code><span class="str">Vue 3로 날씨 앱을 만들어줘.</span>
 
+<span class="str">기술 스택:</span>
+<span class="str">- Vite + Vue 3 + TypeScript</span>
+<span class="str">- Composition API + script setup</span>
+<span class="str">- Pinia (상태 관리)</span>
+
 <span class="str">요구사항:</span>
-<span class="str">1. Vite로 프로젝트 생성</span>
-<span class="str">2. 도시 이름으로 날씨 검색</span>
-<span class="str">3. 현재 온도, 날씨状况, 습도 표시</span>
-<span class="str">4. 날씨 아이콘 표시 (OpenWeatherMap API)</span>
-<span class="str">5. Composition API 사용</span></code></pre>
+<span class="str">1. 도시 이름으로 날씨 검색</span>
+<span class="str">2. 현재 온도, 날씨状况, 습도, 풍속 표시</span>
+<span class="str">3. 날씨 아이콘 표시 (OpenWeatherMap API)</span>
+<span class="str">4. 최근 검색 기록 표시 (localStorage)</span>
+<span class="str">5. 로딩/에러 상태 표시</span></code></pre>
+  </div>
+
+  <h3 id="vue-components">Vue 컴포넌트 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Vue 3 (WeatherCard.vue)</span>
+    </div>
+    <pre><code><span class="pp">&lt;script setup lang="ts"&gt;</span>
+<span class="kw">import</span> { <span class="fn">computed</span> } from <span class="str">'vue'</span>;
+
+<span class="kw">interface</span> <span class="type">Props</span> {
+  <span class="fn">city</span>: <span class="type">string</span>;
+  <span class="fn">temp</span>: <span class="type">number</span>;
+  <span class="fn">condition</span>: <span class="type">string</span>;
+  <span class="fn">humidity</span>: <span class="type">number</span>;
+}
+
+<span class="kw">const</span> props = <span class="fn">defineProps</span>&lt;<span class="type">Props</span>&gt;();
+
+<span class="kw">const</span> tempClass = <span class="fn">computed</span>(() <span class="kw">=&gt;</span> {
+  <span class="kw">if</span> (props.temp <span class="kw">&lt;</span> <span class="num">10</span>) <span class="kw">return</span> <span class="str">'cold'</span>;
+  <span class="kw">if</span> (props.temp <span class="kw">&gt;</span> <span class="num">25</span>) <span class="kw">return</span> <span class="str">'hot'</span>;
+  <span class="kw">return</span> <span class="str">'normal'</span>;
+});
+<span class="pp">&lt;/script&gt;</span>
+
+<span class="pp">&lt;template&gt;</span>
+  &lt;div class=<span class="str">"weather-card"</span> :class=<span class="str">"tempClass"</span>&gt;
+    &lt;h3&gt;{{ city }}&lt;/h3&gt;
+    &lt;p class=<span class="str">"temp"</span>&gt;{{ temp }}°C&lt;/p&gt;
+    &lt;p class=<span class="str">"condition"</span>&gt;{{ condition }}&lt;/p&gt;
+    &lt;p class=<span class="str">"humidity"</span>&gt;습도: {{ humidity }}%&lt;/p&gt;
+  &lt;/div&gt;
+<span class="pp">&lt;/template&gt;</span></code></pre>
+  </div>
+
+  <h3 id="vue-composition">Composition API 패턴</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Vue 3 Composition API로 데이터 페치 로직을 만들어줘:</span>
+
+<span class="str">1. useWeather composable</span>
+<span class="str">   - fetchWeather(city) 함수</span>
+<span class="str">   - loading, error, weatherData ref</span>
+<span class="str">   - try-catch로 에러 처리</span>
+
+<span class="str">2. useLocalStorage composable</span>
+<span class="str">   - watchEffect로 자동 저장</span>
+<span class="str">   - 초기값 설정 가능</span></code></pre>
+  </div>
+
+  <h3 id="vue-debugging">常见 오류 해결</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ Vue 디버깅</div>
+    <ul>
+      <li><strong>반응성 문제</strong>: ref/reactive 사용, 배열 인덱스 변경 시 replace 활용</li>
+      <li><strong>이벤트 처리 안됨</span>: @click.native 대신 @click 사용</li>
+      <li><strong>props 변경 안됨</span>: props는 읽기 전용, emit으로 부모에게 알림</li>
+      <li><strong> lifecycle hook </span>: onMounted, onUnmounted 정확히 사용</li>
+    </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="css-frameworks">CSS 프레임워크</h2>
-  <p>Tailwind CSS, Bootstrap 등 CSS 프레임워크를 활용합니다.</p>
+  <p>Tailwind CSS, Bootstrap 등 CSS 프레임워크를 활용하면 더 빠르게 UI를 구축할 수 있습니다.</p>
 
   <h3 id="tailwind-request">Tailwind CSS 요청</h3>
   <div class="code-block">
@@ -181,60 +367,344 @@
     </div>
     <pre><code><span class="str">Tailwind CSS로 랜딩 페이지를 만들어줘.</span>
 
+<span class="str">기술 스택:</span>
+<span class="str">- Tailwind CSS v3</span>
+<span class="str">- Alpine.js (간단한 인터랙션)</span>
+
 <span class="str">요구사항:</span>
-<span class="str">1. Hero 섹션: 제목, 부제목, CTA 버튼</span>
+<span class="str">1. Hero 섹션: 제목, 부제목, CTA 버튼 2개 ( primary/secondary)</span>
 <span class="str">2. 피처 섹션: 3개 카드 (아이콘, 제목, 설명)</span>
-<span class="str">3. CTA 섹션: 배경색 강조</span>
-<span class="str">4. 반응형: 모바일 1열, 데스크톱 3열</span>
-<span class="str">5. 다크 모드 지원</span></code></pre>
+<span class="str">3. 가격 섹션: 3개套餐 (Basic/Pro/Enterprise)</span>
+<span class="str">4. CTA 섹션: 배경 그라데이션, 폼</span>
+<span class="str">5. 푸터: 로고, 링크 3열</span>
+<span class="str">6. 반응형: 모바일 1열, 태블릿 2열, 데스크톱 3열</span>
+<span class="str">7. 다크 모드: class 전략, colors: { dark: '#1a1a1a' }</span></code></pre>
+  </div>
+
+  <h3 id="tailwind-patterns">Tailwind 패턴 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Tailwind CSS</span>
+    </div>
+    <pre><code><span class="str">&lt;!-- 버튼 --&gt;</span>
+&lt;button class=<span class="str">"px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"</span>&gt;
+  클릭 me
+&lt;/button&gt;
+
+<span class="str">&lt;!-- 카드 --&gt;</span>
+&lt;div class=<span class="str">"p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-shadow"</span>&gt;
+  &lt;h3 class=<span class="str">"text-lg font-semibold mb-2"</span>&gt;타이틀&lt;/h3&gt;
+  &lt;p class=<span class="str">"text-gray-600 dark:text-gray-300"</span>&gt;본문&lt;/p&gt;
+&lt;/div&gt;
+
+<span class="str">&lt;!-- 입력 필드 --&gt;</span>
+&lt;input 
+  type=<span class="str">"text"</span>
+  class=<span class="str">"w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600"</span>
+  placeholder=<span class="str">"입력하세요"</span>
+/&gt;</code></pre>
+  </div>
+
+  <h3 id="bootstrap-request">Bootstrap 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Bootstrap 5로 관리자 대시보드를 만들어줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. 사이드바 + 메인 컨텐츠 레이아웃</span>
+<span class="str">2. 통계 카드 4개 (총 사용자, 수익, 주문, 신규)</span>
+<span class="str">3. 차트 영역 (Chart.js)</span>
+<span class="str">4. 테이블: 주문 목록 (검색, 페이징 포함)</span>
+<span class="str">5. Offcanvas 사이드바 (모바일)</span>
+<span class="str">6. 다크 모드 토글</span></code></pre>
   </div>
 
   <div class="info-box tip">
-    <div class="info-box-title">💡 팁</div>
-    <p>Tailwind CSS는 클래스 이름이 길어질 수 있으므로, 구체적인 레이아웃과 스타일을 명시하면 더 좋은 결과가 나옵니다.</p>
+    <div class="info-box-title">💡 CSS 프레임워크 선택 기준</div>
+    <ul>
+      <li><strong>Tailwind CSS</strong>: 커스터마이징 Flexibility 높음, 유틸리티 클래스, 학습 곡선 있음</li>
+      <li><strong>Bootstrap</strong>: 빠른 프로토타이핑, 사전 제작된 컴포넌트, 일관된 디자인</li>
+      <li><strong>styled-components</strong>: React와 함께 사용, CSS-in-JS, 컴포넌트 단위 스타일링</li>
+      <li><strong>CSS Modules</strong>: 컴포넌트별 격리,vanilla CSS 가장 낮은 학습 곡선</li>
+    </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="animation">애니메이션</h2>
-  <p>프론트엔드 애니메이션을 쉽게 구현합니다.</p>
+  <p>프론트엔드 애니메이션을 쉽게 구현합니다. CSS transitions, keyframes, 라이브러리 활용법을 배웁니다.</p>
 
   <h3 id="animation-request">애니메이션 요청</h3>
   <div class="code-block">
     <div class="code-header">
       <span class="code-lang">Claude에게 요청</span>
     </div>
-    <pre><code><span class="str">다음 요소에 애니메이션을 추가해줘:</span>
+    <pre><code><span class="str">다음 애니메이션을 CSS로 구현해줘:</span>
 
-<span class="str">1. 버튼 hover 시 스케일 업 효과</span>
-<span class="str">2. 페이지 로드 시 헤더가 부드럽게 나타남</span>
-<span class="str">3. 카드 hover 시 그림자 증가 효과</span>
-<span class="str">4. 로딩 스피너 애니메이션</span>
-<span class="str">5. CSS transitions 사용</span></code></pre>
+<span class="str">1. 버튼 hover</span>
+<span class="str">   - scale(1.05), 배경색 변경</span>
+<span class="str">   - transition: all 0.3s ease</span>
+
+<span class="str">2. 페이지 로드 애니메이션</span>
+<span class="str">   - 헤더: slideDown + fadeIn (0.5s)</span>
+<span class="str">   - 콘텐츠: staggered fadeIn (각 요소 0.1s 지연)</span>
+
+<span class="str">3. 카드 hover</span>
+<span class="str">   - translateY(-4px)</span>
+<span class="str">   - box-shadow 증가</span>
+
+<span class="str">4. 로딩 스피너</span>
+<span class="str">   - spin animation (1s linear infinite)</span>
+
+<span class="str">5. 페이지 전환</span>
+<span class="str">   - fade + slide (0.3s)</span></code></pre>
+  </div>
+
+  <h3 id="css-animations">CSS 애니메이션 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">CSS</span>
+    </div>
+    <pre><code><span class="str">/* Fade In Up Animation */</span>
+<span class="fn">@keyframes</span> fadeInUp {
+  <span class="kw">from</span> {
+    <span class="fn">opacity</span>: <span class="num">0</span>;
+    <span class="fn">transform</span>: <span class="fn">translateY</span>(<span class="num">20px</span>);
+  }
+  <span class="kw">to</span> {
+    <span class="fn">opacity</span>: <span class="num">1</span>;
+    <span class="fn">transform</span>: <span class="fn">translateY</span>(<span class="num">0</span>);
+  }
+}
+
+<span class="str">.animate-fade-in-up</span> {
+  <span class="fn">animation</span>: fadeInUp <span class="num">0.5s</span> <span class="fn">ease-out</span> forwards;
+}
+
+<span class="str">/* Staggered Animation */</span>
+<span class="fn">.stagger-1</span> { <span class="fn">animation-delay</span>: <span class="num">0.1s</span>; }
+<span class="fn">.stagger-2</span> { <span class="fn">animation-delay</span>: <span class="num">0.2s</span>; }
+<span class="fn">.stagger-3</span> { <span class="fn">animation-delay</span>: <span class="num">0.3s</span>; }</code></pre>
+  </div>
+
+  <h3 id="animation-libraries">애니메이션 라이브러리</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Framer Motion으로 React 애니메이션을 만들어줘:</span>
+
+<span class="str">1. 페이지 전환 애니메이션</span>
+<span class="str">   - AnimatePresence + motion.div</span>
+<span class="str">   - variants로 단계별 애니메이션</span>
+
+<span class="str">2. 리스트 애니메이션</span>
+<span class="str">   - layout prop으로 자동 리플로우</span>
+<span class="str">   - exitBeforeEnter strategy</span>
+
+<span class="str">3. 모달 애니메이션</span>
+<span class="str">   - backdrop blur + fade</span>
+<span class="str">   - scale + fadeIn</span>
+
+<span class="str">4. 스크롤 애니메이션</span>
+<span class="str">   - whileInView로 스크롤 트리거</span>
+<span class="str">   - viewport once: true</span></code></pre>
+  </div>
+
+  <h3 id="animation-tips">애니메이션 베스트 프랙티스</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 애니메이션 팁</div>
+    <ul>
+      <li><strong>성능</strong>: transform, opacity만 animated, position/width 등은 피하기</li>
+      <li><strong>지속 시간</strong>: 200-500ms가 적당한 사용자 느낌</li>
+      <li><strong>easing</strong>: linear 피하기, ease-out/ease-in-out 활용</li>
+      <li><strong>접근성</strong>: prefers-reduced-motionmedia query 지원</li>
+      <li><strong>과도함 피하기</strong>: 모든 요소에 애니메이션 적용 금지</li>
+    </ul>
   </div>
 </section>
 
 <section class="content-section">
   <h2 id="responsive">반응형 디자인</h2>
-  <p>모바일과 데스크톱 모두対応하는 반응형 사이트를 만듭니다.</p>
+  <p>모바일과 데스크톱 모두 대응하는 반응형 사이트를 만듭니다. 주요 브레이크포인트를 명시적으로 전달하세요.</p>
 
   <h3 id="responsive-request">반응형 요청</h3>
   <div class="code-block">
     <div class="code-header">
       <span class="code-lang">Claude에게 요청</span>
     </div>
-    <pre><code><span class="str">제품 카드를 만들어줘. 요구사항:</span>
+    <pre><code><span class="str">반응형 제품 카드를 만들어줘.</span>
 
-<span class="str">모바일 (< 640px):</span>
-<span class="str">- 1열 레이아웃</span>
-<span class="str">- 이미지 상단, 텍스트 하단</span>
+<span class="str">브레이크포인트:</span>
+<span class="str">- Mobile First: 기본 모바일, ~639px</span>
+<span class="str">- Medium: 640px ~ 1023px (2열)</span>
+<span class="str">- Desktop: 1024px ~ (4열)</span>
 
-<span class="str">태블릿 (640px ~ 1024px):</span>
-<span class="str">- 2열 레이아웃</span>
+<span class="str">요구사항:</span>
+<span class="str">1. 모바일: 1열, 이미지 상단, 텍스트 하단</span>
+<span class="str">2. 태블릿: 2열, 카드 그리드</span>
+<span class="str">3. 데스크톱: 4열, 호버 시 확대 효과 (scale 1.02)</span>
+<span class="str">4. 이미지: object-fit: cover, aspect-ratio 4/3</span>
+<span class="str">5. 텍스트: 클램핑 (line-clamp-2)</span></code></pre>
+  </div>
 
-<span class="str">데스크톱 (> 1024px):</span>
-<span class="str">- 4열 레이아웃</span>
-<span class="str">- 호버 시 카드 확대 효과</span></code></pre>
+  <h3 id="responsive-patterns">반응형 패턴 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">CSS</span>
+    </div>
+    <pre><code><span class="str">/* Mobile First */</span>
+<span class="fn">.container</span> {
+  <span class="fn">width</span>: <span class="num">100%</span>;
+  <span class="fn">padding</span>: <span class="num">0 16px</span>;
+}
+
+<span class="fn">.grid</span> {
+  <span class="fn">display</span>: <span class="fn">grid</span>;
+  <span class="fn">grid-template-columns</span>: <span class="num">1fr</span>;
+  <span class="fn">gap</span>: <span class="num">16px</span>;
+}
+
+<span class="str">/* Medium: 640px */</span>
+<span class="pp">@media</span> (<span class="fn">min-width</span>: <span class="num">640px</span>) {
+  <span class="fn">.grid</span> {
+    <span class="fn">grid-template-columns</span>: <span class="fn">repeat</span>(<span class="num">2</span>, <span class="num">1fr</span>);
+  }
+}
+
+<span class="str">/* Desktop: 1024px */</span>
+<span class="pp">@media</span> (<span class="fn">min-width</span>: <span class="num">1024px</span>) {
+  <span class="fn">.grid</span> {
+    <span class="fn">grid-template-columns</span>: <span class="fn">repeat</span>(<span class="num">4</span>, <span class="num">1fr</span>);
+  }
+  <span class="fn">.container</span> {
+    <span class="fn">max-width</span>: <span class="num">1200px</span>;
+    <span class="fn">margin</span>: <span class="num">0 auto</span>;
+  }
+}</code></pre>
+  </div>
+
+  <h3 id="responsive-tips">반응형 베스트 프랙티스</h3>
+  <div class="info-box tip">
+    <div class="info-box-title">💡 반응형 디자인 팁</div>
+    <ul>
+      <li><strong>Mobile First</strong>: 작은 화면 기준 먼저 개발, 점진적으로 확장</li>
+      <li><strong> Relative Units</strong>: px 대신 rem, em, %, vw/vh 사용</li>
+      <li><strong>이미지</strong>: srcset, picture 요소로 해상도별 이미지 제공</li>
+      <li><strong>터치 영역</strong>: 최소 44x44px 터치 타겟 확보</li>
+      <li><strong>텍스트</strong>: fluid typography로 부드러운 크기 전환</li>
+    </ul>
+  </div>
+
+  <h3 id="debugging-responsive">반응형 디버깅</h3>
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 반응형 문제 해결</div>
+    <ul>
+      <li><strong>레이아웃 깨짐</strong>: DevTools로 브레이크포인트별 검사</li>
+      <li><strong>스크롤 가로 발생</strong>: overflow-x: hidden 또는 요소 너비 검사</li>
+      <li><strong>이미지 넘침</strong>: max-width: 100% + height: auto</li>
+      <li><strong>폰트 크기</strong>: 최소 16px (모바일 입력 필드 줌 방지)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="state-management">상태 관리</h2>
+  <p>복잡한 프론트엔드 애플리케이션에서 상태 관리는 필수입니다. 적절한 상태 관리 전략을 선택하세요.</p>
+
+  <h3 id="state-options">상태 관리 옵션</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React 상태 관리 패턴을 만들어줘:</span>
+
+<span class="str">1. Local State (useState)</span>
+<span class="str">   - 단일 컴포넌트 내 상태</span>
+<span class="str">   - 폼 입력, 토글, 로컬 UI 상태</span>
+
+<span class="str">2. Global State (Zustand)</span>
+<span class="str">   - 장바구니, 사용자 정보, 테마</span>
+<span class="str">   - 간단한 API, DevTools 지원</span>
+
+<span class="str">3. Server State (TanStack Query)</span>
+<span class="str">   - API 데이터 캐싱</span>
+<span class="str">   - 로딩/에러 상태 자동 관리</span>
+<span class="str">   - 백그라운드 리페치</span>
+
+<span class="str">4. URL State (React Router)</span>
+<span class="str">   - 필터, 페이지, 검색 파라미터</span>
+<span class="str">   - 브라우저 히스토리 연동</span></code></pre>
+  </div>
+
+  <h3 id="zustand-example">Zustand 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (store.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">create</span> } from <span class="str">'zustand'</span>;
+<span class="kw">import</span> { <span class="fn">persist</span> } from <span class="str">'zustand/middleware'</span>;
+
+<span class="kw">interface</span> <span class="type">CartItem</span> {
+  <span class="fn">id</span>: <span class="type">number</span>;
+  <span class="fn">name</span>: <span class="type">string</span>;
+  <span class="fn">price</span>: <span class="type">number</span>;
+  <span class="fn">quantity</span>: <span class="type">number</span>;
+}
+
+<span class="kw">interface</span> <span class="type">CartState</span> {
+  <span class="fn">items</span>: <span class="type">CartItem[]</span>;
+  <span class="fn">addItem</span>: <span class="kw">(item</span>: <span class="type">CartItem</span>) <span class="kw">=&gt;</span> <span class="type">void</span>;
+  <span class="fn">removeItem</span>: <span class="kw">(id</span>: <span class="type">number</span>) <span class="kw">=&gt;</span> <span class="type">void</span>;
+  <span class="fn">clearCart</span>: <span class="kw">()</span> <span class="kw">=&gt;</span> <span class="type">void</span>;
+}
+
+<span class="kw">export</span> <span class="kw">const</span> <span class="fn">useCartStore</span> = <span class="fn">create</span>&lt;<span class="type">CartState</span>&gt;()(
+  <span class="fn">persist</span>(
+    (set) <span class="kw">=&gt;</span> ({
+      <span class="fn">items</span>: [],
+      <span class="fn">addItem</span>: (item) <span class="kw">=&gt;</span> <span class="fn">set</span>((state) <span class="kw">=&gt;</span> ({
+        <span class="fn">items</span>: [...state.items, item]
+      })),
+      <span class="fn">removeItem</span>: (id) <span class="kw">=&gt;</span> <span class="fn">set</span>((state) <span class="kw">=&gt;</span> ({
+        <span class="fn">items</span>: state.items.<span class="fn">filter</span>((i) <span class="kw">=&gt;</span> i.id <span class="kw">!==</span> id)
+      })),
+      <span class="fn">clearCart</span>: <span class="kw">()</span> <span class="kw">=&gt;</span> <span class="fn">set</span>({ <span class="fn">items</span>: [] }),
+    }),
+    { <span class="fn">name</span>: <span class="str">'cart-storage'</span> }
+  )
+);</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="testing">테스트 작성</h2>
+  <p>Vibe Coding으로 작성된 코드도 테스트가 필요합니다. 테스트 전략을 함께 요청하세요.</p>
+
+  <h3 id="testing-request">테스트 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React 투두 앱에 테스트를 추가해줘.</span>
+
+<span class="str">기술 스택:</span>
+<span class="str">- Vitest + React Testing Library</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. TodoItem 단위 테스트</span>
+<span class="str">   - 체크박스 클릭 시 onToggle 호출</span>
+<span class="str">   - 삭제 버튼 클릭 시 onDelete 호출</span>
+
+<span class="str">2. TodoList 통합 테스트</span>
+<span class="str">   - 여러 todo 렌더링</span>
+<span class="str">   - 빈 목록 표시</span>
+
+<span class="str">3. TodoForm 통합 테스트</span>
+<span class="str">   - 입력 후 제출</span>
+<span class="str">   - 빈 입력 시 에러</span></code></pre>
   </div>
 </section>
 
@@ -266,12 +736,28 @@
 <section class="content-section">
   <h2 id="summary">핵심 정리</h2>
   <ul>
-    <li><strong>기본 웹 페이지</strong>: HTML/CSS/JS로 간단한 페이지</li>
-    <li><strong>React/Vue</strong>: 컴포넌트 기반 애플리케이션</li>
-    <li><strong>CSS 프레임워크</strong>: Tailwind, Bootstrap 활용</li>
-    <li><strong>애니메이션</strong>: CSS transitions, keyframes</li>
-    <li><strong>반응형</strong>: 모바일/데스크톱 대응</li>
+    <li><strong>기본 웹 페이지</strong>: HTML/CSS/JS로 간단한 페이지, 구조 명확히 전달</li>
+    <li><strong>React</strong>: 컴포넌트 분리, Hooks 활용, TypeScript 권장</li>
+    <li><strong>Vue</strong>: Composition API, script setup, Pinia</li>
+    <li><strong>CSS 프레임워크</strong>: Tailwind/Bootstrap 특징 이해, 선택적 사용</li>
+    <li><strong>애니메이션</strong>: 성능 고려, reduced-motion 지원</li>
+    <li><strong>반응형</strong>: Mobile First, 브레이크포인트 명확히</li>
+    <li><strong>상태 관리</strong>:local/Server/URL 상태 구분, 적절한 도구 선택</li>
+    <li><strong>테스트</strong>: Vitest + RTL, 단위/통합 테스트 작성</li>
   </ul>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 프론트엔드 Vibe Coding 체크리스트</div>
+    <ul>
+      <li>☑️ 프로젝트 구조와 기술 스택 명시</li>
+      <li>☑️ 컴포넌트 분리 기준 전달</li>
+      <li>☑️ 스타일링 방식 지정</li>
+      <li>☑️ TypeScript 사용 시 타입 명시</li>
+      <li>☑️ 반응형 브레이크포인트 구체화</li>
+      <li>☑️ 상태 관리 전략 포함</li>
+      <li>☑️ 테스트 요구사항 추가</li>
+    </ul>
+  </div>
 </section>
 
 <!-- Page Navigation (이전/다음) -->
