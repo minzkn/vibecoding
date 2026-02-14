@@ -110,42 +110,41 @@
 </section>
 
 <section class="content-section">
-  <h2 id="step-1">Step 1: Claude CLI 열기 (1분)</h2>
+  <h2 id="step-1">Step 1: AI 도구 열기 (1분)</h2>
 
   <p>
-    터미널(또는 명령 프롬프트)을 열고, 아래 명령어를 입력하세요:
+    아래 도구 중 하나를 선택해서 터미널(또는 명령 프롬프트)에서 실행하세요:
   </p>
 
   <div class="code-block">
     <div class="code-header">
-      <span class="code-lang">터미널/명령 프롬프트</span>
+      <span class="code-lang">도구 선택 (하나만 입력)</span>
     </div>
-    <pre><code><span class="cmt"># 복사해서 터미널에 붙여넣기 후 Enter</span>
-npx claude</code></pre>
+    <pre><code><span class="cmt"># 방법 1: Claude CLI (추천)</span>
+npx claude
+
+<span class="cmt"># 방법 2: Codex CLI (OpenAI)</span>
+npx -y @openai/codex
+
+<span class="cmt"># 방법 3: Ollama (무료, 로컬)</span>
+ollama run llama3.2</code></pre>
   </div>
 
   <div class="info-box warning">
     <div class="info-box-title">⚠️ 처음 실행 시</div>
     <p>
-      <code>npx claude</code>를 처음 쓰면 패키지를 다운로드하라고 물어봅니다.<br>
+      처음 쓰면 패키지를 다운로드하라고 물어봅니다.<br>
       <strong>y</strong> 를 입력하고 Enter를 치세요.
     </p>
   </div>
 
   <div class="info-box warning">
-    <div class="info-box-title">🔑 API 키가 없으면?</div>
-    <p>
-      Claude CLI는 Anthropic(Claude 만든 회사)의 API 키가 필요합니다.<br>
-      아직 없다면 <a href="../quickstart-local.html"><strong>Ollama로 시작하기 (무료)</strong></a>를 클릭하세요!
-    </p>
-  </div>
-
-  <div class="info-box tip">
-    <div class="info-box-title">💡 Claude CLI가 뭔가요?</div>
-    <p>
-      Claude CLI는 AI랑 터미널에서 바로 대화할 수 있게 해주는 도구예요.
-      우리가 사용할 AI 코딩 도구입니다.
-    </p>
+    <div class="info-box-title">🔑 도구별 특징</div>
+    <ul>
+      <li><strong>Claude CLI</strong>: Anthropic API 키 필요, 강력한 코딩能力</li>
+      <li><strong>Codex</strong>: OpenAI API 키 필요, 코드 작업에 특화</li>
+      <li><strong>Ollama</strong>: 무료, 로컬 실행, API 키 불필요</li>
+    </ul>
   </div>
 </section>
 
@@ -153,13 +152,13 @@ npx claude</code></pre>
   <h2 id="step-2">Step 2: 만들고 싶은 것 말하기 (1분)</h2>
 
   <p>
-    Claude(클로드)가 실행되면, 만들고 싶은 것을 <strong>한국어로 자세히</strong> 설명하세요.
+    선택한 AI 도구가 실행되면, 만들고 싶은 것을 <strong>한국어로 자세히</strong> 설명하세요.
     다음과 같이 입력하면 됩니다:
   </p>
 
   <div class="code-block">
     <div class="code-header">
-      <span class="code-lang">Claude에게 말 걸기 (복사해서 사용)</span>
+      <span class="code-lang">AI에게 말 걸기 (복사해서 사용)</span>
     </div>
     <pre><code><span class="str">💬 You:</span>
 <span class="str">안녕! HTML로 간단한 계산기 웹 페이지 만들어줘.</span>
@@ -285,15 +284,21 @@ xdg-open index.html</code></pre>
 
   <div class="card-grid">
     <div class="doc-card">
-      <h3>📚 개념 이해</h3>
-      <p>Vibe Coding이 뭔지 더 자세히 알고 싶다면</p>
-      <a href="../getting-started.html" class="card-link">Vibe Coding이란? →</a>
+      <h3>🟣 Claude로 시작</h3>
+      <p>Anthropic Claude API 사용</p>
+      <a href="../quickstart-claude-cli.html" class="card-link">Claude CLI 시작 →</a>
     </div>
 
     <div class="doc-card">
-      <h3>🎯 프롬프트 배우기</h3>
-      <p>더 좋은 결과를 얻는 방법</p>
-      <a href="../prompt-basics.html" class="card-link">프롬프트 기본 →</a>
+      <h3>🔵 Codex로 시작</h3>
+      <p>OpenAI Codex 사용</p>
+      <a href="../codex.html" class="card-link">Codex 가이드 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🦙 무료로 시작</h3>
+      <p>돈 안내고 Vibe Coding 하자</p>
+      <a href="../quickstart-local.html" class="card-link">Ollama 시작 →</a>
     </div>
 
     <div class="doc-card">
@@ -303,9 +308,15 @@ xdg-open index.html</code></pre>
     </div>
 
     <div class="doc-card">
-      <h3>🦙 무료로 시작</h3>
-      <p>돈 안내고 Vibe Coding 하자</p>
-      <a href="../quickstart-local.html" class="card-link">Ollama 시작 →</a>
+      <h3>📚 개념 이해</h3>
+      <p>Vibe Coding이 뭔지 더 자세히 알고 싶다면</p>
+      <a href="../getting-started.html" class="card-link">Vibe Coding이란? →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>🎯 프롬프트 배우기</h3>
+      <p>더 좋은 결과를 얻는 방법</p>
+      <a href="../prompt-basics.html" class="card-link">프롬프트 기본 →</a>
     </div>
   </div>
 
@@ -350,7 +361,7 @@ xdg-open index.html</code></pre>
   <h2 id="summary">핵심 정리</h2>
   <ul>
     <li><strong>Vibe Coding</strong> = 만들고 싶은 걸 말하면 AI가 코드를 대신 작성</li>
-    <li><strong>Step 1</strong>: <code>npx claude</code> 실행 (또는 Ollama)</li>
+    <li><strong>Step 1</strong>: Claude CLI, Codex, Ollama 중 선택해서 실행</li>
     <li><strong>Step 2</strong>: 만들고 싶은 걸 한국어로 설명</li>
     <li><strong>Step 3</strong>: 생성된 파일을 브라우저에서 확인</li>
     <li><strong>Step 4</strong>: 마음에 안 들면 바로 수정 요청!</li>
