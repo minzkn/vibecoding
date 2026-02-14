@@ -404,12 +404,12 @@ form.<span class="fn">addEventListener</span>(<span class="str">"submit"</span>,
 <span class="cmt">// 서버 애플리케이션 생성</span>
 <span class="kw">const</span> app = <span class="fn">express</span>();
 
-<span class="cmt">// JSON 요청ボディを処理するミドルウェア</span>
+<span class="cmt">// JSON 요청 본문을 처리하는 미들웨어</span>
 <span class="cmt">// app.use() = 요청이 올 때마다 실행되는 중간 처리 단계</span>
 app.<span class="fn">use</span>(express.<span class="fn">json</span>());
 
 <span class="cmt">// POST /posts 라우트 - 새 게시글을 생성하는 API 엔드포인트</span>
-<span class="cmt">// req = 클라이언트からのリクエスト, res = 서버からのレスポンス</span>
+<span class="cmt">// req = 클라이언트의 요청, res = 서버의 응답</span>
 app.<span class="fn">post</span>(<span class="str">"/posts"</span>, <span class="kw">async</span> (req, res) =&gt; {
   <span class="cmt">// req.body에서 데이터 추출 (구조 분해 할당)</span>
   <span class="kw">const</span> { title, body } = req.body;
