@@ -744,13 +744,12 @@ ollama pull phi3.5
 <span class="cmt"># 실행</span>
 ollama run phi3:mini
 
-<span class="str">&gt;&gt;&gt; Explain quantum entanglement in simple terms</span>
+<span class="str">&gt;&gt;&gt; 양자 얽힘을 간단하게 설명해줘</span>
 
-Quantum entanglement is like having two magic coins that are mysteriously
-connected. When you flip one coin and it lands on heads, the other coin
-instantly lands on tails, no matter how far apart they are. This connection
-happens faster than light could travel between them, which puzzled Einstein
-and led him to call it "spooky action at a distance."</code></pre>
+양자 얽힘은 마치 두 개의 마법 동전이 신비롭게 연결되어 있는 것과 같습니다. 
+하나의 동전을 던져 앞면이 나오면, 다른 동전은 즉시 뒷면이 나옵니다. 
+아무리 멀리 떨어져 있어도 이 연결은 빛보다 빠르게 일어납니다. 
+이것은 아인슈타인을 당황하게 했고 그는 이를 "잠 Entangled action at a distance"라 불렀습니다.</code></pre>
 
   <h3 id="phi-benchmark">Phi vs 다른 소형 모델 벤치마크</h3>
 
@@ -1168,7 +1167,7 @@ ollama run llava <span class="str">"What's in this image?"</span> /path/to/image
 <span class="cmt"># API를 통한 이미지 분석</span>
 curl http://localhost:<span class="num">11434</span>/api/generate -d <span class="str">'{
   "model": "llava",
-  "prompt": "Describe this image in detail",
+  "prompt": "이 이미지를 상세히 설명해줘",
   "images": ["'</span>$(base64 &lt; image.jpg)<span class="str">'"]
 }'</span></code></pre>
 

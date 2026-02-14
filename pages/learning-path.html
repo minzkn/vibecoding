@@ -158,36 +158,42 @@
 
   <h3 id="time-commitment">시간 투자 가이드</h3>
 
-  <table>
-    <thead>
-      <tr>
-        <th>단계</th>
-        <th>주당 시간</th>
-        <th>총 기간</th>
-        <th>달성 목표</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>초급</strong></td>
-        <td>3-5시간</td>
-        <td>1-2주</td>
-        <td>간단한 앱 독립 제작</td>
-      </tr>
-      <tr>
-        <td><strong>중급</strong></td>
-        <td>5-8시간</td>
-        <td>2-4주</td>
-        <td>복잡한 프로젝트 완성</td>
-      </tr>
-      <tr>
-        <td><strong>고급</strong></td>
-        <td>8-10시간</td>
-        <td>4주+</td>
-        <td>상용 수준 앱 개발</td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="info-box info">
+    <div class="info-box-title">⏱️ 권장 학습 시간 (초급자 기준)</div>
+    <table>
+      <thead>
+        <tr>
+          <th>단계</th>
+          <th>주당 시간</th>
+          <th>총 기간</th>
+          <th>달성 목표</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>초급 ⭐</strong></td>
+          <td>3-5시간</td>
+          <td><strong>2-3주</strong></td>
+          <td>간단한 웹 앱 독립 제작</td>
+        </tr>
+        <tr>
+          <td><strong>중급 ⭐⭐</strong></td>
+          <td>5-8시간</td>
+          <td><strong>4-6주</strong></td>
+          <td>복잡한 프로젝트 완성 (API 연동, 백엔드)</td>
+        </tr>
+        <tr>
+          <td><strong>고급 ⭐⭐⭐</strong></td>
+          <td>8-10시간</td>
+          <td>6주+</td>
+          <td>상용 수준 앱 개발</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top: 1em;">
+      <strong>💡 팁:</strong> 처음엔 서두르지 마세요. 기초를 잘 다지면 나중에 더 빠릅니다!
+    </p>
+  </div>
 
   <div class="info-box info">
     <div class="info-box-title">💡 학습 팁</div>
@@ -202,16 +208,20 @@
 
 <!-- Section 2: 초급 (1-2주) -->
 <section class="content-section">
-  <h2 id="beginner">초급 (1-2주) ⭐</h2>
+  <h2 id="beginner">초급 (2-3주) ⭐</h2>
 
-  <p>
-    Vibe Coding의 기본을 다지는 단계입니다. <strong>하나의 CLI 도구</strong>에 집중하고,
-    <strong>간단한 프로젝트 3개</strong>를 완성하는 것이 목표입니다.
-  </p>
+  <div class="info-box info">
+    <div class="info-box-title">📋 초급 학습 로드맵</div>
+    <p>이 단계에서는 <strong>1개의 CLI 도구</strong>에 집중하고, <strong>3개의 필수 프로젝트</strong>를 완성합니다.</p>
+    <ul>
+      <li>✅ <strong>필수:</strong> Hello World → 계산기 → TODO 앱 (3개)</li>
+      <li>📌 <strong>선택:</strong> 더 많은 프로젝트로 연습</li>
+    </ul>
+  </div>
 
   <h3 id="beginner-week1">Week 1: 개념 이해 및 첫 프로젝트</h3>
 
-  <h4>Day 1-2: 기초 학습 (3-4시간)</h4>
+  <h4>Day 1-2: 기초 학습 (3-4시간) - 필수</h4>
   <ol>
     <li><a href="getting-started.html">Vibe Coding이란?</a> 완독 (30분)</li>
     <li><a href="cli-tools-overview.html">AI CLI 도구 생태계</a> 읽고 도구 선택 (30분)</li>
@@ -231,7 +241,7 @@
     <p><strong>학습 포인트:</strong> AI 명령, 파일 생성, 브라우저 테스트</p>
   </div>
 
-  <h4>Day 3-4: 프롬프트 기본 (2-3시간)</h4>
+  <h4>Day 3-4: 프롬프트 기본 (2-3시간) - 필수</h4>
   <ol>
     <li><a href="prompt-basics.html">프롬프트 기본</a> 학습 (1시간)</li>
     <li>두 번째 프로젝트: 계산기 앱 (2시간)</li>
@@ -250,7 +260,7 @@
     <p><strong>학습 포인트:</strong> 이벤트 처리, 상태 관리, 프롬프트 구체화</p>
   </div>
 
-  <h4>Day 5-7: TODO 앱 완성 (3-4시간)</h4>
+  <h4>Day 5-7: TODO 앱 완성 (3-4시간) - 필수</h4>
   <ol>
     <li>세 번째 프로젝트: TODO 앱 (3시간)</li>
     <li>코드 리뷰 및 이해 (1시간)</li>
@@ -269,18 +279,26 @@
     <p><strong>학습 포인트:</strong> 데이터 영속성, 배열 조작, CSS 반응형</p>
   </div>
 
-  <pre><code><span class="kw">const</span> form = document.<span class="fn">querySelector</span>(<span class="str">"#todo-form"</span>);
-<span class="kw">const</span> input = document.<span class="fn">querySelector</span>(<span class="str">"#todo-input"</span>);
-<span class="kw">const</span> list = document.<span class="fn">querySelector</span>(<span class="str">"#todo-list"</span>);
+  <pre><code><span class="cmt">// HTML 요소를 JavaScript 변수에 연결</span>
+<span class="cmt">// document.querySelector() = HTML에서 특정 요소를 찾아 연결</span>
+<span class="kw">const</span> form = document.<span class="fn">querySelector</span>(<span class="str">"#todo-form"</span>);  <span class="cmt">// 할 일 입력 폼</span>
+<span class="kw">const</span> input = document.<span class="fn">querySelector</span>(<span class="str">"#todo-input"</span>);    <span class="cmt">// 텍스트 입력 상자</span>
+<span class="kw">const</span> list = document.<span class="fn">querySelector</span>(<span class="str">"#todo-list"</span>);      <span class="cmt">// 할 일 목록 (ul/ol)</span>
 
+<span class="cmt">// 폼 제출 이벤트 리스너 - 사용자가 Enter 키를 누르면 실행</span>
+<span class="cmt">// addEventListener = "이벤트가 발생하면 이 함수를 실행해라"</span>
 form.<span class="fn">addEventListener</span>(<span class="str">"submit"</span>, (e) =&gt; {
-  e.<span class="fn">preventDefault</span>();
+  e.<span class="fn">preventDefault</span>();  <span class="cmt">// 기본 동작(페이지 새로고침) 차단</span>
+  
+  <span class="cmt">// 입력값 가져오기 - trim()으로 앞뒤 공백 제거</span>
   <span class="kw">const</span> text = input.value.<span class="fn">trim</span>();
-  <span class="kw">if</span> (!text) <span class="kw">return</span>;
-  <span class="kw">const</span> li = document.<span class="fn">createElement</span>(<span class="str">"li"</span>);
-  li.textContent = text;
-  list.<span class="fn">appendChild</span>(li);
-  input.value = <span class="str">""</span>;
+  <span class="kw">if</span> (!text) <span class="kw">return</span>;  <span class="cmt">// 빈 글자면 실행 중단</span>
+  
+  <span class="cmt">// 새 HTML 요소(li) 생성하여 목록에 추가</span>
+  <span class="kw">const</span> li = document.<span class="fn">createElement</span>(<span class="str">"li"</span>);  <span class="cmt">// 새로운 리스트 아이템</span>
+  li.textContent = text;  <span class="cmt">// 사용자가 입력한 텍스트 설정</span>
+  list.<span class="fn">appendChild</span>(li);  <span class="cmt">// 목록의 맨 뒤에 추가</span>
+  input.value = <span class="str">""</span>;  <span class="cmt">// 입력창 비우기 (다음 입력을 위해)</span>
 });</code></pre>
 
   <h3 id="beginner-checklist">초급 체크리스트</h3>
@@ -309,18 +327,22 @@ form.<span class="fn">addEventListener</span>(<span class="str">"submit"</span>,
   </ul>
 </section>
 
-<!-- Section 3: 중급 (2-4주) -->
+<!-- Section 3: 중급 (4-6주) -->
 <section class="content-section">
-  <h2 id="intermediate">중급 (2-4주) ⭐⭐</h2>
+  <h2 id="intermediate">중급 (4-6주) ⭐⭐</h2>
 
-  <p>
-    다양한 도구와 기술을 익히고, 복잡한 프로젝트를 완성하는 단계입니다.
-    <strong>최소 2개 이상의 CLI 도구</strong>를 사용하고, <strong>5-10개 프로젝트</strong>를 완성합니다.
-  </p>
+  <div class="info-box info">
+    <div class="info-box-title">📋 중급 학습 로드맵</div>
+    <p>이 단계에서는 <strong>2개 이상의 CLI 도구</strong>를 사용하고, <strong>외부 API 연동 프로젝트</strong>를 완성합니다.</p>
+    <ul>
+      <li>✅ <strong>필수:</strong> 날씨 앱 → 영화 검색 앱 (API 연동 2개)</li>
+      <li>📌 <strong>선택:</strong> React/Vue 프로젝트, 백엔드 서버</li>
+    </ul>
+  </div>
 
   <h3 id="intermediate-week3">Week 3-4: 도구 다양화 및 로컬 LLM</h3>
 
-  <h4>Day 1-3: 다른 CLI 도구 배우기 (4-5시간)</h4>
+  <h4>Day 1-3: 다른 CLI 도구 배우기 (4-5시간) - 필수</h4>
   <ol>
     <li><a href="cli-comparison.html">CLI 도구 비교</a> 읽고 2번째 도구 선택 (1시간)</li>
     <li>Ollama 설치 및 로컬 LLM 실행 (1시간)</li>
@@ -376,15 +398,26 @@ form.<span class="fn">addEventListener</span>(<span class="str">"submit"</span>,
     <p><strong>학습 포인트:</strong> Frontend + Backend 통합, 데이터베이스, 인증, 파일 업로드</p>
   </div>
 
-  <pre><code><span class="kw">import</span> express <span class="kw">from</span> <span class="str">"express"</span>;
+  <pre><code><span class="cmt">// Express.js - Node.js 웹 프레임워크 (서버를 만드는 도구)</span>
+<span class="kw">import</span> express <span class="kw">from</span> <span class="str">"express"</span>;
 
+<span class="cmt">// 서버 애플리케이션 생성</span>
 <span class="kw">const</span> app = <span class="fn">express</span>();
+
+<span class="cmt">// JSON 요청ボディを処理するミドルウェア</span>
+<span class="cmt">// app.use() = 요청이 올 때마다 실행되는 중간 처리 단계</span>
 app.<span class="fn">use</span>(express.<span class="fn">json</span>());
 
+<span class="cmt">// POST /posts 라우트 - 새 게시글을 생성하는 API 엔드포인트</span>
+<span class="cmt">// req = 클라이언트からのリクエスト, res = 서버からのレスポンス</span>
 app.<span class="fn">post</span>(<span class="str">"/posts"</span>, <span class="kw">async</span> (req, res) =&gt; {
+  <span class="cmt">// req.body에서 데이터 추출 (구조 분해 할당)</span>
   <span class="kw">const</span> { title, body } = req.body;
+  
+  <span class="cmt">// 유효성 검사 - 제목이나 본문이 비어있으면 400 에러</span>
   <span class="kw">if</span> (!title || !body) <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">400</span>).<span class="fn">json</span>({ error: <span class="str">"invalid payload"</span> });
-  <span class="cmt">// DB 저장 로직 자리</span>
+  
+  <span class="cmt">// DB 저장 로직 자리 - 실제 앱에서는 데이터베이스에 저장</span>
   res.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>({ id: <span class="num">1</span>, title });
 });</code></pre>
 
@@ -416,14 +449,18 @@ app.<span class="fn">post</span>(<span class="str">"/posts"</span>, <span class=
   </ul>
 </section>
 
-<!-- Section 4: 고급 (4주+) -->
+<!-- Section 4: 고급 (6주+) -->
 <section class="content-section">
-  <h2 id="advanced">고급 (4주+) ⭐⭐⭐</h2>
+  <h2 id="advanced">고급 (6주+) ⭐⭐⭐</h2>
 
-  <p>
-    MCP 통합, 다중 LLM 전환, CI/CD 자동화 등 고급 주제를 다룹니다.
-    <strong>상용 수준의 복잡한 프로젝트</strong>를 완성하고, <strong>커스텀 도구</strong>를 만들 수 있습니다.
-  </p>
+  <div class="info-box info">
+    <div class="info-box-title">📋 고급 학습 로드맵</div>
+    <p>MCP 통합, 다중 LLM 전환, CI/CD 자동화 등 <strong>고급 주제</strong>를 다룹니다.</p>
+    <ul>
+      <li>✅ <strong>필수:</strong> MCP 서버 1개 이상, Full-stack 프로젝트 1개</li>
+      <li>📌 <strong>선택:</strong> CI/CD 파이프라인, 커스텀 도구 개발</li>
+    </ul>
+  </div>
 
   <h3 id="advanced-topics">고급 주제</h3>
 

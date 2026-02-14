@@ -1007,11 +1007,11 @@ ollama run llava <span class="str">"Compare these images"</span> image1.jpg imag
 
 <span class="cmt"># 대화형 모드에서</span>
 ollama run llava
-<span class="str">&gt;&gt;&gt; Describe this image /path/to/photo.png</span>
-This image shows a beautiful sunset over a mountain landscape...
+<span class="str">&gt;&gt;&gt; 이 이미지를 설명해줘 /path/to/photo.png</span>
+이 이미지는 아름다운 해질녘 풍경입니다. 산 너머로 노을이 지고 있습니다...
 
-<span class="str">&gt;&gt;&gt; What colors do you see? /path/to/photo.png</span>
-The dominant colors are orange, pink, and purple in the sky...</code></pre>
+<span class="str">&gt;&gt;&gt; 이 이미지는 어떤 색상이 있어? /path/to/photo.png</span>
+이 이미지의 주요 색상은 주황색, 분홍색, 보라색입니다...</code></pre>
 
   <h3 id="vision-api">API로 이미지 전송</h3>
 
@@ -1050,7 +1050,7 @@ result = analyze_image(
 analyze_image(<span class="str">"document.jpg"</span>, <span class="str">"Extract all text from this image"</span>)
 
 <span class="cmt"># 2. 이미지 설명</span>
-analyze_image(<span class="str">"photo.jpg"</span>, <span class="str">"Describe this image in detail"</span>)
+analyze_image(<span class="str">"photo.jpg"</span>, <span class="str">"이 이미지를 상세히 설명해줘"</span>)
 
 <span class="cmt"># 3. 객체 감지</span>
 analyze_image(<span class="str">"scene.jpg"</span>, <span class="str">"List all objects you can see"</span>)

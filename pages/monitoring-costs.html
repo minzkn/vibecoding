@@ -581,15 +581,15 @@ alerter.check_limits()</code></pre>
 
     <span class="kw">def</span> <span class="fn">alert_expensive_request</span>(self, cost: float, model: str, user_id: str):
         message = f<span class="str">"""
-⚠️ Expensive API Request Detected
+⚠️ 고비용 API 요청 감지
 
-User: {user_id}
-Model: {model}
-Cost: ${cost:.2f}
-Threshold: ${self.threshold:.2f}
+사용자: {user_id}
+모델: {model}
+비용: ${cost:.2f}
+임계값: ${self.threshold:.2f}
 
-This single request exceeded the per-request cost threshold.
-Please review the usage pattern.
+이 단일 요청이 요청당 비용 임계값을 초과했습니다.
+사용 패턴을 검토해 주세요.
         """</span>
 
         send_slack_alert(

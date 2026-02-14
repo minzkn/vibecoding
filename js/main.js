@@ -4,6 +4,7 @@
 var SEARCH_INDEX = [
   // 시작하기
   { title: "Vibe Coding이란?", url: "pages/getting-started.html", description: "AI 기반 Vibe Coding 개념, 전통적 개발과의 차이, 장점", keywords: "vibe coding ai 개념 시작 바이브코딩" },
+  { title: "5분 퀵스타트", url: "pages/quickstart-beginner.html", description: "프로그래밍 경험 없어도OK! 5분 만에 첫 Vibe Coding 프로젝트 완성", keywords: "vibe coding 빠른시작 초입문 5분 tutorial beginner quickstart一分钟" },
   { title: "AI CLI 도구 생태계", url: "pages/cli-tools-overview.html", description: "모든 주요 AI CLI 도구 개요 및 비교", keywords: "cli tools 도구 생태계 비교 개요" },
   { title: "Claude CLI 5분 시작", url: "pages/quickstart-claude-cli.html", description: "Claude CLI로 첫 Vibe Coding 시작하기", keywords: "claude cli quickstart 빠른시작 튜토리얼" },
   { title: "Ollama 로컬 시작", url: "pages/quickstart-local.html", description: "Ollama로 로컬 실행 워크플로우 시작하기", keywords: "ollama local 로컬 빠른시작" },
@@ -89,6 +90,7 @@ var NAV_STRUCTURE = [
   { title: '시작하기', pages: [
     { file: 'index.html', title: '홈' },
     { file: 'getting-started.html', title: 'Vibe Coding이란?' },
+    { file: 'quickstart-beginner.html', title: '5분 퀵스타트' },
     { file: 'cli-tools-overview.html', title: 'AI CLI 도구 생태계' },
     { file: 'quickstart-claude-cli.html', title: 'Claude CLI 5분 시작' },
     { file: 'quickstart-local.html', title: 'Ollama 로컬 시작' },
