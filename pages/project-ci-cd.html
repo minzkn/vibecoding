@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="CI/CD 파이프라인 - 실전 프로젝트 튜토리얼">
+<meta property="og:description" content="GitHub Actions로 CI/CD 파이프라인을 구축하는 실전 튜토리얼입니다. 자동화된 빌드, 테스트, 배포를 경험해보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/project-ci-cd.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="GitHub Actions로 CI/CD 파이프라인을 구축하는 실전 튜토리얼입니다. 자동화된 빌드, 테스트, 배포를 경험해보세요.">
+<meta name="keywords" content="ci cd 파이프라인 프로젝트 자동화 github actions vibe coding">
+<meta name="author" content="MINZKN">
+<title>CI/CD 파이프라인 - 실전 프로젝트 튜토리얼 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">CI/CD 파이프라인 - 실전 프로젝트 튜토리얼</h1>
+<p class="page-description">GitHub Actions로 CI/CD 파이프라인을 구축하는 실전 튜토리얼입니다. 자동화된 빌드, 테스트, 배포를 경험해보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">프로젝트 개요</h2>
+  <p>
+    이 튜토리얼에서는 GitHub Actions를 사용하여 CI/CD 파이프라인을 구축합니다.
+    코드를 푸시하면 자동으로 테스트가 실행되고, 통과하면 배포까지 진행됩니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 CI/CD 파이프라인 흐름</div>
+    <ol>
+      <li>개발자가 코드 푸시</li>
+      <li>GitHub Actions가 워크플로우 트리거</li>
+      <li>테스트 실행 (CI)</li>
+      <li>테스트 통과 시 배포 (CD)</li>
+    </ol>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="step1">Step 1: GitHub 저장소 설정</h2>
+  <p>먼저 GitHub 저장소를 만들고 로컬 프로젝트를 연결합니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">터미널</span>
+    </div>
+    <pre><code><span class="cmt"># 로컬 프로젝트 폴더로 이동</span>
+cd my-project
+
+<span class="cmt"># Git 초기화</span>
+git init
+
+<span class="cmt"># 모든 파일 스테이징</span>
+git add .
+
+<span class="cmt"># 첫 커밋</span>
+git commit -m "Initial commit"
+
+<span class="cmt"># GitHub 저장소 생성 후 연결</span>
+git remote add origin https://github.com/用户名/저장소명.git
+git branch -M main
+git push -u origin main</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="step2">Step 2: CI/CD 워크플로우 요청</h2>
+  <p>Claude에게 GitHub Actions 워크플로우 생성을 요청합니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">GitHub Actions CI/CD 워크플로우를 만들어줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. Node.js 프로젝트용</span>
+<span class="str">2. 풀 리퀘스트와 메인 브랜치 푸시 시 실행</span>
+<span class="str">3. npm install과 npm test 실행</span>
+<span class="str">4. 테스트 통과 시 Vercel이나 Netlify에 자동 배포</span>
+<span class="str">5. Node.js 버전은 20.x 사용</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="step3">Step 3: 생성된 워크플로우 확인</h2>
+  <p>Claude가 생성한 GitHub Actions 워크플로우 파일입니다:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">YAML (.github/workflows/ci-cd.yml)</span>
+    </div>
+    <pre><code><span class="pp">name</span>: CI/CD Pipeline
+
+<span class="pp">on</span>:
+  <span class="pp">push</span>:
+    branches: [main]
+  <span class="pp">pull_request</span>:
+    branches: [main]
+
+<span class="pp">jobs</span>:
+  <span class="pp">build-and-test</span>:
+    <span class="pp">runs-on</span>: ubuntu-latest
+    
+    <span class="pp">steps</span>:
+      <span class="pp">- name</span>: Checkout code
+        <span class="pp">uses</span>: actions/checkout@v4
+        
+      <span class="pp">- name</span>: Setup Node.js
+        <span class="pp">uses</span>: actions/setup-node@v4
+        <span class="pp">with</span>:
+          node-version: <span class="str">'20'</span>
+          cache: <span class="str">'npm'</span>
+          
+      <span class="pp">- name</span>: Install dependencies
+        <span class="pp">run</span>: npm ci
+        
+      <span class="pp">- name</span>: Run tests
+        <span class="pp">run</span>: npm test
+        
+      <span class="pp">- name</span>: Build
+        <span class="pp">run</span>: npm run build
+
+  <span class="pp">deploy</span>:
+    <span class="pp">needs</span>: build-and-test
+    <span class="pp">runs-on</span>: ubuntu-latest
+    <span class="pp">if</span>: github.ref == <span class="str">'refs/heads/main'</span>
+    
+    <span class="pp">steps</span>:
+      <span class="pp">- name</span>: Checkout code
+        <span class="pp">uses</span>: actions/checkout@v4
+        
+      <span class="pp">- name</span>: Deploy to Netlify
+        <span class="pp">uses</span>: nwtgck/actions-netlify@v2.0
+        <span class="pp">with</span>:
+          publish-dir: <span class="str">'./dist'</span>
+          production-branch: <span class="str">main</span>
+          github-token: <span class="str">${{ secrets.GITHUB_TOKEN }}</span>
+          netlify-auth-token: <span class="str">${{ secrets.NETLIFY_AUTH_TOKEN }}</span>
+          netlify-site-id: <span class="str">${{ secrets.NETLIFY_SITE_ID }}</span></code></pre>
+  </div>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ 주의</div>
+    <p>Netlify 배포를 위해서는 Netlify에서 인증 토큰과 사이트 ID를 생성하여 GitHub Secrets에 추가해야 합니다.</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="step4">Step 4: GitHub Secrets 설정</h2>
+  <p>보안敏感的 정보는 GitHub Secrets에 저장합니다.</p>
+
+  <h3 id="secrets-steps">설정 방법</h3>
+  <ol>
+    <li>GitHub 저장소 페이지로 이동</li>
+    <li><strong>Settings</strong> 탭 클릭</li>
+    <li>왼쪽 메뉴에서 <strong>Secrets and variables</strong> → <strong>Actions</strong> 클릭</li>
+    <li><strong>New repository secret</strong> 버튼 클릭</li>
+    <li>이름과 값을 입력하여 저장</li>
+  </ol>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 필요한 Secrets</div>
+    <ul>
+      <li><strong>NETLIFY_AUTH_TOKEN</strong>: Netlify에서 생성</li>
+      <li><strong>NETLIFY_SITE_ID</strong>: Netlify 사이트 설정에서 확인</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="step5">Step 5: 파이프라인 실행 확인</h2>
+  <p>코드를 푸시하고 GitHub Actions가 실행되는지 확인합니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">터미널</span>
+    </div>
+    <pre><code><span class="cmt"># 코드 변경 후 커밋</span>
+git add .
+git commit -m "Add CI/CD workflow"
+
+<span class="cmt"># GitHub에 푸시</span>
+git push origin main</code></pre>
+  </div>
+
+  <h3 id="check-results">실행 결과 확인</h3>
+  <ol>
+    <li>GitHub 저장소 페이지에서 <strong>Actions</strong> 탭 클릭</li>
+    <li>실행 중인 워크플로우 클릭</li>
+    <li>각 단계의 로그 확인</li>
+    <li>완료되면 녹색 체크 표시 확인</li>
+  </ol>
+</section>
+
+<section class="content-section">
+  <h2 id="advanced">고급 기능 추가</h2>
+  <p>기본 파이프라인이 작동하면 추가 기능을 요청해봅니다.</p>
+
+  <h3 id="extend-1">기능 1: 코드 품질 검사</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">ESLint와 Prettier로 코드 품질 검사를</span>
+<span class="str">추가해줘. npm run lint와 npm run format</span>
+<span class="str">스크립트를 실행하고, 실패하면 빌드가</span>
+<span class="str">실패하도록 해줘.</span></code></pre>
+  </div>
+
+  <h3 id="extend-2">기능 2: 보안 스캔</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">npm audit으로 보안 취약점 스캔을</span>
+<span class="str">추가해줘. 취약점이 발견되면 빌드가</span>
+<span class="str">실패하도록 해줘.</span></code></pre>
+  </div>
+
+  <h3 id="extend-3">기능 3: 슬랙 알림</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">슬랙으로 빌드 결과를 알리도록</span>
+<span class="str">추가해줘. 성공과 실패 시 다른</span>
+<span class="str">메시지를 보내야 해.</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="pipeline-flow">CI/CD 파이프라인 흐름도</h2>
+  <p>완성된 CI/CD 파이프라인의 흐름은 다음과 같습니다:</p>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300"
+         style="width:100%;max-width:600px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="cicd-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="20" y="120" width="100" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="70" y="150" text-anchor="middle" fill="var(--diagram-text)" font-size="12">
+        코드 푸시
+      </text>
+
+      <line x1="120" y1="145" x2="170" y2="145"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cicd-arrow)"/>
+
+      <rect x="170" y="110" width="120" height="70" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="230" y="140" text-anchor="middle" fill="var(--diagram-text)" font-size="12">
+        GitHub Actions
+      </text>
+      <text x="230" y="160" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        워크플로우 실행
+      </text>
+
+      <line x1="290" y1="145" x2="340" y2="145"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cicd-arrow)"/>
+
+      <rect x="340" y="120" width="80" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="380" y="145" text-anchor="middle" fill="var(--diagram-text)" font-size="11">
+        빌드
+      </text>
+      <text x="380" y="160" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        npm run build
+      </text>
+
+      <line x1="420" y1="145" x2="470" y2="145"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cicd-arrow)"/>
+
+      <rect x="470" y="120" width="80" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="510" y="145" text-anchor="middle" fill="var(--diagram-text)" font-size="11">
+        테스트
+      </text>
+      <text x="510" y="160" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        npm test
+      </text>
+
+      <line x1="510" y1="170" x2="510" y2="220"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cicd-arrow)"/>
+
+      <rect x="440" y="220" width="140" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="510" y="245" text-anchor="middle" fill="var(--diagram-text)" font-size="11">
+        배포 (Netlify/Vercel)
+      </text>
+
+      <text x="230" y="220" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        실패 시 알림
+      </text>
+      <line x1="230" y1="180" x2="230" y2="220" stroke="var(--diagram-accent)" stroke-width="1" stroke-dasharray="4,4"/>
+    </svg>
+    <p class="diagram-caption">CI/CD 파이프라인 흐름</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>CI/CD 파이프라인을 구축하는 방법을 배웠습니다. 더 많은 자동화 기능을探索해 보세요!</p>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>AI 기반 테스트</h3>
+      <p>자동화된 테스트를 만들어보세요</p>
+      <a href="ai-testing.html" class="card-link">AI 기반 테스트 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>보안 모범 사례</h3>
+      <p>보안적으로 안전한 파이프라인을 구축하세요</p>
+      <a href="security-best-practices.html" class="card-link">보안 모범 사례 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>비용 최적화</h3>
+      <p>CI/CD 비용을 최적화하세요</p>
+      <a href="cost-optimization.html" class="card-link">비용 최적화 →</a>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li><strong>GitHub 저장소</strong>: 코드를 GitHub에 푸시</li>
+    <li><strong>워크플로우 파일</strong>: .github/workflows에 YAML 생성</li>
+    <li><strong>Secrets 설정</strong>: 보안 정보를 GitHub Secrets에 저장</li>
+    <li><strong>자동 실행</strong>: 푸시 시 자동으로 CI/CD 파이프라인 실행</li>
+    <li><strong>확장</strong>: 코드 품질, 보안 스캔, 알림等功能 추가</li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

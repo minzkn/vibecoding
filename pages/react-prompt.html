@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="React 프롬프트 - 기술 스택별 가이드">
+<meta property="og:description" content="React 개발을 위한 효과적인 프롬프트 기법을 배웁니다. 컴포넌트, Hooks, 상태管理等 React 특화 프롬프트를 알아봅니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/react-prompt.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="React 개발을 위한 효과적인 프롬프트 기법을 배웁니다. 컴포넌트, Hooks, 상태管理等 React 특화 프롬프트를 알아봅니다.">
+<meta name="keywords" content="react 프롬프트 components hooks state vibe coding">
+<meta name="author" content="MINZKN">
+<title>React 프롬프트 - 기술 스택별 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">React 프롬프트 - 기술 스택별 가이드</h1>
+<p class="page-description">React 개발을 위한 효과적인 프롬프트 기법을 배웁니다. 컴포넌트, Hooks, 상태管理等 React 특화 프롬프트를 알아봅니다.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    React는 컴포넌트 기반의 UI 라이브러리입니다.
+    AI에게 React 코드를 요청할 때에는 React의 특성을 반영한 프롬프트를 작성하면 더 좋은 결과를 얻을 수 있습니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 React 프롬프트 특징</div>
+    <ul>
+      <li><strong>컴포넌트 구조</strong>: 컴포넌트 분리 명시</li>
+      <li><strong>Hooks</strong>: useState, useEffect 등 명시</li>
+      <li><strong>스타일링</strong>: CSS Modules, styled-components 등</li>
+      <li><strong>상태 관리</strong>: props, context, 상태 관리 라이브러리</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="component-prompt">컴포넌트 생성</h2>
+  <p>React 컴포넌트를 효과적으로 생성하는 프롬프트입니다.</p>
+
+  <h3 id="basic-component">기본 컴포넌트</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React 함수형 컴포넌트를 만들어줘.</span>
+
+<span class="str">컴포넌트 이름: UserCard</span>
+<span class="str">기능:</span>
+<span class="str">- 사용자 이름, 이메일, 아바타 이미지 표시</span>
+<span class="str">- 프로필 페이지 링크 버튼</span>
+<span class="str">- 호버 시 배경색 변경</span>
+<span class="str">스타일: CSS Modules</span></code></pre>
+  </div>
+
+  <h3 id="form-component">폼 컴포넌트</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React 로그인 폼 컴포넌트를 만들어줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. 이메일, 비밀번호 입력 필드</span>
+<span class="str">2. 입력 검증 (이메일 형식, 비밀번호 길이)</span>
+<span class="str">3. submit 버튼 (로딩 상태 표시)</span>
+<span class="str">4. 에러 메시지 표시</span>
+<span class="str">5. useState로 상태 관리</span>
+<span class="str">6. TypeScript 사용</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="hooks-prompt">Hooks 사용</h2>
+  <p>React Hooks를 활용한 코드를 요청합니다.</p>
+
+  <h3 id="use-state">useState 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">useState를 사용하는 카운터 컴포넌트를 만들어줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. 증가, 감소, 초기화 버튼</span>
+<span class="str">2. 현재 카운트 값 표시</span>
+<span class="str">3. 값이 0以下时 빨간색, 10 이상일 때 파란색</span>
+<span class="str">4. CSS Modules로 스타일링</span></code></pre>
+  </div>
+
+  <h3 id="use-effect">useEffect 예시</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">useEffect를 사용하는 데이터 페치 컴포넌트를 만들어줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. API에서 사용자 목록 가져오기</span>
+<span class="str">2. 로딩 상태 표시</span>
+<span class="str">3. 에러 상태 처리</span>
+<span class="str">4. 컴포넌트 언마운트 시 클린업</span>
+<span class="str">5. fetch API 사용</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="context-prompt">Context API</h2>
+  <p>React Context를 활용한 전역 상태 관리를 요청합니다.</p>
+
+  <h3 id="context-example">Context 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React Theme Context를 만들어줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. ThemeProvider 컴포넌트</span>
+<span class="str">2. 다크/라이트 모드 토글 기능</span>
+<span class="str">3. 현재 테마 상태 제공</span>
+<span class="str">4. useContext 훅 사용</span>
+<span class="str">5. localStorage에 테마 저장</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="routing">라우팅</h2>
+  <p>React Router를 사용한 페이지 라우팅을 요청합니다.</p>
+
+  <h3 id="router-example">라우팅 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">React Router v6을 사용하는 라우팅을 만들어줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. / - 홈 페이지</span>
+<span class="str">2. /about - 소개 페이지</span>
+<span class="str">3. /posts/:id - 게시물 상세 페이지</span>
+<span class="str">4. 404 페이지</span>
+<span class="str">5. 네비게이션 바 컴포넌트</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="typescript">TypeScript 활용</h2>
+  <p>TypeScript와 함께 React를 사용합니다.</p>
+
+  <h3 id="ts-example">TypeScript 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">TypeScript로 React 컴포넌트를 만들어줘.</span>
+
+<span class="str">타입 정의:</span>
+<span class="str">interface User {</span>
+<span class="str">  id: number;</span>
+<span class="str">  name: string;</span>
+<span class="str">  email: string;</span>
+<span class="str">}</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. User 타입 사용</span>
+<span class="str">2. props 타입 정의</span>
+<span class="str">3. 상태 타입 정의</span>
+<span class="str">4.严格的 타입 지정</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="best-practices">모범 사례</h2>
+  <p>효과적인 React 프롬프트를 위한 모범 사례입니다.</p>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 React 프롬프트 팁</div>
+    <ul>
+      <li><strong>컴포넌트 명명</strong>: 명확하고 일관된 이름 사용</li>
+      <li><strong>props 명시</strong>: 필요한 props를 구체적으로 설명</li>
+      <li><strong>스타일링 방식</strong>: CSS Modules, styled-components 등 명시</li>
+      <li><strong>TypeScript</strong>: 타입 안전한 코드 요청</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>React 개발에 대해 더 자세히 배워보세요!</p>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>프론트엔드 Vibe Coding</h3>
+      <p>더 다양한 프론트엔드 프로젝트</p>
+      <a href="frontend-vibe.html" class="card-link">프론트엔드 Vibe Coding →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>백엔드 Vibe Coding</h3>
+      <p>백엔드 개발도 AI로!</p>
+      <a href="backend-vibe.html" class="card-link">백엔드 Vibe Coding →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>API 디자인</h3>
+      <p>React와 연동할 API 설계</p>
+      <a href="api-design.html" class="card-link">API 디자인 →</a>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li><strong>컴포넌트</strong>: 함수형 컴포넌트, props 명시</li>
+    <li><strong>Hooks</strong>: useState, useEffect, useContext 등</li>
+    <li><strong>상태 관리</strong>: local state, Context API</li>
+    <li><strong>라우팅</strong>: React Router v6</li>
+    <li><strong>TypeScript</strong>: 타입 안전한 코드</li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

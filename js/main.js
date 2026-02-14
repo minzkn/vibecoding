@@ -59,6 +59,30 @@ var SEARCH_INDEX = [
   { title: "프롬프트 최적화", url: "pages/prompt-optimization.html", description: "토큰 절약 및 정확도 향상 기법", keywords: "prompt optimization 최적화 토큰절약" },
   { title: "Markdown 스타일 가이드와 문서 품질", url: "pages/markdown-style-guide.html", description: "일관된 Markdown 스타일과 문서 품질 체크리스트", keywords: "markdown 스타일 가이드 문서 품질 구조화" },
 
+  // 실전 프로젝트 튜토리얼
+  { title: "Todo 앱 구축", url: "pages/project-todo-app.html", description: "Vibe Coding으로 Todo 앱을 단계별로 구축하는 실전 튜토리얼", keywords: "todo 앱 프로젝트 튜토리얼 실전" },
+  { title: "REST API 구축", url: "pages/project-rest-api.html", description: "AI 도움으로 REST API 설계부터 구현까지", keywords: "rest api 프로젝트 튜토리얼 백엔드" },
+  { title: "CI/CD 파이프라인", url: "pages/project-ci-cd.html", description: "GitHub Actions로 CI/CD 파이프라인 구축하기", keywords: "ci cd 파이프라인 프로젝트 자동화" },
+
+  // 테스트 & QA 자동화
+  { title: "AI 기반 테스트", url: "pages/ai-testing.html", description: "AI로 테스트 코드 생성하고 테스트 자동화하기", keywords: "ai testing 테스트 자동화 단위테스트" },
+  { title: "프롬프트 테스트", url: "pages/prompt-testing.html", description: "프롬프트 품질 평가 및 테스트 방법", keywords: "prompt testing 프롬프트 테스트 품질평가" },
+
+  // 보안 & 비용 관리
+  { title: "보안 모범 사례", url: "pages/security-best-practices.html", description: "LLM 애플리케이션 보안 모범 사례", keywords: "보안 security 모범사례 vulnerability" },
+  { title: "비용 최적화", url: "pages/cost-optimization.html", description: "LLM API 비용 최적화 전략과 실전 기법", keywords: "cost optimization 비용 최적화 절약" },
+
+  // 팀 협업 & 프로세스
+  { title: "팀 프롬프트 라이브러리", url: "pages/team-prompt-library.html", description: "팀에서 공유하는 프롬프트 라이브러리 구축", keywords: "team prompt library 팀 프롬프트 공유" },
+  { title: "AI 코드 리뷰", url: "pages/code-review-ai.html", description: "AI 활용 코드 리뷰 프로세스", keywords: "code review ai 코드리뷰 자동화" },
+
+  // 기술 스택별 개발 가이드
+  { title: "프론트엔드 Vibe Coding", url: "pages/frontend-vibe.html", description: "프론트엔드 개발에서 Vibe Coding 활용법", keywords: "frontend 프론트엔드 vibe 코딩" },
+  { title: "React 프롬프트", url: "pages/react-prompt.html", description: "React 개발을 위한 효과적인 프롬프트 기법", keywords: "react 프롬프트 컴포넌트" },
+  { title: "백엔드 Vibe Coding", url: "pages/backend-vibe.html", description: "백엔드 개발에서 Vibe Coding 활용법", keywords: "backend 백엔드 vibe 코딩 서버" },
+  { title: "API 디자인", url: "pages/api-design.html", description: "AI 도움으로 API 설계하기", keywords: "api design 설계 rest" },
+  { title: "데이터베이스 프롬프트", url: "pages/database-prompt.html", description: "데이터베이스 설계 및 SQL 생성 프롬프트", keywords: "database sql 프롬프트 설계" },
+
   // 환경 구축 & 도구
   { title: "LLM 개발 환경", url: "pages/dev-environment.html", description: "터미널, 에디터, Git 설정", keywords: "development environment 개발환경 설정" },
   { title: "API 키 관리", url: "pages/api-key-management.html", description: "환경 변수, 시크릿, 보안 관리", keywords: "api key management 키관리 보안" },
@@ -144,6 +168,30 @@ var NAV_STRUCTURE = [
     { file: 'prompt-for-coding.html', title: '코딩용 프롬프트' },
     { file: 'prompt-optimization.html', title: '프롬프트 최적화' },
     { file: 'markdown-style-guide.html', title: 'Markdown 스타일 가이드와 문서 품질' }
+  ]},
+  { title: '실전 프로젝트 튜토리얼', pages: [
+    { file: 'project-todo-app.html', title: 'Todo 앱 구축' },
+    { file: 'project-rest-api.html', title: 'REST API 구축' },
+    { file: 'project-ci-cd.html', title: 'CI/CD 파이프라인' }
+  ]},
+  { title: '테스트 & QA 자동화', pages: [
+    { file: 'ai-testing.html', title: 'AI 기반 테스트' },
+    { file: 'prompt-testing.html', title: '프롬프트 테스트' }
+  ]},
+  { title: '보안 & 비용 관리', pages: [
+    { file: 'security-best-practices.html', title: '보안 모범 사례' },
+    { file: 'cost-optimization.html', title: '비용 최적화' }
+  ]},
+  { title: '팀 협업 & 프로세스', pages: [
+    { file: 'team-prompt-library.html', title: '팀 프롬프트 라이브러리' },
+    { file: 'code-review-ai.html', title: 'AI 코드 리뷰' }
+  ]},
+  { title: '기술 스택별 가이드', pages: [
+    { file: 'frontend-vibe.html', title: '프론트엔드 Vibe Coding' },
+    { file: 'react-prompt.html', title: 'React 프롬프트' },
+    { file: 'backend-vibe.html', title: '백엔드 Vibe Coding' },
+    { file: 'api-design.html', title: 'API 디자인' },
+    { file: 'database-prompt.html', title: '데이터베이스 프롬프트' }
   ]},
   { title: '환경 구축 & 도구', pages: [
     { file: 'dev-environment.html', title: 'LLM 개발 환경' },

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="API 디자인 - 기술 스택별 가이드">
+<meta property="og:description" content="AI 도움으로 API를 설계하는 방법을 배웁니다. RESTful API 설계 원칙과 실전 팁을 알아봅니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/api-design.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI 도움으로 API를 설계하는 방법을 배웁니다. RESTful API 설계 원칙과 실전 팁을 알아봅니다.">
+<meta name="keywords" content="api design 설계 restful vibe coding">
+<meta name="author" content="MINZKN">
+<title>API 디자인 - 기술 스택별 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">API 디자인 - 기술 스택별 가이드</h1>
+<p class="page-description">AI 도움으로 API를 설계하는 방법을 배웁니다. RESTful API 설계 원칙과 실전 팁을 알아봅니다.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    좋은 API 설계는 개발자 경험을 좌우합니다.
+    AI를 활용하여 일관되고 사용하기 쉬운 API를 설계할 수 있습니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 RESTful API 원칙</div>
+    <ul>
+      <li><strong>자원의 명사 사용</strong>: /users, /posts</li>
+      <li><strong>HTTP 메서드 적절히 사용</strong>: GET, POST, PUT, DELETE</li>
+      <li><strong>계층적 URL</strong>: /users/123/posts</li>
+      <li><strong>일관된 응답 형식</strong>: JSON</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="endpoint-design">엔드포인트 설계</h2>
+  <p>API 엔드포인트를 설계합니다.</p>
+
+  <h3 id="endpoint-request">엔드포인트 설계 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">블로그 API의 엔드포인트를 설계해줘.</span>
+
+<span class="str">리소스:</span>
+<span class="str">- 사용자 (users)</span>
+<span class="str">- 게시물 (posts)</span>
+<span class="str">- 댓글 (comments)</span>
+<span class="str">- 카테고리 (categories)</span>
+
+<span class="str">요구:</span>
+<span class="str">- CRUD 엔드포인트</span>
+<span class="str">- 페이지네이션</span>
+<span class="str">- 필터링</span>
+<span class="str">- 정렬</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="request-response">요청/응답 형식</h2>
+  <p>API 요청과 응답의 형식을 정의합니다.</p>
+
+  <h3 id="response-format">응답 형식 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">API 응답 형식을 표준화해줘.</span>
+
+<span class="str">성공 응답:</span>
+<span class="str">- success: boolean</span>
+<span class="str">- data: object</span>
+<span class="str">- message: string (선택)</span>
+<span class="str">- pagination: object (선택)</span>
+
+<span class="str">에러 응답:</span>
+<span class="str">- success: false</span>
+<span class="str">- error: object</span>
+<span class="str">  - code: string</span>
+<span class="str">  - message: string</span>
+<span class="str">  - details: object (선택)</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="error-handling">에러 처리</h2>
+  <p>일관된 에러 처리를 설계합니다.</p>
+
+  <h3 id="error-codes">HTTP 상태 코드</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>코드</th>
+        <th>의미</th>
+        <th>사용 상황</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>200</td>
+        <td>OK</td>
+        <td>성공적인 GET, PUT</td>
+      </tr>
+      <tr>
+        <td>201</td>
+        <td>Created</td>
+        <td>리소스 생성 성공</td>
+      </tr>
+      <tr>
+        <td>400</td>
+        <td>Bad Request</td>
+        <td>잘못된 요청</td>
+      </tr>
+      <tr>
+        <td>401</td>
+        <td>Unauthorized</td>
+        <td>인증 필요</td>
+      </tr>
+      <tr>
+        <td>404</td>
+        <td>Not Found</td>
+        <td>리소스 없음</td>
+      </tr>
+      <tr>
+        <td>500</td>
+        <td>Server Error</td>
+        <td>서버 오류</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="versioning">API 버전 관리</h2>
+  <p>API 버전을 관리하는 전략입니다.</p>
+
+  <h3 id="version-request">버전 관리 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">API 버전 관리 전략을 설계해줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. URL 기반 버전 (v1, v2)</span>
+<span class="str">2. 호환성이 깨진 변경은 새 버전에서</span>
+<span class="str">3.旧 버전은 최소 6개월 지원</span>
+<span class="str">4. deprecation 알림 헤더</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="documentation">API 문서화</h2>
+  <p>API 문서를 자동으로 생성합니다.</p>
+
+  <h3 id="swagger-request">문서 생성 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">OpenAPI (Swagger) 문서를 생성해줘.</span>
+
+<span class="str">포함 내용:</span>
+<span class="str">- 모든 엔드포인트 설명</span>
+<span class="str">- 요청/응답 스키마</span>
+<span class="str">- 에러 응답 예시</span>
+<span class="str">- 인증 요구사항</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>API 개발에 대해 더 자세히 배워보세요!</p>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>REST API 구축</h3>
+      <p>실전 튜토리얼</p>
+      <a href="project-rest-api.html" class="card-link">REST API 구축 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>백엔드 Vibe Coding</h3>
+      <p>백엔드 개발 가이드</p>
+      <a href="backend-vibe.html" class="card-link">백엔드 Vibe Coding →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>데이터베이스 프롬프트</h3>
+      <p>DB 설계도 AI로!</p>
+      <a href="database-prompt.html" class="card-link">데이터베이스 프롬프트 →</a>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li><strong>엔드포인트</strong>: 리소스 기반 URL 설계</li>
+    <li><strong>응답 형식</strong>: 일관된 JSON 구조</li>
+    <li><strong>에러 처리</strong>: 적절한 HTTP 상태 코드</li>
+    <li><strong>버전 관리</strong>: URL 기반 버전 관리</li>
+    <li><strong>문서화</strong>: OpenAPI/Swagger</li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

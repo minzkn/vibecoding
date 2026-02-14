@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="데이터베이스 프롬프트 - 기술 스택별 가이드">
+<meta property="og:description" content="데이터베이스 설계와 SQL 생성에 AI를 활용하는 방법을 배웁니다. ERD, 테이블 설계, 쿼리 작성을 AI로 도와보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/database-prompt.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="데이터베이스 설계와 SQL 생성에 AI를 활용하는 방법을 배웁니다. ERD, 테이블 설계, 쿼리 작성을 AI로 도와보세요.">
+<meta name="keywords" content="database sql 프롬프트 설계 erd vibe coding">
+<meta name="author" content="MINZKN">
+<title>데이터베이스 프롬프트 - 기술 스택별 가이드 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">데이터베이스 프롬프트 - 기술 스택별 가이드</h1>
+<p class="page-description">데이터베이스 설계와 SQL 생성에 AI를 활용하는 방법을 배웁니다. ERD, 테이블 설계, 쿼리 작성을 AI로 도와보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    데이터베이스 설계와 SQL 쿼리 작성을 AI의 도움으로 효율적으로 수행할 수 있습니다.
+    이 가이드에서는 데이터베이스 관련 프롬프트를 활용하는 방법을 배웁니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 데이터베이스 AI 활용 영역</div>
+    <ul>
+      <li><strong>ERD 설계</strong>: 테이블 구조 설계</li>
+      <li><strong>SQL 쿼리</strong>: SELECT, INSERT, UPDATE, DELETE</li>
+      <li><strong>마이그레이션</strong>: 스키마 변경 스크립트</li>
+      <li><strong>최적화</strong>: 인덱스, 쿼리 최적화</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="schema-design">스키마 설계</h2>
+  <p>데이터베이스 스키마를 설계합니다.</p>
+
+  <h3 id="table-request">테이블 설계 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">블로그 데이터베이스 스키마를 설계해줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- users: id, email, password, name, created_at</span>
+<span class="str">- posts: id, title, content, author_id, created_at, updated_at</span>
+<span class="str">- comments: id, post_id, user_id, content, created_at</span>
+<span class="str">- categories: id, name, slug</span>
+<span class="str">- post_categories: post_id, category_id (다대다)</span>
+
+<span class="str">각 테이블의:</span>
+<span class="str">- 기본 키</span>
+<span class="str">- 외래 키</span>
+<span class="str">- 인덱스</span>
+<span class="str">- 데이터 타입</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="sql-queries">SQL 쿼리 생성</h2>
+  <p>다양한 SQL 쿼리를 생성합니다.</p>
+
+  <h3 id="select-query">SELECT 쿼리 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">다음 조건의 SELECT 쿼리를 작성해줘:</span>
+
+<span class="str">테이블: posts</span>
+<span class="str">조인: users (author), categories</span>
+<span class="str">필터: 최근 30일 게시물, 공개 상태</span>
+<span class="str">정렬: 작성일 내림차순</span>
+<span class="str">페이지네이션: page, limit 파라미터</span></code></pre>
+  </div>
+
+  <h3 id="join-query">JOIN 쿼리 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">게시물과 작성자 정보를 JOIN하는 쿼리를 작성해줘.</span>
+
+<span class="str">필요한 정보:</span>
+<span class="str">- 게시물 제목, 내용</span>
+<span class="str">- 작성자 이름, 이메일</span>
+<span class="str">- 카테고리 이름</span>
+<span class="str">- 댓글 수</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="migration">마이그레이션</h2>
+  <p>스키마 마이그레이션 스크립트를 생성합니다.</p>
+
+  <h3 id="migration-request">마이그레이션 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">users 테이블에 bio 컬럼을 추가하는</span>
+<span class="str">마이그레이션을 작성해줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">- 컬럼명: bio</span>
+<span class="str">- 타입: VARCHAR(500)</span>
+<span class="str">- 기본값: NULL</span>
+<span class="str">- ALTER TABLE 문으로</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="orm-models">ORM 모델</h2>
+  <p>ORM 모델 코드를 생성합니다.</p>
+
+  <h3 id="prisma-model">Prisma 모델 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Prisma 스키마를 작성해줘.</span>
+
+<span class="str">테이블:</span>
+<span class="str">- User: id, email, name, posts, comments</span>
+<span class="str">- Post: id, title, content, author, comments, categories</span>
+<span class="str">- Comment: id, content, post, author</span>
+
+<span class="str">관계:</span>
+<span class="str">- User 1:N Post</span>
+<span class="str">- User 1:N Comment</span>
+<span class="str">- Post 1:N Comment</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="optimization">최적화</h2>
+  <p>쿼리 최적화建议을 받습니다.</p>
+
+  <h3 id="optimize-request">최적화 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">다음 SQL 쿼리를 최적화해줘.</span>
+
+<span class="str">```sql</span>
+<span class="str">SELECT * FROM posts</span>
+<span class="str">WHERE created_at > '2024-01-01'</span>
+<span class="str">AND author_id IN (SELECT id FROM users WHERE active = true)</span>
+<span class="str">ORDER BY created_at DESC</span>
+<span class="str">LIMIT 100;</span>
+<span class="str">```</span>
+
+<span class="str">인덱스 제안과 함께</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>데이터베이스 개발에 대해 더 자세히 배워보세요!</p>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>REST API 구축</h3>
+      <p>DB와 연동된 API 구축</p>
+      <a href="project-rest-api.html" class="card-link">REST API 구축 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>백엔드 Vibe Coding</h3>
+      <p>백엔드 개발 가이드</p>
+      <a href="backend-vibe.html" class="card-link">백엔드 Vibe Coding →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>API 디자인</h3>
+      <p>API 설계 방법</p>
+      <a href="api-design.html" class="card-link">API 디자인 →</a>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li><strong>스키마 설계</strong>: 테이블, 컬럼, 관계 정의</li>
+    <li><strong>SQL 쿼리</strong>: SELECT, JOIN, 필터링</li>
+    <li><strong>마이그레이션</strong>: 스키마 변경 스크립트</li>
+    <li><strong>ORM 모델</strong>: Prisma, SQLAlchemy</li>
+    <li><strong>최적화</strong>: 인덱스, 쿼리 성능</li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

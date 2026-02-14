@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="비용 최적화 - 보안 & 비용 관리">
+<meta property="og:description" content="LLM API 비용을 최적화하는 전략과 실전 기법을 배웁니다. 토큰 사용량 관리, 캐싱, 모델 선택으로 비용을 절감하세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/cost-optimization.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="LLM API 비용을 최적화하는 전략과 실전 기법을 배웁니다. 토큰 사용량 관리, 캐싱, 모델 선택으로 비용을 절감하세요.">
+<meta name="keywords" content="cost optimization 비용 최적화 절약 vibe coding">
+<meta name="author" content="MINZKN">
+<title>비용 최적화 - 보안 & 비용 관리 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">비용 최적화 - 보안 & 비용 관리</h1>
+<p class="page-description">LLM API 비용을 최적화하는 전략과 실전 기법을 배웁니다. 토큰 사용량 관리, 캐싱, 모델 선택으로 비용을 절감하세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>
+    LLM API 비용은 사용량에 따라 급격히 증가할 수 있습니다.
+    이 가이드에서는 비용을 절감하면서도 품질을 유지하는 방법을 배웁니다.
+  </p>
+
+  <div class="info-box warning">
+    <div class="info-box-title">💰 비용 구조 이해</div>
+    <ul>
+      <li><strong>입력 토큰</strong>: 프롬프트와 컨텍스트에 대한 비용</li>
+      <li><strong>출력 토큰</strong>: 생성된 응답에 대한 비용</li>
+      <li><strong>모델 선택</strong>: 모델마다 가격이 다름</li>
+      <li><strong>요청 횟수</strong>: API 호출 횟수도 비용에 영향</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="token-optimization">토큰 최적화</h2>
+  <p>토큰 사용량을 줄여 비용을 절감합니다.</p>
+
+  <h3 id="prompt-compression">프롬프트 압축</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">antes vs depois</span>
+    </div>
+    <pre><code><span class="cmt">// antes: 장문 프롬프트</span>
+<span class="str">"다음은 사용자의 질문입니다. 이 질문에 대해 정확하고"</span>
+<span class="str">"详细한 답변을 제공해주시기 바랍니다. 답변은"</span>
+<span class="str">"가능한 한 상세하고 정확해야 하며, 필요하다면"</span>
+<span class="str">"예제 코드를 포함해주세요..."</span>
+
+<span class="cmt">// depois: 간결한 프롬프트</span>
+<span class="str">"다음 질문에 상세히 답변하고 예제 코드를 포함하세요:"</span></code></pre>
+  </div>
+
+  <h3 id="context-truncation">컨텍스트 정리</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+    </div>
+    <pre><code><span class="kw">def</span> <span class="fn">truncate_context</span>(messages: list, max_tokens: int) -> list:
+    <span class="cmt">// 최신 메시지만 유지</span>
+    truncated = []
+    total_tokens = <span class="num">0</span>
+    
+    <span class="kw">for</span> msg <span class="kw">in</span> <span class="fn">reversed</span>(messages):
+        msg_tokens = <span class="fn">count_tokens</span>(msg.content)
+        
+        <span class="kw">if</span> total_tokens + msg_tokens > max_tokens:
+            <span class="kw">break</span>
+        
+        truncated.<span class="fn">insert</span>(<span class="num">0</span>, msg)
+        total_tokens += msg_tokens
+    
+    <span class="kw">return</span> truncated
+
+<span class="cmt">// 최근 5개의 메시지만 유지 (약 4000 토큰)</span>
+relevant_messages = <span class="fn">truncate_context</span>(all_messages, <span class="num">4000</span>)</code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 토큰 계산 팁</div>
+    <ul>
+      <li>영어: 약 4자당 1토큰</li>
+      <li>한국어: 약 1.5자당 1토큰</li>
+      <li>코드: 토큰화가 더 효율적</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="model-selection">모델 선택</h2>
+  <p>작업에 적합한 모델을 선택하여 비용을 절감합니다.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>작업</th>
+        <th>권장 모델</th>
+        <th>비용 절감</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>간단한 요약</td>
+        <td>Haiku / GPT-4o-mini</td>
+        <td>90%+</td>
+      </tr>
+      <tr>
+        <td>코드 리뷰</td>
+        <td>Sonnet / GPT-4o</td>
+        <td>50%</td>
+      </tr>
+      <tr>
+        <td>복잡한 추론</td>
+        <td>Opus / GPT-4</td>
+        <td>-</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="model-routing">동적 모델 라우팅</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+    </div>
+    <pre><code><span class="kw">def</span> <span class="fn">route_model</span>(task: str, complexity: str) -> str:
+    <span class="cmt">// 작업 복잡도에 따라 모델 선택</span>
+    
+    <span class="kw">if</span> complexity == <span class="str">"low"</span>:
+        <span class="kw">return</span> <span class="str">"claude-haiku-3-5-20250929"</span>
+    <span class="kw">elif</span> complexity == <span class="str">"medium"</span>:
+        <span class="kw">return</span> <span class="str">"claude-sonnet-4-5-20250929"</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> <span class="str">"claude-opus-4-5-20250929"</span>
+
+<span class="cmt">// 사용 예시</span>
+task = <span class="str">"이 텍스트를 요약해줘"</span>
+model = <span class="fn">route_model</span>(task, <span class="str">"low"</span>)
+
+task = <span class="str">"이 코드의 버그를 찾아주고 수정해줘"</span>
+model = <span class="fn">route_model</span>(task, <span class="str">"high"</span>)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="caching">캐싱</h2>
+  <p>같은 요청에 대한 응답을 캐싱하여 중복 API 호출을 방지합니다.</p>
+
+  <h3 id="response-caching">응답 캐싱</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+    </div>
+    <pre><code><span class="kw">from</span> functools <span class="kw">import</span> lru_cache
+<span class="kw">import</span> hashlib
+<span class="kw">import</span> json
+
+<span class="cmt">// 메모리 캐시 (간단한 예시)</span>
+response_cache = {}
+
+<span class="kw">def</span> <span class="fn">get_cache_key</span>(prompt: str) -> str:
+    <span class="kw">return</span> hashlib.<span class="fn">md5</span>(prompt.<span class="fn">encode</span>()).<span class="fn">hexdigest</span>()
+
+<span class="kw">def</span> <span class="fn">get_completion</span>(prompt: str) -> str:
+    cache_key = <span class="fn">get_cache_key</span>(prompt)
+    
+    <span class="cmt">// 캐시된 응답이 있으면 반환</span>
+    <span class="kw">if</span> cache_key <span class="kw">in</span> response_cache:
+        <span class="kw">return</span> response_cache[cache_key]
+    
+    <span class="cmt">// API 호출</span>
+    response = client.messages.<span class="fn">create</span>(prompt=prompt)
+    result = response.content[<span class="num">0</span>].text
+    
+    <span class="cmt">// 캐시에 저장 (TTL: 1시간)</span>
+    response_cache[cache_key] = result
+    
+    <span class="kw">return</span> result</code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 캐싱 전략</div>
+    <ul>
+      <li><strong>정확한 일치</strong>: 동일한 프롬프트에 대한 응답 캐싱</li>
+      <li><strong>유사 검색</strong>: 유사한 프롬프트도 캐시에서 찾기</li>
+      <li><strong>TTL 설정</strong>: 캐시 유효 기간 설정</li>
+      <li><strong>캐시 무효화</strong>: 정기적으로 캐시 갱신</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="budget-alert">예산 알림</h2>
+  <p>비용이 임계치를 초과하기 전에 알림을 받습니다.</p>
+
+  <h3 id="cost-tracking">비용 추적</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+    </div>
+    <pre><code><span class="kw">class</span> <span class="fn">CostTracker</span>:
+    
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, budget: float):
+        self.budget = budget
+        self.total_cost = <span class="num">0</span>
+        self.daily_cost = <span class="num">0</span>
+    
+    <span class="kw">def</span> <span class="fn">add_usage</span>(self, input_tokens: int, output_tokens: int):
+        <span class="cmt">// 토큰당 비용 계산 (예: Claude Sonnet)</span>
+        input_cost = input_tokens * <span class="num">0.000003</span>  <span class="cmt">// $3/1M 토큰</span>
+        output_cost = output_tokens * <span class="num">0.000015</span> <span class="cmt">// $15/1M 토큰</span>
+        
+        cost = input_cost + output_cost
+        self.total_cost += cost
+        self.daily_cost += cost
+        
+        <span class="cmt">// 예산 초과 경고</span>
+        <span class="kw">if</span> self.total_cost > self.budget * <span class="num">0.8</span>:
+            <span class="fn">send_alert</span>(<span class="str">"예산의 80%를 사용했습니다"</span>)
+        
+        <span class="kw">if</span> self.total_cost > self.budget:
+            <span class="fn">send_alert</span>(<span class="str">"예산 초과!"</span>)
+            <span class="kw">raise</span> <span class="fn">BudgetExceededError</span>()
+
+tracker = <span class="fn">CostTracker</span>(budget=<span class="num">100</span>)  <span class="cmt">// 월간 예산 $100</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="batch-processing">배치 처리</h2>
+  <p>여러 요청을 하나로 배치하여 처리 비용을 줄입니다.</p>
+
+  <h3 id="batch-request">배치 요청</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python</span>
+    </div>
+    <pre><code><span class="cmt">// 나쁜 예: 개별 요청</span>
+<span class="kw">for</span> question <span class="kw">in</span> questions:
+    response = client.messages.<span class="fn">create</span>(
+        prompt=f<span class="str">"Q: {question}"</span>
+    )
+    <span class="cmt">// N번의 API 호출 → N배 비용</span>
+
+<span class="cmt">// 좋은 예: 배치 요청</span>
+<span class="kw">def</span> <span class="fn">batch_questions</span>(questions: list) -> list:
+    <span class="cmt">// 여러 질문을 하나의 프롬프트로 결합</span>
+    combined = <span class="str">"\n\n"</span>.<span class="fn">join</span>([
+        <span class="str">f"{i+1}. {q}"</span> 
+        <span class="kw">for</span> i, q <span class="kw">in</span> <span class="fn">enumerate</span>(questions)
+    ])
+    
+    prompt = <span class="str">f"""다음 질문들에 답변해주세요:</span>
+<span class="str">{combined}</span>
+<span class="str">각 질문 번호와 함께 답변해주세요."""</span>
+    
+    response = client.messages.<span class="fn">create</span>(prompt=prompt)
+    <span class="cmt">// 1번의 API 호출 → 비용大幅 절감</span>
+    
+    <span class="kw">return</span> <span class="fn">parse_responses</span>(response.content)</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="cost-summary">비용 최적화 체크리스트</h2>
+  <p>비용을 절감하기 위한 체크리스트입니다.</p>
+
+  <div class="info-box info">
+    <div class="info-box-title">✅ 비용 최적화 체크리스트</div>
+    <ul>
+      <li>프롬프트를 간결하게 유지</li>
+      <li>불필요한 컨텍스트 제거</li>
+      <li>작업에 맞는 적절한 모델 선택</li>
+      <li>반복 요청에 캐싱 적용</li>
+      <li>비용 알림 설정</li>
+      <li>배치 처리 활용</li>
+      <li>정기적으로 비용 분석</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>비용 관리에 대해 더 자세히 배워보세요!</p>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>비용 모니터링</h3>
+      <p>비용을 지속적으로 모니터링하세요</p>
+      <a href="monitoring-costs.html" class="card-link">비용 모니터링 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>다중 LLM 전환</h3>
+      <p>여러 LLM을 상황에 맞게切换하세요</p>
+      <a href="api-switching.html" class="card-link">다중 LLM 전환 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>보안 모범 사례</h3>
+      <p>보안도 함께 챙기세요</p>
+      <a href="security-best-practices.html" class="card-link">보안 모범 사례 →</a>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li><strong>토큰 최적화</strong>: 프롬프트 압축, 컨텍스트 정리</li>
+    <li><strong>모델 선택</strong>: 작업에 맞는 적절한 모델</li>
+    <li><strong>캐싱</strong>: 반복 요청에 대한 응답 캐시</li>
+    <li><strong>예산 알림</strong>: 비용 임계치 초과 시 경고</li>
+    <li><strong>배치 처리</strong>: 여러 요청을 하나로 결합</li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="REST API 구축 - 실전 프로젝트 튜토리얼">
+<meta property="og:description" content="AI 도움으로 REST API를 설계하고 구축하는 실전 튜토리얼입니다. Express.js로 백엔드 API를 만들어보세요.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/project-rest-api.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI 도움으로 REST API를 설계하고 구축하는 실전 튜토리얼입니다. Express.js로 백엔드 API를 만들어보세요.">
+<meta name="keywords" content="rest api 프로젝트 튜토리얼 백엔드 express vibe coding">
+<meta name="author" content="MINZKN">
+<title>REST API 구축 - 실전 프로젝트 튜토리얼 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">REST API 구축 - 실전 프로젝트 튜토리얼</h1>
+<p class="page-description">AI 도움으로 REST API를 설계하고 구축하는 실전 튜토리얼입니다. Express.js로 백엔드 API를 만들어보세요.</p>
+
+<section class="content-section">
+  <h2 id="overview">프로젝트 개요</h2>
+  <p>
+    이 튜토리얼에서는 간단한 메모(Memo) API를 만들어봅니다.
+    기본적인 CRUD(Create, Read, Update, Delete) 기능을 구현합니다.
+  </p>
+
+  <div class="info-box info">
+    <div class="info-box-title">📋 API 엔드포인트 설계</div>
+    <table>
+      <thead>
+        <tr>
+          <th>메서드</th>
+          <th>엔드포인트</th>
+          <th>설명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>GET</td>
+          <td>/api/memos</td>
+          <td>모든 메모 조회</td>
+        </tr>
+        <tr>
+          <td>GET</td>
+          <td>/api/memos/:id</td>
+          <td>단일 메모 조회</td>
+        </tr>
+        <tr>
+          <td>POST</td>
+          <td>/api/memos</td>
+          <td>새 메모 생성</td>
+        </tr>
+        <tr>
+          <td>PUT</td>
+          <td>/api/memos/:id</td>
+          <td>메모 수정</td>
+        </tr>
+        <tr>
+          <td>DELETE</td>
+          <td>/api/memos/:id</td>
+          <td>메모 삭제</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="step1">Step 1: 프로젝트 설정</h2>
+  <p>Node.js 프로젝트 초기화와 필수 패키지 설치를 진행합니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">터미널</span>
+    </div>
+    <pre><code><span class="cmt"># 프로젝트 폴더 생성</span>
+mkdir memo-api
+cd memo-api
+
+<span class="cmt"># package.json 초기화</span>
+npm init -y
+
+<span class="cmt"># Express와 필수 패키지 설치</span>
+npm install express cors uuid
+
+<span class="cmt"># 개발 의존성 설치</span>
+npm install -D nodemon</code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 팁</div>
+    <p>nodemon은 코드 변경 시 서버를 자동으로 재시작해주는 도구입니다.</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="step2">Step 2: AI에게 API 생성 요청</h2>
+  <p>Claude에게 Express.js 기반의 메모 API를 요청합니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">Express.js로 간단한 메모 REST API를 만들어줘.</span>
+
+<span class="str">요구사항:</span>
+<span class="str">1. Express.js 사용</span>
+<span class="str">2. CORS 활성화</span>
+<span class="str">3. JSON 본문 파싱</span>
+<span class="str">4. CRUD 엔드포인트 구현 (/api/memos)</span>
+<span class="str">5. uuid로 고유 ID 생성</span>
+<span class="str">6. 에러 처리 포함</span>
+<span class="str">7. 포트는 3000번 사용</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="step3">Step 3: 생성된 코드 확인</h3>
+  <p>Claude가 생성한 server.js 파일의 예시입니다:</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">JavaScript (server.js)</span>
+    </div>
+    <pre><code><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> cors = <span class="fn">require</span>(<span class="str">'cors'</span>);
+<span class="kw">const</span> { v4: uuidv4 } = <span class="fn">require</span>(<span class="str">'uuid'</span>);
+
+<span class="kw">const</span> app = <span class="fn">express</span>();
+<span class="kw">const</span> PORT = <span class="num">3000</span>;
+
+<span class="cmt">// 미들웨어</span>
+app.<span class="fn">use</span>(cors());
+app.<span class="fn">use</span>(express.json());
+
+<span class="cmt">// 인메모리 데이터 저장소</span>
+<span class="kw">let</span> memos = [];
+
+<span class="cmt">// GET /api/memos - 모든 메모 조회</span>
+app.<span class="fn">get</span>(<span class="str">'/api/memos'</span>, (req, res) => {
+  res.<span class="fn">json</span>(memos);
+});
+
+<span class="cmt">// GET /api/memos/:id - 단일 메모 조회</span>
+app.<span class="fn">get</span>(<span class="str">'/api/memos/:id'</span>, (req, res) => {
+  <span class="kw">const</span> memo = memos.<span class="fn">find</span>(m => m.id === req.params.id);
+  <span class="kw">if</span> (!memo) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({ error: <span class="str">'메모를 찾을 수 없습니다'</span> });
+  }
+  res.<span class="fn">json</span>(memo);
+});
+
+<span class="cmt">// POST /api/memos - 새 메모 생성</span>
+app.<span class="fn">post</span>(<span class="str">'/api/memos'</span>, (req, res) => {
+  <span class="kw">const</span> { title, content } = req.body;
+  <span class="kw">const</span> newMemo = {
+    id: <span class="fn">uuidv4</span>(),
+    title,
+    content,
+    createdAt: <span class="kw">new</span> <span class="fn">Date</span>().<span class="fn">toISOString</span>()
+  };
+  memos.<span class="fn">push</span>(newMemo);
+  res.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>(newMemo);
+});
+
+<span class="cmt">// PUT /api/memos/:id - 메모 수정</span>
+app.<span class="fn">put</span>(<span class="str">'/api/memos/:id'</span>, (req, res) => {
+  <span class="kw">const</span> { title, content } = req.body;
+  <span class="kw">const</span> index = memos.<span class="fn">findIndex</span>(m => m.id === req.params.id);
+  
+  <span class="kw">if</span> (index === -<span class="num">1</span>) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({ error: <span class="str">'메모를 찾을 수 없습니다'</span> });
+  }
+  
+  memos[index] = { ...memos[index], title, content };
+  res.<span class="fn">json</span>(memos[index]);
+});
+
+<span class="cmt">// DELETE /api/memos/:id - 메모 삭제</span>
+app.<span class="fn">delete</span>(<span class="str">'/api/memos/:id'</span>, (req, res) => {
+  <span class="kw">const</span> index = memos.<span class="fn">findIndex</span>(m => m.id === req.params.id);
+  
+  <span class="kw">if</span> (index === -<span class="num">1</span>) {
+    <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">json</span>({ error: <span class="str">'메모를 찾을 수 없습니다'</span> });
+  }
+  
+  memos.<span class="fn">splice</span>(index, <span class="num">1</span>);
+  res.<span class="fn">status</span>(<span class="num">204</span>).<span class="fn">send</span>();
+});
+
+<span class="cmt">// 서버 시작</span>
+app.<span class="fn">listen</span>(PORT, () => {
+  console.<span class="fn">log</span>(<span class="str">`서버가 포트 ${PORT}에서 실행 중입니다`</span>);
+});</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="step4">Step 4: API 테스트</h2>
+  <p>서버를 실행하고 API를 테스트합니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">터미널</span>
+    </div>
+    <pre><code><span class="cmt"># 서버 실행</span>
+node server.js
+
+<span class="cmt"># 또는 nodemon으로 실행 (코드 변경 시 자동 재시작)</span>
+npx nodemon server.js</code></pre>
+  </div>
+
+  <h3 id="test-api">API 테스트 방법</h3>
+  <p>Postman, curl, 또는 브라우저 확장을 사용하여 테스트할 수 있습니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">curl 명령어</span>
+    </div>
+    <pre><code><span class="cmt"># 모든 메모 조회</span>
+curl http://localhost:3000/api/memos
+
+<span class="cmt"># 새 메모 생성</span>
+curl -X POST http://localhost:3000/api/memos \
+  -H "Content-Type: application/json" \
+  -d '{"title": "첫 메모", "content": "메모 내용"}'
+
+<span class="cmt"># 메모 수정</span>
+curl -X PUT http://localhost:3000/api/memos/메모ID \
+  -H "Content-Type: application/json" \
+  -d '{"title": "수정된 제목", "content": "수정된 내용"}'
+
+<span class="cmt"># 메모 삭제</span>
+curl -X DELETE http://localhost:3000/api/memos/메모ID</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="step5">Step 5: 데이터베이스 연동 (선택)</h2>
+  <p>메모리 저장 대신 실제 데이터베이스를 사용해보세요.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Claude에게 요청</span>
+    </div>
+    <pre><code><span class="str">지금 만든 메모 API에 SQLite 데이터베이스를</span>
+<span class="str">연동해줘. better-sqlite3 패키지를 사용하고,</span>
+<span class="str">테이블 이름은 memos로 해줘.</span></code></pre>
+  </div>
+
+  <div class="info-box info">
+    <div class="info-box-title">📚 추가 데이터베이스 옵션</div>
+    <ul>
+      <li><strong>SQLite</strong>: 가볍고 설정이 간단함</li>
+      <li><strong>PostgreSQL</strong>: 프로덕션 환경에 적합</li>
+      <li><strong>MongoDB</strong>: 문서 기반 저장소</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="architecture">API 아키텍처</h2>
+  <p>완성된 API의 아키텍처는 다음과 같습니다:</p>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 250"
+         style="width:100%;max-width:600px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="api-arch-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="200" y="20" width="200" height="40" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="300" y="45" text-anchor="middle" fill="var(--diagram-text)" font-size="13">
+        클라이언트 (React, Vue 등)
+      </text>
+
+      <line x1="300" y1="60" x2="300" y2="90"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#api-arch-arrow)"/>
+
+      <rect x="200" y="90" width="200" height="40" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="300" y="115" text-anchor="middle" fill="var(--diagram-text)" font-size="13">
+        Express.js 서버
+      </text>
+
+      <line x1="300" y1="130" x2="300" y2="160"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#api-arch-arrow)"/>
+
+      <rect x="200" y="160" width="200" height="40" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="300" y="185" text-anchor="middle" fill="var(--diagram-text)" font-size="13">
+        SQLite / PostgreSQL / MongoDB
+      </text>
+
+      <text x="500" y="50" text-anchor="middle" fill="var(--text-secondary)" font-size="11">
+        GET/POST/PUT/DELETE
+      </text>
+      <text x="500" y="70" text-anchor="middle" fill="var(--text-secondary)" font-size="11">
+        JSON
+      </text>
+    </svg>
+    <p class="diagram-caption">REST API 아키텍처</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+  <p>이제 REST API를 만들어보는 방법을 배웠습니다. 다음 프로젝트도 도전해 보세요!</p>
+
+  <div class="card-grid">
+    <div class="doc-card">
+      <h3>CI/CD 파이프라인</h3>
+      <p>API를 자동으로 배포해보세요</p>
+      <a href="project-ci-cd.html" class="card-link">CI/CD 파이프라인 →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>백엔드 Vibe Coding</h3>
+      <p>더 다양한 백엔드 프로젝트를 만들어보세요</p>
+      <a href="backend-vibe.html" class="card-link">백엔드 Vibe Coding →</a>
+    </div>
+
+    <div class="doc-card">
+      <h3>API 디자인</h3>
+      <p>더 나은 API 설계 방법을 배워보세요</p>
+      <a href="api-design.html" class="card-link">API 디자인 →</a>
+    </div>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="summary">핵심 정리</h2>
+  <ul>
+    <li><strong>프로젝트 설정</strong>: npm init으로 프로젝트 초기화</li>
+    <li><strong>요구사항 명시</strong>: API 엔드포인트와 기능을 구체적으로 요청</li>
+    <li><strong>코드 생성</strong>: Express.js로 CRUD 기능 구현</li>
+    <li><strong>테스트</strong>: curl 또는 Postman으로 API 테스트</li>
+    <li><strong>확장</strong>: 데이터베이스 연동으로 실제 서비스 구축</li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<nav class="page-nav"></nav>
+
+</main>
+
+<!-- ===== TOC Sidebar ===== -->
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
