@@ -1295,20 +1295,3 @@ tr:nth-child(even) {
   }
 }
 
-/* ---------- Comments Section ---------- */
-.comments-section {
-  margin: 4rem 0 2rem;
-  padding: 2rem 0 0;
-  border-top: 2px solid var(--border-primary);
-}
-
-.comments-section h2 {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  color: var(--text-heading);
-}
-
-.giscus,
-.giscus-frame {
-  width: 100% !important;
-}
