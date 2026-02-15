@@ -1013,6 +1013,29 @@ tr:nth-child(even) {
   height: auto;
 }
 
+.content-section > svg {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5em auto;
+  background: var(--diagram-fill);
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.diagram {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.5em auto;
+  background: var(--diagram-fill);
+  border-radius: 8px;
+  padding: 20px;
+}
+
 .diagram-container svg text {
   fill: var(--diagram-text);
   font-family: "D2Coding", monospace;
@@ -1317,4 +1340,3 @@ tr:nth-child(even) {
   display: block;
 }
 }
-

@@ -11,8 +11,8 @@ AI Vibe Coding 가이드에 대한 **한국어** 정적 문서 사이트.
 - 3개 CSS: `css/style.css`, `css/themes.css`, `css/responsive.css`
 - 1개 JS: `js/main.js`
 - 2개 SEO: `sitemap.xml`, `robots.txt`
-- 8개 카테고리, 62개 문서 페이지 (`pages/*.html`)
-- 전체 63개 페이지 (`index.html` 포함)
+- 16개 카테고리, 97개 문서 페이지 (`pages/*.html`)
+- 전체 98개 페이지 (`index.html` 포함)
 - 5개 테마: `dark-kernel`(기본), `light`, `solarized`, `nord`, `high-contrast`
 
 ## Development
@@ -33,7 +33,7 @@ python3 -m http.server 8080   # http://localhost:8080
 | 메인 페이지 | `index.html` | 카드 그리드 + 소개 |
 | 페이지 템플릿 | `template.html` | 새 페이지 작성 시 기준 템플릿 |
 | SEARCH_INDEX | `js/main.js` | 검색 엔트리 (index.html 미포함) |
-| NAV_STRUCTURE | `js/main.js` | 8개 카테고리, 페이지 항목 (index.html 포함) |
+| NAV_STRUCTURE | `js/main.js` | 16개 카테고리, 페이지 항목 (index.html 포함) |
 | IIFE 시작 | `js/main.js` | 동적 생성/인터랙션 로직 |
 | 테마 변수 | `css/themes.css` | 5개 테마 CSS custom property |
 | 레이아웃 | `css/style.css` | Grid, 타이포그래피, 컴포넌트 |
@@ -97,7 +97,7 @@ JS가 자동으로 생성하는 항목:
 ### JavaScript 구조 (`js/main.js`)
 파일 구성 순서:
 1. `SEARCH_INDEX` 전역 배열 — 모든 페이지의 `{ title, url, description, keywords }`
-2. `NAV_STRUCTURE` 전역 배열 — 8개 카테고리별 페이지 계층 구조
+2. `NAV_STRUCTURE` 전역 배열 — 16개 카테고리별 페이지 계층 구조
 3. 단일 IIFE — 동적 UI 생성, 테마 전환, TOC, 스크롤 스파이, 검색, 모바일 네비게이션
 
 ### 테마 시스템
@@ -108,14 +108,14 @@ JS가 자동으로 생성하는 항목:
 - SVG 다이어그램은 CSS custom property 사용: `var(--diagram-arrow)`, `var(--diagram-accent)`, `var(--diagram-text)`, `var(--border-color)`, `var(--bg-secondary)`, `var(--accent-primary)`
 
 ### 네비게이션 구조 (NAV_STRUCTURE)
-8개 카테고리:
-- **시작하기**: Vibe Coding 개념, CLI 도구 생태계, 학습 경로
+16개 카테고리(대표 예시):
+- **시작하기**: Vibe Coding 개념, 학습 경로
 - **AI CLI 도구들**: Codex, Claude CLI, Aider, Continue 등
 - **Ollama & 로컬 LLM**: 로컬 실행, 모델 가이드, 트러블슈팅
 - **MCP**: 서버/클라이언트/생태계/고급 주제
 - **LLM API & 연동**: Claude/OpenAI/Gemini/API 추상화
 - **프롬프트 엔지니어링**: 기본/패턴/Few-shot/최적화
-- **환경 구축 & 도구**: 키 관리, Docker, CI/CD, 비용 모니터링
+- **기술 스택 시리즈**: 프론트엔드/백엔드/DB/인프라
 - **참고 & 리소스**: 모델 비교, 제한사항, FAQ, 용어집
 
 ## HTML 페이지 템플릿

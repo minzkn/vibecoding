@@ -79,6 +79,19 @@
   <p><strong>필요한 것:</strong> 컴퓨터 (최소 8GB RAM 권장)</p>
 </div>
 
+<div class="info-box warning">
+  <div class="info-box-title">⏱️ 5분 기준 안내</div>
+  <pre><code><span class="cmt"># Ollama 설치 확인</span>
+ollama --version
+
+<span class="cmt"># Python 확인 (로컬 서버/도구 연동용)</span>
+python3 --version</code></pre>
+  <p>
+    이 페이지의 5분은 <strong>도구 설치와 초기 다운로드가 끝난 상태</strong>를 기준으로 합니다.
+    처음 실행에서는 네트워크와 시스템 환경에 따라 시간이 더 걸릴 수 있습니다.
+  </p>
+</div>
+
 <!-- Section 1: Ollama란? -->
 <section class="content-section">
   <h2 id="what-is-ollama">Ollama란?</h2>
@@ -396,6 +409,10 @@ index.html을 브라우저에서 열어 테스트해보세요.</span></code></pr
 open http://localhost:8000</code></pre>
 
   <p>
+    테스트가 끝나면 서버를 실행한 터미널에서 <code>Ctrl + C</code>를 눌러 종료하세요.
+  </p>
+
+  <p>
     완전 무료로 TODO 앱을 만들었습니다! 🎉
   </p>
 </section>
@@ -602,6 +619,18 @@ aider --model ollama/llama3.1:70b</code></pre>
 ollama list
 
 <span class="cmt"># 서비스가 없으면 Ollama 앱 실행</span></code></pre>
+
+  <h4>❌ "Permission denied" 또는 접근 권한 오류</h4>
+  <p><strong>원인:</strong> 쓰기 권한이 없는 위치에서 실행</p>
+  <p><strong>해결:</strong> 홈 디렉토리 아래 새 폴더에서 다시 시작</p>
+  <pre><code>mkdir my-vibe-project
+cd my-vibe-project</code></pre>
+
+  <h4>❌ "Port 8000 is already in use"</h4>
+  <p><strong>원인:</strong> 다른 프로세스가 8000 포트 사용 중</p>
+  <p><strong>해결:</strong> 다른 포트로 서버 실행</p>
+  <pre><code>python3 -m http.server 8080
+<span class="cmt"># 브라우저: http://localhost:8080</span></code></pre>
 
   <h4>❌ 응답이 너무 느림</h4>
   <p><strong>원인:</strong> GPU 미사용 또는 큰 모델</p>

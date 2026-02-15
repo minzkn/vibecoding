@@ -211,6 +211,27 @@
   h1 { font-size: 1.4rem; }
   h2 { font-size: 1.2rem; }
 
+  .diagram-container {
+    padding: 0.75em;
+  }
+
+  .diagram,
+  .content-section > svg {
+    padding: 12px;
+  }
+
+  .diagram-container svg text,
+  .diagram text,
+  .content-section > svg text {
+    font-size: 11px;
+  }
+
+  .diagram-container svg.diagram-wide {
+    width: 680px;
+    max-width: none;
+    height: auto;
+  }
+
   .search-container {
     display: none;
   }

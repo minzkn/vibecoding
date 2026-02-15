@@ -19,6 +19,14 @@ PAGES_DIR = PROJECT_ROOT / "pages"
 CSS_DIR = PROJECT_ROOT / "css"
 JS_DIR = PROJECT_ROOT / "js"
 
+def is_external_url(url):
+    """외부 URL 여부 판별 (절대 URL + 프로토콜 상대 URL)"""
+    return (
+        url.startswith('http://')
+        or url.startswith('https://')
+        or url.startswith('//')
+    )
+
 def extract_links(html_content, file_path):
     """HTML에서 모든 링크 추출"""
     links = {
@@ -34,7 +42,7 @@ def extract_links(html_content, file_path):
     for match in re.finditer(href_pattern, html_content):
         href = match.group(1)
 
-        if href.startswith('http://') or href.startswith('https://'):
+        if is_external_url(href):
             links['external'].append(href)
         elif href.startswith('#'):
             links['anchor'].append(href[1:])  # # 제거
@@ -117,6 +125,8 @@ def check_links():
 
         # 4. JS 파일 검증
         for js_link in links['js']:
+            if is_external_url(js_link):
+                continue
             js_path = resolve_path(html_file, js_link)
             if not js_path.exists():
                 issues[html_file.name].append(f"❌ JS 파일 없음: {js_link}")

@@ -73,6 +73,12 @@
   --info-bg-info: rgba(88, 166, 255, 0.08);
   --info-bg-warning: rgba(210, 153, 34, 0.08);
   --info-bg-danger: rgba(248, 81, 73, 0.08);
+  --text-tertiary: var(--text-muted);
+  --border-color: var(--border-primary);
+  --accent-success: var(--accent-primary);
+  --code-bg: var(--bg-code);
+  --info-bg-success: var(--accent-glow);
+  --info-bg-tip: var(--accent-glow);
 }
 
 /* ---------- Light ---------- */
@@ -145,6 +151,12 @@
   --info-bg-info: rgba(9, 105, 218, 0.08);
   --info-bg-warning: rgba(154, 103, 0, 0.08);
   --info-bg-danger: rgba(207, 34, 46, 0.08);
+  --text-tertiary: var(--text-muted);
+  --border-color: var(--border-primary);
+  --accent-success: var(--accent-primary);
+  --code-bg: var(--bg-code);
+  --info-bg-success: var(--accent-glow);
+  --info-bg-tip: var(--accent-glow);
 }
 
 /* ---------- Solarized ---------- */
@@ -217,6 +229,12 @@
   --info-bg-info: rgba(38, 139, 210, 0.08);
   --info-bg-warning: rgba(181, 137, 0, 0.08);
   --info-bg-danger: rgba(220, 50, 47, 0.08);
+  --text-tertiary: var(--text-muted);
+  --border-color: var(--border-primary);
+  --accent-success: var(--accent-primary);
+  --code-bg: var(--bg-code);
+  --info-bg-success: var(--accent-glow);
+  --info-bg-tip: var(--accent-glow);
 }
 
 /* ---------- Nord ---------- */
@@ -289,6 +307,12 @@
   --info-bg-info: rgba(136, 192, 208, 0.08);
   --info-bg-warning: rgba(235, 203, 139, 0.08);
   --info-bg-danger: rgba(191, 97, 106, 0.08);
+  --text-tertiary: var(--text-muted);
+  --border-color: var(--border-primary);
+  --accent-success: var(--accent-primary);
+  --code-bg: var(--bg-code);
+  --info-bg-success: var(--accent-glow);
+  --info-bg-tip: var(--accent-glow);
 }
 
 /* ---------- High Contrast ---------- */
@@ -361,4 +385,10 @@
   --info-bg-info: rgba(110, 242, 255, 0.08);
   --info-bg-warning: rgba(255, 204, 0, 0.08);
   --info-bg-danger: rgba(255, 51, 51, 0.08);
+  --text-tertiary: var(--text-muted);
+  --border-color: var(--border-primary);
+  --accent-success: var(--accent-primary);
+  --code-bg: var(--bg-code);
+  --info-bg-success: var(--accent-glow);
+  --info-bg-tip: var(--accent-glow);
 }

@@ -92,7 +92,7 @@
 
   <!-- CLI Tools Architecture Diagram -->
   <div class="diagram-container">
-    <svg viewBox="0 0 720 400" width="720" height="400" xmlns="http://www.w3.org/2000/svg" style="background: var(--diagram-fill); border-radius: 8px; padding: 20px;">
+    <svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" style="background: var(--diagram-fill); border-radius: 8px; padding: 20px;">
       <defs>
         <marker id="cli-tools-overview-1-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
           <path d="M0,0 L8,3 L0,6 Z" fill="var(--diagram-arrow)"/>
@@ -103,14 +103,14 @@
       <text x="360" y="25" text-anchor="middle" font-size="15" font-weight="bold" fill="var(--diagram-text)">AI CLI 도구 아키텍처</text>
 
       <!-- Layer 1: Developer -->
-      <rect x="250" y="60" width="220" height="60" rx="8" class="box-accent" opacity="0.8"/>
+      <rect x="250" y="60" rx="8" class="box-accent" opacity="0.8"/>
       <text x="360" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">개발자 (You)</text>
       <text x="360" y="103" text-anchor="middle" font-size="10" fill="var(--diagram-text)">"TODO 앱 만들어줘"</text>
 
       <line x1="360" y1="120" x2="360" y2="145" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cli-tools-overview-1-arrow)"/>
 
       <!-- Layer 2: CLI Tool -->
-      <rect x="250" y="145" width="220" height="80" rx="8" class="box"/>
+      <rect x="250" y="145" rx="8" class="box"/>
       <text x="360" y="170" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">AI CLI 도구</text>
       <text x="360" y="187" text-anchor="middle" font-size="9" fill="var(--diagram-text)">• 프롬프트 전처리</text>
       <text x="360" y="202" text-anchor="middle" font-size="9" fill="var(--diagram-text)">• 컨텍스트 관리 (파일, Git 등)</text>
@@ -119,14 +119,14 @@
       <line x1="360" y1="225" x2="360" y2="240" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cli-tools-overview-1-arrow)"/>
 
       <!-- Layer 3: LLM API -->
-      <rect x="250" y="240" width="220" height="60" rx="8" class="box"/>
+      <rect x="250" y="240" rx="8" class="box"/>
       <text x="360" y="265" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">LLM (Claude, GPT, etc.)</text>
       <text x="360" y="283" text-anchor="middle" font-size="10" fill="var(--diagram-text)">코드 생성 및 추론</text>
 
       <line x1="360" y1="300" x2="360" y2="325" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#cli-tools-overview-1-arrow)"/>
 
       <!-- Layer 4: Output -->
-      <rect x="250" y="325" width="220" height="60" rx="8" class="box-accent" opacity="0.8"/>
+      <rect x="250" y="325" rx="8" class="box-accent" opacity="0.8"/>
       <text x="360" y="350" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">생성된 코드</text>
       <text x="360" y="368" text-anchor="middle" font-size="10" fill="var(--diagram-text)">파일 생성/수정, 실행</text>
 
@@ -137,7 +137,7 @@
       <text x="50" y="355" font-size="10" fill="var(--text-secondary)">출력</text>
 
       <!-- Features (Right side) -->
-      <rect x="490" y="145" width="210" height="160" rx="6" class="box" opacity="0.3"/>
+      <rect x="490" y="145" rx="6" class="box" opacity="0.3"/>
       <text x="595" y="165" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">CLI 도구 핵심 기능</text>
       <text x="500" y="185" font-size="9" fill="var(--diagram-text)">✓ 프로젝트 컨텍스트 분석</text>
       <text x="500" y="200" font-size="9" fill="var(--diagram-text)">✓ Git 통합 (diff, commit)</text>
@@ -582,7 +582,7 @@ gh copilot suggest "find all python files modified in last week"</code></pre>
 
   <!-- Feature Matrix Diagram -->
   <div class="diagram-container">
-    <svg viewBox="0 0 760 420" width="760" height="420" xmlns="http://www.w3.org/2000/svg" style="background: var(--diagram-fill); border-radius: 8px; padding: 20px;">
+    <svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" style="background: var(--diagram-fill); border-radius: 8px; padding: 20px;">
       <defs>
         <linearGradient id="grad-high" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" style="stop-color:var(--accent-primary);stop-opacity:0.8" />
@@ -613,45 +613,45 @@ gh copilot suggest "find all python files modified in last week"</code></pre>
       <text x="520" y="45" font-size="9" fill="var(--text-secondary)">5.0</text>
 
       <!-- Claude CLI bars -->
-      <rect x="120" y="60" width="360" height="15" fill="url(#grad-high)"/>
+      <rect x="120" y="60" fill="url(#grad-high)"/>
       <text x="490" y="72" font-size="9" fill="var(--diagram-text)">4.5 코드 품질</text>
-      <rect x="120" y="75" width="240" height="15" fill="url(#grad-mid)"/>
+      <rect x="120" y="75" fill="url(#grad-mid)"/>
       <text x="370" y="87" font-size="9" fill="var(--diagram-text)">3.0 Git</text>
 
       <!-- Codex bars -->
-      <rect x="120" y="110" width="360" height="15" fill="url(#grad-high)"/>
+      <rect x="120" y="110" fill="url(#grad-high)"/>
       <text x="490" y="122" font-size="9" fill="var(--diagram-text)">4.5 코드 품질</text>
-      <rect x="120" y="125" width="240" height="15" fill="url(#grad-mid)"/>
+      <rect x="120" y="125" fill="url(#grad-mid)"/>
       <text x="370" y="137" font-size="9" fill="var(--diagram-text)">3.0 작업 자동화</text>
 
       <!-- Aider bars -->
-      <rect x="120" y="160" width="320" height="15" fill="url(#grad-high)"/>
+      <rect x="120" y="160" fill="url(#grad-high)"/>
       <text x="450" y="172" font-size="9" fill="var(--diagram-text)">4.0 코드 품질</text>
-      <rect x="120" y="175" width="400" height="15" fill="url(#grad-mid)"/>
+      <rect x="120" y="175" fill="url(#grad-mid)"/>
       <text x="530" y="187" font-size="9" fill="var(--diagram-text)">5.0 Git</text>
 
       <!-- Continue.dev bars -->
-      <rect x="120" y="210" width="280" height="15" fill="url(#grad-high)"/>
+      <rect x="120" y="210" fill="url(#grad-high)"/>
       <text x="410" y="222" font-size="9" fill="var(--diagram-text)">3.5 코드 품질</text>
-      <rect x="120" y="225" width="320" height="15" fill="url(#grad-mid)"/>
+      <rect x="120" y="225" fill="url(#grad-mid)"/>
       <text x="450" y="237" font-size="9" fill="var(--diagram-text)">4.0 에디터 통합</text>
 
       <!-- Cursor bars -->
-      <rect x="120" y="260" width="360" height="15" fill="url(#grad-high)"/>
+      <rect x="120" y="260" fill="url(#grad-high)"/>
       <text x="490" y="272" font-size="9" fill="var(--diagram-text)">4.5 코드 품질</text>
-      <rect x="120" y="275" width="400" height="15" fill="url(#grad-mid)"/>
+      <rect x="120" y="275" fill="url(#grad-mid)"/>
       <text x="530" y="287" font-size="9" fill="var(--diagram-text)">5.0 UX</text>
 
       <!-- Copilot CLI bars -->
-      <rect x="120" y="310" width="240" height="15" fill="url(#grad-high)"/>
+      <rect x="120" y="310" fill="url(#grad-high)"/>
       <text x="370" y="322" font-size="9" fill="var(--diagram-text)">3.0 코드 품질</text>
-      <rect x="120" y="325" width="360" height="15" fill="url(#grad-mid)"/>
+      <rect x="120" y="325" fill="url(#grad-mid)"/>
       <text x="490" y="337" font-size="9" fill="var(--diagram-text)">4.5 쉘 명령어</text>
 
       <!-- Cline bars -->
-      <rect x="120" y="360" width="280" height="15" fill="url(#grad-high)"/>
+      <rect x="120" y="360" fill="url(#grad-high)"/>
       <text x="410" y="372" font-size="9" fill="var(--diagram-text)">3.5 코드 품질</text>
-      <rect x="120" y="375" width="320" height="15" fill="url(#grad-mid)"/>
+      <rect x="120" y="375" fill="url(#grad-mid)"/>
       <text x="450" y="387" font-size="9" fill="var(--diagram-text)">4.0 자율성</text>
     </svg>
     <p class="diagram-caption">그림 2: 각 도구의 강점 비교 - Claude CLI, Codex, Cursor가 코드 품질에서 우수, Aider는 Git 통합 최고</p>

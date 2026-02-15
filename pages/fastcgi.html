@@ -125,7 +125,7 @@
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 350"
          style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
       <defs>
-        <marker id="fcgi-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+        <marker id="fastcgi-1-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
                 markerWidth="10" markerHeight="7" orient="auto">
           <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
         </marker>
@@ -150,7 +150,7 @@
 
       <!-- Arrow: Client -> Web Server -->
       <line x1="170" y1="55" x2="245" y2="55"
-            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fcgi-arrow)"/>
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fastcgi-1-arrow)"/>
       <text x="207" y="45" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
         HTTP Request
       </text>
@@ -164,7 +164,7 @@
 
       <!-- Arrow: Web Server -> FastCGI -->
       <line x1="325" y1="80" x2="325" y2="125"
-            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fcgi-arrow)"/>
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fastcgi-1-arrow)"/>
       <text x="340" y="107" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
         FastCGI Protocol
       </text>
@@ -181,7 +181,7 @@
 
       <!-- Arrow: FastCGI -> Application -->
       <line x1="400" y1="155" x2="445" y2="155"
-            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fcgi-arrow)"/>
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fastcgi-1-arrow)"/>
 
       <!-- Database -->
       <rect x="500" y="230" width="100" height="40" rx="6"
@@ -192,11 +192,11 @@
 
       <!-- Arrow: Application -> Database -->
       <line x1="525" y1="180" x2="550" y2="225"
-            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fcgi-arrow)"/>
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#fastcgi-1-arrow)"/>
 
       <!-- Arrow: Response path -->
       <line x1="525" y1="90" x2="175" y2="90"
-            stroke="var(--diagram-accent)" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#fcgi-arrow)"/>
+            stroke="var(--diagram-accent)" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#fastcgi-1-arrow)"/>
       <text x="350" y="80" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
         HTTP Response
       </text>

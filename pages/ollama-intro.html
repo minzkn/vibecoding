@@ -141,6 +141,7 @@
     <line x1="400" y1="220" x2="400" y2="240" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#ollama-intro-1-arrow)"/>
     <line x1="400" y1="300" x2="400" y2="320" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#ollama-intro-1-arrow)"/>
   </svg>
+  <p class="diagram-caption">Ollama 핵심 구성: 사용자 입력부터 추론 엔진과 외부 앱 연동까지</p>
 
   <h3 id="why-docker-analogy">Docker와의 비교</h3>
 
@@ -313,7 +314,7 @@
 
   <h4>1. llama.cpp 기반 추론 엔진</h4>
   <p>
-    Ollama는 <a href="https://github.com/ggerganov/llama.cpp" target="_blank">llama.cpp</a>를
+    Ollama는 <a href="https://github.com/ggerganov/llama.cpp" target="_blank" rel="noopener noreferrer">llama.cpp</a>를
     백엔드로 사용합니다. llama.cpp는 C++로 작성된 고성능 LLM 추론 엔진으로, CPU와 GPU에서
     효율적으로 동작하도록 최적화되어 있습니다.
   </p>
@@ -433,6 +434,7 @@ DELETE /api/delete        <span class="cmt"># 모델 삭제</span></code></pre>
     <text x="670" y="210" fill="var(--text-secondary)" text-anchor="middle" font-size="11">대부분 작업에서</text>
     <text x="670" y="225" fill="var(--text-secondary)" text-anchor="middle" font-size="11">차이 거의 없음</text>
   </svg>
+  <p class="diagram-caption">양자화 전후 비교: 메모리 절감과 속도 향상의 트레이드오프</p>
 
   <table>
     <thead>
@@ -673,7 +675,7 @@ docker run -d -p 3000:8080 \
   <h3 id="community">커뮤니티</h3>
 
   <ul>
-    <li><strong>GitHub</strong>: <a href="https://github.com/ollama/ollama" target="_blank">github.com/ollama/ollama</a> (80k+ stars)</li>
+    <li><strong>GitHub</strong>: <a href="https://github.com/ollama/ollama" target="_blank" rel="noopener noreferrer">github.com/ollama/ollama</a> (80k+ stars)</li>
     <li><strong>Discord</strong>: Ollama 공식 Discord 서버</li>
     <li><strong>Reddit</strong>: r/LocalLLaMA, r/ollama</li>
     <li><strong>블로그</strong>: ollama.com/blog</li>

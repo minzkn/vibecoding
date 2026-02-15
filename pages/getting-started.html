@@ -76,6 +76,14 @@
   </ol>
 </div>
 
+<div class="info-box warning">
+  <div class="info-box-title">⏱️ 5분 기준 안내</div>
+  <p>
+    이 페이지의 5분 실습은 <strong>도구 설치와 초기 다운로드가 끝난 상태</strong>를 기준으로 합니다.
+    첫 실행에서는 네트워크와 시스템 환경에 따라 시간이 더 걸릴 수 있습니다.
+  </p>
+</div>
+
 <!-- Section 1: Vibe Coding 정의 -->
 <section class="content-section">
   <h2 id="definition">Vibe Coding 정의</h2>
@@ -101,7 +109,7 @@
 
   <!-- Comparison Diagram -->
   <div class="diagram-container">
-    <svg viewBox="0 0 760 380" width="760" height="380" xmlns="http://www.w3.org/2000/svg" style="background: var(--diagram-fill); border-radius: 8px; padding: 20px;">
+    <svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" style="background: var(--diagram-fill); border-radius: 8px; padding: 20px;">
       <defs>
         <marker id="getting-started-1-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
           <path d="M0,0 L8,3 L0,6 Z" fill="var(--diagram-arrow)"/>
@@ -114,42 +122,42 @@
       <!-- Traditional Development (Left) -->
       <text x="190" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--accent-primary)">전통적 개발</text>
 
-      <rect x="80" y="75" width="220" height="60" rx="6" class="box"/>
+      <rect x="80" y="75" rx="6" class="box"/>
       <text x="190" y="95" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">1. 요구사항 분석</text>
       <text x="190" y="110" text-anchor="middle" font-size="9" fill="var(--diagram-text)">문서 작성, 기술 스택 결정</text>
       <text x="190" y="125" text-anchor="middle" font-size="9" fill="var(--diagram-text)">아키텍처 설계, DB 스키마</text>
 
       <line x1="190" y1="135" x2="190" y2="155" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#getting-started-1-arrow)"/>
 
-      <rect x="80" y="155" width="220" height="60" rx="6" class="box"/>
+      <rect x="80" y="155" rx="6" class="box"/>
       <text x="190" y="175" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">2. 코드 작성</text>
       <text x="190" y="190" text-anchor="middle" font-size="9" fill="var(--diagram-text)">함수, 클래스, 모듈 작성</text>
       <text x="190" y="205" text-anchor="middle" font-size="9" fill="var(--diagram-text)">문법 오류, 버그 수정</text>
 
       <line x1="190" y1="215" x2="190" y2="235" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#getting-started-1-arrow)"/>
 
-      <rect x="80" y="235" width="220" height="60" rx="6" class="box"/>
+      <rect x="80" y="235" rx="6" class="box"/>
       <text x="190" y="255" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">3. 테스트 & 디버깅</text>
       <text x="190" y="270" text-anchor="middle" font-size="9" fill="var(--diagram-text)">단위 테스트, 통합 테스트</text>
       <text x="190" y="285" text-anchor="middle" font-size="9" fill="var(--diagram-text)">버그 추적 및 수정</text>
 
       <line x1="190" y1="295" x2="190" y2="315" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#getting-started-1-arrow)"/>
 
-      <rect x="80" y="315" width="220" height="50" rx="6" class="box-accent" opacity="0.7"/>
+      <rect x="80" y="315" rx="6" class="box-accent" opacity="0.7"/>
       <text x="190" y="335" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">4. 배포</text>
       <text x="190" y="350" text-anchor="middle" font-size="9" fill="var(--diagram-text)">시간: 수일~수주</text>
 
       <!-- Vibe Coding (Right) -->
       <text x="570" y="55" text-anchor="middle" font-size="13" font-weight="bold" fill="var(--accent-secondary)">Vibe Coding</text>
 
-      <rect x="460" y="75" width="220" height="60" rx="6" class="box"/>
+      <rect x="460" y="75" rx="6" class="box"/>
       <text x="570" y="95" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">1. 의도 전달</text>
       <text x="570" y="110" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"TODO 앱 만들어줘"</text>
       <text x="570" y="125" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"React + Firebase로"</text>
 
       <line x1="570" y1="135" x2="570" y2="155" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#getting-started-1-arrow)"/>
 
-      <rect x="460" y="155" width="220" height="70" rx="6" class="box"/>
+      <rect x="460" y="155" rx="6" class="box"/>
       <text x="570" y="175" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">2. AI 코드 생성</text>
       <text x="570" y="190" text-anchor="middle" font-size="9" fill="var(--diagram-text)">즉시 실행 가능한 코드</text>
       <text x="570" y="205" text-anchor="middle" font-size="9" fill="var(--diagram-text)">자동 디버깅</text>
@@ -157,14 +165,14 @@
 
       <line x1="570" y1="225" x2="570" y2="235" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#getting-started-1-arrow)"/>
 
-      <rect x="460" y="235" width="220" height="60" rx="6" class="box"/>
+      <rect x="460" y="235" rx="6" class="box"/>
       <text x="570" y="255" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">3. 대화로 개선</text>
       <text x="570" y="270" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"다크모드 추가해줘"</text>
       <text x="570" y="285" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"버튼 색상 파란색으로"</text>
 
       <line x1="570" y1="295" x2="570" y2="315" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#getting-started-1-arrow)"/>
 
-      <rect x="460" y="315" width="220" height="50" rx="6" class="box-accent" opacity="0.7"/>
+      <rect x="460" y="315" rx="6" class="box-accent" opacity="0.7"/>
       <text x="570" y="335" text-anchor="middle" font-size="11" font-weight="bold" fill="var(--diagram-text)">4. 배포</text>
       <text x="570" y="350" text-anchor="middle" font-size="9" fill="var(--diagram-text)">시간: 수분~수시간</text>
     </svg>
@@ -338,7 +346,7 @@
 
   <!-- Workflow Diagram -->
   <div class="diagram-container">
-    <svg viewBox="0 0 700 450" width="700" height="450" xmlns="http://www.w3.org/2000/svg" style="background: var(--diagram-fill); border-radius: 8px; padding: 20px;">
+    <svg viewBox="0 0 700 450" xmlns="http://www.w3.org/2000/svg" style="background: var(--diagram-fill); border-radius: 8px; padding: 20px;">
       <defs>
         <marker id="getting-started-2-arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
           <path d="M0,0 L8,3 L0,6 Z" fill="var(--diagram-arrow)"/>
@@ -349,7 +357,7 @@
       <text x="350" y="25" text-anchor="middle" font-size="15" font-weight="bold" fill="var(--diagram-text)">Vibe Coding 순환 워크플로우</text>
 
       <!-- Step 1: 문제 정의 -->
-      <rect x="250" y="60" width="200" height="70" rx="8" class="box-accent" opacity="0.8"/>
+      <rect x="250" y="60" rx="8" class="box-accent" opacity="0.8"/>
       <text x="350" y="85" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">1. 문제 정의</text>
       <text x="350" y="102" text-anchor="middle" font-size="10" fill="var(--diagram-text)">"무엇을 만들고 싶은가?"</text>
       <text x="350" y="117" text-anchor="middle" font-size="9" fill="var(--diagram-text)">예: "Markdown 에디터 만들기"</text>
@@ -357,7 +365,7 @@
       <line x1="350" y1="130" x2="350" y2="165" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#getting-started-2-arrow)"/>
 
       <!-- Step 2: 의도 전달 -->
-      <rect x="250" y="165" width="200" height="70" rx="8" class="box"/>
+      <rect x="250" y="165" rx="8" class="box"/>
       <text x="350" y="190" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">2. 의도 전달</text>
       <text x="350" y="207" text-anchor="middle" font-size="10" fill="var(--diagram-text)">AI CLI 도구로 요청</text>
       <text x="350" y="222" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"React로 만들어줘, 미리보기 포함"</text>
@@ -365,7 +373,7 @@
       <line x1="350" y1="235" x2="350" y2="270" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#getting-started-2-arrow)"/>
 
       <!-- Step 3: 코드 생성 -->
-      <rect x="250" y="270" width="200" height="70" rx="8" class="box"/>
+      <rect x="250" y="270" rx="8" class="box"/>
       <text x="350" y="295" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">3. 코드 생성</text>
       <text x="350" y="312" text-anchor="middle" font-size="10" fill="var(--diagram-text)">AI가 코드 작성 및 설명</text>
       <text x="350" y="327" text-anchor="middle" font-size="9" fill="var(--diagram-text)">App.js, Editor.js, Preview.js 생성</text>
@@ -373,7 +381,7 @@
       <line x1="350" y1="340" x2="350" y2="375" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#getting-started-2-arrow)"/>
 
       <!-- Step 4: 대화로 개선 -->
-      <rect x="250" y="375" width="200" height="70" rx="8" class="box-accent" opacity="0.8"/>
+      <rect x="250" y="375" rx="8" class="box-accent" opacity="0.8"/>
       <text x="350" y="400" text-anchor="middle" font-size="12" font-weight="bold" fill="var(--diagram-text)">4. 대화로 개선</text>
       <text x="350" y="417" text-anchor="middle" font-size="10" fill="var(--diagram-text)">피드백 반영 및 반복</text>
       <text x="350" y="432" text-anchor="middle" font-size="9" fill="var(--diagram-text)">"문법 하이라이팅 추가해줘"</text>
@@ -674,6 +682,17 @@ $ npx claude
 
   <h3 id="step-by-step">단계별 실습</h3>
 
+  <h4>30초 사전 점검</h4>
+  <pre><code><span class="cmt"># Node.js 확인 (Claude/Codex 계열)</span>
+node -v
+npm -v
+
+<span class="cmt"># Python 확인 (로컬 서버 실행용)</span>
+python3 --version</code></pre>
+  <p>
+    필요한 명령어가 동작하지 않으면 설치 후 터미널을 다시 열고 재시도하세요.
+  </p>
+
   <h4>Step 1: 작업 디렉토리 생성</h4>
   <pre><code><span class="cmt"># 터미널에서 실행</span>
 mkdir my-first-vibe-coding
@@ -685,6 +704,14 @@ npx claude
 
 <span class="cmt"># 또는 이미 설치했다면</span>
 claude</code></pre>
+
+  <div class="info-box info">
+    <div class="info-box-title">⌨️ 종료/재시작 방법</div>
+    <p>
+      CLI를 종료하려면 <code>Ctrl + C</code>를 누르세요.
+      같은 폴더에서 명령어를 다시 실행하면 바로 이어서 작업할 수 있습니다.
+    </p>
+  </div>
 
   <div class="info-box warning">
     <div class="info-box-title">⚠️ API 키 필요</div>
@@ -747,6 +774,17 @@ npx serve
 
 <span class="cmt"># 브라우저에서 열기</span>
 open http://localhost:8000</code></pre>
+
+  <div class="info-box warning">
+    <div class="info-box-title">자주 막히는 문제 2가지</div>
+    <ul>
+      <li><strong>Permission denied</strong>: 권한 없는 위치에서 실행 중일 수 있습니다. 홈 디렉토리 아래 새 폴더에서 다시 시작하세요.</li>
+      <li><strong>Port 8000 is already in use</strong>: <code>python3 -m http.server 8080</code>으로 바꾸고 <code>http://localhost:8080</code>으로 접속하세요.</li>
+    </ul>
+    <p>
+      서버 종료는 실행한 터미널에서 <code>Ctrl + C</code>입니다.
+    </p>
+  </div>
 
   <div class="info-box tip">
     <div class="info-box-title">✅ 작동 확인</div>

@@ -152,8 +152,8 @@
   <div class="info-box tip">
     <div class="info-box-title">💡 정규화 수준 지정</div>
     <ul>
-      <li><strong>1NF (제1정규형)</strong>: 원자값のみ (복합 값禁止)</li>
-      <li><strong>2NF (제2정규형)</strong>: 部分 함수 종속 제거</li>
+      <li><strong>1NF (제1정규형)</strong>: 원자값만 허용 (복합 값 금지)</li>
+      <li><strong>2NF (제2정규형)</strong>: 부분 함수 종속 제거</li>
       <li><strong>3NF (제3정규형</strong>): 이행 함수 종속 제거</li>
       <li><strong>BCNF (보이스-코드 정규형)</strong>: 결정자 함수 종속 보장</li>
     </ul>
@@ -227,7 +227,7 @@
     <pre><code><span class="str">다음 조건의 서브쿼리를 작성해줘:</span>
 
 <span class="str">1. 평균보다 많은 주문을 한 고객 조회</span>
-<span class="str">2. 최근 6개월内有 거래 없는 비활성 고객 조회</span>
+<span class="str">2. 최근 6개월 내 거래 없는 비활성 고객 조회</span>
 <span class="str">3. 재고가 없는 상품의 주문 건 조회</span>
 <span class="str">4. 각 카테고리에서 가장 판매량이 많은 상품 조회</span>
 
@@ -305,9 +305,9 @@
 
 <span class="str">시나리오:</span>
 <span class="str">- users 테이블의 name 필드를 first_name, last_name으로 분리</span>
-<span class="str">- email을 소문자로统一</span>
+<span class="str">- email을 소문자로 통일</span>
 <span class="str">- created_at이 NULL인 레코드에 현재 시간 설정</span>
-<span class="str">- 마이그레이션前后 데이터 검증 쿼리 포함</span>
+<span class="str">- 마이그레이션 전후 데이터 검증 쿼리 포함</span>
 
 <span class="str">데이터베이스: MySQL</span></code></pre>
   </div>
@@ -327,7 +327,7 @@
       <span class="code-lang">Claude에게 요청</span>
     </div>
     <pre><code><span class="str">users 테이블에 email_verified 컬럼을 추가하는</span>
-<span class="str">마이그레이션과对应的 롤백 스크립트를 작성해줘:</span>
+<span class="str">마이그레이션과 대응되는 롤백 스크립트를 작성해줘:</span>
 
 <span class="str">- 컬럼: email_verified (BOOLEAN, 기본값 FALSE)</span>
 <span class="str">- 롤백: 컬럼 삭제</span>
@@ -485,7 +485,7 @@
       <li><strong>대용량 테이블</strong>: 수천만 건 이상</li>
       <li><strong>범위 쿼리</strong>: 날짜/지역별 조회 빈번</li>
       <li><strong>데이터 보관</strong>: 과거 데이터 별도 관리</li>
-      <li><strong>성능 이슈</strong>: 인덱스 크기肥大</li>
+      <li><strong>성능 이슈</strong>: 인덱스 크기 증가</li>
     </ul>
   </div>
 
@@ -517,7 +517,7 @@
     <div class="code-header">
       <span class="code-lang">Claude에게 요청</span>
     </div>
-    <pre><code><span class="str">PostgreSQL 권한设计方案을 작성해줘:</span>
+    <pre><code><span class="str">PostgreSQL 권한 설계 방안을 작성해줘:</span>
 
 <span class="str">역할:</span>
 <span class="str">- admin: 전체 권한</span>
@@ -555,10 +555,10 @@
     <pre><code><span class="str">PostgreSQL 백업 전략을 설계해줘:</span>
 
 <span class="str">요구사항:</span>
-<span class="str">- 일일 전체 백업 (凌晨 2시)</span>
+<span class="str">- 일일 전체 백업 (새벽 2시)</span>
 <span class="str">- 시간별 증분 백업</span>
 <span class="str">- 30일 보관</span>
-<span class="str">-异地 저장 (S3)</span>
+<span class="str">- 원격지 저장 (S3)</span>
 <span class="str">- 복원 시간 목표 (RTO): 4시간</span>
 <span class="str">- 복원 지점 목표 (RPO): 1시간</span>
 

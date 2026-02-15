@@ -76,6 +76,14 @@
   <p><strong>필요한 것:</strong> 터미널, Node.js (14+), 신용카드 (무료 크레딧 제공)</p>
 </div>
 
+<div class="info-box warning">
+  <div class="info-box-title">⏱️ 5분 기준 안내</div>
+  <p>
+    이 페이지의 5분은 <strong>도구 설치, API 키 발급, 초기 다운로드가 끝난 상태</strong>를 기준으로 합니다.
+    처음 실행에서는 네트워크 상태에 따라 더 오래 걸릴 수 있습니다.
+  </p>
+</div>
+
 <!-- Section 1: 소개 -->
 <section class="content-section">
   <h2 id="overview">Claude CLI란?</h2>
@@ -207,6 +215,16 @@ echo $env:ANTHROPIC_API_KEY</code></pre>
     Claude CLI는 설치 없이 <code>npx</code>로 바로 실행할 수 있습니다.
   </p>
 
+  <h3 id="prepare-workspace">2-0. 작업 폴더 준비</h3>
+
+  <p>
+    파일이 섞이지 않도록 새 폴더를 만들고 그 안에서 진행하세요:
+  </p>
+
+  <pre><code><span class="cmt"># 작업 폴더 생성 및 이동</span>
+mkdir claude-quickstart
+cd claude-quickstart</code></pre>
+
   <h3 id="prerequisites">2-1. 사전 요구사항 확인</h3>
 
   <p>
@@ -215,6 +233,9 @@ echo $env:ANTHROPIC_API_KEY</code></pre>
 
   <pre><code><span class="cmt"># Node.js 버전 확인</span>
 node --version
+
+<span class="cmt"># npm 버전 확인</span>
+npm --version
 
 <span class="cmt"># 예상 출력</span>
 v18.17.0  <span class="cmt"># 14 이상이면 OK</span></code></pre>
@@ -263,6 +284,14 @@ npm install -g @anthropic-ai/claude-cli
 
 <span class="cmt"># 이제 짧은 명령어로 실행</span>
 claude</code></pre>
+  </div>
+
+  <div class="info-box info">
+    <div class="info-box-title">⌨️ 종료/재시작 방법</div>
+    <p>
+      Claude CLI를 종료하려면 <code>Ctrl + C</code>를 누르세요.
+      다시 시작하려면 같은 폴더에서 <code>npx claude</code>를 다시 실행하면 됩니다.
+    </p>
   </div>
 
   <h3 id="first-command">2-3. 첫 번째 명령어</h3>
@@ -583,6 +612,18 @@ export ANTHROPIC_API_KEY=<span class="str">"sk-ant-api03-xxxxxxx"</span></code><
     <li>더 구체적인 요청으로 다시 시도</li>
     <li>파일 경로를 명시적으로 지정</li>
   </ul>
+
+  <h4>❌ "Permission denied" 또는 접근 권한 오류</h4>
+  <p><strong>원인:</strong> 시스템 보호 디렉토리에서 작업 중</p>
+  <p><strong>해결:</strong> 홈 디렉토리 아래 새 폴더를 만들고 그 안에서 실행</p>
+  <pre><code>mkdir claude-quickstart
+cd claude-quickstart</code></pre>
+
+  <h4>❌ "Port 8000 is already in use"</h4>
+  <p><strong>원인:</strong> 이미 다른 프로그램이 8000 포트 사용 중</p>
+  <p><strong>해결:</strong> 다른 포트로 서버 실행</p>
+  <pre><code>python3 -m http.server 8080
+<span class="cmt"># 브라우저: http://localhost:8080</span></code></pre>
 
   <h4>❌ "Insufficient credits"</h4>
   <p><strong>원인:</strong> 무료 크레딧 소진</p>
