@@ -198,7 +198,48 @@ HTML 문서 생성
     </tbody>
   </table>
 
-  <h3 id="token-context">컨텍스트 최소화</h3>
+  <h3 id="token-context">컨텍스트 양 조절</h3>
+
+  <p>컨텍스트 양은 응답 품질, 비용, 처리 속도에 직접적인 영향을 미칩니다. 상황에 맞는 적절한 수준을 선택해야 합니다.</p>
+
+  <table class="comparison-table">
+    <thead>
+      <tr>
+        <th style="width:33%">구분</th>
+        <th style="width:33%">컨텍스트 많음</th>
+        <th style="width:33%">컨텍스트 적음</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>장점</strong></td>
+        <td>복잡한 관계 이해, 관련 정보 누락 감소, 일관성 유지</td>
+        <td>빠른 응답, 낮은 비용, 핵심 정보 집중</td>
+      </tr>
+      <tr>
+        <td><strong>단점</strong></td>
+        <td>높은 비용, 느린 응답, 정보 희석, 처리 오버헤드</td>
+        <td>맥락 이해 부족, 관련성 낮은 답변, 불완전한 결과</td>
+      </tr>
+      <tr>
+        <td><strong>적합한 상황</strong></td>
+        <td>코드 리뷰, 문서 분석, 다중 파일 수정, 복잡한 아키텍처 설계</td>
+        <td>간단한 질문, 단일 작업, 빠른 정보 조회, 반복 작업</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 id="context-strategy">컨텍스트 전략 선택 가이드</h4>
+
+  <div class="info-box info">
+    <div class="info-box-title">적절한 컨텍스트 양 판단</div>
+    <ul>
+      <li><strong>단일 파일 작업:</strong> 현재 파일 + 관련 파일 1~2개만 포함</li>
+      <li><strong>멀티파일 수정:</strong> 변경 대상 파일 명시 + 변경 범위 간결하게 설명</li>
+      <li><strong>아키텍처 설계:</strong> 요구사항 + 기존 구조 + 제약조건 모두 포함</li>
+      <li><strong>반복 작업:</strong> 작업 패턴 정의 후 재사용 (프롬프트 캐싱)</li>
+    </ul>
+  </div>
 
   <p>필요한 정보만 제공하고, 이전 대화를 참조할 때는 요약하세요.</p>
 
@@ -206,7 +247,7 @@ HTML 문서 생성
     <div class="code-header">
       <span class="code-lang">나쁜 예 - 불필요한 컨텍스트</span>
     </div>
-    <pre><code>아까 우리가 얘기했던 그 React 컴포넌트 있잖아요.
+    <pre><code>아까 우리가 협의했던 그 React 컴포넌트 있잖아요.
 그게 지금 useState를 사용하고 있는데,
 이전에 말씀하신 것처럼 useReducer로 바꾸려고 하는데,
 근데 제가 생각해보니까 Context API도 필요할 것 같아서요.
@@ -223,6 +264,17 @@ HTML 문서 생성
 
 구현 방법을 제시해주세요.</code></pre>
   </div>
+
+  <h4 id="context-window-limit">컨텍스트 윈도우 관리</h4>
+
+  <p>모델마다 처리 가능한 최대 컨텍스트 길이(컨텍스트 윈도우)가 제한되어 있습니다. 이 한계를 넘으면 오래된 정보가 잘리거나 오류가 발생합니다.</p>
+
+  <ul>
+    <li><strong>컨텍스트 윈도우 확인:</strong> 사용 중인 모델의 최대 토큰 수를 확인</li>
+    <li><strong>우선순위 정렬:</strong> 가장 중요한 정보를 앞에 배치</li>
+    <li><strong>요약 전략:</strong> 긴 대화는 정기적으로 요약하여 공간 확보</li>
+    <li><strong>청킹:</strong> 대용량 문서는 관련 부분만 추출하여 사용</li>
+  </ul>
 </section>
 
 <section class="content-section">
