@@ -1071,11 +1071,42 @@ pip install -e .
 
 <p><strong>시나리오:</strong> "프로젝트 문서를 Notion과 Google Drive에 동기화"</p>
 
+<div class="info-box info">
+<strong>💡 문서 동기화 흐름:</strong>
 <ol>
-<li>로컬 Markdown 파일 읽기</li>
-<li>Notion 페이지 생성/업데이트</li>
-<li>PDF로 변환하여 Google Drive 업로드</li>
+<li><strong>로컬 파일 읽기:</strong> 파일시스템 서버로 Markdown 파일 스캔 및 메타데이터 추출</li>
+<li><strong>Notion 동기화:</strong> Notion API로 페이지 생성/업데이트, 기존 페이지는 변경 감지 후 갱신</li>
+<li><strong>PDF 변환:</strong> Markdown → HTML → PDF 변환 파이프라인 실행</li>
+<li><strong>Drive 업로드:</strong> Google Drive API로 PDF 업로드, 폴더 구조 유지</li>
+<li><strong>변경 추적:</strong> 파일 해시 비교로 중복 동기화 방지</li>
 </ol>
+</div>
+
+<div class="code-block">
+<div class="code-header">
+<span class="language">JavaScript</span>
+<span class="filename">문서 동기화 자동화 예시</span>
+<button class="copy-btn" aria-label="Copy code">Copy</button>
+</div>
+<pre><code><span class="cmt">// 문서 동기화 워크플로우</span>
+<span class="kw">async function</span> <span class="fn">syncDocuments</span>() {
+  <span class="cmt">// 1. 로컬 Markdown 파일 읽기</span>
+  <span class="kw">const</span> mdFiles = <span class="kw">await</span> <span class="fn">readLocalMarkdown</span>(<span class="str">'./docs'</span>);
+
+  <span class="cmt">// 2. Notion 페이지 동기화</span>
+  <span class="kw">for</span> (<span class="kw">const</span> file <span class="kw">of</span> mdFiles) {
+    <span class="kw">const</span> pageId = <span class="kw">await</span> <span class="fn">findOrCreateNotionPage</span>(file.title);
+    <span class="kw">await</span> <span class="fn">updateNotionPage</span>(pageId, file.content);
+  }
+
+  <span class="cmt">// 3. PDF 변환 및 Google Drive 업로드</span>
+  <span class="kw">const</span> pdfFiles = <span class="kw">await</span> <span class="fn">convertToPDF</span>(mdFiles);
+  <span class="kw">await</span> <span class="fn">uploadToGoogleDrive</span>(pdfFiles, <span class="str">'project-docs'</span>);
+
+  console.log(<span class="str">`✅ ${mdFiles.length}개 문서 동기화 완료`</span>);
+}
+</code></pre>
+</div>
 </section>
 
 <section class="content-section">

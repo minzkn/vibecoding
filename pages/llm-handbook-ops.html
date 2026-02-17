@@ -311,10 +311,26 @@
 <section class="content-section">
   <h2 id="domain-ops">도메인별 운영 포인트</h2>
   <ul>
-    <li><strong>코딩</strong>: 리포지토리 접근 권한과 비밀키 보호가 핵심</li>
-    <li><strong>문서</strong>: 최신 문서 동기화와 출처 표기 강화</li>
-    <li><strong>지원</strong>: 민감 정보 마스킹과 이력 추적 강화</li>
+    <li><strong>코딩:</strong> 리포지토리 접근 권한과 비밀키 보호가 핵심</li>
+    <li><strong>문서:</strong>
+      <ul>
+        <li><strong>문서 버전 관리:</strong> 지식베이스와 LLM 컨텍스트 간 최신 정보 유지</li>
+        <li><strong>자동 갱신:</strong> 문서 변경 시 임베딩 데이터베이스 자동 업데이트</li>
+        <li><strong>출처 표기:</strong> LLM 응답에 참조 문서 링크 및 버전 정보 포함</li>
+      </ul>
+    </li>
+    <li><strong>지원:</strong> 민감 정보 마스킹과 이력 추적 강화</li>
   </ul>
+
+  <div class="info-box tip">
+    <strong>문서 동기화 구현 예시:</strong>
+    <ul>
+      <li>Webhook으로 Notion/Confluence 변경 감지</li>
+      <li>변경된 문서를 자동으로 크롤링 및 청킹</li>
+      <li>벡터 DB (Pinecone, Qdrant)에 재인덱싱</li>
+      <li>LLM 응답 시 최신 문서 참조 보장</li>
+    </ul>
+  </div>
 </section>
 
 <section class="content-section">

@@ -79,6 +79,67 @@
     </ul>
   </div>
 
+  <h3 id="http-methods">HTTP 메서드 이해하기</h3>
+  <p>각 HTTP 메서드의 특성을 이해하고 올바르게 사용하는 것이 RESTful API의 핵심입니다.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>메서드</th>
+        <th>용도</th>
+        <th>멱등성</th>
+        <th>안전성</th>
+        <th>예시</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>GET</strong></td>
+        <td>리소스 조회</td>
+        <td>✅ O</td>
+        <td>✅ O</td>
+        <td>GET /users/123</td>
+      </tr>
+      <tr>
+        <td><strong>POST</strong></td>
+        <td>리소스 생성</td>
+        <td>❌ X</td>
+        <td>❌ X</td>
+        <td>POST /users</td>
+      </tr>
+      <tr>
+        <td><strong>PUT</strong></td>
+        <td>리소스 전체 수정/생성</td>
+        <td>✅ O</td>
+        <td>❌ X</td>
+        <td>PUT /users/123</td>
+      </tr>
+      <tr>
+        <td><strong>PATCH</strong></td>
+        <td>리소스 부분 수정</td>
+        <td>△ 경우에 따라</td>
+        <td>❌ X</td>
+        <td>PATCH /users/123</td>
+      </tr>
+      <tr>
+        <td><strong>DELETE</strong></td>
+        <td>리소스 삭제</td>
+        <td>✅ O</td>
+        <td>❌ X</td>
+        <td>DELETE /users/123</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <strong>💡 멱등성(Idempotent)과 안전성(Safe)이란?</strong>
+    <ul>
+      <li><strong>멱등성:</strong> 같은 요청을 여러 번 보내도 결과가 동일 (서버 상태가 같음)</li>
+      <li><strong>안전성:</strong> 서버의 상태를 절대 변경하지 않음 (읽기 전용)</li>
+    </ul>
+    <p><strong>⚠️ 실무 주의사항:</strong> GET 요청에 데이터 변경 로직을 넣으면 안 됩니다!</p>
+  </div>
+
   <h3 id="api-types">API 유형</h3>
   <p>프로젝트에 맞는 API 유형을 선택하세요.</p>
   <ul>
@@ -588,6 +649,131 @@
 <span class="str">- 갱신 엔드포인트 포함</span>
 
 <span class="str">환경: Express.js + TypeScript</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="cors-security">CORS 보안 설정</h2>
+  <p>Cross-Origin Resource Sharing(CORS)는 웹 브라우저에서 다른 도메인의 리소스에 접근할 수 있도록 허용하는 메커니즘입니다.</p>
+
+  <div class="info-box warning">
+    <div class="info-box-title">⚠️ CORS 기본 설정의 위험성</div>
+    <p><code>app.use(cors())</code>는 <strong>모든 도메인</strong>에서의 요청을 허용합니다.</p>
+    <p>프로덕션 환경에서는 <strong>절대 사용하면 안 됩니다!</strong></p>
+    <ul>
+      <li>악의적인 웹사이트에서 API 호출 가능</li>
+      <li>사용자 데이터 유출 위험</li>
+      <li>CSRF(Cross-Site Request Forgery) 공격 가능</li>
+    </ul>
+  </div>
+
+  <h3 id="cors-dev">개발 환경: 모든 도메인 허용</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">JavaScript</span>
+    </div>
+    <pre><code><span class="kw">const</span> express = <span class="fn">require</span>(<span class="str">'express'</span>);
+<span class="kw">const</span> cors = <span class="fn">require</span>(<span class="str">'cors'</span>);
+
+<span class="kw">const</span> app = <span class="fn">express</span>();
+
+<span class="cmt">// 개발 환경에서만 사용!</span>
+app.<span class="fn">use</span>(cors());</code></pre>
+  </div>
+
+  <h3 id="cors-prod">프로덕션 환경: 특정 도메인만 허용</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">JavaScript</span>
+    </div>
+    <pre><code><span class="kw">const</span> corsOptions = {
+  origin: [
+    <span class="str">'https://myapp.com'</span>,
+    <span class="str">'https://www.myapp.com'</span>,
+    <span class="str">'https://admin.myapp.com'</span>
+  ],
+  methods: [<span class="str">'GET'</span>, <span class="str">'POST'</span>, <span class="str">'PUT'</span>, <span class="str">'DELETE'</span>],
+  credentials: <span class="kw">true</span>,  <span class="cmt">// 쿠키 포함 허용</span>
+  maxAge: <span class="num">86400</span>      <span class="cmt">// preflight 캐시 시간 (24시간)</span>
+};
+
+app.<span class="fn">use</span>(cors(corsOptions));</code></pre>
+  </div>
+
+  <h3 id="cors-dynamic">동적 Origin 검증</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">JavaScript</span>
+    </div>
+    <pre><code><span class="kw">const</span> allowedOrigins = process.env.NODE_ENV === <span class="str">'production'</span>
+  ? [<span class="str">'https://myapp.com'</span>, <span class="str">'https://www.myapp.com'</span>]
+  : [<span class="str">'http://localhost:3000'</span>, <span class="str">'http://localhost:5173'</span>];
+
+<span class="kw">const</span> corsOptions = {
+  origin: (origin, callback) => {
+    <span class="cmt">// origin이 없는 경우 허용 (같은 도메인 요청, Postman 등)</span>
+    <span class="kw">if</span> (!origin || allowedOrigins.<span class="fn">includes</span>(origin)) {
+      callback(<span class="kw">null</span>, <span class="kw">true</span>);
+    } <span class="kw">else</span> {
+      callback(<span class="kw">new</span> <span class="fn">Error</span>(<span class="str">'Not allowed by CORS'</span>));
+    }
+  },
+  credentials: <span class="kw">true</span>
+};
+
+app.<span class="fn">use</span>(cors(corsOptions));</code></pre>
+  </div>
+
+  <h3 id="cors-env">환경 변수 활용</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">.env</span>
+    </div>
+    <pre><code>NODE_ENV=production
+ALLOWED_ORIGINS=https://myapp.com,https://www.myapp.com</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">JavaScript</span>
+    </div>
+    <pre><code><span class="kw">const</span> allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.<span class="fn">split</span>(<span class="str">','</span>)
+  : [<span class="str">'http://localhost:3000'</span>];
+
+<span class="kw">const</span> corsOptions = {
+  origin: allowedOrigins,
+  credentials: <span class="kw">true</span>
+};
+
+app.<span class="fn">use</span>(cors(corsOptions));</code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <strong>💡 CORS 디버깅 팁</strong>
+    <ul>
+      <li><strong>브라우저 개발자 도구:</strong> Console에서 CORS 에러 메시지 확인</li>
+      <li><strong>Preflight 요청:</strong> OPTIONS 메서드 요청이 성공하는지 확인</li>
+      <li><strong>응답 헤더:</strong> <code>Access-Control-Allow-Origin</code> 헤더가 올바른지 확인</li>
+      <li><strong>Credentials:</strong> 쿠키를 사용한다면 <code>credentials: true</code> 필수</li>
+    </ul>
+  </div>
+
+  <h3 id="cors-testing">CORS 테스트</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">curl로 테스트</span>
+    </div>
+    <pre><code><span class="cmt"># Preflight 요청 테스트</span>
+curl -X OPTIONS http://localhost:3000/api/users \
+  -H "Origin: https://myapp.com" \
+  -H "Access-Control-Request-Method: POST" \
+  -v
+
+<span class="cmt"># 실제 요청 테스트</span>
+curl -X GET http://localhost:3000/api/users \
+  -H "Origin: https://myapp.com" \
+  -v</code></pre>
   </div>
 </section>
 

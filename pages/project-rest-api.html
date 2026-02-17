@@ -170,7 +170,7 @@ npm install -D nodemon</code></pre>
 <span class="kw">const</span> { v4: uuidv4 } = <span class="fn">require</span>(<span class="str">'uuid'</span>);
 
 <span class="kw">const</span> app = <span class="fn">express</span>();
-<span class="kw">const</span> PORT = <span class="num">3000</span>;
+<span class="kw">const</span> PORT = process.env.PORT || <span class="num">3000</span>;
 
 <span class="cmt">// 미들웨어</span>
 app.<span class="fn">use</span>(cors());
@@ -250,12 +250,112 @@ app.<span class="fn">listen</span>(PORT, () => {
 node server.js
 
 <span class="cmt"># 또는 nodemon으로 실행 (코드 변경 시 자동 재시작)</span>
-npx nodemon server.js</code></pre>
+npx nodemon server.js
+
+<span class="cmt"># 환경 변수로 다른 포트 사용</span>
+PORT=3001 node server.js</code></pre>
   </div>
 
-  <h3 id="test-api">API 테스트 방법</h3>
-  <p>Postman, curl, 또는 브라우저 확장을 사용하여 테스트할 수 있습니다.</p>
+  <h3 id="port-conflict">포트 충돌 해결하기</h3>
 
+  <div class="info-box warning">
+    <strong>⚠️ "Port 3000 is already in use" 에러가 발생하면?</strong>
+    <p>다른 프로그램이 이미 3000번 포트를 사용 중입니다. 아래 방법으로 해결하세요.</p>
+  </div>
+
+  <h4>방법 1: 환경 변수로 다른 포트 사용 (권장)</h4>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">터미널</span>
+    </div>
+    <pre><code><span class="cmt"># 다른 포트로 실행</span>
+PORT=3001 node server.js
+
+<span class="cmt"># 또는 .env 파일 사용</span>
+<span class="cmt"># .env 파일에 PORT=3001 추가</span>
+npm install dotenv
+node -r dotenv/config server.js</code></pre>
+  </div>
+
+  <h4>방법 2: 사용 중인 프로세스 종료</h4>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">macOS/Linux</span>
+    </div>
+    <pre><code><span class="cmt"># 포트 사용 프로세스 찾기</span>
+lsof -i :3000
+
+<span class="cmt"># 결과 예시:</span>
+<span class="cmt"># node    12345 user   23u  IPv4 0x1234  TCP *:3000 (LISTEN)</span>
+
+<span class="cmt"># 프로세스 종료 (PID 사용)</span>
+kill -9 12345
+
+<span class="cmt"># 또는 한 번에 종료</span>
+lsof -t -i :3000 | xargs kill -9</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Windows</span>
+    </div>
+    <pre><code><span class="cmt"># 포트 사용 프로세스 찾기</span>
+netstat -ano | findstr :3000
+
+<span class="cmt"># 결과 예시:</span>
+<span class="cmt"># TCP    0.0.0.0:3000    0.0.0.0:0    LISTENING    12345</span>
+
+<span class="cmt"># 프로세스 종료 (PID 사용)</span>
+taskkill /PID 12345 /F</code></pre>
+  </div>
+
+  <h3 id="test-tools">API 테스트 도구 비교</h3>
+  <p>다양한 도구로 API를 테스트할 수 있습니다. 상황에 맞는 도구를 선택하세요.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>타입</th>
+        <th>장점</th>
+        <th>사용 시나리오</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>curl</strong></td>
+        <td>CLI</td>
+        <td>빠르고 간단, 스크립트 작성 가능</td>
+        <td>빠른 테스트, CI/CD</td>
+      </tr>
+      <tr>
+        <td><strong>Postman</strong></td>
+        <td>GUI</td>
+        <td>직관적, 컬렉션 관리, 환경 변수</td>
+        <td>복잡한 API 테스트, 팀 협업</td>
+      </tr>
+      <tr>
+        <td><strong>Thunder Client</strong></td>
+        <td>VS Code 확장</td>
+        <td>VS Code 통합, 가벼움</td>
+        <td>개발 중 빠른 테스트</td>
+      </tr>
+      <tr>
+        <td><strong>REST Client</strong></td>
+        <td>VS Code 확장</td>
+        <td>파일 기반, Git 관리 가능</td>
+        <td>API 문서화, 버전 관리</td>
+      </tr>
+      <tr>
+        <td><strong>HTTPie</strong></td>
+        <td>CLI</td>
+        <td>사용자 친화적 CLI, 컬러 출력</td>
+        <td>curl보다 읽기 쉬운 출력</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="test-curl">1. curl로 테스트</h3>
   <div class="code-block">
     <div class="code-header">
       <span class="code-lang">curl 명령어</span>
@@ -275,6 +375,81 @@ curl -X PUT http://localhost:3000/api/memos/메모ID \
 
 <span class="cmt"># 메모 삭제</span>
 curl -X DELETE http://localhost:3000/api/memos/메모ID</code></pre>
+  </div>
+
+  <h3 id="test-thunder">2. Thunder Client로 테스트 (VS Code)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">설정 방법</span>
+    </div>
+    <pre><code>1. VS Code 확장에서 "Thunder Client" 설치
+2. 사이드바에서 번개 아이콘 클릭
+3. New Request 버튼 클릭
+4. 메서드 선택 (GET, POST 등)
+5. URL 입력: http://localhost:3000/api/memos
+6. Body 탭에서 JSON 입력 (POST/PUT인 경우)
+7. Send 버튼 클릭</code></pre>
+  </div>
+
+  <h3 id="test-rest-client">3. REST Client로 테스트 (.http 파일)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">test-api.http</span>
+    </div>
+    <pre><code><span class="cmt">### 모든 메모 조회</span>
+GET http://localhost:3000/api/memos
+
+<span class="cmt">###</span>
+<span class="cmt">### 새 메모 생성</span>
+POST http://localhost:3000/api/memos
+Content-Type: application/json
+
+{
+  "title": "첫 메모",
+  "content": "메모 내용"
+}
+
+<span class="cmt">###</span>
+<span class="cmt">### 메모 수정 (ID를 실제 값으로 변경)</span>
+PUT http://localhost:3000/api/memos/abc-123
+Content-Type: application/json
+
+{
+  "title": "수정된 제목",
+  "content": "수정된 내용"
+}
+
+<span class="cmt">###</span>
+<span class="cmt">### 메모 삭제</span>
+DELETE http://localhost:3000/api/memos/abc-123</code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <strong>💡 REST Client 사용법:</strong>
+    <ol>
+      <li>VS Code에서 "REST Client" 확장 설치</li>
+      <li><code>test-api.http</code> 파일 생성</li>
+      <li>위 코드 붙여넣기</li>
+      <li>각 요청 위의 "Send Request" 링크 클릭</li>
+    </ol>
+  </div>
+
+  <h3 id="test-httpie">4. HTTPie로 테스트 (선택)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">HTTPie 설치 및 사용</span>
+    </div>
+    <pre><code><span class="cmt"># 설치 (macOS)</span>
+brew install httpie
+
+<span class="cmt"># 설치 (Ubuntu/Debian)</span>
+sudo apt install httpie
+
+<span class="cmt"># 사용 (curl보다 간결)</span>
+http GET http://localhost:3000/api/memos
+http POST http://localhost:3000/api/memos title="첫 메모" content="내용"
+http PUT http://localhost:3000/api/memos/abc-123 title="수정"
+http DELETE http://localhost:3000/api/memos/abc-123</code></pre>
   </div>
 </section>
 

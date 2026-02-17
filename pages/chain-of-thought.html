@@ -385,6 +385,61 @@ most_common <span class="kw">=</span> <span class="fn">Counter</span>(answers).<
 <span class="fn">print</span>(<span class="fn">f</span><span class="str">"최종 답: {most_common}"</span>)
 <span class="fn">print</span>(<span class="fn">f</span><span class="str">"모든 답: {answers}"</span>)</code></pre>
   </div>
+
+  <h4>Self-Consistency 실행 결과 예시</h4>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">5번 실행 시 추론 경로 비교</span>
+    </div>
+    <pre><code>문제: 사과 18개를 3명이 나누고, 각자 3개씩 더 받습니다. 한 명당 몇 개?
+
+<span class="cmt">═══ 실행 1 (temperature=0.7) ═══</span>
+1단계: 18 ÷ 3 = 6개씩
+2단계: 6 + 3 = 9개
+<strong>답: 9개</strong> ✅
+
+<span class="cmt">═══ 실행 2 (temperature=0.7) ═══</span>
+1단계: 처음 나눔 → 18 / 3 = 6
+2단계: 추가 받음 → 6 + 3 = 9
+<strong>답: 9개</strong> ✅
+
+<span class="cmt">═══ 실행 3 (temperature=0.7) ═══</span>
+1단계: 총 사과 = 18 + (3×3) = 27개
+2단계: 27 ÷ 3 = 9개
+<strong>답: 9개</strong> ✅ (다른 경로, 같은 답)
+
+<span class="cmt">═══ 실행 4 (temperature=0.7) ═══</span>
+1단계: 각자 받을 기본 = 18 ÷ 3 = 6
+2단계: 추가 = 3개
+3단계: 합계 = 6 + 3 = 9
+<strong>답: 9개</strong> ✅
+
+<span class="cmt">═══ 실행 5 (temperature=0.7) ═══</span>
+1단계: 18 ÷ 3 = 6개
+2단계: 6 + 3 = 8개  <span class="cmt"># 계산 실수</span>
+<strong>답: 8개</strong> ❌ (소수 의견)
+
+<span class="cmt">═══ 투표 결과 ═══</span>
+9개: ████ (4표) ← 최종 답 선택
+8개: █ (1표)
+
+<strong>최종 답: 9개 (신뢰도 80%)</strong>
+
+<span class="cmt">═══ 효과 ═══</span>
+- 단일 실행: 20% 확률로 8개 오답 가능
+- Self-Consistency: 다수결로 정답 9개 선택
+- 정확도 향상: 80% → 95%+ (오답 걸러냄)</code></pre>
+  </div>
+
+  <div class="info-box tip">
+    <strong>Self-Consistency 핵심:</strong>
+    <ul>
+      <li><strong>다양한 경로:</strong> 동일한 문제를 다르게 접근 (실행 1,2 vs 실행 3)</li>
+      <li><strong>오류 감지:</strong> 소수 의견(8개)을 자동으로 제거</li>
+      <li><strong>신뢰도 측정:</strong> 투표 비율로 답의 확실성 판단</li>
+      <li><strong>비용 트레이드오프:</strong> 5배 비용으로 정확도 15-20% 향상</li>
+    </ul>
+  </div>
 </section>
 
 <section class="content-section">

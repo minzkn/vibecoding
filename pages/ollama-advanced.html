@@ -618,6 +618,64 @@ rag.query(<span class="str">"회사의 휴가 정책은 무엇인가요?"</span>
 
   <h3 id="rag-optimization">RAG 최적화 기법</h3>
 
+  <h4>성능 비교표</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>기법</th>
+        <th>정확도</th>
+        <th>검색 속도</th>
+        <th>메모리 사용</th>
+        <th>구현 복잡도</th>
+        <th>적합한 경우</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>기본 벡터 검색</strong></td>
+        <td>⭐⭐⭐</td>
+        <td>빠름 (50ms)</td>
+        <td>보통</td>
+        <td>낮음</td>
+        <td>일반적인 시맨틱 검색</td>
+      </tr>
+      <tr>
+        <td><strong>하이브리드 검색</strong></td>
+        <td>⭐⭐⭐⭐</td>
+        <td>보통 (100ms)</td>
+        <td>보통</td>
+        <td>중간</td>
+        <td>키워드+의미 모두 중요</td>
+      </tr>
+      <tr>
+        <td><strong>Reranking</strong></td>
+        <td>⭐⭐⭐⭐⭐</td>
+        <td>느림 (300ms)</td>
+        <td>높음</td>
+        <td>높음</td>
+        <td>최고 정확도 필요</td>
+      </tr>
+      <tr>
+        <td><strong>Parent Document</strong></td>
+        <td>⭐⭐⭐⭐</td>
+        <td>빠름 (60ms)</td>
+        <td>높음</td>
+        <td>중간</td>
+        <td>컨텍스트가 중요한 경우</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <strong>기법 선택 가이드:</strong>
+    <ul>
+      <li><strong>속도 우선:</strong> 기본 벡터 검색 or Parent Document</li>
+      <li><strong>정확도 우선:</strong> Reranking (Hybrid + Reranking 조합 최고)</li>
+      <li><strong>균형:</strong> 하이브리드 검색 (가성비 최고)</li>
+      <li><strong>비용 고려:</strong> 기본 벡터 검색 (메모리/컴퓨트 최소)</li>
+    </ul>
+  </div>
+
   <h4>1. 하이브리드 검색 (키워드 + 벡터)</h4>
 
   <pre><code><span class="kw">from</span> langchain.retrievers <span class="kw">import</span> EnsembleRetriever

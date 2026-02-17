@@ -339,6 +339,33 @@ rate_limiter = RateLimiter(requests_per_minute=<span class="num">100</span>)
     <span class="cmt"># 도구 실행...</span>
 </code></pre>
 </div>
+
+<h4>Rate Limiting 시나리오 예시</h4>
+
+<div class="info-box tip">
+<strong>시나리오: 분당 100회 제한 (초당 ~1.67회 리필)</strong>
+
+<pre style="background: var(--bg-tertiary); padding: 1em; border-radius: 4px; margin-top: 0.5em;"><code><span class="cmt"># 시간 0초: 사용자가 처음 요청 (토큰 100개 시작)</span>
+요청 1-50: ✅ 허용 (토큰 100 → 50 남음)
+
+<span class="cmt"># 시간 30초: 50개 토큰 소진 상태</span>
+- 경과 시간: 30초
+- 리필된 토큰: 30 × 1.67 ≈ 50개
+- 현재 토큰: 50 + 50 = 100개 (상한 100)
+
+요청 51-100: ✅ 허용 (토큰 100 → 0 남음)
+
+<span class="cmt"># 시간 30초: 토큰 소진</span>
+요청 101: ❌ 거부 (토큰 0개, 0.6초 후 재시도)
+
+<span class="cmt"># 시간 31초: 1초 대기 (리필 1.67개)</span>
+요청 102: ✅ 허용 (토큰 1.67 → 0.67 남음)
+
+<span class="cmt"># 결과:</span>
+<span class="cmt"># - 짧은 버스트: 최대 100개까지 허용</span>
+<span class="cmt"># - 지속적 사용: 초당 ~1.67개로 제한</span>
+<span class="cmt"># - 공평성: 모든 사용자가 동일한 버킷</span></code></pre>
+</div>
 </section>
 
 <section class="content-section">
@@ -1166,45 +1193,158 @@ start_http_server(<span class="num">9090</span>)
 <h2 id="best-practices">베스트 프랙티스</h2>
 
 <div class="info-box tip">
-<strong>보안</strong>
+<strong>보안 체크리스트</strong>
 <ul>
-<li>최소 권한 원칙 적용</li>
-<li>입력 검증 철저히</li>
-<li>API 키 환경 변수로 관리</li>
-<li>Rate limiting 구현</li>
-<li>샌드박싱으로 격리</li>
+<li>✅ 최소 권한 원칙 적용
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>각 도구별 권한 정의 (read-only, write, admin)</li>
+    <li>사용자별 권한 매핑 테이블 구현</li>
+    <li>예: <code>tool:read_file</code>, <code>tool:write_file</code> 분리</li>
+  </ul>
+</li>
+<li>✅ 입력 검증 철저히
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>경로 검증: <code>Path.resolve()</code>로 심볼릭 링크 해제</li>
+    <li>SQL 검증: 파라미터화된 쿼리만 허용</li>
+    <li>파일 크기 제한: 10MB 초과 차단</li>
+  </ul>
+</li>
+<li>✅ API 키 환경 변수로 관리
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>절대 코드에 하드코딩 금지</li>
+    <li><code>os.getenv("MCP_API_KEY")</code> 사용</li>
+    <li>.env 파일 .gitignore 추가</li>
+  </ul>
+</li>
+<li>✅ Rate limiting 구현
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>사용자별: 분당 60회</li>
+    <li>IP별: 분당 100회</li>
+    <li>전역: 초당 1000회</li>
+  </ul>
+</li>
+<li>✅ 샌드박싱으로 격리
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>파일 접근: 허용 디렉토리 화이트리스트</li>
+    <li>네트워크: 허용 도메인만 접근 가능</li>
+    <li>프로세스: Docker 컨테이너 격리</li>
+  </ul>
+</li>
 </ul>
 </div>
 
 <div class="info-box tip">
-<strong>성능</strong>
+<strong>성능 체크리스트</strong>
 <ul>
-<li>적절한 캐싱 전략</li>
-<li>연결 풀링 사용</li>
-<li>비동기 I/O 활용</li>
-<li>타임아웃 설정</li>
-<li>리소스 제한 (CPU, 메모리)</li>
+<li>✅ 적절한 캐싱 전략
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>읽기 전용 데이터: TTL 10분</li>
+    <li>사용자 세션: TTL 1시간</li>
+    <li>API 응답: LRU 캐시 1000개 엔트리</li>
+  </ul>
+</li>
+<li>✅ 연결 풀링 사용
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>DB 풀: min=5, max=20</li>
+    <li>HTTP 클라이언트: keep-alive 활성화</li>
+    <li>연결 재사용으로 오버헤드 50% 감소</li>
+  </ul>
+</li>
+<li>✅ 비동기 I/O 활용
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li><code>async/await</code> 일관되게 사용</li>
+    <li><code>asyncio.gather()</code>로 병렬 처리</li>
+    <li>블로킹 호출은 <code>run_in_executor()</code></li>
+  </ul>
+</li>
+<li>✅ 타임아웃 설정
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>쿼리: 30초</li>
+    <li>API 호출: 10초</li>
+    <li>파일 I/O: 60초</li>
+  </ul>
+</li>
+<li>✅ 리소스 제한 (CPU, 메모리)
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>Docker: <code>--memory=1g --cpus=2</code></li>
+    <li>프로세스: <code>ulimit -v 1048576</code> (1GB)</li>
+  </ul>
+</li>
 </ul>
 </div>
 
 <div class="info-box tip">
-<strong>신뢰성</strong>
+<strong>신뢰성 체크리스트</strong>
 <ul>
-<li>포괄적인 에러 처리</li>
-<li>재시도 로직 (exponential backoff)</li>
-<li>Circuit breaker 패턴</li>
-<li>헬스체크 엔드포인트</li>
-<li>Graceful shutdown</li>
+<li>✅ 포괄적인 에러 처리
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>모든 외부 호출에 try-except</li>
+    <li>사용자 친화적 에러 메시지</li>
+    <li>스택 트레이스는 로그만 (사용자에게 노출 금지)</li>
+  </ul>
+</li>
+<li>✅ 재시도 로직 (exponential backoff)
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>1차: 2초, 2차: 4초, 3차: 8초</li>
+    <li>최대 3회 재시도 후 실패 처리</li>
+    <li>일시적 오류만 재시도 (5xx, timeout)</li>
+  </ul>
+</li>
+<li>✅ Circuit breaker 패턴
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>실패율 50% 초과 시 회로 차단</li>
+    <li>30초 후 half-open으로 테스트</li>
+    <li>성공 시 회로 복구</li>
+  </ul>
+</li>
+<li>✅ 헬스체크 엔드포인트
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li><code>/health</code>: 기본 상태 (200 OK)</li>
+    <li><code>/health/ready</code>: DB 연결 확인</li>
+    <li><code>/health/live</code>: 프로세스 살아있는지</li>
+  </ul>
+</li>
+<li>✅ Graceful shutdown
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>SIGTERM 시그널 처리</li>
+    <li>진행 중인 요청 완료 대기 (최대 30초)</li>
+    <li>DB 연결 정리 후 종료</li>
+  </ul>
+</li>
 </ul>
 </div>
 
 <div class="info-box tip">
-<strong>관찰성</strong>
+<strong>관찰성 체크리스트</strong>
 <ul>
-<li>구조화된 로깅</li>
-<li>메트릭 수집 (Prometheus)</li>
-<li>분산 추적 (Jaeger, Zipkin)</li>
-<li>알림 설정 (PagerDuty, Slack)</li>
+<li>✅ 구조화된 로깅
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>JSON 형식으로 출력</li>
+    <li>타임스탬프, 레벨, 요청 ID 포함</li>
+    <li>민감 정보 마스킹 (비밀번호, API 키)</li>
+  </ul>
+</li>
+<li>✅ 메트릭 수집 (Prometheus)
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>요청 수: <code>mcp_requests_total</code></li>
+    <li>응답 시간: <code>mcp_response_duration_seconds</code></li>
+    <li>에러율: <code>mcp_errors_total</code></li>
+  </ul>
+</li>
+<li>✅ 분산 추적 (Jaeger, Zipkin)
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>각 요청에 trace_id 부여</li>
+    <li>서비스 간 호출 추적</li>
+    <li>병목 지점 시각화</li>
+  </ul>
+</li>
+<li>✅ 알림 설정 (PagerDuty, Slack)
+  <ul style="margin-left: 1.5em; font-size: 0.9em;">
+    <li>에러율 5% 초과: WARNING</li>
+    <li>서비스 다운: CRITICAL</li>
+    <li>응답 시간 2초 초과: INFO</li>
+  </ul>
+</li>
 </ul>
 </div>
 </section>

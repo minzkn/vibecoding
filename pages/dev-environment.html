@@ -629,7 +629,10 @@ git config --global alias.amend <span class="str">"commit --amend --no-edit"</sp
 git config --global alias.unstage <span class="str">"reset HEAD --"</span>
 git config --global alias.uncommit <span class="str">"reset --soft HEAD~1"</span>
 
-<span class="cmt"># 동기화</span>
+<span class="cmt"># 원격 저장소 동기화 - 모든 변경사항을 가져와서 리베이스</span>
+<span class="cmt"># 사용 시나리오: 팀원의 변경사항을 가져올 때</span>
+<span class="cmt"># 장점: merge commit 없이 깔끔한 히스토리 유지</span>
+<span class="cmt"># 주의: 로컬 변경사항이 있으면 충돌 가능 (커밋 후 사용 권장)</span>
 git config --global alias.sync <span class="str">"!git fetch --all && git pull --rebase"</span>
 
 <span class="cmt"># 정리</span>
@@ -640,7 +643,7 @@ git st                  <span class="cmt"># git status</span>
 git lg                  <span class="cmt"># 그래프 로그</span>
 git cob feature-x       <span class="cmt"># 브랜치 생성 + 체크아웃</span>
 git amend               <span class="cmt"># 마지막 커밋 수정</span>
-git sync                <span class="cmt"># fetch + pull --rebase</span></code></pre>
+git sync                <span class="cmt"># fetch + pull --rebase (원격 변경사항 동기화)</span></code></pre>
 
   <h3 id="git-hooks">Git Hooks (자동화)</h3>
 
@@ -968,11 +971,34 @@ chezmoi diff
 <span class="cmt"># 적용</span>
 chezmoi apply
 
-<span class="cmt"># GitHub와 동기화</span>
+<span class="cmt"># dotfiles를 GitHub와 동기화하여 여러 머신에서 설정 공유</span>
+<span class="cmt"># 1. chezmoi 로컬 저장소로 이동</span>
 chezmoi cd
+
+<span class="cmt"># 2. GitHub 원격 저장소 연결 (최초 1회)</span>
 git remote add origin git@github.com:yourusername/dotfiles.git
 git push -u origin main
-chezmoi git pull -- --rebase</code></pre>
+
+<span class="cmt"># 3. 다른 머신의 변경사항 가져오기</span>
+chezmoi git pull -- --rebase
+
+<span class="cmt"># 4. 실제 설정 파일에 적용</span>
+chezmoi apply</code></pre>
+
+  <div class="info-box tip">
+    <strong>💡 Chezmoi 다중 머신 동기화 워크플로우:</strong>
+    <ol>
+      <li><strong>머신 A에서 설정 변경</strong>
+        <pre><code>chezmoi edit ~/.zshrc
+chezmoi apply
+chezmoi cd && git add . && git commit -m "Update zshrc"
+git push</code></pre>
+      </li>
+      <li><strong>머신 B에서 변경사항 가져오기</strong>
+        <pre><code>chezmoi update  <span class="cmt"># git pull + chezmoi apply 자동 실행</span></code></pre>
+      </li>
+    </ol>
+  </div>
 </section>
 
 <section class="content-section">
@@ -993,11 +1019,73 @@ chezmoi git pull -- --rebase</code></pre>
 <span class="cmt"># 환경 정리</span>
 <span class="kw">alias</span> cleanup=<span class="str">"docker system prune -af && npm cache clean --force"</span>
 
-<span class="cmt"># 포트 사용 확인</span>
+<span class="cmt"># 네트워킹 유틸리티</span>
+
+<span class="cmt"># 모든 열린 포트 확인</span>
 <span class="kw">alias</span> ports=<span class="str">"lsof -i -P -n | grep LISTEN"</span>
 
-<span class="cmt"># IP 주소 확인</span>
-<span class="kw">alias</span> myip=<span class="str">"curl -s ifconfig.me"</span></code></pre>
+<span class="cmt"># 특정 포트 사용 프로세스 확인</span>
+<span class="fn">port</span>() {
+  lsof -i :<span class="str">"$1"</span>
+}
+
+<span class="cmt"># 포트 사용 프로세스 강제 종료</span>
+<span class="fn">killport</span>() {
+  <span class="kw">local</span> pid=$(lsof -t -i :<span class="str">"$1"</span>)
+  <span class="kw">if</span> [ -z <span class="str">"$pid"</span> ]; <span class="kw">then</span>
+    echo <span class="str">"❌ 포트 $1 에서 실행 중인 프로세스가 없습니다"</span>
+  <span class="kw">else</span>
+    kill -9 $pid
+    echo <span class="str">"✅ 포트 $1 프로세스 종료 완료 (PID: $pid)"</span>
+  <span class="kw">fi</span>
+}
+
+<span class="cmt"># 공인 IP 주소 확인</span>
+<span class="kw">alias</span> myip=<span class="str">"curl -s ifconfig.me"</span>
+
+<span class="cmt"># 로컬 IP 주소 확인 (macOS)</span>
+<span class="kw">alias</span> localip=<span class="str">"ipconfig getifaddr en0"</span>
+
+<span class="cmt"># 네트워크 연결 상태 확인</span>
+<span class="kw">alias</span> netstat-summary=<span class="str">"netstat -an | grep ESTABLISHED | wc -l"</span>
+
+<span class="cmt"># DNS 조회</span>
+<span class="fn">dns</span>() {
+  nslookup <span class="str">"$1"</span>
+}
+
+<span class="cmt"># 포트가 열려있는지 확인</span>
+<span class="fn">checkport</span>() {
+  nc -zv localhost <span class="str">"$1"</span> 2>&1 | grep -q succeeded && echo <span class="str">"✅ 포트 $1: 열림"</span> || echo <span class="str">"❌ 포트 $1: 닫힘"</span>
+}</code></pre>
+
+  <div class="info-box tip">
+    <strong>💡 네트워킹 유틸리티 사용 예시</strong>
+    <pre><code><span class="cmt"># 포트 3000 사용 중인지 확인</span>
+$ port 3000
+node    12345 user   23u  IPv4 0x1234  0t0  TCP *:3000 (LISTEN)
+
+<span class="cmt"># 포트 3000 프로세스 종료</span>
+$ killport 3000
+✅ 포트 3000 프로세스 종료 완료 (PID: 12345)
+
+<span class="cmt"># 내 공인 IP 확인</span>
+$ myip
+123.456.789.10
+
+<span class="cmt"># 로컬 IP 확인</span>
+$ localip
+192.168.1.100
+
+<span class="cmt"># DNS 조회</span>
+$ dns google.com
+Server:  8.8.8.8
+Address: 8.8.8.8#53
+
+<span class="cmt"># 포트가 열려있는지 확인</span>
+$ checkport 3000
+✅ 포트 3000: 열림</code></pre>
+  </div>
 
   <h3 id="tips-functions">유용한 쉘 함수</h3>
 

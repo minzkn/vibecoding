@@ -336,7 +336,8 @@ $ ghcs "마지막 커밋 메시지 수정"
 → git branch --merged | grep -v "\*" | xargs -n 1 git branch -d
 
 $ ghcs "원격 브랜치와 동기화"
-→ git fetch --prune</code></pre>
+→ git fetch --prune
+<span class="cmt"># git fetch --prune: 원격에서 삭제된 브랜치를 로컬에서도 제거</span></code></pre>
 
   <h4>변경사항 검토</h4>
   <pre><code>$ ghcs "특정 작성자의 최근 커밋 보기"

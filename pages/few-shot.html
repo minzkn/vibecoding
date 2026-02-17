@@ -502,6 +502,80 @@ A: list.sort() 사용
     </tbody>
   </table>
 
+  <h4>예제 수별 성능/비용 비교 (감정 분석 작업 기준)</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>예제 수</th>
+        <th>정확도</th>
+        <th>입력 토큰</th>
+        <th>응답 속도</th>
+        <th>비용 (상대)</th>
+        <th>권장 사용</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>0 (Zero-shot)</td>
+        <td>70-75%</td>
+        <td>~50</td>
+        <td>0.5초</td>
+        <td>1x</td>
+        <td>빠른 프로토타입</td>
+      </tr>
+      <tr>
+        <td>1 (One-shot)</td>
+        <td>75-80%</td>
+        <td>~100</td>
+        <td>0.6초</td>
+        <td>2x</td>
+        <td>형식 명확화</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>85-88%</td>
+        <td>~200</td>
+        <td>0.8초</td>
+        <td>4x</td>
+        <td>일반적 권장 ✅</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>90-92%</td>
+        <td>~350</td>
+        <td>1.0초</td>
+        <td>7x</td>
+        <td>높은 정확도 필요</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td>93-94%</td>
+        <td>~700</td>
+        <td>1.5초</td>
+        <td>14x</td>
+        <td>도메인 특화</td>
+      </tr>
+      <tr>
+        <td>20</td>
+        <td>94-95%</td>
+        <td>~1400</td>
+        <td>2.5초</td>
+        <td>28x</td>
+        <td>거의 불필요 ⚠️</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box info">
+    <strong>핵심 인사이트:</strong>
+    <ul>
+      <li><strong>3개 예제:</strong> 가성비 최고 (정확도 85-88%, 비용 4배)</li>
+      <li><strong>5개 이상:</strong> 정확도 개선 폭 감소 (수익 체감의 법칙)</li>
+      <li><strong>10개 이상:</strong> 비용 대비 효과 낮음 (1% 개선에 2배 비용)</li>
+      <li><strong>최적 전략:</strong> 3개로 시작 → 정확도 부족 시 5개로 증가</li>
+    </ul>
+  </div>
+
   <div class="info-box warning">
     <div class="info-box-title">⚠️ 예제가 많다고 항상 좋은 것은 아닙니다</div>
     <p>
