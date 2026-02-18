@@ -120,6 +120,14 @@ var SEARCH_INDEX = [
   { title: "LLM 핸드북: 개념과 구조", url: "pages/llm-handbook-concepts.html", description: "LLM 핵심 개념, 토큰/컨텍스트, 모델 구조와 생태계 지형 정리", keywords: "llm 핸드북 개념 구조 토큰 컨텍스트 생태계" },
   { title: "LLM 핸드북: 학습·정렬·추론", url: "pages/llm-handbook-training.html", description: "프리트레이닝, 정렬, 추론 최적화, RAG/도구 사용 흐름", keywords: "llm 학습 정렬 rlhf dpo 추론 rag 도구사용" },
   { title: "LLM 핸드북: 제품화·운영·안전", url: "pages/llm-handbook-ops.html", description: "서비스 배포, 비용/지연 관리, 평가/모니터링, 보안/컴플라이언스", keywords: "llm 운영 배포 모니터링 평가 보안 컴플라이언스" },
+  { title: "RAG 완전 가이드", url: "pages/rag-guide.html",
+    description: "RAG 원리, 아키텍처 패턴, 청킹·임베딩·벡터DB·검색전략, 고급기법, 평가",
+    keywords: "rag retrieval augmented generation 검색증강 임베딩 벡터db 청킹 hybrid reranking ragas" },
+
+  // 🤖 n8n & AI 자동화
+  { title: "n8n이란?", url: "pages/n8n-intro.html", description: "n8n 워크플로우 자동화 플랫폼 소개: 설치, 핵심 개념, 기본 워크플로우 구축", keywords: "n8n 워크플로우 자동화 노코드 로우코드 셀프호스팅 zapier 대안" },
+  { title: "n8n AI 워크플로우", url: "pages/n8n-ai-workflows.html", description: "Claude·OpenAI·Gemini 연동 AI 에이전트, RAG 파이프라인, 실전 자동화 사례", keywords: "n8n ai 워크플로우 claude openai ai agent rag 자동화 llm" },
+  { title: "n8n 고급 활용", url: "pages/n8n-advanced.html", description: "커스텀 노드 개발, Docker 운영 배포, 보안, 성능 최적화, 모니터링", keywords: "n8n 고급 커스텀 노드 배포 보안 성능 모니터링 docker" },
 
   // 📖 참고 & 리소스
   { title: "Vibe Coding 패턴", url: "pages/vibe-coding-patterns.html", description: "Vibe Coding 디자인 패턴 및 실전 사례", keywords: "vibe coding patterns 패턴 사례" },
@@ -254,7 +262,13 @@ var NAV_STRUCTURE = [
     { file: 'llm-theory-math-appendix.html', title: 'LLM 이론 수학 부록' },
     { file: 'llm-handbook-concepts.html', title: 'LLM 핸드북: 개념과 구조' },
     { file: 'llm-handbook-training.html', title: 'LLM 핸드북: 학습·정렬·추론' },
-    { file: 'llm-handbook-ops.html', title: 'LLM 핸드북: 제품화·운영·안전' }
+    { file: 'llm-handbook-ops.html', title: 'LLM 핸드북: 제품화·운영·안전' },
+    { file: 'rag-guide.html', title: 'RAG 완전 가이드' }
+  ]},
+  { title: '🤖 n8n & AI 자동화', pages: [
+    { file: 'n8n-intro.html', title: 'n8n이란?' },
+    { file: 'n8n-ai-workflows.html', title: 'n8n AI 워크플로우' },
+    { file: 'n8n-advanced.html', title: 'n8n 고급 활용' }
   ]},
   { title: '📖 참고 & 리소스', pages: [
     { file: 'vibe-coding-patterns.html', title: 'Vibe Coding 패턴' },

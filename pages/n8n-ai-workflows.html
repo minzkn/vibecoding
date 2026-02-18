@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="n8n AI 워크플로우 구축">
+<meta property="og:description" content="n8n으로 Claude·OpenAI 연동 AI 에이전트, RAG 파이프라인, 출력 파서, 멀티에이전트, 실전 사례 완전 가이드">
+<meta property="og:url" content="https://minzkn.com/claude/pages/n8n-ai-workflows.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="n8n으로 Claude·OpenAI 연동 AI 에이전트, RAG 파이프라인, 출력 파서, 멀티에이전트, 실전 사례 완전 가이드">
+<meta name="keywords" content="n8n AI, Claude 연동, OpenAI 노드, AI Agent, RAG, 워크플로우 자동화, LLM 파이프라인, 멀티에이전트, 출력파서, 벡터스토어">
+<meta name="author" content="MINZKN">
+<title>n8n AI 워크플로우 구축 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">n8n AI 워크플로우 구축</h1>
+<p class="lead">Claude·OpenAI·Gemini·Ollama를 n8n과 연동하여 AI 에이전트·RAG·멀티에이전트·Human-in-the-Loop 파이프라인을 구축하는 완전 실전 가이드</p>
+
+<div class="info-box warning">
+  <strong>전제 조건:</strong> n8n이 설치되어 있어야 합니다. → <a href="n8n-intro.html#installation">n8n 설치 가이드</a>
+</div>
+
+<section class="content-section">
+  <h2 id="ai-nodes-overview">n8n AI 노드 생태계</h2>
+
+  <p>
+    n8n은 <strong>LangChain</strong> 기반의 AI 노드들을 기본 제공합니다.
+    코드 없이 AI 에이전트, RAG 파이프라인, 멀티모달 처리를 워크플로우로 구성할 수 있습니다.
+  </p>
+
+  <svg viewBox="0 0 800 500" class="diagram" role="img" aria-label="n8n AI 노드 계층 구조">
+    <defs>
+      <marker id="n8n-ai-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--diagram-arrow)" />
+      </marker>
+    </defs>
+    <rect x="250" y="20" width="300" height="60" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2.5" rx="8"/>
+    <text x="400" y="48" fill="var(--diagram-accent)" text-anchor="middle" font-size="15" font-weight="bold">AI Agent 노드</text>
+    <text x="400" y="68" fill="var(--text-secondary)" text-anchor="middle" font-size="11">자율 판단 + 도구 사용 (ReAct)</text>
+    <line x1="400" y1="80" x2="400" y2="105" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-ai-arrow)"/>
+    <rect x="250" y="105" width="300" height="60" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="400" y="132" fill="var(--diagram-text)" text-anchor="middle" font-size="14" font-weight="bold">Basic LLM Chain / Summarization / Q&amp;A</text>
+    <text x="400" y="152" fill="var(--text-secondary)" text-anchor="middle" font-size="11">프롬프트 → LLM → 출력 (단순 체인)</text>
+    <line x1="310" y1="165" x2="180" y2="205" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-ai-arrow)"/>
+    <line x1="400" y1="165" x2="400" y2="205" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-ai-arrow)"/>
+    <line x1="490" y1="165" x2="620" y2="205" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-ai-arrow)"/>
+    <rect x="70" y="205" width="160" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="150" y="228" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">Anthropic (Claude)</text>
+    <text x="150" y="248" fill="var(--text-secondary)" text-anchor="middle" font-size="11">claude-opus-4-6 등</text>
+    <rect x="320" y="205" width="160" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="400" y="228" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">OpenAI Chat Model</text>
+    <text x="400" y="248" fill="var(--text-secondary)" text-anchor="middle" font-size="11">gpt-4o, gpt-4o-mini</text>
+    <rect x="570" y="205" width="160" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="650" y="228" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">Ollama / Groq</text>
+    <text x="650" y="248" fill="var(--text-secondary)" text-anchor="middle" font-size="11">로컬 / 고속 추론</text>
+    <line x1="200" y1="290" x2="100" y2="335" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-ai-arrow)"/>
+    <line x1="200" y1="290" x2="310" y2="335" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-ai-arrow)"/>
+    <rect x="20" y="335" width="160" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="100" y="358" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">Window Buffer Memory</text>
+    <text x="100" y="378" fill="var(--text-secondary)" text-anchor="middle" font-size="11">최근 N개 대화</text>
+    <rect x="200" y="335" width="160" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="280" y="358" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">Redis Chat Memory</text>
+    <text x="280" y="378" fill="var(--text-secondary)" text-anchor="middle" font-size="11">영속 세션 메모리</text>
+    <line x1="600" y1="290" x2="490" y2="335" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-ai-arrow)"/>
+    <line x1="600" y1="290" x2="680" y2="335" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-ai-arrow)"/>
+    <rect x="390" y="335" width="160" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="470" y="358" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">HTTP Request Tool</text>
+    <text x="470" y="378" fill="var(--text-secondary)" text-anchor="middle" font-size="11">외부 API 호출</text>
+    <rect x="570" y="335" width="160" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="650" y="358" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">Workflow Tool</text>
+    <text x="650" y="378" fill="var(--text-secondary)" text-anchor="middle" font-size="11">서브워크플로우 실행</text>
+    <rect x="250" y="430" width="300" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="400" y="453" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">Vector Store (RAG)</text>
+    <text x="400" y="473" fill="var(--text-secondary)" text-anchor="middle" font-size="11">Pinecone / Qdrant / Supabase pgvector / In-Memory</text>
+    <line x1="400" y1="390" x2="400" y2="430" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-ai-arrow)"/>
+  </svg>
+  <p class="diagram-caption">n8n AI 노드 계층: AI Agent가 LLM 모델·메모리·도구를 조합하여 자율 실행</p>
+
+  <h3 id="ai-node-catalog">AI 노드 전체 카탈로그</h3>
+
+  <table>
+    <thead>
+      <tr><th>카테고리</th><th>노드</th><th>역할</th></tr>
+    </thead>
+    <tbody>
+      <tr><td rowspan="4"><strong>Chain</strong></td><td>Basic LLM Chain</td><td>프롬프트 → LLM → 텍스트 출력</td></tr>
+      <tr><td>Summarization Chain</td><td>긴 문서 요약 (Map-Reduce 또는 Stuffing)</td></tr>
+      <tr><td>Retrieval Q&amp;A Chain</td><td>문서 기반 Q&amp;A (벡터 스토어 결합)</td></tr>
+      <tr><td>Conversational Chain</td><td>메모리 포함 대화형 체인</td></tr>
+      <tr><td><strong>Agent</strong></td><td>AI Agent</td><td>ReAct 패턴, 자율 도구 선택·실행</td></tr>
+      <tr><td rowspan="6"><strong>LLM 모델</strong></td><td>Anthropic Chat Model</td><td>Claude API (claude-opus-4-6 등)</td></tr>
+      <tr><td>OpenAI Chat Model</td><td>GPT-4o, GPT-4o-mini 등</td></tr>
+      <tr><td>Google Gemini Chat Model</td><td>Gemini 1.5 Pro/Flash</td></tr>
+      <tr><td>Ollama Chat Model</td><td>로컬 LLM (Llama, Mistral 등)</td></tr>
+      <tr><td>Groq Chat Model</td><td>초고속 Llama 추론 (무료 티어)</td></tr>
+      <tr><td>Azure OpenAI Chat Model</td><td>Azure 배포 GPT 모델</td></tr>
+      <tr><td rowspan="4"><strong>메모리</strong></td><td>Window Buffer Memory</td><td>최근 N개 메시지 보관 (인메모리)</td></tr>
+      <tr><td>Redis Chat Memory</td><td>Redis 기반 세션별 영속 메모리</td></tr>
+      <tr><td>Postgres Chat Memory</td><td>PostgreSQL 기반 영속 메모리</td></tr>
+      <tr><td>Motorhead Memory</td><td>Motorhead 서버 기반 요약 메모리</td></tr>
+      <tr><td rowspan="5"><strong>벡터 스토어</strong></td><td>In-Memory Vector Store</td><td>임시 메모리 벡터 (테스트용)</td></tr>
+      <tr><td>Pinecone Vector Store</td><td>Pinecone 클라우드</td></tr>
+      <tr><td>Qdrant Vector Store</td><td>Qdrant 셀프호스팅</td></tr>
+      <tr><td>Supabase Vector Store</td><td>Supabase pgvector</td></tr>
+      <tr><td>Chroma Vector Store</td><td>ChromaDB 셀프호스팅</td></tr>
+      <tr><td rowspan="3"><strong>임베딩</strong></td><td>OpenAI Embeddings</td><td>text-embedding-3-small/large</td></tr>
+      <tr><td>Anthropic (via HTTP)</td><td>voyage-3 등 별도 호출</td></tr>
+      <tr><td>Ollama Embeddings</td><td>로컬 임베딩 (무료)</td></tr>
+      <tr><td rowspan="5"><strong>문서 로더</strong></td><td>Default Data Loader</td><td>Binary 데이터(PDF, DOCX, CSV 등)</td></tr>
+      <tr><td>GitHub Document Loader</td><td>GitHub 저장소 파일 로드</td></tr>
+      <tr><td>Notion Document Loader</td><td>Notion 페이지/DB 로드</td></tr>
+      <tr><td>JSON Document Loader</td><td>JSON 파일 로드</td></tr>
+      <tr><td>Recursive URL Loader</td><td>웹사이트 크롤링 + 로드</td></tr>
+      <tr><td rowspan="3"><strong>텍스트 분할</strong></td><td>Recursive Character Text Splitter</td><td>범용 (권장)</td></tr>
+      <tr><td>Character Text Splitter</td><td>단순 문자 기준 분할</td></tr>
+      <tr><td>Token Text Splitter</td><td>토큰 수 기준 정확한 분할</td></tr>
+      <tr><td rowspan="3"><strong>출력 파서</strong></td><td>Auto-fixing Output Parser</td><td>파싱 실패 시 LLM이 자동 수정</td></tr>
+      <tr><td>Structured Output Parser</td><td>JSON Schema 기반 구조화 출력</td></tr>
+      <tr><td>Item List Output Parser</td><td>목록 형태 출력 파싱</td></tr>
+      <tr><td rowspan="5"><strong>도구 (Tool)</strong></td><td>Calculator</td><td>수학 계산</td></tr>
+      <tr><td>HTTP Request Tool</td><td>에이전트가 외부 API 호출</td></tr>
+      <tr><td>Wikipedia</td><td>Wikipedia 검색</td></tr>
+      <tr><td>SerpAPI</td><td>Google 검색 결과</td></tr>
+      <tr><td>n8n Workflow Tool</td><td>서브워크플로우를 도구로 사용</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="claude-integration">Claude (Anthropic) 연동 심화</h2>
+
+  <h3 id="claude-credentials">자격증명 설정</h3>
+
+  <pre><code><span class="cmt"># UI에서 자격증명 추가</span>
+Settings → Credentials → Add Credential → Anthropic
+
+API Key: sk-ant-api03-...
+
+<span class="cmt"># 또는 환경 변수 (n8n이 자동으로 자격증명 생성)</span>
+ANTHROPIC_API_KEY=sk-ant-api03-...</code></pre>
+
+  <h3 id="claude-llm-chain">Basic LLM Chain 구성</h3>
+
+  <pre><code><span class="cmt"># Basic LLM Chain 노드 설정</span>
+Chat Model → Anthropic Chat Model
+  Model: claude-opus-4-6
+  Max Tokens: 4096
+  Temperature: 0.7
+  Top P: 0.9
+  Extended Thinking: OFF (고급 추론 시 ON)
+
+Prompt:
+  System: |
+    당신은 전문적인 코드 리뷰어입니다.
+    코드의 문제점을 구체적으로 지적하고 개선 방안을 제시하세요.
+    응답은 반드시 한국어로 작성하세요.
+  Human: {{ $json.code }}</code></pre>
+
+  <h3 id="claude-direct-api">HTTP Request로 Claude API 직접 호출</h3>
+
+  <p>멀티모달(이미지 분석), 스트리밍, 캐시 제어 등 고급 기능은 HTTP Request 노드로 직접 호출합니다.</p>
+
+  <pre><code><span class="cmt"># HTTP Request 노드 — Claude API 직접 호출</span>
+Method: POST
+URL: https://api.anthropic.com/v1/messages
+Headers:
+  x-api-key: {{ $env.ANTHROPIC_API_KEY }}
+  anthropic-version: 2023-06-01
+  content-type: application/json
+  anthropic-beta: prompt-caching-2024-07-31   <span class="cmt"># 프롬프트 캐싱</span>
+
+Body (JSON):
+{
+  "model": "claude-opus-4-6",
+  "max_tokens": 4096,
+  "system": [
+    {
+      "type": "text",
+      "text": "{{ $json.systemPrompt }}",
+      "cache_control": { "type": "ephemeral" }
+    }
+  ],
+  "messages": [
+    {
+      "role": "user",
+      "content": "{{ $json.userMessage }}"
+    }
+  ]
+}</code></pre>
+
+  <pre><code><span class="cmt">// 응답 파싱 (Code 노드)</span>
+<span class="kw">const</span> resp = $json;
+<span class="kw">return</span> [{
+  json: {
+    answer:       resp.content[<span class="num">0</span>].text,
+    inputTokens:  resp.usage.input_tokens,
+    outputTokens: resp.usage.output_tokens,
+    cacheRead:    resp.usage.cache_read_input_tokens ?? <span class="num">0</span>,
+    cacheWrite:   resp.usage.cache_creation_input_tokens ?? <span class="num">0</span>,
+    stopReason:   resp.stop_reason,
+    <span class="cmt">// 비용 추정 (claude-opus-4-6 기준)</span>
+    costUSD: (resp.usage.input_tokens / <span class="num">1e6</span> * <span class="num">3</span>) +
+             (resp.usage.output_tokens / <span class="num">1e6</span> * <span class="num">15</span>),
+  }
+}];</code></pre>
+
+  <h3 id="claude-vision">이미지 분석 (Vision)</h3>
+
+  <pre><code><span class="cmt"># 이미지 URL → Claude Vision 분석</span>
+<span class="cmt">## HTTP Request 노드 Body</span>
+{
+  "model": "claude-opus-4-6",
+  "max_tokens": 2048,
+  "messages": [
+    {
+      "role": "user",
+      "content": [
+        {
+          "type": "image",
+          "source": {
+            "type": "url",
+            "url": "{{ $json.imageUrl }}"
+          }
+        },
+        {
+          "type": "text",
+          "text": "이 이미지를 자세히 설명하고, 주요 객체를 JSON 배열로 나열하세요."
+        }
+      ]
+    }
+  ]
+}</code></pre>
+
+  <pre><code><span class="cmt"># Binary 이미지 → Base64 → Claude</span>
+
+<span class="cmt">## Code 노드 — Binary를 Base64로 변환</span>
+<span class="kw">const</span> item = $input.first();
+<span class="kw">const</span> base64 = item.binary.data.data;  <span class="cmt">// 이미 base64</span>
+<span class="kw">const</span> mimeType = item.binary.data.mimeType;
+
+<span class="kw">return</span> [{ json: { base64, mimeType } }];</code></pre>
+
+  <pre><code><span class="cmt">## HTTP Request Body (base64 이미지)</span>
+{
+  "model": "claude-opus-4-6",
+  "max_tokens": 2048,
+  "messages": [{
+    "role": "user",
+    "content": [
+      {
+        "type": "image",
+        "source": {
+          "type": "base64",
+          "media_type": "{{ $json.mimeType }}",
+          "data": "{{ $json.base64 }}"
+        }
+      },
+      { "type": "text", "text": "{{ $json.prompt }}" }
+    ]
+  }]
+}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="output-parsers">출력 파서 (Output Parser)</h2>
+
+  <p>
+    LLM의 자유 형식 텍스트 출력을 <strong>구조화된 데이터</strong>로 변환합니다.
+    이후 노드에서 <code>$json.fieldName</code>으로 바로 접근할 수 있어 워크플로우 연결이 매우 간편해집니다.
+  </p>
+
+  <h3 id="output-parser-structured">Structured Output Parser</h3>
+
+  <pre><code><span class="cmt"># Basic LLM Chain + Structured Output Parser 구성</span>
+
+Output Parser → Structured Output Parser
+  Schema Type: Manual
+  Attributes:
+    - Name: category
+      Type: string
+      Description: "분류 카테고리 (결제/기술/계정/기타 중 하나)"
+    - Name: severity
+      Type: options
+      Options: 긴급, 높음, 보통, 낮음
+      Description: "심각도 수준"
+    - Name: summary
+      Type: string
+      Description: "50자 이내 한국어 요약"
+    - Name: requiresHuman
+      Type: boolean
+      Description: "인간 담당자 처리 필요 여부"
+
+<span class="cmt"># 프롬프트에 파서 지침이 자동 추가됨</span>
+<span class="cmt"># 출력 결과 → 바로 $json.category, $json.severity 로 접근</span></code></pre>
+
+  <pre><code><span class="cmt">// 파싱 결과 예시</span>
+{
+  "category": "결제",
+  "severity": "긴급",
+  "summary": "신용카드 결제 실패, 즉시 처리 필요",
+  "requiresHuman": <span class="kw">true</span>
+}</code></pre>
+
+  <h3 id="output-parser-autofix">Auto-fixing Output Parser</h3>
+
+  <p>LLM이 잘못된 형식을 반환하면, 에러 메시지와 함께 LLM에게 자동으로 재요청하여 수정합니다.</p>
+
+  <pre><code><span class="cmt"># Auto-fixing Output Parser 설정</span>
+Output Parser → Auto-fixing Output Parser
+  Parser: Structured Output Parser (내부에 구조 정의)
+  Max Retries: 3    <span class="cmt"># 최대 수정 재시도 횟수</span>
+
+<span class="cmt"># 동작 방식</span>
+1. LLM 출력 파싱 시도
+2. 실패 → LLM에 에러 메시지와 함께 재요청
+   "다음 에러를 수정하세요: JSON parse error at line 3..."
+3. 최대 Retry 횟수까지 반복
+4. 여전히 실패 → 노드 에러 처리</code></pre>
+
+  <h3 id="output-parser-manual">Code 노드로 수동 파싱</h3>
+
+  <pre><code><span class="cmt">// LLM 출력에서 JSON 추출 (마크다운 코드블록 포함 경우)</span>
+<span class="kw">const</span> text = $json.text || $json.output;
+
+<span class="cmt">// ```json ... ``` 블록 추출</span>
+<span class="kw">const</span> jsonMatch = text.match(<span class="str">/```(?:json)?\s*([\s\S]*?)```/</span>);
+<span class="kw">if</span> (jsonMatch) {
+  <span class="kw">const</span> parsed = JSON.parse(jsonMatch[<span class="num">1</span>].trim());
+  <span class="kw">return</span> [{ json: parsed }];
+}
+
+<span class="cmt">// 순수 JSON 파싱 시도</span>
+<span class="kw">try</span> {
+  <span class="kw">const</span> parsed = JSON.parse(text.trim());
+  <span class="kw">return</span> [{ json: parsed }];
+} <span class="kw">catch</span> {
+  <span class="cmt">// 정규식으로 키-값 추출 (폴백)</span>
+  <span class="kw">const</span> category = text.match(<span class="str">/category[:\s]+([^\n,}]+)/i</span>)?.[<span class="num">1</span>]?.trim();
+  <span class="kw">return</span> [{ json: { category, rawText: text } }];
+}</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="ai-agent">AI Agent 노드 완전 가이드</h2>
+
+  <p>
+    <strong>AI Agent 노드</strong>는 LLM이 스스로 "어떤 도구를 쓸지" 판단하고,
+    도구 실행 결과를 바탕으로 다음 행동을 결정하는 <strong>ReAct 패턴</strong>을 구현합니다.
+  </p>
+
+  <svg viewBox="0 0 800 380" class="diagram" role="img" aria-label="AI Agent ReAct 실행 루프">
+    <defs>
+      <marker id="n8n-agent-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--diagram-arrow)" />
+      </marker>
+    </defs>
+    <rect x="30" y="155" width="120" height="60" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="90" y="182" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">사용자 질문</text>
+    <text x="90" y="200" fill="var(--text-secondary)" text-anchor="middle" font-size="10">"BTC 현재 가격?"</text>
+    <line x1="150" y1="185" x2="195" y2="185" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#n8n-agent-arrow)"/>
+    <rect x="195" y="20" width="160" height="330" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="8"/>
+    <text x="275" y="45" fill="var(--diagram-accent)" text-anchor="middle" font-size="13" font-weight="bold">Claude LLM</text>
+    <rect x="210" y="60" width="130" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="5"/>
+    <text x="275" y="82" fill="var(--diagram-text)" text-anchor="middle" font-size="11" font-weight="bold">① Thought</text>
+    <text x="275" y="100" fill="var(--text-secondary)" text-anchor="middle" font-size="10">도구 선택 판단</text>
+    <rect x="210" y="130" width="130" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="5"/>
+    <text x="275" y="152" fill="var(--diagram-text)" text-anchor="middle" font-size="11" font-weight="bold">② Action</text>
+    <text x="275" y="170" fill="var(--text-secondary)" text-anchor="middle" font-size="10">도구 호출 요청</text>
+    <rect x="210" y="200" width="130" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="5"/>
+    <text x="275" y="222" fill="var(--diagram-text)" text-anchor="middle" font-size="11" font-weight="bold">③ Observation</text>
+    <text x="275" y="240" fill="var(--text-secondary)" text-anchor="middle" font-size="10">도구 결과 수신</text>
+    <rect x="210" y="270" width="130" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="5"/>
+    <text x="275" y="292" fill="var(--diagram-text)" text-anchor="middle" font-size="11" font-weight="bold">④ Final Answer</text>
+    <text x="275" y="310" fill="var(--text-secondary)" text-anchor="middle" font-size="10">최종 응답</text>
+    <line x1="275" y1="110" x2="275" y2="130" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-agent-arrow)"/>
+    <line x1="275" y1="180" x2="275" y2="200" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-agent-arrow)"/>
+    <line x1="275" y1="250" x2="275" y2="270" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-agent-arrow)"/>
+    <rect x="430" y="40" width="150" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="505" y="63" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">HTTP Request Tool</text>
+    <text x="505" y="82" fill="var(--text-secondary)" text-anchor="middle" font-size="10">CoinGecko API</text>
+    <rect x="430" y="115" width="150" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="505" y="138" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">Calculator Tool</text>
+    <text x="505" y="157" fill="var(--text-secondary)" text-anchor="middle" font-size="10">변동률 계산</text>
+    <rect x="430" y="190" width="150" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="505" y="213" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">Workflow Tool</text>
+    <text x="505" y="232" fill="var(--text-secondary)" text-anchor="middle" font-size="10">서브워크플로우</text>
+    <line x1="355" y1="155" x2="430" y2="68" stroke="var(--diagram-arrow)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#n8n-agent-arrow)"/>
+    <line x1="355" y1="155" x2="430" y2="143" stroke="var(--diagram-arrow)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#n8n-agent-arrow)"/>
+    <line x1="355" y1="155" x2="430" y2="218" stroke="var(--diagram-arrow)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#n8n-agent-arrow)"/>
+    <line x1="430" y1="68" x2="355" y2="225" stroke="var(--diagram-arrow)" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#n8n-agent-arrow)"/>
+    <line x1="430" y1="143" x2="355" y2="225" stroke="var(--diagram-arrow)" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#n8n-agent-arrow)"/>
+    <rect x="630" y="265" width="140" height="60" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="700" y="292" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">최종 응답</text>
+    <text x="700" y="312" fill="var(--text-secondary)" text-anchor="middle" font-size="10">"BTC: $XX,XXX"</text>
+    <line x1="355" y1="295" x2="630" y2="295" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#n8n-agent-arrow)"/>
+  </svg>
+  <p class="diagram-caption">AI Agent ReAct 루프: Thought → Action(도구 호출) → Observation → 반복 → Final Answer</p>
+
+  <h3 id="agent-config">AI Agent 핵심 설정</h3>
+
+  <pre><code><span class="cmt"># AI Agent 노드 전체 설정</span>
+
+Chat Model → Anthropic Chat Model
+  Model: claude-opus-4-6
+  Temperature: 0          <span class="cmt"># 도구 사용 시 결정론적 행동 권장</span>
+  Max Tokens: 4096
+
+Memory → Window Buffer Memory
+  Context Window Length: 10
+
+Max Iterations: 10        <span class="cmt"># 무한 루프 방지 (도구 최대 호출 횟수)</span>
+Return Intermediate Steps: true  <span class="cmt"># 중간 Thought/Action 포함 출력</span>
+
+System Prompt: |
+  당신은 유용한 AI 어시스턴트입니다.
+  주어진 도구를 적극 활용하여 정확한 답변을 제공하세요.
+  최종 답변은 반드시 한국어로 작성하세요.
+  모르는 정보는 추측하지 말고 도구로 확인하세요.
+
+Human Message: {{ $json.userMessage }}</code></pre>
+
+  <h3 id="agent-tools">도구(Tool) 설정 상세</h3>
+
+  <pre><code><span class="cmt"># HTTP Request Tool — 주식/암호화폐 가격 조회</span>
+Name: get_crypto_price
+Description: |
+  암호화폐의 현재 가격과 24시간 변동률을 조회합니다.
+  id 파라미터에 코인 ID를 입력하세요.
+  예: bitcoin, ethereum, ripple
+Method: GET
+URL: https://api.coingecko.com/api/v3/simple/price
+Query Parameters:
+  ids: {{ $parameter.id }}
+  vs_currencies: usd,krw
+  include_24hr_change: true</code></pre>
+
+  <pre><code><span class="cmt"># n8n Workflow Tool — 복잡한 DB 조회를 서브워크플로우로</span>
+Name: get_customer_info
+Description: |
+  고객 ID로 고객 정보(이름, 이메일, 주문 이력)를 조회합니다.
+  customer_id 파라미터에 고객 ID(숫자)를 입력하세요.
+Workflow: "고객 정보 조회 서브워크플로우"
+
+<span class="cmt"># 서브워크플로우 내부:</span>
+Execute Workflow Trigger
+  ↓
+PostgreSQL
+  Query: |
+    SELECT c.*, json_agg(o.*) as orders
+    FROM customers c
+    LEFT JOIN orders o ON o.customer_id = c.id
+    WHERE c.id = {{ $json.customer_id }}
+    GROUP BY c.id
+  ↓
+Respond to Workflow</code></pre>
+
+  <h3 id="agent-system-prompt">에이전트 시스템 프롬프트 설계</h3>
+
+  <pre><code><span class="cmt"># 고객 지원 에이전트 시스템 프롬프트 예시</span>
+당신은 [회사명] 공식 고객 지원 AI입니다.
+
+## 역할과 권한
+- 주문 조회, 배송 상태 확인, 반품/교환 안내 가능
+- 환불 처리는 50,000원 이하만 직접 처리 가능
+- 50,000원 초과 또는 법적 분쟁 → 인간 담당자 연결
+
+## 도구 사용 규칙
+- 고객 정보 조회 시 반드시 get_customer_info 도구 사용
+- 주문 상태 확인 시 반드시 get_order_status 도구 사용
+- 추측으로 주문 상태를 답변하지 말 것
+
+## 응답 형식
+- 친절하고 공감적인 어조 유지
+- 전문 용어 대신 쉬운 표현 사용
+- 해결이 어려우면 담당자 연결 제안
+
+## 개인정보 보호
+- 전화번호, 신용카드 번호를 응답에 포함하지 말 것
+- 이메일은 마스킹 처리: hong***@example.com</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="memory-strategies">메모리 전략</h2>
+
+  <h3 id="memory-comparison">메모리 종류 비교</h3>
+
+  <table>
+    <thead>
+      <tr><th>메모리 타입</th><th>영속성</th><th>토큰 사용</th><th>적합한 사용처</th><th>세션 분리</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Window Buffer</strong></td><td>인메모리 (임시)</td><td>최근 N개 × 메시지 길이</td><td>단일 실행 내 대화</td><td>실행 ID 기준</td></tr>
+      <tr><td><strong>Redis Chat</strong></td><td>Redis에 영속</td><td>설정한 Window 크기</td><td>다중 세션, 챗봇</td><td>Session ID 키</td></tr>
+      <tr><td><strong>Postgres Chat</strong></td><td>DB에 영속</td><td>설정한 Window 크기</td><td>대화 이력 분석 필요 시</td><td>Session ID 컬럼</td></tr>
+      <tr><td><strong>없음(Stateless)</strong></td><td>없음</td><td>없음</td><td>단발성 질의, 분류·요약</td><td>-</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="memory-session">세션별 메모리 관리</h3>
+
+  <pre><code><span class="cmt"># Redis Chat Memory — 사용자별 독립 메모리</span>
+
+AI Agent
+  Memory → Redis Chat Memory
+    Session Key: {{ $json.userId }}        <span class="cmt"># 사용자별 분리</span>
+    Session ID: {{ $json.sessionId }}      <span class="cmt"># 또는 대화 세션별 분리</span>
+    Context Window Length: 20             <span class="cmt"># 최근 20개 메시지</span>
+    Redis Credential: (Redis 자격증명)
+
+<span class="cmt"># Telegram 봇 예시 — chat.id로 세션 분리</span>
+Session Key: {{ $json.message.chat.id }}</code></pre>
+
+  <pre><code><span class="cmt">// Code 노드 — 오래된 메모리 수동 정리 (Redis)</span>
+<span class="cmt">// 특정 사용자의 대화 이력 초기화</span>
+<span class="kw">const</span> userId = $json.userId;
+<span class="kw">const</span> sessionKey = <span class="str">`n8n:${userId}:history`</span>;
+
+<span class="cmt">// 다음 Redis 노드에서 DEL 명령 실행</span>
+<span class="kw">return</span> [{ json: { sessionKey } }];</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="rag-pipeline">RAG 파이프라인 완전 구축</h2>
+
+  <h3 id="rag-document-loaders">문서 로더 종류</h3>
+
+  <table>
+    <thead>
+      <tr><th>로더</th><th>지원 형식</th><th>특이사항</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Default Data Loader (Binary)</td><td>PDF, DOCX, TXT, HTML, CSV, JSON</td><td>Binary 노드 출력을 연결</td></tr>
+      <tr><td>GitHub Document Loader</td><td>GitHub 저장소 파일</td><td>특정 디렉토리·확장자 필터 가능</td></tr>
+      <tr><td>Notion Document Loader</td><td>Notion 페이지·DB</td><td>Notion API 자격증명 필요</td></tr>
+      <tr><td>Recursive URL Loader</td><td>웹페이지 (크롤링)</td><td>최대 깊이, 도메인 제한 설정</td></tr>
+      <tr><td>JSON Document Loader</td><td>JSON 파일/구조</td><td>특정 키만 텍스트로 추출 가능</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="rag-text-splitters">텍스트 분할기 비교</h3>
+
+  <table>
+    <thead>
+      <tr><th>분할기</th><th>분할 기준</th><th>권장 설정</th><th>적합한 경우</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Recursive Character</strong></td><td>\n\n → \n → 공백 → 문자</td><td>Chunk: 1000, Overlap: 200</td><td>범용 (가장 추천)</td></tr>
+      <tr><td><strong>Character</strong></td><td>단일 구분자 (기본: \n\n)</td><td>Chunk: 2000, Overlap: 200</td><td>문단 기준 명확한 문서</td></tr>
+      <tr><td><strong>Token</strong></td><td>LLM 토큰 수 기준</td><td>Chunk: 512 tokens</td><td>토큰 한도 정확히 제어 시</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="rag-ingest">워크플로우 1: 문서 인덱싱 파이프라인</h3>
+
+  <pre><code><span class="cmt"># 문서 → 청크 → 임베딩 → 벡터 DB 저장</span>
+
+<span class="cmt">## 트리거: 파일 업로드 Webhook</span>
+Webhook Trigger (multipart/form-data)
+  ↓
+<span class="cmt">## 메타데이터 추출</span>
+Code 노드
+  const filename = $binary.data.fileName;
+  const source = $json.source ?? 'upload';
+  const uploadedBy = $json.uploadedBy ?? 'system';
+  return [{ json: { filename, source, uploadedBy }, binary: $input.first().binary }];
+  ↓
+<span class="cmt">## 중복 체크 (선택)</span>
+Supabase 노드
+  Query: SELECT id FROM documents WHERE filename = '{{ $json.filename }}'
+  ↓
+IF (이미 존재하면) → 409 응답 반환
+
+<span class="cmt">## 문서 → 텍스트 청크 분할</span>
+Default Data Loader
+  Data Type: Binary (자동 감지: PDF/DOCX/TXT)
+  Text Splitter → Recursive Character Text Splitter
+    Chunk Size: 1000
+    Chunk Overlap: 200
+    Separators: ["\n\n", "\n", " ", ""]
+  ↓
+<span class="cmt">## 임베딩 생성 + 벡터 DB 저장</span>
+Supabase Vector Store
+  Operation: Insert Documents
+  Embedding → OpenAI Embeddings (text-embedding-3-small)
+  Table: documents
+  Query Name: match_documents
+  Metadata:
+    source: {{ $json.filename }}
+    uploadedBy: {{ $json.uploadedBy }}
+    uploadedAt: {{ $now.toISO() }}
+  ↓
+<span class="cmt">## 완료 응답</span>
+Respond to Webhook
+  Body: { "success": true, "chunks": {{ $input.all().length }} }</code></pre>
+
+  <h3 id="rag-query">워크플로우 2: RAG 질의응답</h3>
+
+  <pre><code><span class="cmt"># 질문 → 벡터 검색 → LLM 답변 생성</span>
+
+Webhook Trigger
+  Body: { "question": "...", "userId": "...", "topK": 5 }
+  ↓
+<span class="cmt">## 방법 A: Retrieval Q&A Chain (간단)</span>
+Retrieval Q&A Chain
+  Chat Model → Anthropic (claude-opus-4-6)
+  Vector Store → Supabase (Retrieve Documents)
+    Query: {{ $json.question }}
+    Top K: {{ $json.topK ?? 5 }}
+  Prompt Template: |
+    다음 문서를 참고하여 질문에 답변하세요.
+    문서에 없는 내용은 "문서에서 확인할 수 없습니다"라고 답변하세요.
+
+    문서:
+    {context}
+
+    질문: {question}
+  ↓
+Respond to Webhook (answer + sources)</code></pre>
+
+  <pre><code><span class="cmt">## 방법 B: AI Agent + Vector Store Tool (더 유연)</span>
+
+AI Agent
+  Chat Model: Claude claude-opus-4-6
+  Memory: Redis Chat Memory (userId 키)
+  Tools:
+    Vector Store Retriever Tool
+      Vector Store: Supabase
+      Name: search_documents
+      Description: "내부 문서에서 관련 정보를 검색합니다. query에 검색할 내용을 입력하세요."
+      Top K: 5
+      Filter: { "source": "{{ $json.docSource }}" }  <span class="cmt"># 특정 문서만</span>
+
+  System Prompt: |
+    당신은 내부 문서 기반 AI 어시스턴트입니다.
+    반드시 search_documents 도구로 문서를 확인한 후 답변하세요.
+    출처 파일명을 항상 명시하세요.
+    문서에 없는 내용은 솔직히 모른다고 하세요.
+
+  Human: {{ $json.question }}</code></pre>
+
+  <h3 id="rag-advanced">고급 RAG 기법</h3>
+
+  <pre><code><span class="cmt">// 하이브리드 검색: 벡터 유사도 + 키워드 검색 결합</span>
+
+<span class="cmt">// 1. 벡터 검색 (의미적 유사도)</span>
+Supabase Vector Store Retrieve → 상위 10개
+
+<span class="cmt">// 2. PostgreSQL 키워드 검색 (Full-Text Search)</span>
+PostgreSQL:
+  SELECT *, ts_rank(to_tsvector('korean', content), query) AS rank
+  FROM documents, to_tsquery('korean', '{{ $json.keywords }}') query
+  WHERE to_tsvector('korean', content) @@ query
+  ORDER BY rank DESC LIMIT 10
+
+<span class="cmt">// 3. Code 노드 — 결과 병합 및 중복 제거</span>
+<span class="kw">const</span> vector = $items(<span class="str">"Vector Store"</span>).map(i => i.json);
+<span class="kw">const</span> keyword = $items(<span class="str">"PostgreSQL"</span>).map(i => i.json);
+<span class="kw">const</span> merged = [...vector, ...keyword];
+<span class="kw">const</span> seen = <span class="kw">new</span> <span class="type">Set</span>();
+<span class="kw">const</span> unique = merged.filter(d => {
+  <span class="kw">if</span> (seen.has(d.id)) <span class="kw">return false</span>;
+  seen.add(d.id);
+  <span class="kw">return true</span>;
+});
+<span class="kw">return</span> [{ json: { documents: unique.slice(<span class="num">0</span>, <span class="num">8</span>) } }];
+  ↓
+<span class="cmt">// 4. LLM에 컨텍스트와 함께 전달</span></code></pre>
+
+  <pre><code><span class="cmt">// 쿼리 재작성 (Query Rewriting) — 검색 품질 향상</span>
+
+Basic LLM Chain (쿼리 재작성 전용, 빠른 모델 사용)
+  Chat Model: claude-haiku-4-5
+  Prompt: |
+    대화 이력과 사용자 질문을 보고, 문서 검색에 최적화된
+    독립적인 검색 쿼리를 한국어로 작성하세요.
+    대화 이력 없이도 이해 가능한 완전한 쿼리여야 합니다.
+
+    대화 이력: {{ $json.history ?? "없음" }}
+    사용자 질문: {{ $json.question }}
+
+    검색 쿼리만 출력 (설명 없이):
+  ↓
+벡터 DB 검색 (재작성된 쿼리로)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="multi-agent">멀티에이전트 패턴</h2>
+
+  <h3 id="multi-agent-parallel">패턴 1: 병렬 전문가 에이전트</h3>
+
+  <pre><code><span class="cmt"># 하나의 복잡한 질문을 여러 전문 에이전트가 병렬 처리</span>
+
+Webhook Trigger ("분기별 실적 분석해줘")
+  ↓
+Code 노드 (질문 분해)
+  return [
+    { json: { question: "Q1-Q2 매출 트렌드", agent: "sales" } },
+    { json: { question: "비용 구조 분석", agent: "finance" } },
+    { json: { question: "시장 점유율 변화", agent: "market" } },
+  ];
+  ↓ (3개 아이템, 병렬 처리)
+
+<span class="cmt">## 각 아이템에 대해 담당 에이전트 라우팅</span>
+Switch 노드 ({{ $json.agent }}으로 분기)
+  "sales"  → 매출 분석 에이전트 (DB Tool + Chart Tool)
+  "finance"→ 재무 분석 에이전트 (DB Tool + Calculator)
+  "market" → 시장 분석 에이전트 (Web Search Tool + DB Tool)
+  ↓ (Merge: Append)
+
+<span class="cmt">## 결과 통합 에이전트</span>
+AI Agent (통합 요약)
+  System: "세 전문가의 분석을 종합하여 경영 보고서를 작성하세요."
+  Human: "분석 결과:\n{{ $json.allResults }}"</code></pre>
+
+  <h3 id="multi-agent-supervisor">패턴 2: 슈퍼바이저 에이전트</h3>
+
+  <pre><code><span class="cmt"># 슈퍼바이저가 전문 에이전트들을 지휘</span>
+
+Chat Trigger (사용자 요청)
+  ↓
+슈퍼바이저 AI Agent
+  System: |
+    당신은 팀 슈퍼바이저입니다.
+    사용자 요청을 분석하고 적절한 전문 에이전트에게 작업을 할당하세요.
+    사용 가능한 에이전트:
+    - research_agent: 웹 검색, 정보 수집
+    - code_agent: 코드 작성, 디버깅
+    - data_agent: 데이터 분석, 시각화
+    결과를 검토하고 최종 답변을 사용자에게 전달하세요.
+  Tools:
+    → research_agent (Workflow Tool)
+    → code_agent (Workflow Tool)
+    → data_agent (Workflow Tool)</code></pre>
+
+  <h3 id="multi-agent-human-in-loop">패턴 3: Human-in-the-Loop</h3>
+
+  <pre><code><span class="cmt"># AI 처리 → 사람 검토 → 승인/거절 → 계속 실행</span>
+
+Webhook Trigger (자동화 요청)
+  ↓
+AI Agent (초안 작성)
+  ↓
+<span class="cmt">## 사람 검토 요청 (Slack에 승인 요청)</span>
+Slack 노드
+  Text: "AI가 다음 초안을 작성했습니다:\n{{ $json.draft }}\n승인하시겠습니까?"
+  Blocks:
+    - type: actions
+      elements:
+        - type: button
+          text: "✅ 승인"
+          action_id: approve
+          value: "{{ $execution.resumeUrl }}?action=approve"
+        - type: button
+          text: "❌ 거절"
+          action_id: reject
+          value: "{{ $execution.resumeUrl }}?action=reject"
+          style: danger
+  ↓
+<span class="cmt">## Webhook 재개 대기 (최대 24시간)</span>
+Wait 노드
+  Resume: On Webhook Call
+  Webhook Suffix: /approval/{{ $execution.id }}
+  Max Wait Time: 86400   <span class="cmt"># 24시간 후 자동 타임아웃</span>
+  ↓
+<span class="cmt">## 승인/거절 처리</span>
+IF ({{ $json.action }} === "approve")
+  True → 실제 실행 (이메일 발송, DB 저장 등)
+  False → 취소 알림 + 로그</code></pre>
+
+  <pre><code><span class="cmt"># Wait 노드 재개 URL 호출 방법</span>
+
+<span class="cmt">## Slack 버튼 클릭 시 n8n으로 재개 신호 전송</span>
+<span class="cmt">## action_id에 따라 resumeUrl에 파라미터 추가</span>
+
+<span class="cmt">## 외부에서 재개 호출 (curl 예시)</span>
+curl -X POST "{{ $execution.resumeUrl }}" \
+  -H "Content-Type: application/json" \
+  -d '{"action": "approve", "approvedBy": "manager@company.com"}'</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="real-world-examples">실전 AI 자동화 사례</h2>
+
+  <h3 id="example-slack-ai">사례 1: Slack AI 분류 & 자동 라우팅</h3>
+
+  <pre><code><span class="cmt"># Slack 새 메시지 → AI 분류 → 담당자 태그 + DB 로그</span>
+
+Slack Trigger (새 메시지)
+  Channel: #customer-support
+  ↓
+Basic LLM Chain (claude-haiku-4-5, 빠름)
+  System: |
+    고객 메시지를 JSON으로만 분류하세요.
+    category: ["결제", "기술", "계정", "배송", "일반", "기타"]
+    severity: ["긴급", "높음", "보통", "낮음"]
+    sentiment: ["화남", "불만", "중립", "만족"]
+    language: ["한국어", "영어", "기타"]
+  User: {{ $json.text }}
+
+Output Parser → Structured Output Parser
+  category, severity, sentiment, language (모두 string)
+  ↓
+Code 노드 (담당자 매핑)
+  const assigneeMap = {
+    "결제": { user: "U01FINANCE", channel: "#finance-support" },
+    "기술": { user: "U02DEVTEAM", channel: "#dev-support" },
+    "계정": { user: "U03OPSCORE", channel: "#ops-support" },
+  };
+  const assignee = assigneeMap[$json.category] ?? { user: "U04GENERAL" };
+  return [{ json: { ...$json, assignee } }];
+  ↓
+[병렬]
+  Slack (원본 채널에 분류 태그 추가)
+    Thread TS: {{ $json.ts }}
+    Text: "카테고리: {{ $json.category }} | 심각도: {{ $json.severity }}"
+  PostgreSQL (티켓 생성)
+    INSERT INTO support_tickets ...
+  IF (severity == "긴급")
+    → Slack DM to assignee.user (즉시 알림)</code></pre>
+
+  <h3 id="example-github-review">사례 2: GitHub PR AI 코드 리뷰</h3>
+
+  <pre><code><span class="cmt"># PR 오픈 → diff 가져오기 → AI 리뷰 → GitHub 코멘트</span>
+
+GitHub Trigger
+  Event: Pull Request, Action: opened/synchronize
+  ↓
+Code 노드 (PR 메타데이터)
+  const pr = $json.pull_request;
+  return [{ json: {
+    title: pr.title,
+    author: pr.user.login,
+    diffUrl: pr.diff_url,
+    commentsUrl: pr.comments_url,
+    prNumber: pr.number,
+    repoFullName: $json.repository.full_name,
+  }}];
+  ↓
+HTTP Request (diff 다운로드)
+  URL: {{ $json.diffUrl }}
+  Headers: Authorization: token {{ $env.GITHUB_TOKEN }}, Accept: application/vnd.github.v3.diff
+  ↓
+Code 노드 (diff 전처리)
+  const diff = $json.data;
+  const MAX_CHARS = 12000;
+  const truncated = diff.length > MAX_CHARS
+    ? diff.slice(0, MAX_CHARS) + '\n... (이하 생략)'
+    : diff;
+  const addedLines = (diff.match(/^\+[^+]/mg) ?? []).length;
+  const removedLines = (diff.match(/^-[^-]/mg) ?? []).length;
+  return [{ json: { diff: truncated, addedLines, removedLines } }];
+  ↓
+Basic LLM Chain (claude-opus-4-6)
+  System: |
+    당신은 시니어 소프트웨어 엔지니어입니다.
+    PR 코드 변경사항을 분석하고 건설적인 피드백을 작성하세요.
+
+    ## 리뷰 항목 (중요도 순)
+    1. 🐛 버그 및 잠재적 오류
+    2. 🔒 보안 취약점
+    3. ⚡ 성능 이슈
+    4. 🏗️ 코드 구조 및 가독성
+    5. 🧪 테스트 커버리지
+    6. ✅ 잘된 점
+
+    각 항목에 해당하는 내용이 없으면 생략하세요.
+    구체적인 코드 라인을 인용하면 더 좋습니다.
+  User: |
+    PR 제목: {{ $node["Code"].json.title }}
+    작성자: {{ $node["Code"].json.author }}
+    변경: +{{ $node["Code 1"].json.addedLines }}줄 / -{{ $node["Code 1"].json.removedLines }}줄
+
+    코드 변경사항:
+    ```diff
+    {{ $json.diff }}
+    ```
+  ↓
+HTTP Request (GitHub 코멘트 등록)
+  URL: https://api.github.com/repos/{{ $node["Code"].json.repoFullName }}/issues/{{ $node["Code"].json.prNumber }}/comments
+  Method: POST
+  Headers: Authorization: token {{ $env.GITHUB_TOKEN }}
+  Body: { "body": "## 🤖 AI 코드 리뷰\n\n{{ $json.text }}\n\n---\n*자동 생성된 리뷰입니다. 참고용으로 활용하세요.*" }</code></pre>
+
+  <h3 id="example-content-pipeline">사례 3: AI 콘텐츠 생성 파이프라인</h3>
+
+  <pre><code><span class="cmt"># 주제 입력 → AI 리서치 → 초안 작성 → SEO 최적화 → 발행</span>
+
+Webhook Trigger
+  Body: { "topic": "n8n으로 AI 자동화 구축하기", "language": "ko", "targetLength": 1500 }
+  ↓
+AI Agent (리서치 에이전트)
+  Tools: Wikipedia, SerpAPI, HTTP Request (뉴스 API)
+  System: 주제에 대한 최신 정보를 수집하고 JSON으로 요약하세요.
+  ↓
+Basic LLM Chain (초안 작성, claude-opus-4-6)
+  Prompt: |
+    리서치 결과를 바탕으로 블로그 포스트 초안을 작성하세요.
+    - 언어: {{ $json.language }}
+    - 목표 길이: {{ $json.targetLength }}자
+    - H2/H3 구조, 예제 코드 포함
+    - SEO 최적화된 제목과 소제목
+
+    리서치 결과:
+    {{ $json.research }}
+  ↓
+Basic LLM Chain (SEO 메타데이터 추출, claude-haiku-4-5)
+  Prompt: |
+    다음 블로그 포스트에서 SEO 메타데이터를 JSON으로 추출하세요.
+    - title: SEO 최적화 제목 (60자 이내)
+    - description: 메타 설명 (160자 이내)
+    - keywords: 핵심 키워드 배열 (5-10개)
+    - readingTime: 예상 읽기 시간 (분)
+
+    {{ $json.text }}
+
+Output Parser → Structured Output Parser
+  ↓
+[병렬]
+  HTTP Request (WordPress API 발행 또는 Notion 저장)
+  Google Sheets (콘텐츠 캘린더 기록)
+  Slack (팀 알림: 새 포스트 초안 완료)</code></pre>
+
+  <h3 id="example-incident">사례 4: AI 장애 대응 자동화</h3>
+
+  <pre><code><span class="cmt"># 모니터링 알림 → AI 원인 분석 → 자동 복구 시도 → 에스컬레이션</span>
+
+Webhook Trigger (Prometheus AlertManager)
+  Body: { "alertname": "HighCPUUsage", "service": "api-server", "severity": "critical" }
+  ↓
+Code 노드 (경보 파싱)
+  const alert = $json.alerts[0];
+  return [{ json: {
+    alertname: alert.labels.alertname,
+    service: alert.labels.service,
+    severity: alert.labels.severity,
+    startedAt: alert.startsAt,
+    description: alert.annotations.description,
+  }}];
+  ↓
+[병렬]
+  HTTP Request (최근 로그 조회 - Loki/Elasticsearch)
+  HTTP Request (메트릭 조회 - Prometheus)
+  PostgreSQL (최근 배포 이력)
+  ↓ (Merge)
+AI Agent (원인 분석 + 복구 방안)
+  System: |
+    DevOps 전문가로서 장애 원인을 분석하고 즉시 조치 방안을 제시하세요.
+    제공된 도구로 추가 조사를 할 수 있습니다.
+    복구 명령어는 반드시 실행 전 승인을 요청하세요.
+  Tools:
+    → SSH Command Tool (서버 명령어 실행)
+    → Kubernetes API Tool (Pod 재시작 등)
+  User: |
+    장애 내용:
+    {{ $json.description }}
+
+    최근 로그: {{ $json.logs }}
+    메트릭: {{ $json.metrics }}
+    최근 배포: {{ $json.deployments }}
+  ↓
+Slack 노드 (즉시 알림 + AI 분석 결과)
+  Channel: #incidents
+  Text: |
+    🚨 *{{ $json.alertname }}* - {{ $json.service }}
+    AI 분석: {{ $json.output }}
+  ↓
+IF (severity == "critical" && 자동 복구 제안 있음)
+  → Human-in-the-Loop (승인 후 복구 실행)
+  → PagerDuty (온콜 담당자 호출)</code></pre>
+
+  <h3 id="example-lead-scoring">사례 5: AI 리드 스코어링</h3>
+
+  <pre><code><span class="cmt"># CRM 신규 리드 → AI 분석 → 점수 산출 → 영업팀 라우팅</span>
+
+HubSpot Trigger (새 Contact 생성)
+  ↓
+HTTP Request (회사 정보 보강 - Clearbit/Apollo)
+  URL: https://company.clearbit.com/v2/companies/find
+  Query: domain={{ $json.company.domain }}
+  ↓
+Basic LLM Chain (claude-opus-4-6)
+  System: |
+    B2B SaaS 영업 전문가로서 리드를 분석하고 점수를 산출하세요.
+
+    점수 기준 (0-100점):
+    - 회사 규모 (직원 수): 대기업 30점, 중기업 20점, 소기업 10점
+    - 업종 적합성: AI/Tech 25점, 제조 15점, 서비스 10점
+    - 타이틀 적합성: C레벨/VP 20점, 매니저 15점, 일반 5점
+    - 인게이지먼트: 데모 신청 25점, 콘텐츠 다운 15점, 방문만 5점
+
+    JSON으로만 응답: { "score": number, "tier": "A|B|C", "reason": string, "nextAction": string }
+  User: |
+    이름: {{ $json.firstname }} {{ $json.lastname }}
+    직책: {{ $json.jobtitle }}
+    회사: {{ $json.company }}
+    직원 수: {{ $json.company_size }}
+    업종: {{ $json.industry }}
+    유입 경로: {{ $json.lead_source }}
+
+Output Parser → Structured Output Parser
+  ↓
+HubSpot 노드 (리드 점수 업데이트)
+  Update Contact Property: lead_score, lead_tier, ai_reason
+  ↓
+Switch (tier)
+  "A" → 영업팀 즉시 알림 + 자동 미팅 일정 제안
+  "B" → 이메일 시퀀스 등록
+  "C" → 뉴스레터만 구독</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="security-prompt">프롬프트 보안</h2>
+
+  <h3 id="prompt-injection">프롬프트 인젝션 방지</h3>
+
+  <pre><code><span class="cmt">// Code 노드 — 사용자 입력 위생처리</span>
+<span class="kw">const</span> userInput = $json.userMessage;
+
+<span class="cmt">// 1. 길이 제한</span>
+<span class="kw">if</span> (userInput.length > <span class="num">2000</span>) {
+  <span class="kw">throw new</span> <span class="type">Error</span>(<span class="str">'입력이 너무 깁니다 (최대 2000자)'</span>);
+}
+
+<span class="cmt">// 2. 인젝션 패턴 감지</span>
+<span class="kw">const</span> injectionPatterns = [
+  <span class="str">/ignore\s+(all\s+)?previous\s+instructions/i</span>,
+  <span class="str">/system\s+prompt/i</span>,
+  <span class="str">/jailbreak/i</span>,
+  <span class="str">/\[INST\]/i</span>,
+  <span class="str">/&lt;system&gt;/i</span>,
+];
+<span class="kw">for</span> (<span class="kw">const</span> pattern <span class="kw">of</span> injectionPatterns) {
+  <span class="kw">if</span> (pattern.test(userInput)) {
+    <span class="kw">throw new</span> <span class="type">Error</span>(<span class="str">'허용되지 않는 입력입니다'</span>);
+  }
+}
+
+<span class="cmt">// 3. 특수 문자 이스케이프 (SQL 인젝션 방지)</span>
+<span class="kw">const</span> sanitized = userInput
+  .replace(<span class="str">/[<>&"']/g</span>, c => ({
+    <span class="str">'<'</span>: <span class="str">'&lt;'</span>, <span class="str">'>'</span>: <span class="str">'&gt;'</span>, <span class="str">'&'</span>: <span class="str">'&amp;'</span>,
+    <span class="str">'"'</span>: <span class="str">'&quot;'</span>, <span class="str">"'"</span>: <span class="str">'&#39;'</span>
+  }[c]));
+
+<span class="kw">return</span> [{ json: { sanitizedInput: sanitized } }];</code></pre>
+
+  <h3 id="rate-limiting">Rate Limiting</h3>
+
+  <pre><code><span class="cmt">// Code 노드 — 사용자별 요청 제한 (Redis 기반)</span>
+<span class="kw">const</span> userId = $json.userId;
+<span class="kw">const</span> key = <span class="str">`ratelimit:${userId}:${$now.toFormat('yyyy-MM-dd-HH')}`</span>;
+<span class="kw">const</span> MAX_REQUESTS_PER_HOUR = <span class="num">20</span>;
+
+<span class="cmt">// 다음 Redis 노드에서:</span>
+<span class="cmt">// INCR key → TTL 3600 → IF count > MAX → 429 반환</span>
+<span class="kw">return</span> [{ json: { ratelimitKey: key, maxRequests: MAX_REQUESTS_PER_HOUR } }];</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="cost-optimization">AI 비용 최적화</h2>
+
+  <h3 id="cost-model-routing">모델 라우팅 전략</h3>
+
+  <pre><code><span class="cmt">// Code 노드 — 복잡도 기반 모델 자동 선택</span>
+<span class="kw">const</span> { prompt, taskType } = $json;
+<span class="kw">const</span> tokenEstimate = Math.ceil(prompt.length / <span class="num">3.5</span>);
+
+<span class="kw">let</span> model, temperature;
+
+<span class="kw">if</span> (taskType === <span class="str">'classification'</span> || tokenEstimate < <span class="num">500</span>) {
+  model = <span class="str">'claude-haiku-4-5'</span>;  <span class="cmt">// 빠르고 저렴</span>
+  temperature = <span class="num">0</span>;
+} <span class="kw">else if</span> (taskType === <span class="str">'code'</span> || tokenEstimate < <span class="num">2000</span>) {
+  model = <span class="str">'claude-sonnet-4-6'</span>;  <span class="cmt">// 균형</span>
+  temperature = <span class="num">0.3</span>;
+} <span class="kw">else</span> {
+  model = <span class="str">'claude-opus-4-6'</span>;    <span class="cmt">// 복잡한 추론</span>
+  temperature = <span class="num">0.7</span>;
+}
+
+<span class="kw">return</span> [{ json: { ...($json), model, temperature } }];</code></pre>
+
+  <h3 id="cost-caching">프롬프트 캐싱 (Anthropic)</h3>
+
+  <pre><code><span class="cmt"># 긴 시스템 프롬프트에 캐시 활성화 → 비용 90% 절감</span>
+<span class="cmt"># 최소 1024 토큰 이상인 시스템 프롬프트에 적용</span>
+
+{
+  "system": [
+    {
+      "type": "text",
+      "text": "{{ $json.longSystemPrompt }}",
+      "cache_control": { "type": "ephemeral" }  <span class="cmt"># 이 부분 캐시</span>
+    }
+  ],
+  "messages": [
+    { "role": "user", "content": "{{ $json.userMessage }}" }
+  ]
+}
+
+<span class="cmt"># 캐시 히트 시 비용</span>
+<span class="cmt"># 입력 토큰: $3/MTok → $0.30/MTok (90% 절감)</span>
+<span class="cmt"># 유효 시간: 5분 (호출할 때마다 갱신)</span></code></pre>
+
+  <table>
+    <thead>
+      <tr><th>작업 유형</th><th>권장 모델</th><th>이유</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>분류·태깅·감정분석</td><td>claude-haiku-4-5</td><td>단순 작업, 속도·비용 우선</td></tr>
+      <tr><td>요약·번역·추출</td><td>claude-haiku-4-5 / sonnet</td><td>충분한 품질, 저비용</td></tr>
+      <tr><td>코드 생성·리뷰</td><td>claude-sonnet-4-6</td><td>품질-비용 균형</td></tr>
+      <tr><td>복잡한 추론·에이전트</td><td>claude-opus-4-6</td><td>최고 품질 필요</td></tr>
+      <tr><td>대량 반복 처리</td><td>Ollama (로컬)</td><td>비용 제로, 프라이버시</td></tr>
+      <tr><td>빠른 추론 (저지연)</td><td>Groq (Llama)</td><td>무료 티어, 초고속</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">📚 관련 가이드</div>
+    <ul>
+      <li><a href="n8n-intro.html">n8n 기초</a> — 설치, 핵심 개념, 노드 레퍼런스</li>
+      <li><a href="n8n-advanced.html">n8n 고급 활용</a> — 커스텀 노드, 운영 배포, 보안</li>
+      <li><a href="claude-api.html">Claude API 가이드</a> — Anthropic API 심층 활용</li>
+      <li><a href="mcp-intro.html">MCP란?</a> — Claude와 외부 도구 연동</li>
+    </ul>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

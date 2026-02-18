@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="n8n이란?">
+<meta property="og:description" content="n8n 워크플로우 자동화 완전 가이드: 설치, 핵심 개념, 표현식, 트리거, 노드 레퍼런스, 패턴, 디버깅">
+<meta property="og:url" content="https://minzkn.com/claude/pages/n8n-intro.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="n8n 워크플로우 자동화 완전 가이드: 설치, 핵심 개념, 표현식, 트리거, 노드 레퍼런스, 패턴, 디버깅">
+<meta name="keywords" content="n8n, 워크플로우 자동화, workflow automation, 노코드, 로우코드, 셀프호스팅, Zapier 대안, Make.com, n8n 설치, n8n 표현식, n8n 트리거">
+<meta name="author" content="MINZKN">
+<title>n8n이란? - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<header class="site-header"></header>
+<nav class="side-nav" aria-label="사이트 내비게이션"></nav>
+
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">n8n이란?</h1>
+<p class="lead">오픈소스 워크플로우 자동화 플랫폼 — AI와 400개 이상의 서비스를 코드 없이 연결하는 셀프호스팅 자동화 엔진 완전 가이드</p>
+
+<div class="info-box warning">
+  <strong>업데이트 안내:</strong> n8n은 활발하게 개발 중입니다. 버전·노드·가격 정책은 변동될 수 있으므로 최신 내용은 <a href="https://docs.n8n.io" target="_blank" rel="noopener noreferrer">공식 문서</a>를 확인하세요.
+</div>
+
+<div class="info-box tip">
+  <div class="info-box-title">⚡ 30초 퀵스타트</div>
+  <pre><code><span class="cmt"># Docker 한 줄로 즉시 실행</span>
+docker run -it --rm -p 5678:5678 -v ~/.n8n:/home/node/.n8n n8nio/n8n
+
+<span class="cmt"># → http://localhost:5678 접속, 계정 생성 후 바로 사용</span></code></pre>
+</div>
+
+<section class="content-section">
+  <h2 id="what-is-n8n">n8n이란 무엇인가?</h2>
+
+  <p>
+    <strong>n8n</strong>(발음: "n-eight-n" 또는 "nodemation")은 독일 스타트업 n8n GmbH가 2019년 공개한
+    <strong>오픈소스 워크플로우 자동화 플랫폼</strong>입니다. 코드 없이 시각적 에디터로 자동화를 구축하면서도,
+    필요하면 JavaScript/Python 코드를 자유롭게 삽입할 수 있는 <strong>로우코드(Low-Code)</strong> 접근 방식이 특징입니다.
+  </p>
+
+  <p>
+    2024~2025년 AI 붐과 함께 n8n은 <strong>LLM 기반 AI 에이전트 워크플로우</strong>를 가장 쉽게 구축할 수 있는
+    플랫폼으로 주목받고 있습니다. Claude, OpenAI, Gemini 등 주요 AI API와의 기본 통합을 제공하며,
+    메모리·도구 사용·RAG 파이프라인까지 노드 조합으로 완성할 수 있습니다.
+  </p>
+
+  <h3 id="core-features">핵심 특징</h3>
+
+  <ul>
+    <li><strong>셀프호스팅 우선</strong>: 데이터를 자체 서버에서 처리 — 프라이버시와 비용 절감</li>
+    <li><strong>공정 코드 라이선스</strong>: Sustainable Use License — 영리 목적 SaaS 재판매 제외 시 무료</li>
+    <li><strong>400+ 통합 노드</strong>: Slack, GitHub, PostgreSQL, HTTP Request, AI 노드 등</li>
+    <li><strong>시각적 에디터</strong>: 드래그 앤 드롭으로 워크플로우 설계</li>
+    <li><strong>코드 삽입 가능</strong>: Code 노드로 JS/Python 코드 직접 실행</li>
+    <li><strong>AI 네이티브</strong>: AI Agent, LLM Chain, 벡터 스토어 노드 기본 제공</li>
+    <li><strong>다양한 트리거</strong>: Webhook, Cron, 이벤트, 수동 실행</li>
+    <li><strong>실행 이력</strong>: 각 실행의 입력/출력 데이터를 시각적으로 확인</li>
+    <li><strong>팀 협업</strong>: 사용자 권한(Owner/Member/Viewer), 프로젝트 분리</li>
+    <li><strong>템플릿 마켓플레이스</strong>: 900개+ 공개 워크플로우 템플릿 즉시 사용</li>
+  </ul>
+
+  <svg viewBox="0 0 800 420" class="diagram" role="img" aria-label="n8n 플랫폼 개요">
+    <defs>
+      <marker id="n8n-intro-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--diagram-arrow)" />
+      </marker>
+    </defs>
+    <rect x="20" y="30" width="130" height="360" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="85" y="55" fill="var(--text-secondary)" text-anchor="middle" font-size="11" font-weight="bold">트리거 / 소스</text>
+    <rect x="35" y="65" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="85" y="86" fill="var(--diagram-text)" text-anchor="middle" font-size="12">Webhook</text>
+    <rect x="35" y="107" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="85" y="128" fill="var(--diagram-text)" text-anchor="middle" font-size="12">Cron Schedule</text>
+    <rect x="35" y="149" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="85" y="170" fill="var(--diagram-text)" text-anchor="middle" font-size="12">GitHub Event</text>
+    <rect x="35" y="191" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="85" y="212" fill="var(--diagram-text)" text-anchor="middle" font-size="12">Slack Message</text>
+    <rect x="35" y="233" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="85" y="254" fill="var(--diagram-text)" text-anchor="middle" font-size="12">Email / Form</text>
+    <rect x="35" y="275" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="85" y="296" fill="var(--diagram-text)" text-anchor="middle" font-size="12">수동 실행</text>
+    <rect x="200" y="20" width="400" height="380" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2.5" rx="10"/>
+    <text x="400" y="48" fill="var(--diagram-accent)" text-anchor="middle" font-size="16" font-weight="bold">n8n 워크플로우 엔진</text>
+    <rect x="220" y="65" width="120" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="280" y="87" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">Trigger 노드</text>
+    <text x="280" y="105" fill="var(--text-secondary)" text-anchor="middle" font-size="11">이벤트 감지</text>
+    <rect x="360" y="65" width="120" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="420" y="87" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">Transform 노드</text>
+    <text x="420" y="105" fill="var(--text-secondary)" text-anchor="middle" font-size="11">데이터 변환/필터</text>
+    <rect x="220" y="145" width="120" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="6"/>
+    <text x="280" y="166" fill="var(--diagram-accent)" text-anchor="middle" font-size="13" font-weight="bold">AI Agent 노드</text>
+    <text x="280" y="184" fill="var(--text-secondary)" text-anchor="middle" font-size="11">LLM + 도구 실행</text>
+    <rect x="360" y="145" width="120" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="420" y="166" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">Code 노드</text>
+    <text x="420" y="184" fill="var(--text-secondary)" text-anchor="middle" font-size="11">JS / Python 실행</text>
+    <rect x="220" y="225" width="120" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="280" y="246" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">IF / Switch</text>
+    <text x="280" y="264" fill="var(--text-secondary)" text-anchor="middle" font-size="11">조건 분기</text>
+    <rect x="360" y="225" width="120" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="420" y="246" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">Loop / Split</text>
+    <text x="420" y="264" fill="var(--text-secondary)" text-anchor="middle" font-size="11">반복 처리</text>
+    <rect x="220" y="305" width="260" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="350" y="326" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">Sub-Workflow / Error Handler</text>
+    <text x="350" y="344" fill="var(--text-secondary)" text-anchor="middle" font-size="11">모듈화 · 에러 복구</text>
+    <line x1="340" y1="90" x2="360" y2="90" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-intro-arrow)"/>
+    <line x1="280" y1="115" x2="280" y2="145" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-intro-arrow)"/>
+    <line x1="420" y1="115" x2="420" y2="145" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-intro-arrow)"/>
+    <line x1="280" y1="195" x2="280" y2="225" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-intro-arrow)"/>
+    <line x1="420" y1="195" x2="420" y2="225" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-intro-arrow)"/>
+    <line x1="280" y1="275" x2="280" y2="305" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#n8n-intro-arrow)"/>
+    <rect x="650" y="30" width="130" height="360" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="715" y="55" fill="var(--text-secondary)" text-anchor="middle" font-size="11" font-weight="bold">액션 / 대상</text>
+    <rect x="665" y="65" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="715" y="86" fill="var(--diagram-text)" text-anchor="middle" font-size="12">Slack 전송</text>
+    <rect x="665" y="107" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="715" y="128" fill="var(--diagram-text)" text-anchor="middle" font-size="12">Email 전송</text>
+    <rect x="665" y="149" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="715" y="170" fill="var(--diagram-text)" text-anchor="middle" font-size="12">DB 저장</text>
+    <rect x="665" y="191" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="715" y="212" fill="var(--diagram-text)" text-anchor="middle" font-size="12">HTTP 호출</text>
+    <rect x="665" y="233" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="715" y="254" fill="var(--diagram-text)" text-anchor="middle" font-size="12">GitHub PR</text>
+    <rect x="665" y="275" width="100" height="32" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="715" y="296" fill="var(--diagram-text)" text-anchor="middle" font-size="12">AI 응답 반환</text>
+    <line x1="150" y1="200" x2="200" y2="200" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#n8n-intro-arrow)"/>
+    <line x1="600" y1="200" x2="650" y2="200" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#n8n-intro-arrow)"/>
+  </svg>
+  <p class="diagram-caption">n8n 아키텍처: 외부 트리거 → 워크플로우 노드 체인 → 액션 대상</p>
+
+  <h3 id="n8n-vs-alternatives">n8n vs 다른 자동화 도구 비교</h3>
+
+  <table>
+    <thead>
+      <tr><th>항목</th><th>n8n</th><th>Zapier</th><th>Make (Integromat)</th><th>Airflow</th><th>Temporal</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>호스팅</strong></td><td>셀프호스팅(무료)/Cloud</td><td>Cloud 전용</td><td>Cloud 전용</td><td>셀프호스팅</td><td>셀프호스팅/Cloud</td></tr>
+      <tr><td><strong>비용</strong></td><td>셀프호스팅 무료</td><td>$20~$69+/월</td><td>$9~$29+/월</td><td>인프라만</td><td>인프라만</td></tr>
+      <tr><td><strong>코드 작성</strong></td><td>선택적(JS/Python)</td><td>제한적</td><td>제한적</td><td>Python 필수</td><td>Go/TypeScript</td></tr>
+      <tr><td><strong>AI 통합</strong></td><td>전용 AI 노드 다수</td><td>기본 OpenAI</td><td>OpenAI 지원</td><td>커스텀 코드</td><td>커스텀 코드</td></tr>
+      <tr><td><strong>데이터 프라이버시</strong></td><td>완전 자체 보관</td><td>Zapier 경유</td><td>Make 경유</td><td>완전 자체</td><td>완전 자체</td></tr>
+      <tr><td><strong>학습 난이도</strong></td><td>중간</td><td>쉬움</td><td>중간</td><td>높음</td><td>매우 높음</td></tr>
+      <tr><td><strong>오픈소스</strong></td><td>✅ Sustainable Use</td><td>❌</td><td>❌</td><td>✅ Apache 2.0</td><td>✅ MIT</td></tr>
+      <tr><td><strong>실시간 이벤트</strong></td><td>✅ Webhook</td><td>✅ (제한)</td><td>✅</td><td>제한적</td><td>✅</td></tr>
+      <tr><td><strong>적합 대상</strong></td><td>개발자·기업 자동화</td><td>비개발자</td><td>비개발자</td><td>데이터 엔지니어</td><td>백엔드 개발자</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🎯 n8n이 최적인 상황</div>
+    <ul>
+      <li>민감한 데이터(고객 정보, 소스코드)를 외부 서버에 보내고 싶지 않을 때</li>
+      <li>AI 에이전트 워크플로우를 빠르게 프로토타이핑할 때</li>
+      <li>월 구독 비용을 절감하고 싶을 때 (팀 규모 확장 시)</li>
+      <li>커스텀 로직이 필요하지만 전체를 코드로 짜기엔 부담될 때</li>
+      <li>복잡한 조건 분기, 루프, 멀티스텝 자동화가 필요할 때</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="installation">설치 방법</h2>
+
+  <h3 id="install-docker">방법 1: Docker (가장 추천)</h3>
+
+  <pre><code><span class="cmt"># 기본 실행 (데이터 보존 포함)</span>
+docker run -d \
+  --name n8n \
+  -p 5678:5678 \
+  -v ~/.n8n:/home/node/.n8n \
+  --restart unless-stopped \
+  n8nio/n8n
+
+<span class="cmt"># 특정 버전 고정 (운영 환경 권장)</span>
+docker run -d \
+  --name n8n \
+  -p 5678:5678 \
+  -v ~/.n8n:/home/node/.n8n \
+  --restart unless-stopped \
+  n8nio/n8n:1.68.0   <span class="cmt"># 버전 명시</span></code></pre>
+
+  <h3 id="install-docker-compose">방법 2: Docker Compose (운영 환경)</h3>
+
+  <pre><code><span class="cmt"># docker-compose.yml</span>
+<span class="kw">version</span>: <span class="str">'3.8'</span>
+<span class="kw">services</span>:
+  <span class="kw">n8n</span>:
+    <span class="kw">image</span>: n8nio/n8n
+    <span class="kw">restart</span>: unless-stopped
+    <span class="kw">ports</span>:
+      - <span class="str">"5678:5678"</span>
+    <span class="kw">environment</span>:
+      - WEBHOOK_URL=https://n8n.yourdomain.com
+      - GENERIC_TIMEZONE=Asia/Seoul
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=${DB_PASSWORD}
+    <span class="kw">volumes</span>:
+      - n8n_data:/home/node/.n8n
+    <span class="kw">depends_on</span>:
+      postgres:
+        condition: service_healthy
+
+  <span class="kw">postgres</span>:
+    <span class="kw">image</span>: postgres:15-alpine
+    <span class="kw">restart</span>: unless-stopped
+    <span class="kw">environment</span>:
+      - POSTGRES_DB=n8n
+      - POSTGRES_USER=n8n
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    <span class="kw">volumes</span>:
+      - postgres_data:/var/lib/postgresql/data
+    <span class="kw">healthcheck</span>:
+      test: [<span class="str">"CMD-SHELL"</span>, <span class="str">"pg_isready -U n8n"</span>]
+      interval: 10s
+      retries: 5
+
+<span class="kw">volumes</span>:
+  n8n_data:
+  postgres_data:</code></pre>
+
+  <pre><code><span class="cmt"># .env 파일</span>
+N8N_ENCRYPTION_KEY=$(openssl rand -hex 32)
+DB_PASSWORD=$(openssl rand -hex 16)
+
+<span class="cmt"># 실행</span>
+docker compose up -d
+docker compose logs -f n8n</code></pre>
+
+  <h3 id="install-npm">방법 3: npm (로컬 개발)</h3>
+
+  <pre><code><span class="cmt"># Node.js 18.17+ 필요</span>
+node --version   <span class="cmt"># v18.17.0 이상 확인</span>
+
+npm install -g n8n
+
+<span class="cmt"># 실행</span>
+n8n start
+
+<span class="cmt"># 터널링으로 외부 Webhook 테스트 (개발용)</span>
+n8n start --tunnel</code></pre>
+
+  <h3 id="env-vars">주요 환경 변수 전체 참조</h3>
+
+  <table>
+    <thead>
+      <tr><th>환경 변수</th><th>기본값</th><th>설명</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>N8N_PORT</code></td><td>5678</td><td>서버 포트</td></tr>
+      <tr><td><code>N8N_HOST</code></td><td>localhost</td><td>서버 호스트 (0.0.0.0 = 모든 인터페이스)</td></tr>
+      <tr><td><code>N8N_PROTOCOL</code></td><td>http</td><td>http 또는 https</td></tr>
+      <tr><td><code>WEBHOOK_URL</code></td><td>-</td><td>외부 Webhook URL (Nginx 뒤 배치 시)</td></tr>
+      <tr><td><code>N8N_ENCRYPTION_KEY</code></td><td>자동 생성</td><td>자격증명 암호화 키 (운영 필수 고정)</td></tr>
+      <tr><td><code>N8N_USER_MANAGEMENT_JWT_SECRET</code></td><td>자동</td><td>JWT 서명 키</td></tr>
+      <tr><td><code>DB_TYPE</code></td><td>sqlite</td><td>sqlite / postgresdb / mysqldb</td></tr>
+      <tr><td><code>DB_POSTGRESDB_*</code></td><td>-</td><td>PostgreSQL 연결 정보</td></tr>
+      <tr><td><code>EXECUTIONS_MODE</code></td><td>regular</td><td>regular / queue (대용량)</td></tr>
+      <tr><td><code>EXECUTIONS_DATA_MAX_AGE</code></td><td>336 (2주)</td><td>실행 이력 보관 시간</td></tr>
+      <tr><td><code>EXECUTIONS_DATA_PRUNE</code></td><td>true</td><td>오래된 이력 자동 삭제</td></tr>
+      <tr><td><code>EXECUTIONS_DATA_PRUNE_MAX_COUNT</code></td><td>10000</td><td>최대 보관 실행 수</td></tr>
+      <tr><td><code>N8N_CONCURRENCY_PRODUCTION_LIMIT</code></td><td>-1 (무제한)</td><td>동시 실행 워크플로우 수</td></tr>
+      <tr><td><code>N8N_LOG_LEVEL</code></td><td>info</td><td>error/warn/info/verbose/debug</td></tr>
+      <tr><td><code>N8N_LOG_OUTPUT</code></td><td>console</td><td>console / file</td></tr>
+      <tr><td><code>GENERIC_TIMEZONE</code></td><td>UTC</td><td>타임존 (예: Asia/Seoul)</td></tr>
+      <tr><td><code>N8N_DIAGNOSTICS_ENABLED</code></td><td>true</td><td>원격 진단 전송 (운영 시 false 권장)</td></tr>
+      <tr><td><code>N8N_VERSION_NOTIFICATIONS_ENABLED</code></td><td>true</td><td>버전 알림 표시</td></tr>
+      <tr><td><code>N8N_TEMPLATES_ENABLED</code></td><td>true</td><td>템플릿 마켓플레이스 표시</td></tr>
+      <tr><td><code>NODE_FUNCTION_ALLOW_BUILTIN</code></td><td>*</td><td>Code 노드에서 허용할 Node.js 내장 모듈</td></tr>
+      <tr><td><code>NODE_FUNCTION_ALLOW_EXTERNAL</code></td><td>-</td><td>Code 노드에서 허용할 npm 패키지 (쉼표 구분)</td></tr>
+      <tr><td><code>N8N_PAYLOAD_SIZE_MAX</code></td><td>16 (MB)</td><td>최대 요청 크기</td></tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 Code 노드에서 외부 npm 패키지 사용</div>
+    <pre><code><span class="cmt"># 특정 패키지 허용</span>
+NODE_FUNCTION_ALLOW_EXTERNAL=lodash,moment,axios,cheerio
+
+<span class="cmt"># 모든 패키지 허용 (보안 주의)</span>
+NODE_FUNCTION_ALLOW_EXTERNAL=*</code></pre>
+    <p>허용된 패키지는 Code 노드에서 <code>require('lodash')</code>로 바로 사용 가능합니다.</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="core-concepts">핵심 개념</h2>
+
+  <h3 id="concept-workflow">워크플로우(Workflow)</h3>
+
+  <p>
+    워크플로우는 n8n의 기본 단위입니다. <strong>노드(Node)</strong>가 <strong>연결(Connection)</strong>로 이어진 방향 그래프입니다.
+  </p>
+
+  <ul>
+    <li><strong>활성(Active)</strong>: Trigger 노드가 이벤트를 감지하면 자동 실행</li>
+    <li><strong>비활성(Inactive)</strong>: 수동 실행 / 테스트만 가능</li>
+    <li><strong>워크플로우 설정</strong>: 에러 워크플로우 지정, 타임존, 실행 제한, 저장 정책</li>
+  </ul>
+
+  <h3 id="concept-node">노드(Node) 분류</h3>
+
+  <table>
+    <thead>
+      <tr><th>분류</th><th>역할</th><th>주요 예시</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Trigger</strong></td><td>워크플로우 시작 이벤트</td><td>Webhook, Schedule, Email Trigger, GitHub Trigger, Chat Trigger</td></tr>
+      <tr><td><strong>Action</strong></td><td>데이터 조회·변경·전송</td><td>HTTP Request, Slack, Gmail, PostgreSQL, Google Sheets</td></tr>
+      <tr><td><strong>Data Transform</strong></td><td>데이터 가공·변환</td><td>Code, Set, Edit Fields, Filter, Sort, Aggregate</td></tr>
+      <tr><td><strong>Flow Control</strong></td><td>실행 흐름 제어</td><td>IF, Switch, Loop, Merge, Wait, SplitInBatches</td></tr>
+      <tr><td><strong>AI / LangChain</strong></td><td>LLM·에이전트 실행</td><td>AI Agent, Basic LLM Chain, OpenAI, Anthropic</td></tr>
+      <tr><td><strong>Helper</strong></td><td>유틸리티</td><td>Date & Time, Crypto, HTML Extract, RSS Read</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="concept-data">데이터 구조 — 아이템(Item)과 Binary</h3>
+
+  <p>
+    노드 간 전달 데이터는 <strong>아이템(Item) 배열</strong>입니다.
+    각 아이템은 <code>json</code>(구조화 데이터)과 선택적으로 <code>binary</code>(파일/이미지 등) 필드를 가집니다.
+  </p>
+
+  <pre><code><span class="cmt">// 아이템 배열 구조</span>
+[
+  {
+    <span class="str">"json"</span>: {
+      <span class="str">"id"</span>: <span class="num">1</span>,
+      <span class="str">"name"</span>: <span class="str">"홍길동"</span>,
+      <span class="str">"email"</span>: <span class="str">"hong@example.com"</span>
+    }
+  },
+  {
+    <span class="str">"json"</span>: { <span class="str">"id"</span>: <span class="num">2</span>, <span class="str">"name"</span>: <span class="str">"김철수"</span> },
+    <span class="str">"binary"</span>: {
+      <span class="str">"data"</span>: {
+        <span class="str">"data"</span>: <span class="str">"base64EncodedContent..."</span>,
+        <span class="str">"mimeType"</span>: <span class="str">"application/pdf"</span>,
+        <span class="str">"fileName"</span>: <span class="str">"report.pdf"</span>,
+        <span class="str">"fileSize"</span>: <span class="num">102400</span>
+      }
+    }
+  }
+]</code></pre>
+
+  <pre><code><span class="cmt">// Code 노드에서 Binary 데이터 처리</span>
+<span class="kw">const</span> item = $input.first();
+
+<span class="cmt">// binary 존재 확인</span>
+<span class="kw">if</span> (item.binary?.data) {
+  <span class="kw">const</span> { mimeType, fileName } = item.binary.data;
+  console.log(<span class="str">`파일: ${fileName} (${mimeType})`</span>);
+}
+
+<span class="cmt">// Binary → Buffer 변환</span>
+<span class="kw">const</span> buffer = Buffer.from(item.binary.data.data, <span class="str">'base64'</span>);
+
+<span class="kw">return</span> [{ json: { size: buffer.length } }];</code></pre>
+
+  <h3 id="concept-paired-items">Paired Items (아이템 페어링)</h3>
+
+  <p>
+    여러 노드의 출력을 Merge할 때, 각 아이템이 어느 원본 아이템에서 나왔는지 추적하는 메커니즘입니다.
+    Merge by Key 모드에서 올바른 JOIN을 위해 중요합니다.
+  </p>
+
+  <pre><code><span class="cmt">// Code 노드에서 pairedItem 명시적 설정</span>
+<span class="kw">return</span> $input.all().map((item, idx) => ({
+  json: {
+    ...item.json,
+    processed: <span class="kw">true</span>
+  },
+  pairedItem: { item: idx }   <span class="cmt">// 원본 아이템 인덱스 연결</span>
+}));</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="expressions">표현식(Expression) 완전 가이드</h2>
+
+  <p>
+    n8n 노드 필드에 <code>{{ }}</code> 구문으로 동적 값을 삽입합니다.
+    내부적으로 <strong>tmpl.js</strong> 템플릿 엔진을 사용하며, 단일 JavaScript 표현식을 지원합니다.
+  </p>
+
+  <h3 id="expr-builtins">내장 변수 전체 목록</h3>
+
+  <table>
+    <thead>
+      <tr><th>변수</th><th>타입</th><th>설명</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>$json</code></td><td>object</td><td>현재 노드 입력 아이템의 json 필드</td></tr>
+      <tr><td><code>$input</code></td><td>object</td><td>현재 노드 전체 입력 (<code>.all()</code>, <code>.first()</code>, <code>.last()</code>, <code>.item(n)</code>)</td></tr>
+      <tr><td><code>$items("노드명")</code></td><td>array</td><td>특정 이름의 노드 출력 배열</td></tr>
+      <tr><td><code>$node["노드명"].json</code></td><td>object</td><td>특정 노드의 첫 번째 아이템 json</td></tr>
+      <tr><td><code>$node["노드명"].context</code></td><td>object</td><td>Loop 노드의 반복 상태(noItemsLeft, currentRunIndex 등)</td></tr>
+      <tr><td><code>$env</code></td><td>object</td><td>환경 변수 (<code>$env.MY_VAR</code>)</td></tr>
+      <tr><td><code>$vars</code></td><td>object</td><td>n8n 전역 변수 (UI에서 설정)</td></tr>
+      <tr><td><code>$workflow</code></td><td>object</td><td>워크플로우 메타데이터 (id, name, active)</td></tr>
+      <tr><td><code>$execution</code></td><td>object</td><td>실행 정보 (id, mode, resumeUrl)</td></tr>
+      <tr><td><code>$now</code></td><td>Luxon DateTime</td><td>현재 시각 (Luxon 객체)</td></tr>
+      <tr><td><code>$today</code></td><td>Luxon DateTime</td><td>오늘 자정 (Luxon 객체)</td></tr>
+      <tr><td><code>$prevNode</code></td><td>object</td><td>이전 노드 정보 (name, outputIndex, runIndex)</td></tr>
+      <tr><td><code>$runIndex</code></td><td>number</td><td>Loop 내 현재 반복 인덱스 (0부터)</td></tr>
+      <tr><td><code>$itemIndex</code></td><td>number</td><td>현재 처리 중인 아이템 인덱스 (0부터)</td></tr>
+      <tr><td><code>$parameter</code></td><td>object</td><td>노드 파라미터 값 참조</td></tr>
+      <tr><td><code>$secret</code></td><td>object</td><td>n8n Vault 시크릿 (Enterprise)</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="expr-luxon">Luxon 날짜/시간 처리</h3>
+
+  <p>n8n은 <strong>Luxon</strong> 라이브러리를 내장하여 날짜/시간 처리를 지원합니다.</p>
+
+  <pre><code><span class="cmt">// 현재 시각</span>
+{{ $now.toISO() }}                          <span class="cmt">// "2026-02-18T03:00:00.000+09:00"</span>
+{{ $now.toFormat('yyyy-MM-dd HH:mm') }}     <span class="cmt">// "2026-02-18 03:00"</span>
+{{ $now.toFormat('yyyy년 MM월 dd일') }}      <span class="cmt">// "2026년 02월 18일"</span>
+
+<span class="cmt">// 날짜 계산</span>
+{{ $now.plus({ days: 7 }).toISODate() }}    <span class="cmt">// 7일 후 날짜</span>
+{{ $now.minus({ hours: 1 }).toISO() }}      <span class="cmt">// 1시간 전</span>
+{{ $now.startOf('month').toISODate() }}     <span class="cmt">// 이번 달 1일</span>
+{{ $now.endOf('month').toISODate() }}       <span class="cmt">// 이번 달 말일</span>
+
+<span class="cmt">// Unix 타임스탬프 변환</span>
+{{ $now.toSeconds() }}                      <span class="cmt">// Unix 초</span>
+{{ $now.toMillis() }}                       <span class="cmt">// Unix 밀리초</span>
+{{ DateTime.fromSeconds($json.timestamp).toISO() }}  <span class="cmt">// 역변환</span>
+
+<span class="cmt">// 요일 확인</span>
+{{ $now.weekday }}                          <span class="cmt">// 1(월)~7(일)</span>
+{{ $now.weekdayLong }}                      <span class="cmt">// "Monday" 등</span>
+
+<span class="cmt">// 기간 계산</span>
+{{ $now.diff(DateTime.fromISO($json.createdAt), 'days').days.toFixed(0) }} 일 경과</code></pre>
+
+  <h3 id="expr-string">문자열·배열 조작</h3>
+
+  <pre><code><span class="cmt">// 문자열</span>
+{{ $json.name.toUpperCase() }}
+{{ $json.email.split('@')[0] }}              <span class="cmt">// 이메일 앞부분</span>
+{{ $json.text.substring(0, 100) + '...' }}  <span class="cmt">// 100자 자르기</span>
+{{ $json.html.replace(/&lt;[^&gt;]*&gt;/g, '') }}  <span class="cmt">// HTML 태그 제거</span>
+{{ $json.url.includes('https') ? '보안' : '비보안' }}
+
+<span class="cmt">// 배열</span>
+{{ $json.tags.join(', ') }}
+{{ $json.items.length }}
+{{ $json.scores.reduce((a, b) => a + b, 0) / $json.scores.length }}  <span class="cmt">// 평균</span>
+{{ $json.items.filter(i => i.active).map(i => i.name).join(', ') }}
+
+<span class="cmt">// JSON</span>
+{{ JSON.stringify($json.metadata) }}
+{{ JSON.parse($json.configStr).timeout }}</code></pre>
+
+  <h3 id="expr-advanced">고급 표현식 패턴</h3>
+
+  <pre><code><span class="cmt">// 다른 노드 아이템 참조</span>
+{{ $items("HTTP Request")[0].json.data }}
+{{ $items("PostgreSQL").length }}
+
+<span class="cmt">// Nullish coalescing (값 없으면 기본값)</span>
+{{ $json.description ?? '설명 없음' }}
+{{ $json.user?.email ?? 'unknown@example.com' }}
+
+<span class="cmt">// 복잡한 조건</span>
+{{ ['admin', 'manager'].includes($json.role) ? '관리자' : '일반 사용자' }}
+
+<span class="cmt">// Loop 노드 내 반복 정보</span>
+{{ $node["SplitInBatches"].context.currentRunIndex }}  <span class="cmt">// 현재 배치 번호</span>
+{{ $node["SplitInBatches"].context.noItemsLeft }}      <span class="cmt">// 마지막 배치 여부</span>
+
+<span class="cmt">// 실행 메타데이터</span>
+{{ $execution.id }}          <span class="cmt">// 실행 고유 ID</span>
+{{ $workflow.name }}         <span class="cmt">// 워크플로우 이름</span>
+{{ $execution.mode }}        <span class="cmt">// "trigger" | "manual" | "retry"</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="triggers">트리거 노드 완전 가이드</h2>
+
+  <h3 id="trigger-webhook">Webhook Trigger</h3>
+
+  <p>외부 시스템이 HTTP 요청을 보내면 워크플로우를 시작합니다. n8n에서 가장 많이 사용되는 트리거입니다.</p>
+
+  <pre><code><span class="cmt"># Webhook 노드 설정 상세</span>
+
+<span class="cmt">## 기본 설정</span>
+HTTP Method: GET / POST / PUT / PATCH / DELETE / HEAD (복수 선택 가능)
+Path: my-webhook             <span class="cmt"># https://n8n.example.com/webhook/my-webhook</span>
+Response Mode:
+  - Immediately           <span class="cmt"># 즉시 200 OK 반환 (비동기)</span>
+  - When Last Node Finishes  <span class="cmt"># 워크플로우 완료 후 응답 (동기)</span>
+  - Using 'Respond to Webhook' Node  <span class="cmt"># 원하는 노드에서 응답</span>
+
+<span class="cmt">## 인증 옵션</span>
+Authentication: None / Basic Auth / Header Auth / JWT Auth
+
+<span class="cmt">## 요청 데이터 접근</span>
+{{ $json.body }}         <span class="cmt"># POST 본문</span>
+{{ $json.query }}        <span class="cmt"># 쿼리 파라미터</span>
+{{ $json.headers }}      <span class="cmt"># HTTP 헤더</span>
+{{ $json.params }}       <span class="cmt"># URL 경로 파라미터</span>
+
+<span class="cmt">## 테스트 URL (비활성 상태) vs 운영 URL (활성 상태)</span>
+테스트: https://n8n.example.com/webhook-test/my-webhook
+운영:   https://n8n.example.com/webhook/my-webhook</code></pre>
+
+  <pre><code><span class="cmt"># Webhook 수신 데이터 구조 예시 (POST JSON)</span>
+{
+  "body": { "user": "홍길동", "action": "signup" },
+  "headers": {
+    "content-type": "application/json",
+    "x-signature": "sha256=abc123..."
+  },
+  "query": { "source": "email" },
+  "params": {}
+}</code></pre>
+
+  <h3 id="trigger-schedule">Schedule Trigger (Cron)</h3>
+
+  <pre><code><span class="cmt"># 인터벌 방식</span>
+Trigger Interval: Minutes / Hours / Days / Weeks / Months
+예) Every 30 minutes → 30분마다 실행
+
+<span class="cmt"># 커스텀 Cron 표현식</span>
+Cron Expression: 0 9 * * 1-5
+  ┬ ┬ ┬ ┬ ┬
+  │ │ │ │ └─ 요일 (0=일, 1=월 ... 5=금, 6=토)
+  │ │ │ └─── 월 (1-12)
+  │ │ └───── 일 (1-31)
+  │ └─────── 시 (0-23)
+  └───────── 분 (0-59)
+
+<span class="cmt"># 실용 예시</span>
+"0 9 * * 1-5"     → 평일 오전 9시
+"0 0 1 * *"       → 매월 1일 자정
+"0 */2 * * *"     → 2시간마다
+"30 8 * * 1"      → 매주 월요일 8:30
+"0 9,12,18 * * *" → 하루 3번 (9시, 12시, 18시)</code></pre>
+
+  <h3 id="trigger-other">기타 트리거 노드</h3>
+
+  <table>
+    <thead>
+      <tr><th>트리거</th><th>용도</th><th>특이사항</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><strong>Email Trigger (IMAP)</strong></td><td>새 이메일 수신 시 실행</td><td>폴링 방식, 30~60초 간격</td></tr>
+      <tr><td><strong>Chat Trigger</strong></td><td>n8n 내장 채팅 UI 메시지</td><td>웹 임베드 가능</td></tr>
+      <tr><td><strong>Execute Workflow Trigger</strong></td><td>다른 워크플로우에서 호출</td><td>서브워크플로우 필수</td></tr>
+      <tr><td><strong>Error Trigger</strong></td><td>워크플로우 오류 발생 시</td><td>에러 알림 워크플로우용</td></tr>
+      <tr><td><strong>GitHub Trigger</strong></td><td>PR, Push, Issue 등 이벤트</td><td>GitHub Webhook 자동 등록</td></tr>
+      <tr><td><strong>Slack Trigger</strong></td><td>Slack 메시지/이벤트</td><td>Bot Token + Event API</td></tr>
+      <tr><td><strong>Form Trigger</strong></td><td>n8n 내장 폼 제출</td><td>별도 폼 UI 자동 생성</td></tr>
+      <tr><td><strong>SSE Trigger</strong></td><td>Server-Sent Events 수신</td><td>실시간 스트림 데이터</td></tr>
+      <tr><td><strong>RabbitMQ Trigger</strong></td><td>메시지 큐 컨슈머</td><td>AMQP 프로토콜</td></tr>
+      <tr><td><strong>Kafka Trigger</strong></td><td>Kafka 토픽 컨슈머</td><td>대용량 이벤트 처리</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="content-section">
+  <h2 id="essential-nodes">핵심 노드 완전 레퍼런스</h2>
+
+  <h3 id="node-http">HTTP Request</h3>
+
+  <pre><code><span class="cmt"># 주요 설정</span>
+Method: GET / POST / PUT / PATCH / DELETE / HEAD / OPTIONS
+URL: https://api.example.com/{{ $json.resourceId }}
+
+<span class="cmt"># Authentication</span>
+- None
+- Header Auth: Authorization: Bearer {{ $env.API_TOKEN }}
+- Basic Auth: username + password
+- OAuth2: 자격증명으로 자동 토큰 갱신
+- API Key: 쿼리 또는 헤더에 키 자동 삽입
+
+<span class="cmt"># Body 전송 방식</span>
+Content Type: JSON / Form-Data / Form-URL-Encoded / Binary / RAW
+JSON Body:
+{
+  "name": "{{ $json.name }}",
+  "tags": {{ JSON.stringify($json.tags) }}
+}
+
+<span class="cmt"># 응답 처리</span>
+Response Format: JSON / Text / File / Auto-detect
+Full Response: true → { status, headers, body } 포함
+
+<span class="cmt"># 실패 처리</span>
+Continue on Fail: true      <span class="cmt"># 에러여도 계속 진행</span>
+Retry On Fail: true         <span class="cmt"># 자동 재시도</span>
+Max Tries: 3
+Wait Between Tries (ms): 2000
+
+<span class="cmt"># 타임아웃</span>
+Timeout: 10000   <span class="cmt"># 10초 (ms)</span></code></pre>
+
+  <h3 id="node-code">Code 노드</h3>
+
+  <pre><code><span class="cmt">// 실행 모드 선택</span>
+<span class="cmt">// "Run Once for All Items" — 전체 아이템 배열을 한 번에 처리 (기본)</span>
+<span class="kw">const</span> items = $input.all();
+<span class="kw">const</span> results = items.map(item => ({
+  json: {
+    ...item.json,
+    upperName: item.json.name?.toUpperCase(),
+    processedAt: $now.toISO(),
+  }
+}));
+<span class="kw">return</span> results;
+
+<span class="cmt">// "Run Once for Each Item" — 아이템마다 독립 실행</span>
+<span class="kw">const</span> { name, score } = $json;
+<span class="kw">return</span> { json: { name, grade: score >= <span class="num">90</span> ? <span class="str">'A'</span> : score >= <span class="num">80</span> ? <span class="str">'B'</span> : <span class="str">'C'</span> } };
+
+<span class="cmt">// Python 모드 (별도 설정)</span>
+<span class="cmt"># Python 표현식으로 데이터 처리</span>
+import json, datetime
+
+items = _input.all()
+result = []
+for item in items:
+    data = item['json']
+    result.append({
+        'json': {
+            'name': data['name'].upper(),
+            'processed': datetime.datetime.now().isoformat()
+        }
+    })
+return result</code></pre>
+
+  <pre><code><span class="cmt">// 자주 쓰는 Code 노드 패턴</span>
+
+<span class="cmt">// 1. 외부 npm 모듈 사용 (NODE_FUNCTION_ALLOW_EXTERNAL 필요)</span>
+<span class="kw">const</span> _ = require(<span class="str">'lodash'</span>);
+<span class="kw">const</span> items = $input.all().map(i => i.json);
+<span class="kw">const</span> grouped = _.groupBy(items, <span class="str">'category'</span>);
+<span class="kw">return</span> Object.entries(grouped).map(([key, val]) => ({
+  json: { category: key, count: val.length, items: val }
+}));
+
+<span class="cmt">// 2. CSV 파싱</span>
+<span class="kw">const</span> csv = $json.csvText;
+<span class="kw">const</span> lines = csv.trim().split(<span class="str">'\n'</span>);
+<span class="kw">const</span> headers = lines[<span class="num">0</span>].split(<span class="str">','</span>);
+<span class="kw">return</span> lines.slice(<span class="num">1</span>).map(line => {
+  <span class="kw">const</span> vals = line.split(<span class="str">','</span>);
+  <span class="kw">return</span> { json: Object.fromEntries(headers.map((h, i) => [h.trim(), vals[i]?.trim()])) };
+});
+
+<span class="cmt">// 3. 중복 제거</span>
+<span class="kw">const</span> seen = <span class="kw">new</span> <span class="type">Set</span>();
+<span class="kw">return</span> $input.all().filter(item => {
+  <span class="kw">const</span> key = item.json.email;
+  <span class="kw">if</span> (seen.has(key)) <span class="kw">return false</span>;
+  seen.add(key);
+  <span class="kw">return true</span>;
+});</code></pre>
+
+  <h3 id="node-flow">Flow Control 노드 상세</h3>
+
+  <pre><code><span class="cmt">## IF 노드</span>
+조건 결합: AND / OR
+연산자: Equal, Not Equal, Contains, Starts With, Ends With,
+        Larger, Smaller, Regex Match, Is Empty, Is Not Empty
+
+<span class="cmt">## Switch 노드</span>
+<span class="cmt"># 여러 조건 분기 (IF의 다중 버전)</span>
+Mode: Rules   → 각 Rule에 조건 설정, 해당 출력으로 분기
+Mode: Expression → {{ $json.type }} 값으로 자동 분기
+Fallback: 매치 없는 경우 출력
+
+<span class="cmt">## SplitInBatches 노드</span>
+<span class="cmt"># 대량 아이템을 N개씩 묶어 순차 처리</span>
+Batch Size: 10          <span class="cmt"># 한 번에 10개씩</span>
+Options:
+  Reset: false          <span class="cmt"># 루프 초기화 여부</span>
+
+<span class="cmt"># Loop 상태 확인 (다음 노드에서)</span>
+{{ $node["SplitInBatches"].context.noItemsLeft }}    <span class="cmt"># 마지막 배치?</span>
+{{ $node["SplitInBatches"].context.currentRunIndex }} <span class="cmt"># 현재 배치 번호</span>
+
+<span class="cmt">## Wait 노드</span>
+<span class="cmt"># 워크플로우 실행을 지정 시간 동안 일시 정지</span>
+Resume: After Time Interval
+  Amount: 5
+  Unit: Seconds / Minutes / Hours / Days
+Resume: At Specified Time → {{ $json.retryAt }}
+Resume: On Webhook Call   → 외부 시스템이 Webhook 호출 시 재개
+
+<span class="cmt">## Merge 노드</span>
+Mode: Append            → 모든 아이템 단순 합치기
+Mode: Merge by Field    → 공통 필드 기준 병합 (SQL LEFT/INNER JOIN)
+Mode: Multiplex         → 카르테시안 곱 (모든 조합)
+Mode: Choose Branch     → IF True/False 분기 재결합
+Mode: Wait for All Inputs → 두 입력 모두 도달 시 진행
+
+<span class="cmt">## Aggregate 노드</span>
+<span class="cmt"># 여러 아이템을 하나로 집계</span>
+Aggregate: All Item Data (Into a List) → [{...}, {...}] → {list: [{...}, {...}]}
+Field: items → 특정 필드만 배열로 수집</code></pre>
+
+  <h3 id="node-data-transform">데이터 변환 노드</h3>
+
+  <pre><code><span class="cmt">## Filter 노드</span>
+<span class="cmt"># 조건에 맞는 아이템만 통과</span>
+Condition: {{ $json.score }} Larger than 60
+→ 60점 초과 아이템만 다음 노드로
+
+<span class="cmt">## Sort 노드</span>
+Type: Simple
+Sort Key: {{ $json.price }}
+Order: Ascending / Descending
+Type: Random → 무작위 섞기
+
+<span class="cmt">## Limit 노드</span>
+Max Items: 10   → 앞에서 10개만 통과
+
+<span class="cmt">## Remove Duplicates 노드</span>
+Compare: All Fields   → 전체 필드가 같으면 중복
+Compare: Selected Fields → 특정 필드 기준 중복 제거
+Field: email
+
+<span class="cmt">## Edit Fields (Set) 노드</span>
+Mode: Manual Mapping
+  fullName: {{ $json.firstName + ' ' + $json.lastName }}
+  timestamp: {{ $now.toISO() }}
+
+Mode: JSON → 전체 json 객체 대체
+Include Other Fields: true / false
+
+<span class="cmt">## Rename Keys 노드</span>
+<span class="cmt"># 필드명 일괄 변경</span>
+user_name → userName
+created_at → createdAt</code></pre>
+
+  <h3 id="node-helpers">유틸리티 노드</h3>
+
+  <pre><code><span class="cmt">## Date & Time 노드</span>
+Action: Format a Date
+  Value: {{ $json.timestamp }}
+  Format: yyyy-MM-dd HH:mm:ss
+  Timezone: Asia/Seoul
+
+Action: Add to a Date → {{ $json.date }}.plus({ days: 30 })
+Action: Get Current Date → $now
+
+<span class="cmt">## Crypto 노드</span>
+Action: Hash → MD5 / SHA256 / SHA512
+  Type: SHA256
+  Value: {{ $json.password + $json.salt }}
+  Encoding: hex
+
+Action: HMAC → 서명 생성
+Action: Generate → UUID, 랜덤 문자열
+
+<span class="cmt">## HTML Extract 노드</span>
+Source Data: {{ $json.html }}
+Extraction Values:
+  - Key: title
+    CSS Selector: h1
+    Return Value: Text
+  - Key: links
+    CSS Selector: a[href]
+    Return Value: Attribute (href)
+    Return Array: true
+
+<span class="cmt">## RSS Read 노드</span>
+URL: https://feeds.example.com/rss.xml
+Limit: 10   → 최신 10개 항목만</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="first-workflow">실전 워크플로우 예제</h2>
+
+  <h3 id="example-weather">예제 1: 날씨 → Slack (기초)</h3>
+
+  <pre><code><span class="cmt"># 매일 9시 서울 날씨 → Slack 전송</span>
+
+<span class="cmt">## Step 1: Schedule Trigger</span>
+Cron: "0 9 * * 1-5"   <span class="cmt"># 평일 오전 9시</span>
+Timezone: Asia/Seoul
+
+<span class="cmt">## Step 2: HTTP Request (날씨 API)</span>
+URL: https://api.open-meteo.com/v1/forecast
+Query Parameters:
+  latitude: 37.5665
+  longitude: 126.9780
+  current_weather: true
+  timezone: Asia/Seoul
+
+<span class="cmt">## Step 3: Code (메시지 포맷)</span></code></pre>
+
+  <pre><code><span class="cmt">// Code 노드</span>
+<span class="kw">const</span> w = $input.first().json.current_weather;
+<span class="kw">const</span> codeMap = {
+  <span class="num">0</span>: <span class="str">'맑음 ☀️'</span>, <span class="num">1</span>: <span class="str">'대체로 맑음 🌤️'</span>, <span class="num">2</span>: <span class="str">'흐림 ⛅'</span>, <span class="num">3</span>: <span class="str">'흐림 ☁️'</span>,
+  <span class="num">45</span>: <span class="str">'안개 🌫️'</span>, <span class="num">61</span>: <span class="str">'비 🌧️'</span>, <span class="num">71</span>: <span class="str">'눈 ❄️'</span>, <span class="num">80</span>: <span class="str">'소나기 🌦️'</span>,
+  <span class="num">95</span>: <span class="str">'뇌우 ⛈️'</span>,
+};
+<span class="kw">const</span> condition = codeMap[w.weathercode] ?? <span class="str">'알 수 없음'</span>;
+<span class="kw">return</span> [{ json: { message:
+  <span class="str">`*📅 ${$now.toFormat('yyyy년 MM월 dd일 (cccc)')} 서울 날씨*\n`</span> +
+  <span class="str">`날씨: ${condition}\n기온: ${w.temperature}°C\n풍속: ${w.windspeed} km/h`</span>
+}}];</code></pre>
+
+  <pre><code><span class="cmt">## Step 4: Slack</span>
+Channel: #daily-weather
+Text: {{ $json.message }}
+Parse Mode: mrkdwn</code></pre>
+
+  <h3 id="example-webhook-api">예제 2: Webhook API 서버 (중급)</h3>
+
+  <pre><code><span class="cmt"># n8n을 간단한 REST API 서버로 활용</span>
+
+<span class="cmt">## POST /webhook/users/create → DB 저장 → 이메일 → 응답</span>
+
+Webhook Trigger
+  Method: POST
+  Path: users/create
+  Response Mode: Using 'Respond to Webhook' Node
+  ↓
+
+Code 노드 (입력 검증)
+  const { name, email, role } = $json.body;
+  if (!name || !email) throw new Error('name과 email은 필수입니다');
+  if (!email.includes('@')) throw new Error('유효하지 않은 이메일');
+  const allowedRoles = ['user', 'admin', 'viewer'];
+  if (role && !allowedRoles.includes(role)) throw new Error('허용되지 않은 role');
+  return [{ json: { name, email, role: role ?? 'user' } }];
+  ↓
+
+PostgreSQL 노드
+  Operation: Execute Query
+  Query: |
+    INSERT INTO users (name, email, role, created_at)
+    VALUES ('{{ $json.name }}', '{{ $json.email }}', '{{ $json.role }}', NOW())
+    RETURNING id, name, email, role, created_at
+  ↓
+
+Gmail 노드 (환영 이메일)
+  To: {{ $json.email }}
+  Subject: 가입을 환영합니다, {{ $json.name }}님!
+  Body: ...
+  ↓
+
+Respond to Webhook 노드
+  Status Code: 201
+  Response Body:
+  {
+    "success": true,
+    "user": {
+      "id": {{ $json.id }},
+      "name": "{{ $json.name }}",
+      "email": "{{ $json.email }}"
+    }
+  }</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="ui-guide">UI 가이드</h2>
+
+  <h3 id="ui-canvas">캔버스 조작</h3>
+
+  <table>
+    <thead>
+      <tr><th>단축키</th><th>동작</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><kbd>Ctrl/Cmd</kbd> + <kbd>Enter</kbd></td><td>워크플로우 실행</td></tr>
+      <tr><td><kbd>Ctrl/Cmd</kbd> + <kbd>S</kbd></td><td>저장</td></tr>
+      <tr><td><kbd>Ctrl/Cmd</kbd> + <kbd>Z</kbd> / <kbd>Y</kbd></td><td>실행 취소 / 다시 실행</td></tr>
+      <tr><td><kbd>Ctrl/Cmd</kbd> + <kbd>C</kbd> / <kbd>V</kbd></td><td>노드 복사 / 붙여넣기</td></tr>
+      <tr><td><kbd>Ctrl/Cmd</kbd> + <kbd>D</kbd></td><td>노드 복제</td></tr>
+      <tr><td><kbd>Delete</kbd> / <kbd>Backspace</kbd></td><td>선택 노드 삭제</td></tr>
+      <tr><td><kbd>Ctrl/Cmd</kbd> + <kbd>A</kbd></td><td>모든 노드 선택</td></tr>
+      <tr><td><kbd>Ctrl/Cmd</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd></td><td>전체 워크플로우 화면 맞춤</td></tr>
+      <tr><td><kbd>Tab</kbd></td><td>다음 노드로 포커스</td></tr>
+      <tr><td>더블클릭 (캔버스)</td><td>노드 추가 메뉴</td></tr>
+      <tr><td><kbd>Space</kbd> + 드래그</td><td>캔버스 이동</td></tr>
+      <tr><td>마우스 스크롤</td><td>줌 인/아웃</td></tr>
+      <tr><td><kbd>Ctrl/Cmd</kbd> + <kbd>0</kbd></td><td>100% 줌 리셋</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="ui-debug">디버깅 전략</h3>
+
+  <pre><code><span class="cmt"># 1. 노드 클릭 → Input/Output 탭으로 데이터 확인</span>
+<span class="cmt"># 2. Execute Node → 해당 노드만 단독 실행</span>
+<span class="cmt"># 3. "Pinned Data" — 실행 결과를 고정하여 다운스트림 테스트</span>
+<span class="cmt">#    노드 우클릭 → Pin Data → 이후 실행 시 이 데이터 사용</span>
+
+<span class="cmt"># 4. Code 노드에서 console.log → "Execution Log" 탭에서 확인</span>
+console.log('디버그:', JSON.stringify($json, null, 2));
+console.log('아이템 수:', $input.all().length);
+
+<span class="cmt"># 5. 특정 노드부터 실행 — 노드 우클릭 → "Execute From Here"</span>
+<span class="cmt"># 6. 이전 실행 데이터로 테스트 — Executions → 특정 실행 → "Load"</span></code></pre>
+
+  <h3 id="ui-workflow-settings">워크플로우 설정</h3>
+
+  <pre><code><span class="cmt"># 워크플로우 Settings 메뉴</span>
+Error Workflow: "에러 알림 워크플로우" 선택
+  → 실패 시 해당 워크플로우 자동 실행
+
+Timezone: Asia/Seoul
+  → Schedule Trigger, Date 연산의 기준 시각
+
+Caller Policy: Any Workflow
+  → 서브워크플로우로 호출 허용 범위
+
+Save Execution Progress: true
+  → 각 노드 실행 후 중간 상태 저장 (장애 복구 가능)
+
+Execution Order: v1 (latest)
+  → 새 실행 순서 정책 (기본값 유지 권장)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="workflow-patterns">워크플로우 패턴</h2>
+
+  <h3 id="pattern-webhook">패턴 1: 동기 Webhook API</h3>
+
+  <pre><code>Webhook Trigger (Response Mode: Using Respond Node)
+  ↓
+IF (입력 검증)
+  True → 처리 로직 → Respond to Webhook (200)
+  False → Respond to Webhook (400, 에러 메시지)</code></pre>
+
+  <h3 id="pattern-fan-out">패턴 2: Fan-Out (병렬 처리)</h3>
+
+  <pre><code><span class="cmt"># 하나의 이벤트 → 여러 작업 동시 실행</span>
+
+Webhook Trigger
+  ├─→ Slack 알림      (동시 실행)
+  ├─→ DB 저장
+  ├─→ Email 발송
+  └─→ 외부 API 호출
+         ↓ (Merge: Append)
+      Code (결과 집계)</code></pre>
+
+  <h3 id="pattern-fan-in">패턴 3: Fan-In (결과 집계)</h3>
+
+  <pre><code><span class="cmt"># 여러 소스에서 데이터 수집 → 통합</span>
+
+Schedule Trigger
+  ├─→ PostgreSQL (매출 데이터)
+  ├─→ HTTP (GA4 API)
+  └─→ HTTP (Slack 통계)
+         ↓ (Merge: Append)
+      Code (전체 집계)
+         ↓
+      Gmail (주간 리포트)</code></pre>
+
+  <h3 id="pattern-batch">패턴 4: 배치 처리 (대용량)</h3>
+
+  <pre><code>Schedule Trigger
+  ↓
+PostgreSQL (미처리 레코드 SELECT)
+  ↓
+SplitInBatches (50개씩)
+  ↓ (각 배치)
+  HTTP Request (외부 API)
+    ↓
+  IF (성공/실패)
+    True → PostgreSQL UPDATE (processed = true)
+    False → PostgreSQL UPDATE (retry_count + 1)
+  ↓ (루프 반복)
+IF (noItemsLeft)
+  → Slack (완료 알림)</code></pre>
+
+  <h3 id="pattern-saga">패턴 5: 단계별 파이프라인 (Saga)</h3>
+
+  <pre><code><span class="cmt"># 각 단계가 실패하면 보상(롤백) 트랜잭션 실행</span>
+
+Webhook Trigger (주문 생성)
+  ↓
+Code (재고 확인)
+  ↓ (재고 있음)
+HTTP Request (결제 처리)
+  ↓ (성공)
+PostgreSQL (주문 생성)
+  ↓ (성공)
+HTTP Request (배송 요청)
+  ↓ (실패 시 → Error Workflow)
+    → PostgreSQL (주문 취소)
+    → HTTP Request (결제 환불)
+    → Slack (관리자 알림)
+  ↓ (성공)
+Gmail (주문 확인 이메일)</code></pre>
+
+  <h3 id="pattern-idempotent">패턴 6: 멱등성 보장 (중복 실행 방지)</h3>
+
+  <pre><code><span class="cmt">// Code 노드 — 멱등성 키 기반 중복 처리 방지</span>
+<span class="kw">const</span> idempotencyKey = $json.eventId || $json.orderId;
+
+<span class="cmt">// 이미 처리한 이벤트인지 확인 (Redis 또는 DB)</span>
+<span class="kw">// 다음 노드: Redis GET → IF (존재하면 중단)</span>
+<span class="kw">return</span> [{ json: { ...($json), idempotencyKey } }];</code></pre>
+
+  <pre><code>Webhook Trigger
+  ↓
+Code (idempotencyKey 추출)
+  ↓
+Redis (GET idempotencyKey)
+  ↓
+IF (이미 처리됨)
+  True → Respond (409 Conflict)
+  False → 처리 로직
+            ↓
+          Redis (SET idempotencyKey "done" EX 86400)
+            ↓
+          Respond (200 OK)</code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="next-steps">다음 단계</h2>
+
+  <div class="info-box info">
+    <div class="info-box-title">📚 n8n 학습 경로</div>
+    <ol>
+      <li><a href="n8n-intro.html">n8n 기초</a> (현재 페이지) — 설치·개념·표현식·노드·패턴</li>
+      <li><a href="n8n-ai-workflows.html">AI 워크플로우 구축</a> — Claude/OpenAI 연동, AI Agent, RAG</li>
+      <li><a href="n8n-advanced.html">고급 활용</a> — 커스텀 노드, 운영 배포, 보안, 성능</li>
+    </ol>
+  </div>
+
+  <div class="info-box tip">
+    <div class="info-box-title">🔗 공식 자료</div>
+    <ul>
+      <li>공식 문서: <a href="https://docs.n8n.io" target="_blank" rel="noopener noreferrer">docs.n8n.io</a></li>
+      <li>워크플로우 템플릿: <a href="https://n8n.io/workflows" target="_blank" rel="noopener noreferrer">n8n.io/workflows</a> (900개+)</li>
+      <li>커뮤니티 포럼: <a href="https://community.n8n.io" target="_blank" rel="noopener noreferrer">community.n8n.io</a></li>
+      <li>GitHub: <a href="https://github.com/n8n-io/n8n" target="_blank" rel="noopener noreferrer">github.com/n8n-io/n8n</a></li>
+    </ul>
+  </div>
+</section>
+
+<nav class="page-nav"></nav>
+</main>
+
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+<footer class="site-footer"></footer>
+
+</div>
+<script src="../js/main.js"></script>
+</body>
+</html>

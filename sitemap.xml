@@ -199,6 +199,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://minzkn.com/claude/pages/n8n-intro.html</loc>
+    <lastmod>2026-02-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://minzkn.com/claude/pages/n8n-ai-workflows.html</loc>
+    <lastmod>2026-02-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://minzkn.com/claude/pages/n8n-advanced.html</loc>
+    <lastmod>2026-02-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://minzkn.com/claude/pages/markup-basics.html</loc>
     <lastmod>2026-02-13</lastmod>
     <changefreq>monthly</changefreq>
@@ -356,13 +374,19 @@
   </url>
   <url>
     <loc>https://minzkn.com/claude/pages/llm-handbook-training.html</loc>
-    <lastmod>2026-02-13</lastmod>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://minzkn.com/claude/pages/llm-handbook-ops.html</loc>
     <lastmod>2026-02-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://minzkn.com/claude/pages/rag-guide.html</loc>
+    <lastmod>2026-02-18</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
