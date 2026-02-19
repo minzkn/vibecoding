@@ -292,6 +292,115 @@ prompt = <span class="fn">render_prompt</span>(template, variables)
 </section>
 
 <section class="content-section">
+  <h2 id="git-management">Git 기반 상세 관리 가이드</h2>
+  <p>Git으로 프롬프트 라이브러리를 체계적으로 관리합니다.</p>
+
+  <h3 id="repo-structure">레포지터리 구조</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">디렉터리 구조 (team-prompts/)</span>
+    </div>
+    <pre><code>team-prompts/
+├── README.md              <span class="cmt"># 사용 방법, 기여 가이드</span>
+├── CHANGELOG.md           <span class="cmt"># 버전 변경 이력</span>
+├── prompts/
+│   ├── code-review/       <span class="cmt"># 코드 리뷰 프롬프트</span>
+│   │   ├── security.md
+│   │   └── performance.md
+│   ├── documentation/     <span class="cmt"># 문서 작성</span>
+│   └── testing/           <span class="cmt"># 테스트 생성</span>
+├── templates/
+│   └── prompt-template.md <span class="cmt"># 새 프롬프트 작성 템플릿</span>
+├── tests/
+│   └── validate.py        <span class="cmt"># 프롬프트 자동 검증</span>
+└── scripts/
+    ├── search.sh           <span class="cmt"># 키워드 검색</span>
+    └── stats.py            <span class="cmt"># 사용 통계</span></code></pre>
+  </div>
+
+  <h3 id="access-control">접근 권한 관리</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">YAML (CODEOWNERS)</span>
+    </div>
+    <pre><code><span class="cmt"># 팀별 read/write 권한 설정</span>
+<span class="cmt"># 전체 레포지터리: maintainer 팀</span>
+*                     @org/prompt-maintainers
+
+<span class="cmt"># 보안 프롬프트: 보안 팀만 수정 가능</span>
+prompts/code-review/security.md  @org/security-team
+
+<span class="cmt"># 도메인별 소유권</span>
+prompts/testing/      @org/qa-team
+prompts/documentation/ @org/docs-team</code></pre>
+  </div>
+
+  <h3 id="search-script">프롬프트 검색 스크립트</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Python (scripts/search.py)</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="pp">#!/usr/bin/env python3</span>
+<span class="str">"""프롬프트 라이브러리 키워드 검색"""</span>
+<span class="kw">import</span> sys
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+
+<span class="kw">def</span> <span class="fn">search_prompts</span>(keyword: <span class="type">str</span>, category: <span class="type">str</span> = <span class="str">""</span>) -> <span class="type">list</span>:
+    base = Path(<span class="str">"prompts"</span>)
+    results = []
+    <span class="kw">for</span> f <span class="kw">in</span> base.<span class="fn">rglob</span>(<span class="str">"*.md"</span>):
+        <span class="kw">if</span> category <span class="kw">and</span> category <span class="kw">not in</span> <span class="fn">str</span>(f):
+            <span class="kw">continue</span>
+        text = f.<span class="fn">read_text</span>(encoding=<span class="str">"utf-8"</span>)
+        <span class="kw">if</span> keyword.<span class="fn">lower</span>() <span class="kw">in</span> text.<span class="fn">lower</span>():
+            <span class="cmt"># 태그 추출 (예: <!-- tags: security, python -->)</span>
+            tags_line = <span class="kw">next</span>((l <span class="kw">for</span> l <span class="kw">in</span> text.<span class="fn">splitlines</span>() <span class="kw">if</span> <span class="str">"tags:"</span> <span class="kw">in</span> l), <span class="str">""</span>)
+            results.<span class="fn">append</span>({
+                <span class="str">"file"</span>: <span class="fn">str</span>(f),
+                <span class="str">"title"</span>: text.<span class="fn">splitlines</span>()[<span class="num">0</span>].<span class="fn">lstrip</span>(<span class="str">"# "</span>),
+                <span class="str">"tags"</span>: tags_line,
+            })
+    <span class="kw">return</span> results
+
+<span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    keyword  = sys.argv[<span class="num">1</span>] <span class="kw">if</span> <span class="fn">len</span>(sys.argv) > <span class="num">1</span> <span class="kw">else</span> <span class="str">""</span>
+    category = sys.argv[<span class="num">2</span>] <span class="kw">if</span> <span class="fn">len</span>(sys.argv) > <span class="num">2</span> <span class="kw">else</span> <span class="str">""</span>
+    <span class="kw">for</span> r <span class="kw">in</span> <span class="fn">search_prompts</span>(keyword, category):
+        <span class="fn">print</span>(<span class="fn">f</span><span class="str">"[{r['file']}] {r['title']}"</span>)
+
+<span class="cmt"># 사용: python scripts/search.py "보안" "code-review"</span></code></pre>
+  </div>
+
+  <h3 id="pr-template">프롬프트 PR 템플릿</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Markdown (.github/pull_request_template.md)</span>
+    </div>
+    <pre><code><span class="cmt">## 변경 내용</span>
+- [ ] 신규 프롬프트 추가
+- [ ] 기존 프롬프트 개선
+- [ ] 버그 수정
+
+<span class="cmt">## 테스트 결과</span>
+Claude 모델: (사용 모델)
+테스트 입력:
+```
+(테스트 입력 예시)
+```
+출력 샘플:
+```
+(출력 결과 요약)
+```
+
+<span class="cmt">## 체크리스트</span>
+- [ ] 템플릿 형식 준수
+- [ ] 사용 예시 포함
+- [ ] CHANGELOG.md 업데이트</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
   <h2 id="best-practices">모범 사례</h2>
   <p>효과적인 프롬프트 라이브러리를 위한 모범 사례입니다.</p>
 

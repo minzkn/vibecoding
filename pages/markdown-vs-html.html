@@ -167,13 +167,82 @@
 </section>
 
 <section class="content-section">
-  <h2 id="hybrid">혼합 작성 패턴</h2>
+  <h2 id="hybrid">혼합 작성 패턴 — 실전 케이스 3가지</h2>
   <p>Markdown 안에 HTML을 섞으면 표현력과 속도를 동시에 확보할 수 있습니다.</p>
-  <ul>
-    <li>표나 카드 레이아웃은 HTML로 보강</li>
-    <li>설명 텍스트는 Markdown으로 유지</li>
-    <li>공통 컴포넌트는 템플릿으로 재사용</li>
-  </ul>
+
+  <h3 id="case-1">케이스 1: 경고 박스 삽입</h3>
+  <p>Markdown에 <code>&lt;div&gt;</code> 박스를 끼워 중요 정보를 시각적으로 강조합니다.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Markdown + HTML</span>
+    </div>
+    <pre><code>## API 키 관리
+
+항상 환경 변수로 관리하세요.
+
+&lt;div style="background:rgba(255,150,0,0.1);border-left:4px solid orange;padding:0.8rem 1rem;margin:1rem 0;"&gt;
+  &lt;strong&gt;⚠️ 주의:&lt;/strong&gt; API 키를 코드에 하드코딩하면 보안 사고가 발생할 수 있습니다.
+  &lt;code&gt;git history&lt;/code&gt;에 키가 남지 않도록 주의하세요.
+&lt;/div&gt;
+
+환경 변수 설정 방법:
+
+```bash
+export ANTHROPIC_API_KEY="sk-..."
+```</code></pre>
+  </div>
+
+  <h3 id="case-2">케이스 2: 2열 비교 레이아웃</h3>
+  <p>Markdown의 표는 복잡한 코드 비교에 적합하지 않습니다. HTML 그리드로 대체합니다.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Markdown + HTML Grid</span>
+    </div>
+    <pre><code>## Before / After 비교
+
+&lt;div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;"&gt;
+&lt;div&gt;
+
+**❌ Before**
+```python
+# 하드코딩된 키
+client = Anthropic(api_key="sk-...")
+```
+&lt;/div&gt;
+&lt;div&gt;
+
+**✅ After**
+```python
+# 환경 변수 사용
+client = Anthropic()  # ANTHROPIC_API_KEY 자동 읽기
+```
+&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+  </div>
+
+  <h3 id="case-3">케이스 3: 배지(뱃지) 및 상태 표시</h3>
+  <p>릴리스 노트나 기능 문서에서 버전/상태 배지를 Markdown과 혼합합니다.</p>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Markdown + HTML Badge</span>
+    </div>
+    <pre><code>## 기능 목록
+
+| 기능 | 상태 |
+|------|------|
+| 스트리밍 응답 | &lt;span style="background:#2a7;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.8em;"&gt;GA&lt;/span&gt; |
+| Extended Thinking | &lt;span style="background:#a70;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.8em;"&gt;Beta&lt;/span&gt; |
+| Files API | &lt;span style="background:#555;color:#fff;padding:2px 8px;border-radius:4px;font-size:0.8em;"&gt;Preview&lt;/span&gt; |</code></pre>
+  </div>
+
+  <div class="info-box warning">
+    <strong>혼합 시 주의사항:</strong>
+    <ul>
+      <li>Markdown 파서는 HTML 블록 안의 Markdown을 처리하지 않을 수 있습니다</li>
+      <li>인라인 스타일 남발 시 다크모드 대응이 어려워집니다</li>
+      <li>최소한의 HTML만 사용하고 CSS 클래스를 우선 검토하세요</li>
+    </ul>
+  </div>
 </section>
 
 <section class="content-section">
@@ -187,7 +256,7 @@ client = anthropic.<span class="fn">Anthropic</span>(
 )
 
 message = client.messages.<span class="fn">create</span>(
-    model=<span class="str">"claude-sonnet-4-5-20250929"</span>,
+    model=<span class="str">"claude-sonnet-4-6"</span>,
     max_tokens=<span class="num">700</span>,
     messages=[
         {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"## HTML 섹션이 필요한 이유\n- 카드 레이아웃\n- 배지 스타일"</span>}

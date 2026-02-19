@@ -301,12 +301,131 @@ app.<span class="fn">get</span>(<span class="str">'/now'</span>, <span class="kw
 </section>
 
 <section class="content-section">
+  <h2 id="jwt-auth">JWT 인증 미들웨어</h2>
+  <p><code>@fastify/jwt</code> 플러그인으로 JWT 기반 인증을 구현합니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash — 설치</span>
+    </div>
+    <pre><code><span class="fn">npm install</span> @fastify/jwt</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (src/plugins/auth.ts)</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> fp from <span class="str">'fastify-plugin'</span>;
+<span class="kw">import</span> jwt from <span class="str">'@fastify/jwt'</span>;
+
+<span class="kw">export default</span> <span class="fn">fp</span>(<span class="kw">async</span> (fastify) => {
+  fastify.<span class="fn">register</span>(jwt, {
+    secret: process.env.JWT_SECRET || <span class="str">'super-secret-key'</span>,
+    sign: { expiresIn: <span class="str">'7d'</span> },
+  });
+
+  <span class="cmt">// 인증 훅 — 라우트에 preHandler로 사용</span>
+  fastify.<span class="fn">decorate</span>(<span class="str">'authenticate'</span>, <span class="kw">async</span> (request, reply) => {
+    <span class="kw">try</span> {
+      <span class="kw">await</span> request.<span class="fn">jwtVerify</span>();
+    } <span class="kw">catch</span> (err) {
+      reply.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">send</span>({ error: <span class="str">'Unauthorized'</span>, message: err.message });
+    }
+  });
+});
+
+<span class="cmt">// 사용 예시</span>
+<span class="cmt">// 로그인 → JWT 발급</span>
+app.<span class="fn">post</span>(<span class="str">'/auth/login'</span>, <span class="kw">async</span> (request, reply) => {
+  <span class="kw">const</span> { email, password } = request.body <span class="kw">as</span> { email: <span class="type">string</span>; password: <span class="type">string</span> };
+  <span class="cmt">// ... 사용자 검증 로직 ...</span>
+  <span class="kw">const</span> token = app.<span class="fn">jwt.sign</span>({ id: user.id, email: user.email });
+  <span class="kw">return</span> { token };
+});
+
+<span class="cmt">// 보호된 라우트</span>
+app.<span class="fn">get</span>(<span class="str">'/me'</span>, {
+  <span class="fn">preHandler</span>: [app.authenticate],
+}, <span class="kw">async</span> (request) => {
+  <span class="kw">return</span> request.user;  <span class="cmt">// JWT 페이로드</span>
+});</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="error-handler">커스텀 에러 핸들러</h2>
+  <p>Fastify의 전역 에러 핸들러로 일관된 에러 응답을 반환합니다.</p>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (src/plugins/error-handler.ts)</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> fp from <span class="str">'fastify-plugin'</span>;
+
+<span class="kw">interface</span> <span class="type">ErrorResponse</span> {
+  statusCode: <span class="type">number</span>;
+  error: <span class="type">string</span>;
+  message: <span class="type">string</span>;
+  timestamp: <span class="type">string</span>;
+}
+
+<span class="kw">export default</span> <span class="fn">fp</span>(<span class="kw">async</span> (fastify) => {
+  fastify.<span class="fn">setErrorHandler</span>(<span class="kw">async</span> (error, request, reply) => {
+    <span class="kw">const</span> statusCode = error.statusCode ?? <span class="num">500</span>;
+
+    <span class="cmt">// 검증 에러 (JSON Schema 실패)</span>
+    <span class="kw">if</span> (error.validation) {
+      <span class="kw">return</span> reply.<span class="fn">status</span>(<span class="num">400</span>).<span class="fn">send</span>({
+        statusCode: <span class="num">400</span>,
+        error: <span class="str">'Validation Error'</span>,
+        message: error.message,
+        details: error.validation,
+        timestamp: <span class="kw">new</span> <span class="type">Date</span>().<span class="fn">toISOString</span>(),
+      });
+    }
+
+    <span class="cmt">// 500 에러 — 내부 상세 노출 방지</span>
+    <span class="kw">if</span> (statusCode >= <span class="num">500</span>) {
+      fastify.log.<span class="fn">error</span>(error);
+      <span class="kw">return</span> reply.<span class="fn">status</span>(<span class="num">500</span>).<span class="fn">send</span>({
+        statusCode: <span class="num">500</span>,
+        error: <span class="str">'Internal Server Error'</span>,
+        message: <span class="str">'서버 오류가 발생했습니다'</span>,
+        timestamp: <span class="kw">new</span> <span class="type">Date</span>().<span class="fn">toISOString</span>(),
+      });
+    }
+
+    <span class="kw">const</span> body: <span class="type">ErrorResponse</span> = {
+      statusCode,
+      error: error.name || <span class="str">'Error'</span>,
+      message: error.message,
+      timestamp: <span class="kw">new</span> <span class="type">Date</span>().<span class="fn">toISOString</span>(),
+    };
+
+    <span class="kw">return</span> reply.<span class="fn">status</span>(statusCode).<span class="fn">send</span>(body);
+  });
+
+  <span class="cmt">// 404 핸들러</span>
+  fastify.<span class="fn">setNotFoundHandler</span>(<span class="kw">async</span> (request, reply) => {
+    reply.<span class="fn">status</span>(<span class="num">404</span>).<span class="fn">send</span>({
+      statusCode: <span class="num">404</span>,
+      error: <span class="str">'Not Found'</span>,
+      message: <span class="str">`${request.method} ${request.url} 라우트를 찾을 수 없습니다`</span>,
+    });
+  });
+});</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
   <h2 id="best-practices">모범 사례</h2>
   <ul>
     <li><strong>Schema</strong>: 검증에 JSON Schema 활용</li>
-    <li><strong>Plugins</span>: encapsulated 플러그인</li>
-    <li><strong>Logger</span>: built-in 로거 활용</li>
-    <li><strong>Types</span>: TypeScript로 타입 안전성</li>
+    <li><strong>Plugins</strong>: encapsulated 플러그인</li>
+    <li><strong>Logger</strong>: built-in 로거 활용</li>
+    <li><strong>Types</strong>: TypeScript로 타입 안전성</li>
   </ul>
 </section>
 

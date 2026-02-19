@@ -154,7 +154,7 @@ client = anthropic.<span class="fn">Anthropic</span>(
 )
 
 message = client.messages.<span class="fn">create</span>(
-    model=<span class="str">"claude-sonnet-4-5-20250929"</span>,
+    model=<span class="str">"claude-sonnet-4-6"</span>,
     max_tokens=<span class="num">600</span>,
     messages=[
         {<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"문서 스타일 체크리스트를 만들어줘"</span>}
@@ -224,6 +224,99 @@ message = client.messages.<span class="fn">create</span>(
       </tr>
     </tbody>
   </table>
+</section>
+
+<section class="content-section">
+  <h2 id="anti-patterns">나쁜 예제 (Anti-Pattern) — Before/After</h2>
+  <p>실제 작성 실수와 개선 방법을 비교합니다.</p>
+
+  <h3 id="ap-headings">제목 계층 건너뛰기</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0;">
+    <div class="code-block" style="margin:0;">
+      <div class="code-header" style="background:rgba(255,80,80,0.2);">
+        <span class="code-lang">❌ Before (나쁜 예)</span>
+      </div>
+      <pre><code><span class="cmt"># 서비스 소개</span>
+
+<span class="cmt">#### 주요 기능</span>
+<span class="cmt">- 기능 1</span>
+
+<span class="cmt">## 설치</span></code></pre>
+    </div>
+    <div class="code-block" style="margin:0;">
+      <div class="code-header" style="background:rgba(80,200,80,0.15);">
+        <span class="code-lang">✅ After (좋은 예)</span>
+      </div>
+      <pre><code><span class="cmt"># 서비스 소개</span>
+
+<span class="cmt">## 주요 기능</span>
+<span class="cmt">- 기능 1</span>
+
+<span class="cmt">## 설치</span></code></pre>
+    </div>
+  </div>
+  <p style="font-size:0.9em;color:var(--text-secondary);">h1 다음에 h4가 오면 TOC가 망가지고 스크린 리더 접근성이 저하됩니다.</p>
+
+  <h3 id="ap-lists">과도한 중첩 리스트</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0;">
+    <div class="code-block" style="margin:0;">
+      <div class="code-header" style="background:rgba(255,80,80,0.2);">
+        <span class="code-lang">❌ Before</span>
+      </div>
+      <pre><code><span class="cmt">- 설치</span>
+<span class="cmt">  - Node.js 필요</span>
+<span class="cmt">    - 18 버전 이상</span>
+<span class="cmt">      - LTS 권장</span>
+<span class="cmt">        - nvm 사용 권장</span></code></pre>
+    </div>
+    <div class="code-block" style="margin:0;">
+      <div class="code-header" style="background:rgba(80,200,80,0.15);">
+        <span class="code-lang">✅ After</span>
+      </div>
+      <pre><code><span class="cmt">**사전 요구사항:** Node.js 18 LTS 이상</span>
+<span class="cmt">(nvm 사용 권장)</span>
+
+<span class="cmt">- 설치: `nvm install 18`</span>
+<span class="cmt">- 활성화: `nvm use 18`</span></code></pre>
+    </div>
+  </div>
+
+  <h3 id="ap-codeblocks">언어 없는 코드 블록</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0;">
+    <div class="code-block" style="margin:0;">
+      <div class="code-header" style="background:rgba(255,80,80,0.2);">
+        <span class="code-lang">❌ Before</span>
+      </div>
+      <pre><code><span class="cmt">```</span>
+<span class="cmt">npm install anthropic</span>
+<span class="cmt">```</span></code></pre>
+    </div>
+    <div class="code-block" style="margin:0;">
+      <div class="code-header" style="background:rgba(80,200,80,0.15);">
+        <span class="code-lang">✅ After</span>
+      </div>
+      <pre><code><span class="cmt">```bash</span>
+<span class="cmt">npm install anthropic</span>
+<span class="cmt">```</span></code></pre>
+    </div>
+  </div>
+  <p style="font-size:0.9em;color:var(--text-secondary);">언어 지정이 없으면 구문 강조가 적용되지 않고 복사 버튼도 동작하지 않을 수 있습니다.</p>
+
+  <h3 id="ap-links">의미 없는 링크 텍스트</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0;">
+    <div class="code-block" style="margin:0;">
+      <div class="code-header" style="background:rgba(255,80,80,0.2);">
+        <span class="code-lang">❌ Before</span>
+      </div>
+      <pre><code>자세한 내용은 <span class="fn">[여기]</span>(docs.html)를 클릭.</code></pre>
+    </div>
+    <div class="code-block" style="margin:0;">
+      <div class="code-header" style="background:rgba(80,200,80,0.15);">
+        <span class="code-lang">✅ After</span>
+      </div>
+      <pre><code><span class="fn">[Claude API 공식 문서]</span>(docs.html)를 참고하세요.</code></pre>
+    </div>
+  </div>
 </section>
 
 <section class="content-section">

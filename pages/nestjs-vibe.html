@@ -306,9 +306,171 @@
 </section>
 
 <section class="content-section">
+  <h2 id="guards">Guard (인증/인가)</h2>
+  <p>Guard는 특정 엔드포인트에 접근할 수 있는지 결정합니다. 인증/인가에 주로 사용됩니다.</p>
+
+  <h3 id="jwt-guard">JWT 인증 Guard</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash — 설치</span>
+    </div>
+    <pre><code><span class="fn">npm install</span> @nestjs/jwt @nestjs/passport passport passport-jwt
+<span class="fn">npm install</span> -D @types/passport-jwt</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (auth/jwt-auth.guard.ts)</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> { Injectable, ExecutionContext, UnauthorizedException } from <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { AuthGuard } from <span class="str">'@nestjs/passport'</span>;
+<span class="kw">import</span> { Reflector } from <span class="str">'@nestjs/core'</span>;
+
+<span class="cmt">// 공개 라우트 마킹용 데코레이터</span>
+<span class="kw">import</span> { SetMetadata } from <span class="str">'@nestjs/common'</span>;
+<span class="kw">export const</span> <span class="fn">Public</span> = () => <span class="fn">SetMetadata</span>(<span class="str">'isPublic'</span>, <span class="kw">true</span>);
+
+<span class="fn">@Injectable</span>()
+<span class="kw">export class</span> <span class="type">JwtAuthGuard</span> extends <span class="fn">AuthGuard</span>(<span class="str">'jwt'</span>) {
+  <span class="fn">constructor</span>(<span class="kw">private</span> reflector: <span class="type">Reflector</span>) {
+    <span class="fn">super</span>();
+  }
+
+  <span class="fn">canActivate</span>(context: <span class="type">ExecutionContext</span>) {
+    <span class="cmt">// @Public() 데코레이터가 있으면 인증 건너뜀</span>
+    <span class="kw">const</span> isPublic = <span class="kw">this</span>.reflector.<span class="fn">getAllAndOverride</span>&lt;<span class="type">boolean</span>&gt;(<span class="str">'isPublic'</span>, [
+      context.<span class="fn">getHandler</span>(),
+      context.<span class="fn">getClass</span>(),
+    ]);
+    <span class="kw">if</span> (isPublic) <span class="kw">return</span> <span class="kw">true</span>;
+    <span class="kw">return</span> <span class="kw">super</span>.<span class="fn">canActivate</span>(context);
+  }
+
+  <span class="fn">handleRequest</span>(err: <span class="type">any</span>, user: <span class="type">any</span>) {
+    <span class="kw">if</span> (err || !user) {
+      <span class="kw">throw</span> err || <span class="kw">new</span> <span class="type">UnauthorizedException</span>(<span class="str">'유효하지 않은 토큰입니다'</span>);
+    }
+    <span class="kw">return</span> user;
+  }
+}</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (auth/roles.guard.ts) — RBAC 권한 체크</span>
+    </div>
+    <pre><code><span class="kw">import</span> { Injectable, CanActivate, ExecutionContext, ForbiddenException } from <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { Reflector } from <span class="str">'@nestjs/core'</span>;
+<span class="kw">import</span> { SetMetadata } from <span class="str">'@nestjs/common'</span>;
+
+<span class="kw">export type</span> <span class="type">Role</span> = <span class="str">'admin'</span> | <span class="str">'user'</span> | <span class="str">'guest'</span>;
+<span class="kw">export const</span> <span class="fn">Roles</span> = (...roles: <span class="type">Role</span>[]) => <span class="fn">SetMetadata</span>(<span class="str">'roles'</span>, roles);
+
+<span class="fn">@Injectable</span>()
+<span class="kw">export class</span> <span class="type">RolesGuard</span> implements <span class="type">CanActivate</span> {
+  <span class="fn">constructor</span>(<span class="kw">private</span> reflector: <span class="type">Reflector</span>) {}
+
+  <span class="fn">canActivate</span>(context: <span class="type">ExecutionContext</span>): <span class="type">boolean</span> {
+    <span class="kw">const</span> required = <span class="kw">this</span>.reflector.<span class="fn">getAllAndOverride</span>&lt;<span class="type">Role</span>[]&gt;(<span class="str">'roles'</span>, [
+      context.<span class="fn">getHandler</span>(),
+      context.<span class="fn">getClass</span>(),
+    ]);
+    <span class="kw">if</span> (!required?.length) <span class="kw">return</span> <span class="kw">true</span>;
+
+    <span class="kw">const</span> { user } = context.<span class="fn">switchToHttp</span>().<span class="fn">getRequest</span>();
+    <span class="kw">if</span> (!required.<span class="fn">includes</span>(user?.role)) {
+      <span class="kw">throw new</span> <span class="type">ForbiddenException</span>(<span class="str">'접근 권한이 없습니다'</span>);
+    }
+    <span class="kw">return</span> <span class="kw">true</span>;
+  }
+}
+
+<span class="cmt">// 컨트롤러에서 사용</span>
+<span class="fn">@Get</span>(<span class="str">'admin'</span>)
+<span class="fn">@Roles</span>(<span class="str">'admin'</span>)
+<span class="fn">adminOnly</span>() {
+  <span class="kw">return</span> <span class="str">'관리자만 접근 가능'</span>;
+}</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="interceptors">Interceptor (요청/응답 변환)</h2>
+  <p>Interceptor는 요청/응답을 가로채 로깅, 응답 형식 변환, 캐싱 등에 활용합니다.</p>
+
+  <h3 id="logging-interceptor">로깅 Interceptor</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (common/logging.interceptor.ts)</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> { Injectable, NestInterceptor, ExecutionContext, CallHandler, Logger } from <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { Observable } from <span class="str">'rxjs'</span>;
+<span class="kw">import</span> { tap } from <span class="str">'rxjs/operators'</span>;
+
+<span class="fn">@Injectable</span>()
+<span class="kw">export class</span> <span class="type">LoggingInterceptor</span> implements <span class="type">NestInterceptor</span> {
+  <span class="kw">private</span> logger = <span class="kw">new</span> <span class="type">Logger</span>(<span class="str">'HTTP'</span>);
+
+  <span class="fn">intercept</span>(context: <span class="type">ExecutionContext</span>, next: <span class="type">CallHandler</span>): <span class="type">Observable</span>&lt;<span class="type">any</span>&gt; {
+    <span class="kw">const</span> req  = context.<span class="fn">switchToHttp</span>().<span class="fn">getRequest</span>();
+    <span class="kw">const</span> { method, url } = req;
+    <span class="kw">const</span> start = Date.<span class="fn">now</span>();
+
+    <span class="kw">return</span> next.<span class="fn">handle</span>().<span class="fn">pipe</span>(
+      <span class="fn">tap</span>(() => {
+        <span class="kw">const</span> elapsed = Date.<span class="fn">now</span>() - start;
+        <span class="kw">this</span>.logger.<span class="fn">log</span>(<span class="str">`${method} ${url} - ${elapsed}ms`</span>);
+      }),
+    );
+  }
+}</code></pre>
+  </div>
+
+  <h3 id="transform-interceptor">응답 형식 통일 Interceptor</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (common/transform.interceptor.ts)</span>
+    </div>
+    <pre><code><span class="kw">import</span> { Injectable, NestInterceptor, ExecutionContext, CallHandler } from <span class="str">'@nestjs/common'</span>;
+<span class="kw">import</span> { Observable } from <span class="str">'rxjs'</span>;
+<span class="kw">import</span> { map } from <span class="str">'rxjs/operators'</span>;
+
+<span class="kw">export interface</span> <span class="type">Response</span>&lt;<span class="type">T</span>&gt; {
+  success: <span class="type">boolean</span>;
+  data: <span class="type">T</span>;
+  timestamp: <span class="type">string</span>;
+}
+
+<span class="fn">@Injectable</span>()
+<span class="kw">export class</span> <span class="type">TransformInterceptor</span>&lt;<span class="type">T</span>&gt; implements <span class="type">NestInterceptor</span>&lt;<span class="type">T</span>, <span class="type">Response</span>&lt;<span class="type">T</span>&gt;&gt; {
+  <span class="fn">intercept</span>(context: <span class="type">ExecutionContext</span>, next: <span class="type">CallHandler</span>): <span class="type">Observable</span>&lt;<span class="type">Response</span>&lt;<span class="type">T</span>&gt;&gt; {
+    <span class="kw">return</span> next.<span class="fn">handle</span>().<span class="fn">pipe</span>(
+      <span class="fn">map</span>(data => ({
+        success: <span class="kw">true</span>,
+        data,
+        timestamp: <span class="kw">new</span> <span class="type">Date</span>().<span class="fn">toISOString</span>(),
+      })),
+    );
+  }
+}
+
+<span class="cmt">// main.ts에서 전역 적용</span>
+app.<span class="fn">useGlobalInterceptors</span>(<span class="kw">new</span> <span class="type">TransformInterceptor</span>());
+app.<span class="fn">useGlobalGuards</span>(app.<span class="fn">get</span>(<span class="type">JwtAuthGuard</span>));
+
+<span class="cmt">// 응답 예시:</span>
+<span class="cmt">// { "success": true, "data": { "id": 1, ... }, "timestamp": "2026-02-19T..." }</span></code></pre>
+  </div>
+</section>
+
+<section class="content-section">
   <h2 id="references">참고자료</h2>
   <ul>
     <li><a href="https://docs.nestjs.com" target="_blank" rel="noopener">NestJS 공식 문서</a></li>
+    <li><a href="https://docs.nestjs.com/guards" target="_blank" rel="noopener">Guards 가이드</a></li>
+    <li><a href="https://docs.nestjs.com/interceptors" target="_blank" rel="noopener">Interceptors 가이드</a></li>
   </ul>
 </section>
 

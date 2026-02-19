@@ -178,22 +178,163 @@ describe(<span class="str">'Calculator'</span>, () => {
   <h2 id="e2e-test">E2E 테스트 생성</h2>
   <p>사용자 관점에서 전체 애플리케이션 플로우를 테스트합니다.</p>
 
-  <h3 id="e2e-request">테스트 생성 요청</h3>
+  <h3 id="playwright-setup">Playwright 설치</h3>
   <div class="code-block">
     <div class="code-header">
-      <span class="code-lang">Claude에게 요청</span>
+      <span class="code-lang">Bash</span>
     </div>
-    <pre><code><span class="str">로그인 후 투두 목록을 관리하는 E2E 테스트를</span>
-<span class="str">만들어줘. Playwright를 사용하고:</span>
+    <pre><code><span class="cmt"># 설치</span>
+<span class="fn">npm init playwright@latest</span>
 
-<span class="str">1. 로그인 페이지에서 이메일/비밀번호 입력</span>
-<span class="str">2. 로그인 버튼 클릭</span>
-<span class="str">3. 투두 추가</span>
-<span class="str">4. 투두 완료 표시</span>
-<span class="str">5. 투두 삭제</span>
-<span class="str">6. 로그아웃</span>
+<span class="cmt"># 또는 기존 프로젝트에 추가</span>
+<span class="fn">npm install</span> -D @playwright/test
+<span class="fn">npx playwright install</span>  <span class="cmt"># 브라우저 다운로드</span></code></pre>
+  </div>
 
-<span class="str">이 플로우를 테스트하는 코드를 작성해줘.</span></code></pre>
+  <h3 id="e2e-code">Playwright 실제 E2E 테스트 코드</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript (e2e/todo-flow.spec.ts)</span>
+      <button class="code-copy" aria-label="코드 복사">Copy</button>
+    </div>
+    <pre><code><span class="kw">import</span> { test, expect, type Page } from <span class="str">'@playwright/test'</span>;
+
+<span class="cmt">// 페이지 객체 헬퍼</span>
+<span class="kw">async function</span> <span class="fn">login</span>(page: <span class="type">Page</span>, email: <span class="type">string</span>, password: <span class="type">string</span>) {
+  <span class="kw">await</span> page.<span class="fn">goto</span>(<span class="str">'/login'</span>);
+  <span class="kw">await</span> page.<span class="fn">getByLabel</span>(<span class="str">'이메일'</span>).<span class="fn">fill</span>(email);
+  <span class="kw">await</span> page.<span class="fn">getByLabel</span>(<span class="str">'비밀번호'</span>).<span class="fn">fill</span>(password);
+  <span class="kw">await</span> page.<span class="fn">getByRole</span>(<span class="str">'button'</span>, { name: <span class="str">'로그인'</span> }).<span class="fn">click</span>();
+  <span class="kw">await</span> expect(page).<span class="fn">toHaveURL</span>(<span class="str">'/dashboard'</span>);
+}
+
+test.<span class="fn">describe</span>(<span class="str">'투두 관리 E2E 플로우'</span>, () => {
+  test.<span class="fn">beforeEach</span>(<span class="kw">async</span> ({ page }) => {
+    <span class="kw">await</span> <span class="fn">login</span>(page, <span class="str">'test@example.com'</span>, <span class="str">'password123'</span>);
+  });
+
+  <span class="fn">test</span>(<span class="str">'투두 추가 → 완료 표시 → 삭제 전체 플로우'</span>, <span class="kw">async</span> ({ page }) => {
+    <span class="cmt">// 1. 투두 추가</span>
+    <span class="kw">const</span> todoText = <span class="str">`테스트 투두 ${Date.now()}`</span>;
+    <span class="kw">await</span> page.<span class="fn">getByPlaceholder</span>(<span class="str">'새 항목 추가...'</span>).<span class="fn">fill</span>(todoText);
+    <span class="kw">await</span> page.<span class="fn">keyboard</span>.<span class="fn">press</span>(<span class="str">'Enter'</span>);
+
+    <span class="cmt">// 2. 투두가 목록에 나타나는지 확인</span>
+    <span class="kw">const</span> todoItem = page.<span class="fn">getByText</span>(todoText);
+    <span class="kw">await</span> expect(todoItem).<span class="fn">toBeVisible</span>();
+
+    <span class="cmt">// 3. 완료 체크박스 클릭</span>
+    <span class="kw">await</span> todoItem.<span class="fn">locator</span>(<span class="str">'xpath=../..'</span>).<span class="fn">getByRole</span>(<span class="str">'checkbox'</span>).<span class="fn">click</span>();
+    <span class="kw">await</span> expect(todoItem).<span class="fn">toHaveClass</span>(<span class="str">/completed/</span>);
+
+    <span class="cmt">// 4. 삭제 버튼 클릭</span>
+    <span class="kw">await</span> todoItem.<span class="fn">locator</span>(<span class="str">'xpath=../..'</span>).<span class="fn">getByRole</span>(<span class="str">'button'</span>, { name: <span class="str">'삭제'</span> }).<span class="fn">click</span>();
+    <span class="kw">await</span> expect(todoItem).<span class="fn">not</span>.<span class="fn">toBeVisible</span>();
+  });
+
+  <span class="fn">test</span>(<span class="str">'빈 입력으로 투두 추가 시 에러 표시'</span>, <span class="kw">async</span> ({ page }) => {
+    <span class="kw">await</span> page.<span class="fn">getByRole</span>(<span class="str">'button'</span>, { name: <span class="str">'추가'</span> }).<span class="fn">click</span>();
+    <span class="kw">await</span> expect(page.<span class="fn">getByText</span>(<span class="str">'내용을 입력해주세요'</span>)).<span class="fn">toBeVisible</span>();
+  });
+
+  <span class="fn">test</span>(<span class="str">'로그아웃 후 리다이렉트'</span>, <span class="kw">async</span> ({ page }) => {
+    <span class="kw">await</span> page.<span class="fn">getByRole</span>(<span class="str">'button'</span>, { name: <span class="str">'로그아웃'</span> }).<span class="fn">click</span>();
+    <span class="kw">await</span> expect(page).<span class="fn">toHaveURL</span>(<span class="str">'/login'</span>);
+  });
+});
+
+<span class="cmt">// API 모킹 예시</span>
+<span class="fn">test</span>(<span class="str">'API 오류 시 에러 메시지 표시'</span>, <span class="kw">async</span> ({ page }) => {
+  <span class="cmt">// 서버 응답을 모킹</span>
+  <span class="kw">await</span> page.<span class="fn">route</span>(<span class="str">'**/api/todos'</span>, route => {
+    route.<span class="fn">fulfill</span>({ status: <span class="num">500</span>, body: <span class="str">'Internal Server Error'</span> });
+  });
+
+  <span class="kw">await</span> page.<span class="fn">goto</span>(<span class="str">'/dashboard'</span>);
+  <span class="kw">await</span> expect(page.<span class="fn">getByText</span>(<span class="str">'데이터를 불러올 수 없습니다'</span>)).<span class="fn">toBeVisible</span>();
+});</code></pre>
+  </div>
+
+  <h3 id="playwright-config">Playwright 설정 (playwright.config.ts)</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">TypeScript</span>
+    </div>
+    <pre><code><span class="kw">import</span> { <span class="fn">defineConfig</span>, devices } from <span class="str">'@playwright/test'</span>;
+
+<span class="kw">export default</span> <span class="fn">defineConfig</span>({
+  testDir: <span class="str">'./e2e'</span>,
+  fullyParallel: <span class="kw">true</span>,
+  retries: process.env.CI ? <span class="num">2</span> : <span class="num">0</span>,
+  workers: process.env.CI ? <span class="num">1</span> : undefined,
+  reporter: <span class="str">'html'</span>,
+  use: {
+    baseURL: <span class="str">'http://localhost:3000'</span>,
+    trace: <span class="str">'on-first-retry'</span>,
+    screenshot: <span class="str">'only-on-failure'</span>,
+  },
+  projects: [
+    { name: <span class="str">'chromium'</span>, use: { ...devices[<span class="str">'Desktop Chrome'</span>] } },
+    { name: <span class="str">'Mobile Chrome'</span>, use: { ...devices[<span class="str">'Pixel 5'</span>] } },
+  ],
+  webServer: {
+    command: <span class="str">'npm run start'</span>,
+    url: <span class="str">'http://localhost:3000'</span>,
+    reuseExistingServer: !process.env.CI,
+  },
+});</code></pre>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="coverage">테스트 커버리지 측정</h2>
+  <p>코드 커버리지를 측정하여 테스트 누락 영역을 파악합니다.</p>
+
+  <h3 id="jest-coverage">Jest 커버리지 설정</h3>
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">JSON (package.json)</span>
+    </div>
+    <pre><code>{
+  <span class="str">"scripts"</span>: {
+    <span class="str">"test"</span>: <span class="str">"jest"</span>,
+    <span class="str">"test:coverage"</span>: <span class="str">"jest --coverage"</span>,
+    <span class="str">"test:watch"</span>: <span class="str">"jest --watch"</span>
+  },
+  <span class="str">"jest"</span>: {
+    <span class="str">"coverageThreshold"</span>: {
+      <span class="str">"global"</span>: {
+        <span class="str">"branches"</span>: <span class="num">70</span>,
+        <span class="str">"functions"</span>: <span class="num">80</span>,
+        <span class="str">"lines"</span>: <span class="num">80</span>,
+        <span class="str">"statements"</span>: <span class="num">80</span>
+      }
+    },
+    <span class="str">"coverageReporters"</span>: [<span class="str">"text"</span>, <span class="str">"lcov"</span>, <span class="str">"html"</span>],
+    <span class="str">"collectCoverageFrom"</span>: [
+      <span class="str">"src/**/*.{js,ts}"</span>,
+      <span class="str">"!src/**/*.d.ts"</span>,
+      <span class="str">"!src/main.ts"</span>
+    ]
+  }
+}</code></pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header">
+      <span class="code-lang">Bash — 커버리지 리포트 생성</span>
+    </div>
+    <pre><code><span class="cmt"># 커버리지 측정 + 리포트 생성</span>
+<span class="fn">npm run test:coverage</span>
+
+<span class="cmt"># 출력 예시:</span>
+<span class="cmt"># -------|---------|----------|---------|---------|</span>
+<span class="cmt"># File   | % Stmts | % Branch | % Funcs | % Lines |</span>
+<span class="cmt"># -------|---------|----------|---------|---------|</span>
+<span class="cmt"># All    |   82.5  |   75.0   |   85.0  |   82.5  |</span>
+
+<span class="cmt"># HTML 리포트 열기</span>
+<span class="fn">open</span> coverage/lcov-report/index.html</code></pre>
   </div>
 </section>
 

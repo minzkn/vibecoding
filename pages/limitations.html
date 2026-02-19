@@ -76,11 +76,61 @@
     <li><strong>TPD (Tokens Per Day):</strong> 일일 토큰 수</li>
   </ul>
 
-  <h3 id="tier-limits">티어별 제한 (예시)</h3>
+  <h3 id="tier-limits">티어별 제한 (2026년 2월 기준)</h3>
   <table>
     <thead>
       <tr>
         <th>티어</th>
+        <th>승격 조건</th>
+        <th>RPM</th>
+        <th>TPM (Sonnet)</th>
+        <th>TPD</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Free</strong></td>
+        <td>API 키 발급 직후</td>
+        <td>5</td>
+        <td>25,000</td>
+        <td>300,000</td>
+      </tr>
+      <tr style="background:var(--code-bg);">
+        <td><strong>Tier 1</strong></td>
+        <td>유효 신용카드 등록</td>
+        <td>50</td>
+        <td>50,000</td>
+        <td>1,000,000</td>
+      </tr>
+      <tr>
+        <td><strong>Tier 2</strong></td>
+        <td>$50 이상 결제 후 7일</td>
+        <td>1,000</td>
+        <td>100,000</td>
+        <td>2,500,000</td>
+      </tr>
+      <tr style="background:var(--code-bg);">
+        <td><strong>Tier 3</strong></td>
+        <td>$500 이상 결제 후 7일</td>
+        <td>2,000</td>
+        <td>200,000</td>
+        <td>5,000,000</td>
+      </tr>
+      <tr>
+        <td><strong>Tier 4</strong></td>
+        <td>$5,000 이상 결제 후 7일</td>
+        <td>4,000</td>
+        <td>400,000</td>
+        <td>10,000,000</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="model-tier-limits">모델별 세부 Rate Limit (Tier 1 기준)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
         <th>RPM</th>
         <th>TPM</th>
         <th>TPD</th>
@@ -88,28 +138,22 @@
     </thead>
     <tbody>
       <tr>
-        <td><strong>Tier 1 (초기)</strong></td>
+        <td>claude-opus-4-6</td>
         <td>50</td>
-        <td>40,000</td>
+        <td>20,000</td>
+        <td>300,000</td>
+      </tr>
+      <tr style="background:var(--code-bg);">
+        <td>claude-sonnet-4-6</td>
+        <td>50</td>
+        <td>50,000</td>
         <td>1,000,000</td>
       </tr>
       <tr>
-        <td><strong>Tier 2</strong></td>
-        <td>1,000</td>
-        <td>80,000</td>
-        <td>2,500,000</td>
-      </tr>
-      <tr>
-        <td><strong>Tier 3</strong></td>
-        <td>2,000</td>
-        <td>160,000</td>
-        <td>5,000,000</td>
-      </tr>
-      <tr>
-        <td><strong>Tier 4</strong></td>
-        <td>4,000</td>
-        <td>400,000</td>
-        <td>10,000,000</td>
+        <td>claude-haiku-4-5-20251001</td>
+        <td>50</td>
+        <td>50,000</td>
+        <td>1,000,000</td>
       </tr>
     </tbody>
   </table>
@@ -118,7 +162,8 @@
     <div class="info-box-title">💡 티어 승격</div>
     <p>
       사용 실적과 결제 이력에 따라 자동으로 티어가 승격됩니다.
-      정확한 한도는 API 응답 헤더에서 확인할 수 있습니다.
+      정확한 한도는 API 응답 헤더 또는
+      <a href="https://docs.anthropic.com/ko/api/rate-limits" target="_blank" rel="noopener">공식 Rate Limits 문서</a>에서 확인하세요.
     </p>
   </div>
 
@@ -133,7 +178,7 @@
 client <span class="kw">=</span> anthropic.<span class="fn">Anthropic</span>()
 
 response <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-    model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
+    model<span class="kw">=</span><span class="str">"claude-sonnet-4-6"</span>,
     max_tokens<span class="kw">=</span><span class="num">100</span>,
     messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hi"</span>}]
 )
@@ -196,11 +241,32 @@ response <span class="kw">=</span> client.messages.<span class="fn">create</span
     모델별 최대 출력 토큰 수:
   </p>
 
-  <ul>
-    <li><strong>Opus (고성능):</strong> 최대 4,096 토큰</li>
-    <li><strong>Sonnet (균형):</strong> 최대 8,192 토큰</li>
-    <li><strong>Haiku (경량):</strong> 최대 4,096 토큰</li>
-  </ul>
+  <table>
+    <thead>
+      <tr>
+        <th>모델</th>
+        <th>컨텍스트 윈도우</th>
+        <th>최대 출력 토큰</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>claude-opus-4-6</td>
+        <td>200,000 토큰</td>
+        <td>32,000 토큰</td>
+      </tr>
+      <tr style="background:var(--code-bg);">
+        <td>claude-sonnet-4-6</td>
+        <td>200,000 토큰</td>
+        <td>64,000 토큰 (Extended Thinking 활성화 시)</td>
+      </tr>
+      <tr>
+        <td>claude-haiku-4-5-20251001</td>
+        <td>200,000 토큰</td>
+        <td>16,000 토큰</td>
+      </tr>
+    </tbody>
+  </table>
 
   <div class="info-box warning">
     <div class="info-box-title">⚠️ max_tokens 필수</div>
@@ -241,7 +307,7 @@ response <span class="kw">=</span> client.messages.<span class="fn">create</span
   <h2 id="knowledge-cutoff">지식 기준일 (Knowledge Cutoff)</h2>
 
   <p>
-    Claude의 학습 데이터는 <strong>2025년 1월</strong>까지입니다.
+    Claude의 학습 데이터는 <strong>2025년 8월</strong>까지입니다.
     그 이후의 정보는 알지 못합니다.
   </p>
 
@@ -275,7 +341,7 @@ response <span class="kw">=</span> client.messages.<span class="fn">create</span
 
 <span class="cmt"># Claude가 날씨 API를 호출하도록 지시</span>
 message <span class="kw">=</span> client.messages.<span class="fn">create</span>(
-    model<span class="kw">=</span><span class="str">"claude-<tier>"</span>,
+    model<span class="kw">=</span><span class="str">"claude-sonnet-4-6"</span>,
     max_tokens<span class="kw">=</span><span class="num">1024</span>,
     tools<span class="kw">=</span>tools,
     messages<span class="kw">=</span>[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"서울 날씨 어때?"</span>}]
