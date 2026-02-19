@@ -114,6 +114,9 @@ var SEARCH_INDEX = [
   { title: "FastCGI", url: "pages/fastcgi.html", description: "FastCGI 프로토콜, Nginx/Apache 연동, PHP-FPM, 성능 최적화", keywords: "fastcgi nginx apache php-fpm performance" },
 
   // 📚 LLM 이론 (마지막: 필요할 때 찾아보기)
+  { title: "GPT를 밑바닥부터 (1): 저자·데이터·Autograd", url: "pages/microgpt-intro.html", description: "Karpathy의 microgpt.py — 순수 파이썬 200줄, 저자 소개, 데이터 파이프라인, 토크나이저, Autograd 엔진", keywords: "microgpt karpathy gpt 밑바닥 autograd value 역전파 토크나이저 순수파이썬 micrograd" },
+  { title: "GPT를 밑바닥부터 (2): 아키텍처·어텐션·파이프라인", url: "pages/microgpt-architecture.html", description: "microgpt.py 모델 설계도, 임베딩, Multi-head Attention, 트랜스포머 블록, 완전한 GPT 파이프라인", keywords: "microgpt gpt 아키텍처 attention transformer 임베딩 rmsnorm mlp kv캐시 gpt2" },
+  { title: "GPT를 밑바닥부터 (3): 학습·Adam·추론·LLM 비교", url: "pages/microgpt-training.html", description: "Cross-Entropy 손실, Adam 옵티마이저, 이름 생성 추론, MicroGPT vs 현대 LLM 비교, nanoGPT", keywords: "microgpt gpt 학습 adam 옵티마이저 크로스엔트로피 추론 temperature llm 비교 nanogpt" },
   { title: "LLM 이론 기초", url: "pages/llm-theory-foundations.html", description: "LLM 확률적 생성, 정보이론, 일반화/환각의 핵심 개념", keywords: "llm theory 확률 정보이론 일반화 환각" },
   { title: "LLM 이론 심화", url: "pages/llm-theory-advanced.html", description: "Transformer, 스케일링 법칙, In-Context Learning 이론", keywords: "llm theory transformer attention scaling icl" },
   { title: "LLM 이론 수학 부록", url: "pages/llm-theory-math-appendix.html", description: "LLM 핵심 수식 요약: 크로스엔트로피, 퍼플렉서티, 어텐션", keywords: "llm math appendix cross entropy perplexity attention" },
@@ -257,6 +260,9 @@ var NAV_STRUCTURE = [
     { file: 'fastcgi.html', title: 'FastCGI' }
   ]},
   { title: '📚 LLM 이론', pages: [
+    { file: 'microgpt-intro.html', title: 'GPT를 밑바닥부터 (1): Autograd' },
+    { file: 'microgpt-architecture.html', title: 'GPT를 밑바닥부터 (2): 아키텍처' },
+    { file: 'microgpt-training.html', title: 'GPT를 밑바닥부터 (3): 학습·추론' },
     { file: 'llm-theory-foundations.html', title: 'LLM 이론 기초' },
     { file: 'llm-theory-advanced.html', title: 'LLM 이론 심화' },
     { file: 'llm-theory-math-appendix.html', title: 'LLM 이론 수학 부록' },
