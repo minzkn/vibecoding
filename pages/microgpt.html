@@ -184,6 +184,62 @@
 【Phase 5 — 추론 (이름 생성)】
     BOS → 't' → 'o' → 'm' → BOS  →  "tom"</code></pre>
 
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 140"
+         style="width:100%;max-width:750px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:16px;">
+      <defs>
+        <marker id="microgpt-flow-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="8" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+      <!-- Phase 1 -->
+      <rect x="10" y="30" width="120" height="80" rx="7"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="70" y="55" text-anchor="middle" fill="var(--accent-primary)" font-size="10" font-weight="bold">Phase 1</text>
+      <text x="70" y="72" text-anchor="middle" fill="var(--diagram-text)" font-size="11">데이터·토크나이저</text>
+      <text x="70" y="89" text-anchor="middle" fill="var(--text-muted)" font-size="9">names.txt → 토큰</text>
+      <text x="70" y="103" text-anchor="middle" fill="var(--text-muted)" font-size="9">vocab_size=27</text>
+      <!-- Arrow 1 -->
+      <line x1="130" y1="70" x2="153" y2="70" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-flow-arrow)"/>
+      <!-- Phase 2 -->
+      <rect x="155" y="30" width="120" height="80" rx="7"
+            fill="var(--bg-secondary)" stroke="var(--accent-secondary)" stroke-width="2"/>
+      <text x="215" y="55" text-anchor="middle" fill="var(--accent-secondary)" font-size="10" font-weight="bold">Phase 2</text>
+      <text x="215" y="72" text-anchor="middle" fill="var(--diagram-text)" font-size="11">Autograd 엔진</text>
+      <text x="215" y="89" text-anchor="middle" fill="var(--text-muted)" font-size="9">class Value</text>
+      <text x="215" y="103" text-anchor="middle" fill="var(--text-muted)" font-size="9">add·mul·log·exp</text>
+      <!-- Arrow 2 -->
+      <line x1="275" y1="70" x2="298" y2="70" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-flow-arrow)"/>
+      <!-- Phase 3 -->
+      <rect x="300" y="30" width="120" height="80" rx="7"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="360" y="55" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">Phase 3</text>
+      <text x="360" y="72" text-anchor="middle" fill="var(--diagram-text)" font-size="11">신경망 정의</text>
+      <text x="360" y="89" text-anchor="middle" fill="var(--text-muted)" font-size="9">gpt() 함수</text>
+      <text x="360" y="103" text-anchor="middle" fill="var(--text-muted)" font-size="9">4,192 파라미터</text>
+      <!-- Arrow 3 -->
+      <line x1="420" y1="70" x2="443" y2="70" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-flow-arrow)"/>
+      <!-- Phase 4 -->
+      <rect x="445" y="30" width="120" height="80" rx="7"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="505" y="55" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">Phase 4</text>
+      <text x="505" y="72" text-anchor="middle" fill="var(--diagram-text)" font-size="11">학습 루프</text>
+      <text x="505" y="89" text-anchor="middle" fill="var(--text-muted)" font-size="9">1000 스텝 · Adam</text>
+      <text x="505" y="103" text-anchor="middle" fill="var(--text-muted)" font-size="9">loss 3.30 → 2.37</text>
+      <!-- Arrow 4 -->
+      <line x1="565" y1="70" x2="588" y2="70" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-flow-arrow)"/>
+      <!-- Phase 5 -->
+      <rect x="590" y="30" width="145" height="80" rx="7"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="662" y="55" text-anchor="middle" fill="var(--accent-primary)" font-size="10" font-weight="bold">Phase 5</text>
+      <text x="662" y="72" text-anchor="middle" fill="var(--diagram-text)" font-size="11">추론 (이름 생성)</text>
+      <text x="662" y="89" text-anchor="middle" fill="var(--text-muted)" font-size="9">BOS → 't'→'o'→'m'</text>
+      <text x="662" y="103" text-anchor="middle" fill="var(--text-muted)" font-size="9">→ BOS → "tom"</text>
+    </svg>
+    <p class="diagram-caption">microgpt.py 5단계 파이프라인: 데이터·토크나이저 → Autograd → 신경망 정의 → 학습 → 추론</p>
+  </div>
+
   <div class="info-box info">
     <strong>왜 이 순서인가?</strong> 데이터 없이는 토크나이저가 없고, Autograd 없이는 학습이 없고,
     모델 없이는 추론이 없습니다. 각 블록이 다음 블록의 토대가 되는 완벽한 의존성 체인입니다.
@@ -300,6 +356,58 @@ pos 4: 입력=<span class="str">'a'</span>(0)   → 타겟=BOS(<span class="num"
     앞에 BOS → 모델이 "이름이 시작된다"는 신호를 받고 첫 글자를 예측.
     뒤에 BOS → 모델이 "이름이 끝났다"는 것을 학습(추론 시 생성 종료 조건).
     BOS 하나가 시작 신호이자 종료 신호 두 역할을 모두 합니다.
+  </div>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 140"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:16px;">
+      <defs>
+        <marker id="microgpt-tok-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="8" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+      <!-- Step 1: 문자열 -->
+      <rect x="8" y="35" width="90" height="70" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="53" y="60" text-anchor="middle" fill="var(--accent-primary)" font-size="9" font-weight="bold">문자열</text>
+      <text x="53" y="78" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-family="monospace">"emma"</text>
+      <text x="53" y="97" text-anchor="middle" fill="var(--text-muted)" font-size="9">4글자</text>
+      <!-- Arrow -->
+      <line x1="98" y1="70" x2="116" y2="70" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-tok-arrow)"/>
+      <!-- Step 2: 문자 분해 -->
+      <rect x="118" y="35" width="110" height="70" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="173" y="57" text-anchor="middle" fill="var(--diagram-text)" font-size="9" font-weight="bold">문자 분해</text>
+      <text x="173" y="76" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-family="monospace">e m m a</text>
+      <text x="173" y="95" text-anchor="middle" fill="var(--text-muted)" font-size="9">uchars.index(ch)</text>
+      <!-- Arrow -->
+      <line x1="228" y1="70" x2="246" y2="70" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-tok-arrow)"/>
+      <!-- Step 3: 인덱스 조회 -->
+      <rect x="248" y="35" width="110" height="70" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="303" y="57" text-anchor="middle" fill="var(--diagram-text)" font-size="9" font-weight="bold">인덱스 변환</text>
+      <text x="303" y="76" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-family="monospace">4 12 12 0</text>
+      <text x="303" y="95" text-anchor="middle" fill="var(--text-muted)" font-size="9">a=0 … z=25</text>
+      <!-- Arrow -->
+      <line x1="358" y1="70" x2="376" y2="70" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-tok-arrow)"/>
+      <!-- Step 4: BOS 래핑 -->
+      <rect x="378" y="35" width="110" height="70" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-secondary)" stroke-width="2"/>
+      <text x="433" y="57" text-anchor="middle" fill="var(--accent-secondary)" font-size="9" font-weight="bold">BOS 래핑</text>
+      <text x="433" y="76" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-family="monospace">[26]+ids+[26]</text>
+      <text x="433" y="95" text-anchor="middle" fill="var(--text-muted)" font-size="9">BOS=26</text>
+      <!-- Arrow -->
+      <line x1="488" y1="70" x2="506" y2="70" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-tok-arrow)"/>
+      <!-- Step 5: 토큰 시퀀스 -->
+      <rect x="508" y="20" width="180" height="100" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="598" y="44" text-anchor="middle" fill="var(--accent-primary)" font-size="9" font-weight="bold">토큰 시퀀스</text>
+      <text x="598" y="68" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-family="monospace">[26, 4, 12, 12, 0, 26]</text>
+      <text x="598" y="88" text-anchor="middle" fill="var(--text-muted)" font-size="9">BOS e  m  m  a BOS</text>
+      <text x="598" y="107" text-anchor="middle" fill="var(--text-muted)" font-size="9">길이 6 (4글자 + BOS×2)</text>
+    </svg>
+    <p class="diagram-caption">"emma" 토크나이저 변환 파이프라인: 문자열 → 문자 분해 → 인덱스 조회 → BOS 래핑 → 토큰 시퀀스</p>
   </div>
 
   <h3 id="token-ids">토큰 ID 구조 — 27개 심볼</h3>
@@ -829,6 +937,69 @@ v = <span class="fn">linear</span>(x, state_dict[<span class="str">f'layer{li}.a
     "각 헤드가 다른 것을 학습한다"는 것이 Multi-head Attention의 핵심 아이디어입니다.
   </div>
 
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 230"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:16px;">
+      <defs>
+        <marker id="microgpt-mha-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="7" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+      <!-- 입력 임베딩 16차원 -->
+      <rect x="8" y="85" width="100" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="58" y="107" text-anchor="middle" fill="var(--accent-primary)" font-size="10" font-weight="bold">임베딩 x</text>
+      <text x="58" y="124" text-anchor="middle" fill="var(--diagram-text)" font-size="11">16차원</text>
+      <text x="58" y="139" text-anchor="middle" fill="var(--text-muted)" font-size="9">n_embd=16</text>
+      <!-- 분기 화살표 -->
+      <line x1="108" y1="115" x2="145" y2="45" stroke="var(--diagram-arrow)" stroke-width="1.2" marker-end="url(#microgpt-mha-arrow)"/>
+      <line x1="108" y1="115" x2="145" y2="90" stroke="var(--diagram-arrow)" stroke-width="1.2" marker-end="url(#microgpt-mha-arrow)"/>
+      <line x1="108" y1="115" x2="145" y2="135" stroke="var(--diagram-arrow)" stroke-width="1.2" marker-end="url(#microgpt-mha-arrow)"/>
+      <line x1="108" y1="115" x2="145" y2="180" stroke="var(--diagram-arrow)" stroke-width="1.2" marker-end="url(#microgpt-mha-arrow)"/>
+      <!-- Head 0 -->
+      <rect x="147" y="20" width="140" height="50" rx="5"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="1.5"/>
+      <text x="217" y="40" text-anchor="middle" fill="var(--accent-primary)" font-size="10" font-weight="bold">헤드 0 (dim 0~3)</text>
+      <text x="217" y="57" text-anchor="middle" fill="var(--diagram-text)" font-size="9">Q·K·V 각 4차원 → head_out[0:4]</text>
+      <!-- Head 1 -->
+      <rect x="147" y="77" width="140" height="50" rx="5"
+            fill="var(--bg-secondary)" stroke="var(--accent-secondary)" stroke-width="1.5"/>
+      <text x="217" y="97" text-anchor="middle" fill="var(--accent-secondary)" font-size="10" font-weight="bold">헤드 1 (dim 4~7)</text>
+      <text x="217" y="114" text-anchor="middle" fill="var(--diagram-text)" font-size="9">Q·K·V 각 4차원 → head_out[4:8]</text>
+      <!-- Head 2 -->
+      <rect x="147" y="112" width="140" height="50" rx="5"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="217" y="132" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">헤드 2 (dim 8~11)</text>
+      <text x="217" y="149" text-anchor="middle" fill="var(--diagram-text)" font-size="9">Q·K·V 각 4차원 → head_out[8:12]</text>
+      <!-- Head 3 -->
+      <rect x="147" y="157" width="140" height="50" rx="5"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="217" y="177" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">헤드 3 (dim 12~15)</text>
+      <text x="217" y="194" text-anchor="middle" fill="var(--diagram-text)" font-size="9">Q·K·V 각 4차원 → head_out[12:16]</text>
+      <!-- 합치기 화살표 -->
+      <line x1="287" y1="45" x2="410" y2="105" stroke="var(--diagram-arrow)" stroke-width="1.2" marker-end="url(#microgpt-mha-arrow)"/>
+      <line x1="287" y1="102" x2="410" y2="110" stroke="var(--diagram-arrow)" stroke-width="1.2" marker-end="url(#microgpt-mha-arrow)"/>
+      <line x1="287" y1="137" x2="410" y2="117" stroke="var(--diagram-arrow)" stroke-width="1.2" marker-end="url(#microgpt-mha-arrow)"/>
+      <line x1="287" y1="182" x2="410" y2="125" stroke="var(--diagram-arrow)" stroke-width="1.2" marker-end="url(#microgpt-mha-arrow)"/>
+      <!-- Concat 결과 -->
+      <rect x="412" y="75" width="130" height="70" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="477" y="98" text-anchor="middle" fill="var(--accent-primary)" font-size="10" font-weight="bold">Concat</text>
+      <text x="477" y="116" text-anchor="middle" fill="var(--diagram-text)" font-size="11">x_attn 16차원</text>
+      <text x="477" y="133" text-anchor="middle" fill="var(--text-muted)" font-size="9">4헤드 × 4차원</text>
+      <!-- 출력 프로젝션 화살표 -->
+      <line x1="542" y1="110" x2="568" y2="110" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-mha-arrow)"/>
+      <!-- 출력 프로젝션 -->
+      <rect x="570" y="75" width="120" height="70" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="630" y="98" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">attn_proj</text>
+      <text x="630" y="116" text-anchor="middle" fill="var(--diagram-text)" font-size="11">16차원 출력</text>
+      <text x="630" y="133" text-anchor="middle" fill="var(--text-muted)" font-size="9">linear(x_attn)</text>
+    </svg>
+    <p class="diagram-caption">Multi-head Attention: n_embd=16을 4개 헤드가 4차원씩 분담 → 각각 독립적 패턴 학습 → Concat → 선형 변환</p>
+  </div>
+
   <h3 id="emma-trace">"emma" — 어텐션 동작 단계별 추적 (pos=4)</h3>
   <pre><code><span class="cmt"># 입력 토큰 시퀀스: [BOS(26), e(4), m(12), m(12), a(0)]</span>
 <span class="cmt"># pos_id:           [ 0,      1,    2,      3,      4  ]</span>
@@ -895,6 +1066,58 @@ attn_logits = [
   <div class="info-box info">
     <strong>KV Cache의 효과:</strong> 각 추론 스텝마다 이미 계산한 K, V를 다시 계산하지 않고 재사용합니다.
     O(T²) 반복 계산 → O(T) 증가분 계산. GPT-4 같은 대형 모델에서는 이 캐시가 추론 속도를 수십 배 높여줍니다.
+  </div>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 180"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:16px;">
+      <defs>
+        <marker id="microgpt-kv-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="8" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+      <!-- 타이틀 -->
+      <text x="350" y="18" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">KV 캐시 순차 누적 (추론 시, "kamon" 생성)</text>
+      <!-- Step 0 열 -->
+      <rect x="10" y="28" width="195" height="130" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="107" y="46" text-anchor="middle" fill="var(--accent-primary)" font-size="10" font-weight="bold">Step 0 (pos=0)</text>
+      <text x="107" y="63" text-anchor="middle" fill="var(--diagram-text)" font-size="10">입력: BOS(26)</text>
+      <rect x="25" y="70" width="165" height="24" rx="4"
+            fill="var(--accent-primary)" fill-opacity="0.15" stroke="var(--accent-primary)" stroke-width="1"/>
+      <text x="107" y="86" text-anchor="middle" fill="var(--accent-primary)" font-size="10" font-family="monospace">keys = [K_BOS]</text>
+      <text x="107" y="112" text-anchor="middle" fill="var(--text-muted)" font-size="9">→ Attention 범위: BOS만</text>
+      <text x="107" y="128" text-anchor="middle" fill="var(--text-muted)" font-size="9">→ 샘플링: 'k'(10)</text>
+      <text x="107" y="148" text-anchor="middle" fill="var(--text-muted)" font-size="9">미래 정보 없음 (자동 마스킹)</text>
+      <!-- Arrow 0→1 -->
+      <line x1="205" y1="92" x2="225" y2="92" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-kv-arrow)"/>
+      <!-- Step 1 열 -->
+      <rect x="227" y="28" width="210" height="130" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="332" y="46" text-anchor="middle" fill="var(--accent-secondary)" font-size="10" font-weight="bold">Step 1 (pos=1)</text>
+      <text x="332" y="63" text-anchor="middle" fill="var(--diagram-text)" font-size="10">입력: 'k'(10)</text>
+      <rect x="242" y="70" width="180" height="24" rx="4"
+            fill="var(--accent-secondary)" fill-opacity="0.15" stroke="var(--accent-secondary)" stroke-width="1"/>
+      <text x="332" y="86" text-anchor="middle" fill="var(--accent-secondary)" font-size="10" font-family="monospace">keys = [K_BOS, K_k]</text>
+      <text x="332" y="112" text-anchor="middle" fill="var(--text-muted)" font-size="9">→ Attention 범위: BOS + k</text>
+      <text x="332" y="128" text-anchor="middle" fill="var(--text-muted)" font-size="9">→ 샘플링: 'a'(0)</text>
+      <text x="332" y="148" text-anchor="middle" fill="var(--text-muted)" font-size="9">K_BOS 재계산 없이 재사용</text>
+      <!-- Arrow 1→2 -->
+      <line x1="437" y1="92" x2="457" y2="92" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-kv-arrow)"/>
+      <!-- Step 2 열 -->
+      <rect x="459" y="28" width="230" height="130" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="574" y="46" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">Step 2 (pos=2)</text>
+      <text x="574" y="63" text-anchor="middle" fill="var(--diagram-text)" font-size="10">입력: 'a'(0)</text>
+      <rect x="474" y="70" width="200" height="24" rx="4"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1"/>
+      <text x="574" y="86" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-family="monospace">keys = [K_BOS, K_k, K_a]</text>
+      <text x="574" y="112" text-anchor="middle" fill="var(--text-muted)" font-size="9">→ Attention 범위: BOS+k+a</text>
+      <text x="574" y="128" text-anchor="middle" fill="var(--text-muted)" font-size="9">→ 다음: 'm'(12)</text>
+      <text x="574" y="148" text-anchor="middle" fill="var(--text-muted)" font-size="9">K_BOS, K_k 모두 재사용</text>
+    </svg>
+    <p class="diagram-caption">KV 캐시 누적: 각 스텝마다 새 K·V만 추가 — 기존 K·V 재계산 없이 재사용. 인과적 마스킹도 자동 구현.</p>
   </div>
 
   <h3 id="residual-connection">잔차 연결 (Residual Connection) — 잊어버리지 않기</h3>
@@ -964,6 +1187,80 @@ x = [a + b <span class="kw">for</span> a, b <span class="kw">in</span> <span cla
   <h2 id="transformer-block">트랜스포머 블록</h2>
   <p>트랜스포머의 핵심 반복 단위입니다. 각 레이어는 <strong>Attention → MLP</strong> 순서로 처리합니다.</p>
   <p>입력 x → Attention(컨텍스트 수집) → + → MLP(의미 처리) → + → 출력</p>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 400"
+         style="width:100%;max-width:560px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:16px;">
+      <defs>
+        <marker id="microgpt-block-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="8" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+        <marker id="microgpt-block-arrow-dash" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="8" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-secondary)"/>
+        </marker>
+      </defs>
+      <!-- 입력 x -->
+      <rect x="185" y="10" width="120" height="40" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="245" y="35" text-anchor="middle" fill="var(--accent-primary)" font-size="13" font-weight="bold">입력 x (16차원)</text>
+      <!-- 화살표: 입력 → Pre-LN(Attn) -->
+      <line x1="245" y1="50" x2="245" y2="68" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-block-arrow)"/>
+      <!-- 잔차 분기 왼쪽 라인 (입력 → 첫 + 노드) -->
+      <line x1="195" y1="30" x2="110" y2="30" stroke="var(--accent-secondary)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <line x1="110" y1="30" x2="110" y2="215" stroke="var(--accent-secondary)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <line x1="110" y1="215" x2="175" y2="215" stroke="var(--accent-secondary)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#microgpt-block-arrow-dash)"/>
+      <!-- Pre-LN (Attn) -->
+      <rect x="185" y="70" width="120" height="40" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="245" y="87" text-anchor="middle" fill="var(--diagram-text)" font-size="11">Pre-LN</text>
+      <text x="245" y="102" text-anchor="middle" fill="var(--text-muted)" font-size="9">RMSNorm(x)</text>
+      <!-- 화살표 -->
+      <line x1="245" y1="110" x2="245" y2="128" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-block-arrow)"/>
+      <!-- Attention -->
+      <rect x="165" y="130" width="160" height="40" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="245" y="148" text-anchor="middle" fill="var(--accent-primary)" font-size="11" font-weight="bold">Multi-head Attention</text>
+      <text x="245" y="163" text-anchor="middle" fill="var(--text-muted)" font-size="9">Q·K·V → 컨텍스트 수집</text>
+      <!-- 화살표 -->
+      <line x1="245" y1="170" x2="245" y2="188" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-block-arrow)"/>
+      <!-- 첫 번째 + 잔차 -->
+      <circle cx="245" cy="210" r="18" fill="var(--bg-secondary)" stroke="var(--accent-secondary)" stroke-width="2"/>
+      <text x="245" y="216" text-anchor="middle" fill="var(--accent-secondary)" font-size="16" font-weight="bold">+</text>
+      <!-- 화살표: + → Pre-LN(MLP) -->
+      <line x1="245" y1="228" x2="245" y2="248" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-block-arrow)"/>
+      <!-- 잔차 분기 오른쪽 라인 (첫 + → MLP 잔차 +) -->
+      <line x1="263" y1="210" x2="420" y2="210" stroke="var(--accent-secondary)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <line x1="420" y1="210" x2="420" y2="355" stroke="var(--accent-secondary)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <line x1="420" y1="355" x2="310" y2="355" stroke="var(--accent-secondary)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#microgpt-block-arrow-dash)"/>
+      <!-- Pre-LN (MLP) -->
+      <rect x="185" y="250" width="120" height="40" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="245" y="267" text-anchor="middle" fill="var(--diagram-text)" font-size="11">Pre-LN</text>
+      <text x="245" y="282" text-anchor="middle" fill="var(--text-muted)" font-size="9">RMSNorm(x)</text>
+      <!-- 화살표 -->
+      <line x1="245" y1="290" x2="245" y2="308" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-block-arrow)"/>
+      <!-- MLP -->
+      <rect x="165" y="310" width="160" height="40" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="245" y="328" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">MLP (FC1→ReLU→FC2)</text>
+      <text x="245" y="343" text-anchor="middle" fill="var(--text-muted)" font-size="9">16 → 64 → 16차원</text>
+      <!-- 화살표 -->
+      <line x1="245" y1="350" x2="245" y2="368" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-block-arrow)"/>
+      <!-- 두 번째 + 잔차 -->
+      <circle cx="245" cy="370" r="18" fill="var(--bg-secondary)" stroke="var(--accent-secondary)" stroke-width="2"/>
+      <text x="245" y="376" text-anchor="middle" fill="var(--accent-secondary)" font-size="16" font-weight="bold">+</text>
+      <!-- 화살표: + → 출력 -->
+      <line x1="245" y1="388" x2="245" y2="393" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-block-arrow)"/>
+      <!-- 출력 레이블 -->
+      <text x="245" y="400" text-anchor="middle" fill="var(--accent-primary)" font-size="12" font-weight="bold">출력 x (16차원)</text>
+      <!-- 잔차 연결 레이블 -->
+      <text x="85" y="127" text-anchor="middle" fill="var(--accent-secondary)" font-size="9" font-style="italic">잔차 경로</text>
+      <text x="447" y="285" text-anchor="middle" fill="var(--accent-secondary)" font-size="9" font-style="italic">잔차 경로</text>
+    </svg>
+    <p class="diagram-caption">트랜스포머 블록: Pre-LN → Multi-head Attention → 잔차합 → Pre-LN → MLP → 잔차합. 점선은 잔차(bypass) 경로.</p>
+  </div>
 
   <h3 id="mlp">MLP — 비선형성과 4× 확장의 이유</h3>
   <pre><code><span class="cmt"># fc1: 16차원 → 64차원 (4× 확장)</span>
@@ -1170,6 +1467,51 @@ x = [a + b <span class="kw">for</span> a, b <span class="kw">in</span> <span cla
     </tbody>
   </table>
 
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 260"
+         style="width:100%;max-width:600px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:16px;">
+      <!-- 축 -->
+      <line x1="60" y1="20" x2="60" y2="210" stroke="var(--diagram-arrow)" stroke-width="1.5"/>
+      <line x1="60" y1="210" x2="570" y2="210" stroke="var(--diagram-arrow)" stroke-width="1.5"/>
+      <!-- Y축 레이블 (scale: 2.00~3.50, y=210-((loss-2.00)/1.50)*185) -->
+      <text x="42" y="54" text-anchor="end" fill="var(--diagram-text)" font-size="9">3.30</text>
+      <text x="42" y="103" text-anchor="end" fill="var(--diagram-text)" font-size="9">2.90</text>
+      <text x="42" y="140" text-anchor="end" fill="var(--diagram-text)" font-size="9">2.60</text>
+      <text x="42" y="168" text-anchor="end" fill="var(--diagram-text)" font-size="9">2.37</text>
+      <text x="28" y="116" text-anchor="middle" fill="var(--diagram-text)" font-size="9" transform="rotate(-90,28,116)">Loss</text>
+      <!-- Y축 눈금선 (데이터 포인트 기준) -->
+      <line x1="57" y1="50" x2="570" y2="50" stroke="var(--border-color)" stroke-width="0.5" stroke-dasharray="3,3"/>
+      <line x1="57" y1="99" x2="570" y2="99" stroke="var(--border-color)" stroke-width="0.5" stroke-dasharray="3,3"/>
+      <line x1="57" y1="136" x2="570" y2="136" stroke="var(--border-color)" stroke-width="0.5" stroke-dasharray="3,3"/>
+      <line x1="57" y1="164" x2="570" y2="164" stroke="var(--border-color)" stroke-width="0.5" stroke-dasharray="3,3"/>
+      <!-- X축 레이블 -->
+      <text x="60" y="225" text-anchor="middle" fill="var(--diagram-text)" font-size="9">0</text>
+      <text x="110" y="225" text-anchor="middle" fill="var(--diagram-text)" font-size="9">100</text>
+      <text x="310" y="225" text-anchor="middle" fill="var(--diagram-text)" font-size="9">500</text>
+      <text x="560" y="225" text-anchor="middle" fill="var(--diagram-text)" font-size="9">1000</text>
+      <text x="310" y="242" text-anchor="middle" fill="var(--diagram-text)" font-size="9">Step</text>
+      <!-- 랜덤 베이스라인 점선 (loss=3.30, y=50) -->
+      <line x1="60" y1="50" x2="560" y2="50" stroke="var(--text-muted)" stroke-width="1.5" stroke-dasharray="6,4"/>
+      <text x="565" y="54" text-anchor="start" fill="var(--text-muted)" font-size="8">랜덤</text>
+      <text x="565" y="65" text-anchor="start" fill="var(--text-muted)" font-size="8">3.30</text>
+      <!-- 학습 곡선 (4 포인트 연결 선) -->
+      <!-- step 0 → (x=60, y=50), step 100 → (x=110, y=99), step 500 → (x=310, y=136), step 1000 → (x=560, y=164) -->
+      <polyline points="60,50 110,99 310,136 560,164"
+                fill="none" stroke="var(--accent-primary)" stroke-width="2.5" stroke-linejoin="round"/>
+      <!-- 데이터 포인트 -->
+      <circle cx="60" cy="50" r="5" fill="var(--accent-primary)" stroke="var(--diagram-fill)" stroke-width="1.5"/>
+      <circle cx="110" cy="99" r="5" fill="var(--accent-primary)" stroke="var(--diagram-fill)" stroke-width="1.5"/>
+      <circle cx="310" cy="136" r="5" fill="var(--accent-primary)" stroke="var(--diagram-fill)" stroke-width="1.5"/>
+      <circle cx="560" cy="164" r="5" fill="var(--accent-secondary)" stroke="var(--diagram-fill)" stroke-width="1.5"/>
+      <!-- 포인트 레이블 -->
+      <text x="60" y="42" text-anchor="middle" fill="var(--accent-primary)" font-size="9">3.30</text>
+      <text x="110" y="91" text-anchor="middle" fill="var(--accent-primary)" font-size="9">~2.90</text>
+      <text x="310" y="128" text-anchor="middle" fill="var(--accent-primary)" font-size="9">~2.60</text>
+      <text x="560" y="156" text-anchor="middle" fill="var(--accent-secondary)" font-size="9">2.37</text>
+    </svg>
+    <p class="diagram-caption">손실 궤적: 1,000 스텝 학습 — 3.30(랜덤 초기화) → 2.37(학습 완료). 점선은 랜덤 베이스라인.</p>
+  </div>
+
   <p>손실 3.30→2.37, 개선폭 <strong>0.93</strong> — Perplexity 27→10.7으로
   <strong>약 2.5배</strong> 향상. 4,192개 파라미터만으로 이름의 통계적 패턴을 학습한 결과입니다.</p>
 
@@ -1368,6 +1710,69 @@ logits = <span class="fn">gpt</span>(<span class="num">10</span>, <span class="n
 <span class="cmt"># ── step 4 (pos=4) ── 'n'(13) 샘플링</span>
 <span class="cmt"># ── step 5 (pos=5) ── BOS(26)가 샘플링되면 break → "kamon" 완성</span>
 <span class="cmt"># → sample = ['k', 'a', 'm', 'o', 'n'] → "kamon"</span></code></pre>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 200"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:16px;">
+      <defs>
+        <marker id="microgpt-ar-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="8" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+        <marker id="microgpt-ar-arrow-loop" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="8" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--accent-secondary)"/>
+        </marker>
+      </defs>
+      <!-- BOS 시작 -->
+      <rect x="8" y="75" width="80" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="48" y="97" text-anchor="middle" fill="var(--accent-primary)" font-size="11" font-weight="bold">BOS</text>
+      <text x="48" y="114" text-anchor="middle" fill="var(--text-muted)" font-size="9">token=26</text>
+      <!-- 화살표 -->
+      <line x1="88" y1="100" x2="108" y2="100" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-ar-arrow)"/>
+      <!-- gpt() -->
+      <rect x="110" y="65" width="100" height="70" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="160" y="90" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">gpt()</text>
+      <text x="160" y="107" text-anchor="middle" fill="var(--diagram-text)" font-size="9">token, pos</text>
+      <text x="160" y="123" text-anchor="middle" fill="var(--text-muted)" font-size="9">keys, values</text>
+      <!-- 화살표 -->
+      <line x1="210" y1="100" x2="230" y2="100" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-ar-arrow)"/>
+      <!-- 확률 분포 -->
+      <rect x="232" y="65" width="120" height="70" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="292" y="90" text-anchor="middle" fill="var(--diagram-text)" font-size="11">확률 분포</text>
+      <text x="292" y="107" text-anchor="middle" fill="var(--text-muted)" font-size="9">softmax(logits/T)</text>
+      <text x="292" y="123" text-anchor="middle" fill="var(--text-muted)" font-size="9">T=0.5</text>
+      <!-- 화살표 -->
+      <line x1="352" y1="100" x2="372" y2="100" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-ar-arrow)"/>
+      <!-- 샘플링 -->
+      <rect x="374" y="65" width="110" height="70" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-secondary)" stroke-width="2"/>
+      <text x="429" y="90" text-anchor="middle" fill="var(--accent-secondary)" font-size="11" font-weight="bold">샘플링</text>
+      <text x="429" y="107" text-anchor="middle" fill="var(--text-muted)" font-size="9">random.choices()</text>
+      <text x="429" y="123" text-anchor="middle" fill="var(--text-muted)" font-size="9">→ 토큰 ID</text>
+      <!-- BOS 분기 화살표 (조건 분기) -->
+      <line x1="484" y1="90" x2="510" y2="68" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-ar-arrow)"/>
+      <line x1="484" y1="110" x2="510" y2="135" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#microgpt-ar-arrow)"/>
+      <!-- BOS 종료 -->
+      <rect x="512" y="50" width="120" height="40" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="572" y="68" text-anchor="middle" fill="var(--accent-primary)" font-size="10" font-weight="bold">== BOS?</text>
+      <text x="572" y="84" text-anchor="middle" fill="var(--text-muted)" font-size="9">break → 완성!</text>
+      <!-- 반복(loop) 박스 -->
+      <rect x="512" y="118" width="120" height="40" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-secondary)" stroke-width="1.5"/>
+      <text x="572" y="134" text-anchor="middle" fill="var(--accent-secondary)" font-size="10">≠ BOS</text>
+      <text x="572" y="150" text-anchor="middle" fill="var(--text-muted)" font-size="9">sample.append(ch)</text>
+      <!-- 반복 화살표 (아래로 돌아가기) -->
+      <line x1="512" y1="138" x2="160" y2="165" stroke="var(--accent-secondary)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#microgpt-ar-arrow-loop)"/>
+      <line x1="160" y1="165" x2="160" y2="137" stroke="var(--accent-secondary)" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#microgpt-ar-arrow-loop)"/>
+      <text x="345" y="180" text-anchor="middle" fill="var(--accent-secondary)" font-size="9" font-style="italic">반복 (pos+1, token=새 token_id)</text>
+    </svg>
+    <p class="diagram-caption">자기회귀 생성 루프: BOS → gpt() → softmax/temperature → 샘플링 → BOS이면 종료, 아니면 반복</p>
+  </div>
 
   <h3 id="block-size-limit">block_size=16 제한의 의미</h3>
   <pre><code><span class="kw">for</span> pos_id <span class="kw">in</span> <span class="fn">range</span>(block_size):   <span class="cmt"># 0~15, 최대 16 스텝</span>
