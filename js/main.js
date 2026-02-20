@@ -115,9 +115,7 @@ var SEARCH_INDEX = [
 
   // 📚 LLM 이론 (마지막: 필요할 때 찾아보기)
   { title: "GPT를 밑바닥부터: microgpt.py 완전 해설", url: "pages/microgpt.html", description: "Andrej Karpathy의 microgpt.py — 순수 파이썬 200줄, 저자·데이터·Autograd·아키텍처·학습·Adam·추론·LLM 비교·수치 안정성·AdamW·샘플링·PyTorch 마이그레이션·디버깅·성능 분석까지 완전 해설", keywords: "microgpt karpathy gpt 밑바닥 autograd value 역전파 토크나이저 순수파이썬 micrograd 아키텍처 attention transformer 임베딩 rmsnorm mlp kv캐시 gpt2 weight-tying 학습 adam adamw 옵티마이저 크로스엔트로피 추론 temperature top-k top-p nucleus llm 비교 nanogpt pytorch 마이그레이션 수치안정성 디버깅 성능분석 lion 옵티마이저 lr스케줄러 repetition-penalty greedy-decoding 시간복잡도" },
-  { title: "LLM 이론 기초", url: "pages/llm-theory-foundations.html", description: "LLM 확률적 생성, 정보이론, 일반화/환각의 핵심 개념", keywords: "llm theory 확률 정보이론 일반화 환각" },
-  { title: "LLM 이론 심화", url: "pages/llm-theory-advanced.html", description: "Transformer, 스케일링 법칙, In-Context Learning 이론", keywords: "llm theory transformer attention scaling icl" },
-  { title: "LLM 이론 수학 부록", url: "pages/llm-theory-math-appendix.html", description: "LLM 핵심 수식 요약: 크로스엔트로피, 퍼플렉서티, 어텐션", keywords: "llm math appendix cross entropy perplexity attention" },
+  { title: "LLM 이론 종합", url: "pages/llm-theory.html", description: "LLM 확률적 생성, 정보이론, Transformer, 스케일링 법칙, ICL 이론 종합", keywords: "llm theory 확률 정보이론 transformer attention scaling icl 일반화 환각" },
   { title: "LLM 핸드북: 개념과 구조", url: "pages/llm-handbook-concepts.html", description: "LLM 핵심 개념, 토큰/컨텍스트, 모델 구조와 생태계 지형 정리", keywords: "llm 핸드북 개념 구조 토큰 컨텍스트 생태계" },
   { title: "LLM 핸드북: 학습·정렬·추론", url: "pages/llm-handbook-training.html", description: "프리트레이닝, 정렬, 추론 최적화, RAG/도구 사용 흐름", keywords: "llm 학습 정렬 rlhf dpo 추론 rag 도구사용" },
   { title: "LLM 핸드북: 제품화·운영·안전", url: "pages/llm-handbook-ops.html", description: "서비스 배포, 비용/지연 관리, 평가/모니터링, 보안/컴플라이언스", keywords: "llm 운영 배포 모니터링 평가 보안 컴플라이언스" },
@@ -259,9 +257,7 @@ var NAV_STRUCTURE = [
   ]},
   { title: '📚 LLM 이론', pages: [
     { file: 'microgpt.html', title: 'GPT를 밑바닥부터: microgpt.py' },
-    { file: 'llm-theory-foundations.html', title: 'LLM 이론 기초' },
-    { file: 'llm-theory-advanced.html', title: 'LLM 이론 심화' },
-    { file: 'llm-theory-math-appendix.html', title: 'LLM 이론 수학 부록' },
+    { file: 'llm-theory.html', title: 'LLM 이론 종합' },
     { file: 'llm-handbook-concepts.html', title: 'LLM 핸드북: 개념과 구조' },
     { file: 'llm-handbook-training.html', title: 'LLM 핸드북: 학습·정렬·추론' },
     { file: 'llm-handbook-ops.html', title: 'LLM 핸드북: 제품화·운영·안전' },

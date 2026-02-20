@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark-kernel">
+<head>
+<!-- BEGIN: Google adsense -->
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2110881342960271" crossorigin="anonymous"></script>
+<!-- END: Google adsense -->
+<!-- BEGIN: Google adsense repair -->
+<script async src="https://fundingchoicesmessages.google.com/i/pub-2110881342960271?ers=1" nonce="laI6FT8gpRxugDJv5AGJRA"></script><script nonce="laI6FT8gpRxugDJv5AGJRA">(function() {function signalGooglefcPresent() {if (!window.frames['googlefcPresent']) {if (document.body) {const iframe = document.createElement('iframe'); iframe.style = 'width: 0; height: 0; border: none; z-index: -1000; left: -1000px; top: -1000px;'; iframe.style.display = 'none'; iframe.name = 'googlefcPresent'; document.body.appendChild(iframe);} else {setTimeout(signalGooglefcPresent, 0);}}}signalGooglefcPresent();})();</script>
+<!-- END: Google adsense repair -->
+<!-- BEGIN: Google analytics -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-1VWQF060SX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-1VWQF060SX');
+</script>
+<!-- END: Google analytics -->
+
+<!-- Flash 방지: 쿠키에서 테마 즉시 적용 -->
+<script>
+(function(){var m=document.cookie.match(/claude_theme=([^;]+)/);if(m)document.documentElement.setAttribute('data-theme',m[1]);})();
+</script>
+<meta charset="UTF-8">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="AI Vibe Coding 가이드 /with MINZKN">
+<meta property="og:title" content="LLM 이론 종합: 확률·트랜스포머·스케일링">
+<meta property="og:description" content="LLM 확률적 생성, 정보이론, Transformer, 스케일링 법칙, ICL 이론을 종합 정리합니다.">
+<meta property="og:url" content="https://minzkn.com/claude/pages/llm-theory.html">
+<meta property="og:image" content="https://minzkn.com/claude/images/og-image.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="LLM 확률적 생성, 정보이론, Transformer, 스케일링 법칙, ICL 이론을 종합 정리합니다.">
+<meta name="keywords" content="llm 이론 확률 정보이론 transformer attention scaling icl 일반화 환각">
+<meta name="author" content="MINZKN">
+<title>LLM 이론 종합: 확률·트랜스포머·스케일링 - AI Vibe Coding 가이드 /with MINZKN</title>
+<link rel="icon" type="image/svg+xml" href="../images/favicon.svg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/joungkyun/font-d2coding/d2coding.css">
+<link rel="stylesheet" href="../css/themes.css">
+<link rel="stylesheet" href="../css/style.css">
+<link rel="stylesheet" href="../css/responsive.css">
+</head>
+<body>
+<div class="page-wrapper">
+
+<!-- ===== Header ===== -->
+<header class="site-header">
+</header>
+
+<!-- ===== Side Navigation ===== -->
+<nav class="side-nav" aria-label="사이트 내비게이션">
+</nav>
+
+<!-- ===== Main Content ===== -->
+<main class="main-content">
+<div class="breadcrumb"></div>
+
+<h1 id="top">LLM 이론 종합: 확률·트랜스포머·스케일링</h1>
+<p class="page-description">LLM의 확률적 생성, 정보이론 지표, Transformer 아키텍처, 스케일링 법칙, In-Context Learning까지 핵심 이론을 하나로 정리합니다.</p>
+
+<!-- ============================================================ -->
+<!--  기초 파트                                                     -->
+<!-- ============================================================ -->
+
+<section class="content-section">
+  <h2 id="overview">개요</h2>
+  <p>LLM은 "다음 토큰의 확률"을 예측하는 모델입니다. 이 단순한 가정이 정보이론, 일반화, 환각 같은 현상으로 연결되고, Transformer 아키텍처와 스케일링 법칙이 실질적인 성능을 결정합니다. 이 페이지는 기초부터 심화까지 핵심 이론을 실무 관점에서 풀어 설명합니다.</p>
+  <div class="info-box info">
+    <strong>구성:</strong> 전반부(확률·정보이론·일반화·환각)는 기초, 후반부(Transformer·스케일링·ICL·추론)는 심화입니다. 순서대로 읽으면 자연스럽게 이해가 깊어집니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="probability">확률적 생성의 의미</h2>
+  <p>모델은 정답을 "하나"로 내지 않고, 가능한 답변의 분포를 학습합니다. 따라서 응답은 항상 확률적으로 결정됩니다.</p>
+  <ul>
+    <li><strong>온도(temperature)</strong>: 분포를 넓히거나 좁힘 — 높을수록 다양한 토큰이 선택될 확률 증가</li>
+    <li><strong>Top-k/Top-p</strong>: 후보 토큰의 범위를 제한하여 불필요한 노이즈 차단</li>
+    <li><strong>샘플링 vs 결정론</strong>: 창의성(높은 온도)과 일관성(낮은 온도)의 균형</li>
+  </ul>
+
+  <h3 id="temperature-math">온도 파라미터의 수학적 효과</h3>
+  <p>온도(T)는 softmax 함수의 분포를 조절합니다. 각 토큰 i의 선택 확률은 다음과 같이 계산됩니다:</p>
+  <pre><code><span class="cmt"># 온도가 적용된 Softmax</span>
+P(token_i) = <span class="fn">exp</span>(logit_i / T) / ∑ <span class="fn">exp</span>(logit_j / T)
+
+<span class="cmt"># T → 0 : 가장 높은 logit의 토큰만 선택 (결정론적)</span>
+<span class="cmt"># T = 1 : 원래 분포 그대로</span>
+<span class="cmt"># T → ∞ : 균등 분포 (완전 랜덤)</span></code></pre>
+
+  <p>예를 들어 3개 토큰의 logit이 [2.0, 1.0, 0.5]일 때, 온도에 따른 확률 변화는 다음과 같습니다:</p>
+  <pre><code><span class="cmt"># logits = [2.0, 1.0, 0.5]</span>
+
+<span class="cmt"># T=0.1 (매우 낮음) → 거의 결정론적</span>
+P = [<span class="num">1.000</span>, <span class="num">0.000</span>, <span class="num">0.000</span>]  <span class="cmt"># 최고 확률 토큰만 선택</span>
+
+<span class="cmt"># T=0.7 (낮음) → 안정적이되 약간의 변동</span>
+P = [<span class="num">0.757</span>, <span class="num">0.166</span>, <span class="num">0.077</span>]  <span class="cmt"># 1등 토큰에 집중</span>
+
+<span class="cmt"># T=1.0 (기본) → 원래 분포</span>
+P = [<span class="num">0.594</span>, <span class="num">0.219</span>, <span class="num">0.133</span>]  <span class="cmt"># 자연스러운 분포</span>
+
+<span class="cmt"># T=1.5 (높음) → 평탄한 분포</span>
+P = [<span class="num">0.463</span>, <span class="num">0.281</span>, <span class="num">0.218</span>]  <span class="cmt"># 2·3등도 자주 선택됨</span></code></pre>
+
+  <h3 id="top-p-sampling">Top-p (Nucleus) 샘플링</h3>
+  <p>Top-p 샘플링은 확률을 내림차순으로 정렬한 후, 누적 확률이 p에 도달할 때까지의 토큰만 후보로 남깁니다. 이렇게 하면 확률이 극히 낮은 "노이즈" 토큰을 자연스럽게 제외합니다.</p>
+  <pre><code><span class="cmt"># Top-p=0.9 예시</span>
+<span class="cmt"># 전체 토큰 확률 분포 (내림차순 정렬):</span>
+"the"    : <span class="num">0.35</span>  → 누적 <span class="num">0.35</span> ✓
+"a"      : <span class="num">0.25</span>  → 누적 <span class="num">0.60</span> ✓
+"this"   : <span class="num">0.15</span>  → 누적 <span class="num">0.75</span> ✓
+"that"   : <span class="num">0.10</span>  → 누적 <span class="num">0.85</span> ✓
+"an"     : <span class="num">0.08</span>  → 누적 <span class="num">0.93</span> ✓ <span class="cmt">← p=0.9 도달, 여기까지 포함</span>
+"my"     : <span class="num">0.04</span>  → 제외
+"some"   : <span class="num">0.02</span>  → 제외
+"..."    : <span class="num">0.01</span>  → 제외
+
+<span class="cmt"># 결과: 상위 5개 토큰 중에서만 재샘플링</span>
+<span class="cmt"># Top-k와 달리 동적으로 후보 수가 조절되는 것이 장점</span></code></pre>
+
+  <h3 id="param-guide">상황별 추천 파라미터</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>사용 사례</th>
+        <th>Temperature</th>
+        <th>Top-p</th>
+        <th>이유</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>코드 생성</td>
+        <td>0.1~0.3</td>
+        <td>0.9</td>
+        <td>문법 정확성이 최우선, 변동 최소화</td>
+      </tr>
+      <tr>
+        <td>사실 기반 Q&amp;A</td>
+        <td>0.2~0.4</td>
+        <td>0.9</td>
+        <td>정확한 정보 전달, 일관성 중시</td>
+      </tr>
+      <tr>
+        <td>비즈니스 문서 작성</td>
+        <td>0.5~0.7</td>
+        <td>0.95</td>
+        <td>자연스러움과 정확성의 균형</td>
+      </tr>
+      <tr>
+        <td>창작 글쓰기</td>
+        <td>0.8~1.0</td>
+        <td>0.95</td>
+        <td>다양한 표현과 창의적 전개</td>
+      </tr>
+      <tr>
+        <td>브레인스토밍</td>
+        <td>1.0~1.5</td>
+        <td>1.0</td>
+        <td>의외성과 참신한 아이디어 탐색</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 240"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="llm-theory-1-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="40" y="50" width="170" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="125" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">입력 토큰</text>
+
+      <rect x="270" y="50" width="170" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="355" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">확률 분포</text>
+
+      <rect x="500" y="50" width="160" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="580" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">출력 토큰</text>
+
+      <line x1="210" y1="80" x2="270" y2="80" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-1-arrow)"/>
+      <line x1="440" y1="80" x2="500" y2="80" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-1-arrow)"/>
+
+      <text x="240" y="135" text-anchor="middle" fill="var(--diagram-text)" font-size="11" opacity="0.7">LLM 모델</text>
+      <text x="470" y="135" text-anchor="middle" fill="var(--diagram-text)" font-size="11" opacity="0.7">온도/Top-p</text>
+    </svg>
+    <p class="diagram-caption">입력 → 확률 분포 → 출력의 기본 생성 흐름</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="math-basics">수학 기초: 벡터와 행렬</h2>
+  <p>LLM의 내부 동작을 이해하려면 최소한의 선형대수 직관이 필요합니다.</p>
+  <ul>
+    <li><strong>벡터</strong>: 숫자의 배열. 토큰 임베딩을 벡터로 표현합니다. 예: "고양이" → [0.2, -0.5, 1.3, ...]</li>
+    <li><strong>행렬</strong>: 벡터를 쌓은 2차원 배열. 어텐션 계산의 기본 단위입니다</li>
+    <li><strong>내적(dot product)</strong>: 두 벡터의 유사도를 측정하는 연산. Attention의 핵심</li>
+  </ul>
+  <pre><code><span class="cmt"># 내적 예시</span>
+v · w = ∑ v_i × w_i
+
+<span class="cmt"># 구체적인 예</span>
+[1, 2, 3] · [4, 5, 6] = 1×4 + 2×5 + 3×6 = <span class="num">32</span>
+
+<span class="cmt"># 의미: 두 벡터가 비슷한 방향이면 내적이 큰 양수,</span>
+<span class="cmt">#       반대 방향이면 음수, 수직이면 0에 가깝다</span></code></pre>
+
+  <h3 id="matrix-multiply">행렬 곱셈과 Attention의 연결</h3>
+  <p>Attention에서 Q(Query)와 K(Key)의 유사도를 한꺼번에 구할 때 행렬 곱셈을 사용합니다. 내적을 모든 토큰 쌍에 대해 동시에 계산하는 것입니다.</p>
+  <pre><code><span class="cmt"># 행렬 곱셈 예시: Q(2×3) × K^T(3×2) = Score(2×2)</span>
+Q = [[<span class="num">1</span>, <span class="num">0</span>, <span class="num">2</span>],    K^T = [[<span class="num">1</span>, <span class="num">0</span>],
+     [<span class="num">0</span>, <span class="num">1</span>, <span class="num">1</span>]]          [<span class="num">2</span>, <span class="num">1</span>],
+                           [<span class="num">0</span>, <span class="num">3</span>]]
+
+QK^T = [[<span class="num">1×1+0×2+2×0</span>, <span class="num">1×0+0×1+2×3</span>],   = [[<span class="num">1</span>, <span class="num">6</span>],
+        [<span class="num">0×1+1×2+1×0</span>, <span class="num">0×0+1×1+1×3</span>]]     [<span class="num">2</span>, <span class="num">4</span>]]
+
+<span class="cmt"># 결과의 각 원소 = 해당 Query와 Key의 내적(유사도)</span>
+<span class="cmt"># QK^T[0][1] = 6 → 첫 번째 Query와 두 번째 Key가 매우 유사</span></code></pre>
+
+  <h3 id="cosine-similarity">코사인 유사도</h3>
+  <p>임베딩 벡터 간의 의미적 유사도를 측정할 때 코사인 유사도를 사용합니다. 벡터의 크기에 무관하게 방향만으로 비교하므로, 단어·문장 임베딩 비교의 표준 지표입니다.</p>
+  <pre><code><span class="cmt"># 코사인 유사도</span>
+cos(A, B) = (A · B) / (|A| × |B|)
+
+<span class="cmt"># 범위: -1(정반대) ~ 0(무관) ~ 1(동일 방향)</span>
+<span class="cmt"># 예: "고양이"와 "강아지" 임베딩 → cos ≈ 0.85 (높은 유사도)</span>
+<span class="cmt"># 예: "고양이"와 "자동차" 임베딩 → cos ≈ 0.12 (낮은 유사도)</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="information-theory">정보이론 관점</h2>
+  <p>LLM의 학습과 평가는 정보이론 지표로 측정됩니다.</p>
+  <ul>
+    <li><strong>엔트로피(H)</strong>: 불확실성의 정도. 가능한 토큰이 많을수록 높아짐</li>
+    <li><strong>크로스엔트로피(H(p,q))</strong>: 모델 예측(q)과 실제 분포(p)의 차이</li>
+    <li><strong>퍼플렉서티(PPL)</strong>: 크로스엔트로피를 직관적으로 변환한 지표</li>
+  </ul>
+
+  <h3 id="entropy-intuition">엔트로피 직관: 불확실성의 척도</h3>
+  <p>엔트로피는 "결과를 예측하기 얼마나 어려운가"를 수치화합니다. 일상적인 예시로 이해해 봅시다:</p>
+  <pre><code><span class="cmt"># 공정한 동전 던지기: 2가지 결과, 각각 50%</span>
+H = -(<span class="num">0.5</span> × log₂(<span class="num">0.5</span>) + <span class="num">0.5</span> × log₂(<span class="num">0.5</span>)) = <span class="num">1.0</span> bit
+
+<span class="cmt"># 공정한 주사위: 6가지 결과, 각각 16.7%</span>
+H = -6 × (<span class="num">0.167</span> × log₂(<span class="num">0.167</span>)) ≈ <span class="num">2.58</span> bits
+
+<span class="cmt"># 편향된 동전 (앞면 90%): 거의 예측 가능</span>
+H = -(<span class="num">0.9</span> × log₂(<span class="num">0.9</span>) + <span class="num">0.1</span> × log₂(<span class="num">0.1</span>)) ≈ <span class="num">0.47</span> bits
+
+<span class="cmt"># LLM에서의 의미:</span>
+<span class="cmt"># - 엔트로피가 높은 위치 = 다음 토큰이 불확실 (여러 후보 가능)</span>
+<span class="cmt"># - 엔트로피가 낮은 위치 = 거의 확정적 ("서울의 수도는" → "한국")</span></code></pre>
+
+  <pre><code><span class="cmt"># 크로스엔트로피</span>
+H(p, q) = - ∑ p(x) log q(x)
+
+<span class="cmt"># 퍼플렉서티</span>
+PPL = exp(H(p, q))
+
+<span class="cmt"># 직관적 관계</span>
+<span class="kw">낮은</span> 크로스엔트로피 → <span class="kw">높은</span> 예측 정확도 → <span class="kw">낮은</span> 퍼플렉서티</code></pre>
+
+  <h3 id="nll-loss">학습 손실: NLL (Negative Log-Likelihood)</h3>
+  <p>LLM은 다음 토큰을 예측하는 방식으로 학습합니다. 학습 손실 함수는 크로스엔트로피와 직접 연결됩니다.</p>
+  <pre><code><span class="cmt"># NLL Loss (다음 토큰 예측의 손실 함수)</span>
+L = - ∑ <span class="kw">log</span> p(y_t | y_{&lt;t}, x)
+
+<span class="cmt"># y_t : 실제 다음 토큰</span>
+<span class="cmt"># y_{&lt;t} : 이전까지의 토큰 시퀀스</span>
+<span class="cmt"># x : 입력 컨텍스트</span>
+<span class="cmt"># 이 손실이 낮아질수록 모델의 예측이 정확해짐</span></code></pre>
+
+  <h3 id="ppl-practice">퍼플렉서티 실무 해석</h3>
+  <p>퍼플렉서티는 "모델이 매 토큰을 예측할 때 평균적으로 몇 개의 후보 사이에서 고민하는가"로 직관적으로 해석됩니다.</p>
+  <table>
+    <thead>
+      <tr>
+        <th>PPL 범위</th>
+        <th>의미</th>
+        <th>체감 품질</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1~5</td>
+        <td>거의 확정적 예측</td>
+        <td>반복적이거나 공식적인 문장 (법률 문서, 코드 보일러플레이트)</td>
+      </tr>
+      <tr>
+        <td>5~15</td>
+        <td>양호한 예측</td>
+        <td>자연스러운 문장 생성, 대부분의 실용적 용도에 충분</td>
+      </tr>
+      <tr>
+        <td>15~50</td>
+        <td>보통 수준의 불확실성</td>
+        <td>다소 부자연스러운 표현이 간헐적으로 발생</td>
+      </tr>
+      <tr>
+        <td>50+</td>
+        <td>높은 불확실성</td>
+        <td>모델이 해당 도메인/언어에 약하다는 신호</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="info-box info">
+    <strong>비교 기준:</strong> 같은 데이터셋에서 모델 A(PPL=8)와 모델 B(PPL=25)를 비교하면, A는 평균 8개 후보 중 고르는 수준이고 B는 25개 후보 중 고르는 수준입니다. A가 해당 도메인에서 훨씬 강합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="generalization">일반화와 과적합</h2>
+  <p>LLM은 학습 데이터와 다른 입력에도 답해야 합니다. 일반화가 좋으면 새로운 입력에 안정적으로 대응합니다.</p>
+  <ul>
+    <li><strong>일반화</strong>: 보지 못한 입력에 대한 성능 — LLM의 실제 가치</li>
+    <li><strong>과적합</strong>: 학습 데이터에만 강하고 새로운 입력에 취약</li>
+    <li><strong>데이터 분포</strong>: 학습 데이터가 실제 사용자 입력과 일치해야 일반화 향상</li>
+  </ul>
+
+  <h3 id="distribution-mismatch">학습·검증·배포 분포 불일치</h3>
+  <p>모델의 일반화 실패는 대부분 분포 불일치(distribution shift)에서 비롯됩니다. 학습 데이터, 검증 데이터, 실제 배포 환경의 입력이 각각 다른 특성을 가질 수 있습니다.</p>
+  <ul>
+    <li><strong>학습-검증 불일치</strong>: 검증 데이터가 학습 데이터와 너무 유사하면 과적합을 발견하지 못함</li>
+    <li><strong>검증-배포 불일치</strong>: 벤치마크에서는 우수하지만 실제 사용자 입력에서는 성능 저하</li>
+    <li><strong>시간적 불일치</strong>: 학습 이후 세계가 변화 — 최신 사건, 신기술에 대한 지식 부재</li>
+  </ul>
+
+  <h3 id="zero-shot-generalization">LLM의 제로샷 일반화</h3>
+  <p>대규모 사전학습 모델은 학습 중 명시적으로 접하지 않은 태스크에서도 놀라운 성능을 보입니다. 이것이 <strong>제로샷(zero-shot) 일반화</strong>이며, LLM의 가장 독특한 특성 중 하나입니다.</p>
+  <pre><code><span class="cmt"># 제로샷 일반화 예시</span>
+<span class="cmt"># 학습 시: "다음 토큰 예측"만 수행</span>
+<span class="cmt"># 배포 시: 아래와 같은 태스크를 별도 학습 없이 수행</span>
+
+<span class="str">"이 리뷰의 감정을 판별하세요: '정말 맛있었어요!'"</span>
+→ 긍정  <span class="cmt"># 감정 분류를 학습한 적 없지만 수행 가능</span>
+
+<span class="str">"Translate to English: 오늘 날씨가 좋습니다"</span>
+→ The weather is nice today  <span class="cmt"># 번역 태스크도 패턴으로 학습</span></code></pre>
+
+  <div class="info-box warning">
+    <strong>파인튜닝 시 데이터 다양성:</strong> 파인튜닝 데이터가 편향되면 특정 도메인에서만 강한 모델이 됩니다. 예를 들어 의료 텍스트만으로 파인튜닝하면 법률 질문에서 성능이 급락할 수 있습니다. 도메인, 스타일, 난이도, 언어를 다양하게 구성하는 것이 핵심입니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="hallucination">환각(허위 응답)의 원인</h2>
+  <ul>
+    <li><strong>확률적 생성</strong>: 낮은 확률의 토큰이 선택될 수 있음 — 그럴듯하지만 사실이 아닌 내용 생성</li>
+    <li><strong>지식 공백</strong>: 학습 데이터에 없는 정보를 패턴으로 "채우려" 시도</li>
+    <li><strong>프롬프트 불명확</strong>: 조건이 모호한 질문은 모델의 추측 범위를 넓힘</li>
+  </ul>
+
+  <h3 id="hallucination-mechanism">환각 발생 메커니즘</h3>
+  <p>환각은 모델의 확률 분포 관점에서 이해할 수 있습니다. 모델이 다음 토큰을 예측할 때, 학습 데이터에서 본 패턴을 기반으로 확률을 할당합니다. 문제는 이 확률이 "사실 여부"가 아닌 "통계적 패턴"을 반영한다는 점입니다.</p>
+  <pre><code><span class="cmt"># 환각 발생 과정 (개념적)</span>
+입력: <span class="str">"알베르트 아인슈타인이 노벨상을 받은 연도는"</span>
+
+<span class="cmt"># 모델 내부 확률 분포:</span>
+<span class="str">"1921"</span>  → P = <span class="num">0.45</span>  <span class="cmt"># 정답 (물리학상)</span>
+<span class="str">"1905"</span>  → P = <span class="num">0.25</span>  <span class="cmt"># 특수상대성이론 발표 연도 (오답이지만 관련)</span>
+<span class="str">"1915"</span>  → P = <span class="num">0.15</span>  <span class="cmt"># 일반상대성이론 발표 연도 (오답)</span>
+<span class="str">"1922"</span>  → P = <span class="num">0.10</span>  <span class="cmt"># 수상 발표/수령 연도 혼동</span>
+
+<span class="cmt"># 온도가 높으면 오답이 선택될 확률 증가</span>
+<span class="cmt"># "1905"가 선택되면 → 그럴듯하지만 사실이 아닌 환각</span></code></pre>
+
+  <h3 id="hallucination-types">환각의 주요 유형</h3>
+  <p><strong>사실적 환각(Factual Hallucination)</strong>: 존재하지 않는 사실을 만들어내는 경우입니다.</p>
+  <pre><code><span class="cmt"># 사실적 환각 사례: 존재하지 않는 논문 인용</span>
+<span class="kw">사용자</span>: <span class="str">"Transformer의 attention 효율성에 관한 논문을 추천해주세요"</span>
+
+<span class="kw">모델 응답 (환각)</span>:
+<span class="str">"Smith et al. (2023) 'Efficient Sparse Attention for</span>
+<span class="str"> Long-Range Dependencies' - Journal of Machine Learning"</span>
+
+<span class="cmt"># 문제: 저자, 제목, 저널 모두 그럴듯하지만</span>
+<span class="cmt"># 실제로 존재하지 않는 논문</span>
+<span class="cmt"># 학술 형식 패턴을 학습했기 때문에 형식은 완벽함</span></code></pre>
+
+  <p><strong>논리적 환각(Logical Hallucination)</strong>: 각 단계는 그럴듯하지만 추론 체인이 잘못된 경우입니다.</p>
+  <pre><code><span class="cmt"># 논리적 환각 사례: 잘못된 추론 체인</span>
+<span class="kw">사용자</span>: <span class="str">"서울에서 부산까지 빛의 속도로 이동하면 몇 초?"</span>
+
+<span class="kw">모델 응답 (환각)</span>:
+<span class="str">"서울-부산 거리: 약 325km</span>
+<span class="str"> 빛의 속도: 약 300,000km/s</span>
+<span class="str"> 계산: 325 / 300,000 = 약 0.001초"</span>  ✓ <span class="cmt">정답</span>
+
+<span class="kw">하지만 유사 질문에서:</span>
+<span class="str">"서울-부산 거리: 약 325km</span>
+<span class="str"> 빛의 속도: 약 30만km/s</span>
+<span class="str"> 계산: 325 × 30 = 약 9,750초"</span>  ✗ <span class="cmt">곱셈/나눗셈 혼동</span>
+
+<span class="cmt"># 원인: 토큰 단위 생성이므로 수식의 논리적 일관성을 보장하지 않음</span></code></pre>
+
+  <h3 id="hallucination-mitigation">환각 완화 전략 비교</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>전략</th>
+        <th>효과</th>
+        <th>구현 비용</th>
+        <th>제약</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>RAG (외부 지식 검색)</td>
+        <td>사실적 환각 크게 감소</td>
+        <td>중간~높음</td>
+        <td>검색 품질에 의존, 지연 시간 증가</td>
+      </tr>
+      <tr>
+        <td>낮은 온도 (0.1~0.3)</td>
+        <td>노이즈 토큰 억제</td>
+        <td>낮음</td>
+        <td>다양성 감소, 반복 위험</td>
+      </tr>
+      <tr>
+        <td>자기검증 프롬프트</td>
+        <td>논리적 환각 부분 완화</td>
+        <td>낮음</td>
+        <td>토큰 사용량 2배, 완전하지 않음</td>
+      </tr>
+      <tr>
+        <td>도구 호출 (계산기, 검색)</td>
+        <td>산술/사실 오류 제거</td>
+        <td>중간</td>
+        <td>도구 연동 필요, 호출 지연</td>
+      </tr>
+      <tr>
+        <td>다중 샘플링 (Self-Consistency)</td>
+        <td>일관된 답변 선별</td>
+        <td>높음 (N배 비용)</td>
+        <td>모든 샘플이 동일하게 틀릴 수 있음</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="hallucination-detection">환각 감지 기법</h3>
+  <ul>
+    <li><strong>자기일관성 검사</strong>: 같은 질문을 여러 번 질문하여 답변 간 일치도를 측정 — 답변이 자주 바뀌면 환각 가능성이 높음</li>
+    <li><strong>외부 검증</strong>: 모델의 주장을 검색 엔진, 데이터베이스, API로 교차 확인</li>
+    <li><strong>불확실성 표현 감지</strong>: 모델이 "아마도", "~일 수 있습니다" 같은 헤지 표현을 사용할 때 해당 부분을 집중 검증</li>
+  </ul>
+  <div class="info-box warning">
+    <strong>주의:</strong> 환각은 "버그"라기보다 확률적 생성의 자연스러운 결과입니다. 완전히 제거할 수 없으며, 여러 완화 전략을 조합하는 것이 가장 효과적입니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="uncertainty">불확실성 다루기</h2>
+  <ul>
+    <li><strong>자기검증</strong>: 모델이 스스로 근거를 재점검하도록 유도</li>
+    <li><strong>근거 제공</strong>: 출처를 명시하도록 프롬프트 설계</li>
+    <li><strong>RAG (Retrieval-Augmented Generation)</strong>: 외부 지식으로 보강하여 사실성 향상</li>
+    <li><strong>도구 호출</strong>: 계산·검색·API 호출로 정확한 정보 획득</li>
+  </ul>
+
+  <h3 id="self-verify-prompt">자기검증 프롬프트 패턴</h3>
+  <p>모델이 자신의 답변을 스스로 검증하도록 유도하는 프롬프트 기법입니다:</p>
+  <pre><code><span class="cmt"># 자기검증 프롬프트 예시</span>
+<span class="kw">System</span>: <span class="str">"답변 후 다음 형식으로 자기검증을 수행하세요:</span>
+<span class="str"> [검증] 위 답변에서 사실 확인이 필요한 부분:</span>
+<span class="str"> - 확인 필요 1: ...</span>
+<span class="str"> - 확인 필요 2: ...</span>
+<span class="str"> [확신도] 상/중/하"</span>
+
+<span class="kw">User</span>: <span class="str">"한국의 GDP 순위는?"</span>
+
+<span class="kw">Assistant</span>: <span class="str">"한국은 2024년 기준 세계 GDP 약 13위입니다.</span>
+<span class="str"> [검증]</span>
+<span class="str"> - 확인 필요 1: 정확한 순위는 측정 기관(IMF/World Bank)마다 다름</span>
+<span class="str"> - 확인 필요 2: 2024년 최신 데이터가 반영되지 않았을 수 있음</span>
+<span class="str"> [확신도] 중"</span></code></pre>
+
+  <h3 id="uncertainty-comparison">전략별 효과 비교</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>방법</th>
+        <th>효과</th>
+        <th>구현 복잡도</th>
+        <th>지연 영향</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>자기검증 프롬프트</td>
+        <td>논리적 오류 감소 (10~30%)</td>
+        <td>낮음 (프롬프트만 변경)</td>
+        <td>출력 토큰 1.5~2배</td>
+      </tr>
+      <tr>
+        <td>출처 명시 요구</td>
+        <td>허위 인용 감소</td>
+        <td>낮음</td>
+        <td>소폭 증가</td>
+      </tr>
+      <tr>
+        <td>RAG</td>
+        <td>사실 오류 대폭 감소 (50~80%)</td>
+        <td>높음 (벡터DB, 검색 파이프라인)</td>
+        <td>검색 지연 0.5~2초</td>
+      </tr>
+      <tr>
+        <td>도구 호출</td>
+        <td>산술/실시간 정보 정확</td>
+        <td>중간 (API 연동)</td>
+        <td>도구별 지연 0.1~5초</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 id="combined-strategy">복합 전략 조합</h3>
+  <p>실무에서는 단일 전략보다 여러 전략을 조합할 때 가장 효과적입니다:</p>
+  <pre><code><span class="cmt"># 복합 전략 파이프라인 예시</span>
+
+<span class="cmt"># 1단계: RAG로 관련 문서 검색</span>
+context = <span class="fn">retrieve</span>(query, top_k=<span class="num">5</span>)
+
+<span class="cmt"># 2단계: 검색 결과를 포함한 프롬프트 + 자기검증 요청</span>
+prompt = <span class="str">f"""다음 참고 자료를 바탕으로 답변하세요:
+{context}
+질문: {query}
+답변 후 [검증] 섹션에서 근거를 확인하세요."""</span>
+
+<span class="cmt"># 3단계: 수치 계산이 필요하면 도구 호출</span>
+<span class="kw">if</span> needs_calculation(response):
+    result = <span class="fn">calculator</span>(expression)
+
+<span class="cmt"># 효과: RAG(사실성) + 자기검증(논리성) + 도구(정확성)</span></code></pre>
+</section>
+
+<!-- ============================================================ -->
+<!--  심화 파트                                                     -->
+<!-- ============================================================ -->
+
+<section class="content-section">
+  <h2 id="transformer">Transformer 직관</h2>
+  <p>현대 LLM의 기반이 되는 Transformer 아키텍처의 핵심 구성요소를 살펴봅니다.</p>
+  <ul>
+    <li><strong>Self-Attention</strong>: 모든 토큰의 관계를 동시에 고려 — 순환 구조 없이 병렬 처리 가능</li>
+    <li><strong>Residual Connection + LayerNorm</strong>: 깊은 네트워크에서도 안정적인 학습을 보장</li>
+    <li><strong>Position Encoding</strong>: 토큰의 순서 정보를 벡터로 주입 (Transformer 자체는 순서를 모름)</li>
+    <li><strong>Feed-Forward Network</strong>: 각 토큰의 표현을 비선형 변환으로 풍부하게 함</li>
+  </ul>
+
+  <h3 id="multi-head">Multi-Head Attention: 여러 관점으로 보기</h3>
+  <p>단일 Attention 헤드는 하나의 관계 유형만 포착합니다. Multi-Head Attention은 여러 개의 독립적인 Attention을 병렬로 수행하여, 동시에 여러 관계를 학습합니다.</p>
+  <pre><code><span class="cmt"># Multi-Head Attention 직관</span>
+<span class="cmt"># "The cat sat on the mat"에서 "sat"을 처리할 때:</span>
+
+<span class="kw">Head 1</span> (주어 관계):  <span class="str">"sat"</span> → <span class="str">"cat"</span>에 강하게 주목   <span class="cmt"># 누가?</span>
+<span class="kw">Head 2</span> (위치 관계):  <span class="str">"sat"</span> → <span class="str">"on"</span>에 강하게 주목    <span class="cmt"># 어디?</span>
+<span class="kw">Head 3</span> (구문 관계):  <span class="str">"sat"</span> → <span class="str">"mat"</span>에 강하게 주목   <span class="cmt"># 무엇 위?</span>
+
+<span class="cmt"># 각 헤드의 결과를 연결(concatenate)한 후 선형 변환</span>
+MultiHead = <span class="fn">Concat</span>(Head_1, Head_2, ..., Head_h) × W_O
+
+<span class="cmt"># GPT-3: 96개 헤드, Claude/GPT-4: 더 많은 헤드</span>
+<span class="cmt"># 헤드가 많을수록 다양한 언어적 관계를 포착</span></code></pre>
+
+  <h3 id="why-transformer">왜 Transformer인가: RNN/LSTM과의 비교</h3>
+  <p>Transformer 이전에는 RNN(순환 신경망)과 LSTM이 주류였습니다. Transformer가 이들을 대체한 핵심 이유는 <strong>병렬 처리</strong>입니다.</p>
+  <ul>
+    <li><strong>RNN/LSTM</strong>: 토큰을 순차적으로 처리 — t번째 토큰의 결과가 나와야 t+1번째를 처리할 수 있음. 긴 시퀀스에서 학습 속도가 급격히 저하</li>
+    <li><strong>Transformer</strong>: 모든 토큰 쌍의 관계를 동시에 계산 — GPU의 병렬 처리 능력을 최대한 활용. 수천 토큰도 한 번에 처리 가능</li>
+    <li><strong>장거리 의존성</strong>: RNN은 긴 문장에서 앞부분 정보를 "잊는" 문제가 있지만, Attention은 거리에 관계없이 직접 참조 가능</li>
+  </ul>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 260"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="llm-theory-2-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="30" y="40" width="130" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="95" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="12">입력 임베딩</text>
+
+      <rect x="195" y="40" width="130" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="260" y="68" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Self-</text>
+      <text x="260" y="84" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Attention</text>
+
+      <rect x="360" y="40" width="130" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="425" y="68" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Feed-</text>
+      <text x="425" y="84" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Forward</text>
+
+      <rect x="525" y="40" width="130" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="590" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="12">출력</text>
+
+      <line x1="160" y1="70" x2="195" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-2-arrow)"/>
+      <line x1="325" y1="70" x2="360" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-2-arrow)"/>
+      <line x1="490" y1="70" x2="525" y2="70" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-2-arrow)"/>
+
+      <text x="95" y="125" text-anchor="middle" fill="var(--diagram-text)" font-size="10" opacity="0.7">+ Position</text>
+      <text x="260" y="125" text-anchor="middle" fill="var(--diagram-text)" font-size="10" opacity="0.7">+ Residual</text>
+      <text x="425" y="125" text-anchor="middle" fill="var(--diagram-text)" font-size="10" opacity="0.7">+ LayerNorm</text>
+
+      <text x="350" y="175" text-anchor="middle" fill="var(--diagram-text)" font-size="11" opacity="0.6">× N layers (반복)</text>
+    </svg>
+    <p class="diagram-caption">Transformer 블록의 기본 흐름 (임베딩 → Attention → FFN → 출력, N층 반복)</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="attention-math">Attention 수학적 직관</h2>
+  <pre><code><span class="cmt"># Scaled Dot-Product Attention</span>
+<span class="fn">Attention</span>(Q, K, V) = <span class="fn">softmax</span>(QK^T / <span class="fn">sqrt</span>(d)) × V
+
+<span class="cmt"># Q (Query)  : "내가 찾고 싶은 정보"</span>
+<span class="cmt"># K (Key)    : "내가 가진 정보의 라벨"</span>
+<span class="cmt"># V (Value)  : "실제 정보 내용"</span>
+<span class="cmt"># d          : 임베딩 차원 (스케일링용)</span>
+
+<span class="cmt"># Softmax: 점수를 0~1 사이 확률로 변환</span>
+<span class="fn">softmax</span>(z_i) = <span class="fn">exp</span>(z_i) / ∑ <span class="fn">exp</span>(z_j)</code></pre>
+  <p>Q, K, V는 각각 질의/키/값이며, 유사도가 높은 키에 더 큰 가중치를 부여합니다. 마치 도서관에서 질문(Q)과 가장 관련된 책 제목(K)을 찾고, 그 책의 내용(V)을 가져오는 것과 같습니다.</p>
+
+  <h3 id="attention-example">Attention 계산 단계별 예시</h3>
+  <div class="info-box tip">
+    <strong>실제 계산 예시:</strong> 3개 토큰("I", "love", "AI")의 Self-Attention을 5단계로 따라가 봅니다.
+  </div>
+
+  <pre><code><span class="cmt"># 1단계: 입력 임베딩 (단순화된 2차원 예시)</span>
+Q = [[<span class="num">1.0</span>, <span class="num">0.5</span>],   <span class="cmt"># "I"</span>
+     [<span class="num">0.8</span>, <span class="num">1.2</span>],   <span class="cmt"># "love"</span>
+     [<span class="num">1.5</span>, <span class="num">0.3</span>]]   <span class="cmt"># "AI"</span>
+
+K = Q  <span class="cmt"># Self-Attention에서는 Q=K=V (단순화)</span>
+V = Q
+
+<span class="cmt"># 2단계: 유사도 계산 (QK^T = 내적으로 유사도 측정)</span>
+QK^T = [[<span class="num">1.25</span>, <span class="num">1.60</span>, <span class="num">1.65</span>],   <span class="cmt"># "I"와 각 토큰의 유사도</span>
+        [<span class="num">1.60</span>, <span class="num">2.08</span>, <span class="num">1.56</span>],   <span class="cmt"># "love"와 각 토큰의 유사도</span>
+        [<span class="num">1.65</span>, <span class="num">1.56</span>, <span class="num">2.34</span>]]   <span class="cmt"># "AI"와 각 토큰의 유사도</span>
+
+<span class="cmt"># 3단계: 스케일링 (sqrt(d) = sqrt(2) ≈ 1.41)</span>
+<span class="cmt"># → 내적 값이 너무 커지면 softmax가 극단적이 됨, 이를 방지</span>
+Scaled = QK^T / <span class="num">1.41</span>
+       = [[<span class="num">0.89</span>, <span class="num">1.13</span>, <span class="num">1.17</span>],
+          [<span class="num">1.13</span>, <span class="num">1.47</span>, <span class="num">1.11</span>],
+          [<span class="num">1.17</span>, <span class="num">1.11</span>, <span class="num">1.66</span>]]
+
+<span class="cmt"># 4단계: Softmax (각 행의 합 = 1, 확률 분포로 변환)</span>
+Attention_Weights = [[<span class="num">0.31</span>, <span class="num">0.35</span>, <span class="num">0.34</span>],   <span class="cmt"># "I"가 각 토큰에 주목하는 비율</span>
+                     [<span class="num">0.30</span>, <span class="num">0.41</span>, <span class="num">0.29</span>],   <span class="cmt"># "love"가 각 토큰에 주목</span>
+                     [<span class="num">0.30</span>, <span class="num">0.28</span>, <span class="num">0.42</span>]]   <span class="cmt"># "AI"가 각 토큰에 주목</span>
+
+<span class="cmt"># 5단계: 가중합 (Attention_Weights × V)</span>
+Output = [[<span class="num">1.13</span>, <span class="num">0.63</span>],   <span class="cmt"># "I"의 새로운 표현 (주변 문맥 반영)</span>
+          [<span class="num">1.08</span>, <span class="num">0.68</span>],   <span class="cmt"># "love"의 새로운 표현</span>
+          [<span class="num">1.21</span>, <span class="num">0.57</span>]]   <span class="cmt"># "AI"의 새로운 표현</span>
+
+<span class="cmt"># 결과 해석:</span>
+<span class="cmt"># - "love"는 자기 자신(0.41)과 "I"(0.30)에 많이 주목</span>
+<span class="cmt"># - "AI"는 자기 자신(0.42)에 가장 많이 주목</span>
+<span class="cmt"># - 각 토큰의 출력은 문맥을 반영하여 풍부해짐</span></code></pre>
+</section>
+
+<section class="content-section">
+  <h2 id="scaling">스케일링 법칙</h2>
+  <p>LLM의 성능은 세 가지 축의 상호작용으로 결정됩니다.</p>
+  <ul>
+    <li><strong>모델 크기(N)</strong>: 파라미터 증가 시 성능 개선 (멱법칙적 관계)</li>
+    <li><strong>데이터(D)</strong>: 학습 데이터가 충분하지 않으면 큰 모델도 한계</li>
+    <li><strong>컴퓨트(C)</strong>: 일정 수준까지는 스케일이 성능을 주도</li>
+  </ul>
+
+  <h3 id="scaling-comparison">모델 크기별 성능 비교</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>모델 크기</th>
+        <th>파라미터 수</th>
+        <th>MMLU 정확도</th>
+        <th>학습 비용</th>
+        <th>추론 속도</th>
+        <th>적합한 용도</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Small (3B)</td>
+        <td>~3B</td>
+        <td>60-70%</td>
+        <td>$10K-50K</td>
+        <td>매우 빠름</td>
+        <td>간단한 분류, 요약</td>
+      </tr>
+      <tr>
+        <td>Medium (7B)</td>
+        <td>~7B</td>
+        <td>70-80%</td>
+        <td>$50K-200K</td>
+        <td>빠름</td>
+        <td>일반 대화, 코딩 보조</td>
+      </tr>
+      <tr>
+        <td>Large (13B)</td>
+        <td>~13B</td>
+        <td>80-85%</td>
+        <td>$200K-500K</td>
+        <td>보통</td>
+        <td>복잡한 추론, 전문 작업</td>
+      </tr>
+      <tr>
+        <td>Very Large (70B)</td>
+        <td>~70B</td>
+        <td>85-90%</td>
+        <td>$1M-5M</td>
+        <td>느림</td>
+        <td>고급 추론, 연구</td>
+      </tr>
+      <tr>
+        <td>Frontier (175B+)</td>
+        <td>175B+</td>
+        <td>90-95%</td>
+        <td>$10M+</td>
+        <td>매우 느림</td>
+        <td>최첨단 연구, 벤치마크</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box info">
+    <strong>스케일링 법칙 핵심:</strong>
+    <ul>
+      <li>모델 크기를 10배 늘리면 성능이 약 5-10% 향상</li>
+      <li>데이터가 부족하면 큰 모델도 과적합 발생</li>
+      <li>컴퓨트 예산 = 모델 크기 × 데이터 크기 × 학습 시간</li>
+      <li>최적 균형점: Chinchilla 법칙 (파라미터:토큰 ≈ 1:20)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="icl">In-Context Learning</h2>
+  <p>모델이 추가 학습(가중치 업데이트) 없이도 프롬프트 내 예시를 통해 작업을 수행하는 현상입니다.</p>
+  <ul>
+    <li><strong>Few-shot</strong>: 예시 2~5개로 학습 효과 — 별도 파인튜닝 불필요</li>
+    <li><strong>패턴 추론</strong>: 예시의 규칙을 컨텍스트에서 즉석 추론</li>
+    <li><strong>컨텍스트 길이</strong>: 더 긴 컨텍스트는 더 복잡한 패턴 학습 가능</li>
+  </ul>
+
+  <h3 id="icl-example">Few-shot 프롬프트 실전 예시</h3>
+  <p>감정 분류 태스크에서 Few-shot ICL이 어떻게 동작하는지 살펴봅시다:</p>
+  <pre><code><span class="cmt"># Few-shot 감정 분류 프롬프트</span>
+<span class="kw">System</span>: <span class="str">"리뷰의 감정을 '긍정', '부정', '중립'으로 분류하세요."</span>
+
+<span class="cmt"># 예시 1 (긍정)</span>
+<span class="kw">리뷰</span>: <span class="str">"배송도 빠르고 품질이 정말 좋아요!"</span>
+<span class="kw">감정</span>: 긍정
+
+<span class="cmt"># 예시 2 (부정)</span>
+<span class="kw">리뷰</span>: <span class="str">"일주일 만에 고장났습니다. 환불 요청합니다."</span>
+<span class="kw">감정</span>: 부정
+
+<span class="cmt"># 예시 3 (중립)</span>
+<span class="kw">리뷰</span>: <span class="str">"보통이에요. 가격 대비 적당합니다."</span>
+<span class="kw">감정</span>: 중립
+
+<span class="cmt"># 실제 질문</span>
+<span class="kw">리뷰</span>: <span class="str">"디자인은 예쁜데 기능이 좀 아쉬워요."</span>
+<span class="kw">감정</span>:
+<span class="cmt"># → 모델이 패턴을 파악하여 "중립" 또는 "부정"으로 분류</span></code></pre>
+
+  <h3 id="shot-comparison">Zero-shot vs Few-shot vs Many-shot</h3>
+  <p>제공하는 예시의 수에 따라 ICL의 성격이 달라집니다:</p>
+  <ul>
+    <li><strong>Zero-shot</strong>: 예시 없이 지시만 제공. 모델의 사전학습 지식에만 의존하며, 간단한 태스크에 적합</li>
+    <li><strong>Few-shot (2~5개)</strong>: 소수의 예시로 출력 형식과 기준을 전달. 대부분의 실무 시나리오에서 최적</li>
+    <li><strong>Many-shot (10개+)</strong>: 많은 예시로 복잡한 패턴 전달. 정확도는 높아지지만 컨텍스트를 많이 소비</li>
+  </ul>
+  <div class="info-box tip">
+    <strong>실무 팁:</strong> 예시 수를 늘릴 때 수확체감(diminishing returns)이 발생합니다. 보통 3~5개의 다양한 예시가 비용 대비 최적이며, 예시의 <em>품질과 다양성</em>이 수량보다 중요합니다.
+  </div>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 260"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="llm-theory-3-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="40" y="50" width="200" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="140" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">예시 프롬프트</text>
+
+      <rect x="290" y="50" width="200" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="390" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">패턴 추론</text>
+
+      <rect x="540" y="50" width="140" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="610" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="13">응답 생성</text>
+
+      <line x1="240" y1="80" x2="290" y2="80" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-3-arrow)"/>
+      <line x1="490" y1="80" x2="540" y2="80" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#llm-theory-3-arrow)"/>
+
+      <text x="140" y="135" text-anchor="middle" fill="var(--diagram-text)" font-size="10" opacity="0.7">입력→출력 예시 N개</text>
+      <text x="390" y="135" text-anchor="middle" fill="var(--diagram-text)" font-size="10" opacity="0.7">Attention으로 규칙 추출</text>
+      <text x="610" y="135" text-anchor="middle" fill="var(--diagram-text)" font-size="10" opacity="0.7">새 입력에 적용</text>
+    </svg>
+    <p class="diagram-caption">In-Context Learning의 흐름 (예시 → 패턴 추론 → 응답 생성)</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="reasoning">추론 이론과 한계</h2>
+  <ul>
+    <li><strong>체인 구조</strong>: 긴 추론은 단계마다 오류가 누적될 가능성이 있음</li>
+    <li><strong>샘플링 전략</strong>: 동일 질문에 여러 번 샘플링하여 다수결로 정확도 개선 (Self-Consistency)</li>
+    <li><strong>검증 루프</strong>: 자기검증/도구 검증을 결합하여 추론 신뢰도 향상</li>
+  </ul>
+
+  <h3 id="cot">Chain-of-Thought (CoT) 작동 원리</h3>
+  <p>CoT는 모델이 최종 답만 출력하는 대신, 중간 추론 과정을 단계별로 생성하도록 유도합니다. 이렇게 하면 각 단계의 출력이 다음 단계의 컨텍스트가 되어, 복잡한 문제를 작은 단위로 분해하는 효과를 얻습니다.</p>
+  <pre><code><span class="cmt"># CoT 없이 (직접 응답)</span>
+<span class="kw">Q</span>: <span class="str">"가게에 사과 23개가 있었습니다. 8개를 팔고,</span>
+<span class="str">    12개를 새로 입고했습니다. 몇 개가 남았나요?"</span>
+<span class="kw">A</span>: <span class="str">"27개"</span>
+
+<span class="cmt"># CoT 적용 (단계별 추론)</span>
+<span class="kw">Q</span>: <span class="str">"가게에 사과 23개가 있었습니다. 8개를 팔고,</span>
+<span class="str">    12개를 새로 입고했습니다. 몇 개가 남았나요?</span>
+<span class="str">    단계별로 풀어보세요."</span>
+<span class="kw">A</span>: <span class="str">"1단계: 처음 사과 수 = 23개</span>
+<span class="str">    2단계: 8개를 팔았으므로 = 23 - 8 = 15개</span>
+<span class="str">    3단계: 12개를 입고했으므로 = 15 + 12 = 27개</span>
+<span class="str">    답: 27개"</span>
+
+<span class="cmt"># 직접 응답도 맞을 수 있지만, 복잡한 문제에서는</span>
+<span class="cmt"># CoT가 정확도를 크게 높임 (특히 다단계 산술, 논리 문제)</span></code></pre>
+
+  <h3 id="reasoning-failures">추론 실패 유형</h3>
+  <p>LLM의 추론은 패턴 매칭에 기반하므로, 특정 유형의 논리적 추론에서 체계적인 한계를 보입니다:</p>
+  <ul>
+    <li><strong>다단계 산술</strong>: 3단계 이상의 연속 계산에서 오류율 급증. 중간 결과를 "기억"하지 못하고 토큰 단위로 생성하기 때문</li>
+    <li><strong>반사실적 추론</strong>: "만약 지구의 중력이 2배라면?" 같은 가정적 시나리오에서 학습 데이터의 사실과 혼동</li>
+    <li><strong>부정 논리</strong>: "~가 아닌 것은?" 같은 부정 조건이 포함된 문제에서 취약 — 긍정 패턴에 편향된 학습 때문</li>
+    <li><strong>형식적 논리</strong>: 삼단논법, 전건부정 등 엄밀한 형식 논리에서 간헐적 실패</li>
+  </ul>
+
+  <h3 id="self-consistency">Self-Consistency: 다중 샘플링 기법</h3>
+  <p>Self-Consistency는 같은 문제에 대해 여러 번 독립적으로 추론한 뒤, 가장 빈번한 답을 최종 답으로 선택하는 기법입니다.</p>
+  <pre><code><span class="cmt"># Self-Consistency 예시</span>
+<span class="cmt"># 같은 질문을 temperature=0.7로 5회 샘플링</span>
+
+<span class="kw">샘플 1</span>: ... → 답: <span class="num">27</span>
+<span class="kw">샘플 2</span>: ... → 답: <span class="num">27</span>
+<span class="kw">샘플 3</span>: ... → 답: <span class="num">25</span>  <span class="cmt"># 중간 계산 오류</span>
+<span class="kw">샘플 4</span>: ... → 답: <span class="num">27</span>
+<span class="kw">샘플 5</span>: ... → 답: <span class="num">27</span>
+
+<span class="cmt"># 다수결: 27이 4/5 → 최종 답 = 27 ✓</span>
+<span class="cmt"># 단일 샘플링보다 정확도 향상 (특히 추론 문제에서)</span>
+<span class="cmt"># 비용: N배의 API 호출 필요</span></code></pre>
+
+  <div class="info-box warning">
+    <strong>한계 인식:</strong> CoT와 Self-Consistency도 근본적 한계가 있습니다. 모든 샘플이 같은 방향으로 틀릴 수 있으며(체계적 편향), 학습 데이터에 없는 유형의 논리는 여전히 어렵습니다. 높은 신뢰성이 필요한 경우 도구 호출(계산기, 코드 실행)을 병행하세요.
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!--  통합 마무리                                                    -->
+<!-- ============================================================ -->
+
+<section class="content-section">
+  <h2 id="theory-to-practice">이론에서 실전으로</h2>
+  <p>위에서 다룬 이론들이 실무에서 어떻게 연결되는지 정리합니다.</p>
+
+  <h3 id="practice-basics">기초 이론 → 실전</h3>
+  <ul>
+    <li><strong>확률적 생성</strong> → 온도/Top-p 제어로 품질 안정화</li>
+    <li><strong>크로스엔트로피</strong> → 모델 비교 시 퍼플렉서티 활용</li>
+    <li><strong>환각</strong> → RAG/도구 호출로 사실 검증</li>
+  </ul>
+
+  <h3 id="practice-advanced">심화 이론 → 실전</h3>
+  <ul>
+    <li><strong>Attention</strong> → 긴 컨텍스트에서 중요한 정보 위치 강조 (시스템 프롬프트 설계)</li>
+    <li><strong>ICL</strong> → Few-shot 예시로 빠른 태스크 적응 (별도 파인튜닝 없이)</li>
+    <li><strong>스케일링</strong> → 비용 대비 성능 목표 설정 (모델 선택 기준)</li>
+  </ul>
+
+  <div class="info-box info">
+    <strong>실전 연결:</strong> 이론 이해는 프롬프트 설계, 모델 선택, 평가 기준 설정으로 직접 이어집니다. 이론은 모델 선택과 프롬프트 전략의 근거가 됩니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="case-study">케이스 스터디</h2>
+
+  <h3 id="case-study-summary">사례 1: 요약 품질 개선 — 온도 조절</h3>
+  <ol>
+    <li>퍼플렉서티가 낮은 모델을 우선 후보로 선정</li>
+    <li>온도 값을 낮추어 일관성을 강화</li>
+    <li>RAG로 근거 문장을 함께 제공</li>
+  </ol>
+  <pre><code><span class="cmt"># 온도 조절 전/후 요약 품질 비교</span>
+<span class="kw">원문</span>: <span class="str">"2024년 한국의 반도체 수출이 전년 대비 30% 증가하며</span>
+<span class="str">       무역수지 흑자 전환에 기여했다."</span>
+
+<span class="cmt"># Temperature=1.0 (높음) — 불안정한 변동</span>
+<span class="kw">시도 1</span>: <span class="str">"한국 반도체 수출이 폭발적으로 성장했다"</span>  <span class="cmt"># "폭발적" 과장</span>
+<span class="kw">시도 2</span>: <span class="str">"반도체 산업이 경제 회복을 이끌었다"</span>     <span class="cmt"># 원문에 없는 내용</span>
+<span class="kw">시도 3</span>: <span class="str">"수출 30% 증가로 무역수지가 개선되었다"</span>  <span class="cmt"># 적절</span>
+
+<span class="cmt"># Temperature=0.3 (낮음) — 안정적인 출력</span>
+<span class="kw">시도 1</span>: <span class="str">"반도체 수출이 30% 증가하며 무역 흑자에 기여"</span>  ✓
+<span class="kw">시도 2</span>: <span class="str">"반도체 수출 30% 증가, 무역수지 흑자 전환"</span>    ✓
+<span class="kw">시도 3</span>: <span class="str">"반도체 수출이 30% 늘어 무역 흑자를 달성"</span>    ✓</code></pre>
+  <div class="info-box tip">
+    <strong>결과:</strong> 온도를 0.3으로 낮추면 환각 빈도가 줄고 요약의 일관성이 크게 향상됩니다. 사실 기반 요약에서는 낮은 온도가 거의 항상 유리합니다.
+  </div>
+
+  <h3 id="case-study-icl">사례 2: ICL 성능 개선 — Few-shot 수 조절</h3>
+  <ol>
+    <li>입력 예시를 2개에서 4개로 늘려 패턴 노출 강화</li>
+    <li>예시 형식을 출력 형식과 동일하게 맞춤</li>
+    <li>컨텍스트 길이 한계 내에서 불필요한 텍스트 제거</li>
+  </ol>
+  <table>
+    <thead>
+      <tr>
+        <th>예시 수</th>
+        <th>형식 일관성</th>
+        <th>분류 정확도</th>
+        <th>비고</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>0개 (Zero-shot)</td>
+        <td>낮음</td>
+        <td>~65%</td>
+        <td>출력 형식이 불안정</td>
+      </tr>
+      <tr>
+        <td>1개</td>
+        <td>중간</td>
+        <td>~75%</td>
+        <td>형식은 학습하지만 편향 위험</td>
+      </tr>
+      <tr>
+        <td>3개</td>
+        <td>높음</td>
+        <td>~85%</td>
+        <td>비용 대비 최적의 균형점</td>
+      </tr>
+      <tr>
+        <td>5개</td>
+        <td>높음</td>
+        <td>~88%</td>
+        <td>수확체감 시작</td>
+      </tr>
+      <tr>
+        <td>10개+</td>
+        <td>매우 높음</td>
+        <td>~90%</td>
+        <td>컨텍스트 소비 대비 향상 미미</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="info-box tip">
+    <strong>결과:</strong> 3~5개의 다양한 예시가 가장 효율적입니다. 10개 이상은 정확도 향상이 미미한 반면 컨텍스트 비용이 크게 증가합니다.
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="references">참고자료</h2>
+  <ul>
+    <li><a href="llm-handbook-concepts.html">LLM 핸드북: 개념과 구조</a></li>
+    <li><a href="llm-handbook-training.html">LLM 핸드북: 학습·정렬·추론</a></li>
+    <li><a href="prompt-basics.html">프롬프트 기본</a></li>
+    <li><a href="microgpt.html">GPT를 밑바닥부터: microgpt.py</a></li>
+  </ul>
+</section>
+
+<!-- Page Navigation (이전/다음) -->
+<div class="page-nav"></div>
+
+</main>
+
+<aside class="inline-toc">
+  <div class="toc-title">목차</div>
+  <div class="toc-nav"></div>
+</aside>
+
+<!-- ===== Footer ===== -->
+<footer class="site-footer">
+</footer>
+
+</div>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
