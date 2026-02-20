@@ -8,8 +8,8 @@ AI Vibe Coding 가이드에 대한 한국어 정적 문서 사이트. 빌드 도
 
 - 정적 HTML 파일: `index.html` + `pages/*.html`
 - 3개 CSS, 1개 JS
-- 8개 카테고리, 62개 문서 페이지 (`pages/*.html`)
-- 전체 63개 페이지 (`index.html` 포함)
+- 8개 카테고리, 63개 문서 페이지 (`pages/*.html`)
+- 전체 64개 페이지 (`index.html` 포함)
 - 5개 테마 지원
 
 ## Development

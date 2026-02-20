@@ -248,7 +248,7 @@
     NVIDIA GPU에서 병렬 연산을 수행하는 플랫폼. 로컬 LLM을 실행할 때 CUDA 지원 GPU가 있으면 CPU 대비 수십 배 빠른 추론이 가능합니다.
     Ollama, LM Studio, LocalAI 모두 CUDA를 지원합니다.
   </p>
-  <p><strong>관련 페이지:</strong> <a href="ollama-advanced.html#gpu-acceleration">GPU 가속</a>, <a href="ollama-intro.html">Ollama 소개</a></p>
+  <p><strong>관련 페이지:</strong> <a href="ollama-advanced.html#opt-gpu">GPU 가속</a>, <a href="ollama-intro.html">Ollama 소개</a></p>
 
   <h3 id="cursor">Cursor</h3>
   <p>
@@ -370,11 +370,11 @@
     Ollama, LM Studio, llama.cpp, GPT4All 등 대부분의 로컬 LLM 런타임이 GGUF를 표준 포맷으로 채택하고 있습니다.
   </p>
   <p><strong>관련 페이지:</strong>
-    <a href="ollama-intro.html#model-format">GGUF 상세 가이드</a>,
-    <a href="ollama-intro.html#gguf-structure">파일 내부 구조</a>,
-    <a href="ollama-intro.html#gguf-block-quantization">양자화 동작 원리</a>,
-    <a href="ollama-intro.html#gguf-gpu-offload">GPU 오프로딩</a>,
-    <a href="ollama-advanced.html#quantization">양자화 가이드</a>
+    <a href="gguf-format.html#model-format">GGUF 상세 가이드</a>,
+    <a href="gguf-format.html#gguf-structure">파일 내부 구조</a>,
+    <a href="gguf-format.html#gguf-block-quantization">양자화 동작 원리</a>,
+    <a href="gguf-format.html#gguf-gpu-offload">GPU 오프로딩</a>,
+    <a href="ollama-models.html#quantization">양자화 가이드</a>
   </p>
 
   <h3 id="git">Git (깃)</h3>
@@ -403,7 +403,7 @@
     병렬 연산에 최적화된 프로세서. LLM 추론과 학습에서 CPU 대비 수십~수백 배 빠릅니다.
     NVIDIA GPU(CUDA)가 가장 널리 사용되며, Apple Silicon(Metal), AMD(ROCm)도 지원됩니다.
   </p>
-  <p><strong>관련 페이지:</strong> <a href="ollama-advanced.html#gpu-acceleration">GPU 가속</a>, <a href="dev-environment.html#hardware">하드웨어 가이드</a></p>
+  <p><strong>관련 페이지:</strong> <a href="ollama-advanced.html#opt-gpu">GPU 가속</a>, <a href="ollama-installation.html#gpu-support">하드웨어 가이드</a></p>
 </section>
 
 <!-- ========== H ========== -->
@@ -562,7 +562,7 @@
     Apple의 GPU 가속 프레임워크. M1/M2/M3 칩을 탑재한 Mac에서 Ollama, LM Studio가 Metal을 사용하여 로컬 LLM을 빠르게 실행합니다.
     CUDA의 Apple Silicon 버전이라고 볼 수 있습니다.
   </p>
-  <p><strong>관련 페이지:</strong> <a href="ollama-advanced.html#gpu-acceleration">GPU 가속</a>, <a href="ollama-intro.html">Ollama 소개</a></p>
+  <p><strong>관련 페이지:</strong> <a href="ollama-advanced.html#opt-gpu">GPU 가속</a>, <a href="ollama-intro.html">Ollama 소개</a></p>
 
   <h3 id="mistral">Mistral (미스트랄)</h3>
   <p>
@@ -622,7 +622,7 @@
     GPU 제조사. CUDA를 통해 AI/ML 가속에서 압도적인 점유율을 가지고 있습니다.
     RTX 4090, A100, H100 등이 LLM 학습과 추론에 널리 사용됩니다.
   </p>
-  <p><strong>관련 페이지:</strong> <a href="dev-environment.html#hardware">하드웨어 가이드</a></p>
+  <p><strong>관련 페이지:</strong> <a href="ollama-installation.html#gpu-support">하드웨어 가이드</a></p>
 </section>
 
 <!-- ========== O ========== -->
@@ -718,7 +718,7 @@
     모델의 가중치를 32비트에서 8비트, 4비트로 줄여 메모리와 연산량을 감소시키는 기법. GGUF 포맷은 양자화된 모델을 효율적으로 저장합니다.
     4비트 양자화로 70B 모델을 40GB → 10GB로 줄일 수 있습니다.
   </p>
-  <p><strong>관련 페이지:</strong> <a href="ollama-advanced.html#quantization">양자화 가이드</a>, <a href="ollama-intro.html">Ollama 소개</a></p>
+  <p><strong>관련 페이지:</strong> <a href="ollama-models.html#quantization">양자화 가이드</a>, <a href="ollama-intro.html">Ollama 소개</a></p>
 
   <h3 id="query">Query (쿼리)</h3>
   <p>
@@ -770,7 +770,7 @@
     AMD GPU를 위한 오픈소스 컴퓨팅 플랫폼. CUDA의 AMD 버전이며, Ollama, LM Studio가 AMD GPU를 지원하기 위해 ROCm을 사용합니다.
     Linux에서만 공식 지원됩니다.
   </p>
-  <p><strong>관련 페이지:</strong> <a href="ollama-advanced.html#gpu-acceleration">GPU 가속</a></p>
+  <p><strong>관련 페이지:</strong> <a href="ollama-advanced.html#opt-gpu">GPU 가속</a></p>
 </section>
 
 <!-- ========== S ========== -->
@@ -934,7 +934,7 @@
     GPU 메모리. 로컬 LLM을 실행할 때 모델 크기만큼의 VRAM이 필요합니다. 7B 모델은 약 8GB, 13B 모델은 약 16GB, 70B 모델은 약 80GB VRAM을 요구합니다.
     양자화(Quantization)로 요구 메모리를 줄일 수 있습니다.
   </p>
-  <p><strong>관련 페이지:</strong> <a href="dev-environment.html#hardware">하드웨어 가이드</a>, <a href="ollama-advanced.html#quantization">양자화 가이드</a></p>
+  <p><strong>관련 페이지:</strong> <a href="ollama-installation.html#gpu-support">하드웨어 가이드</a>, <a href="ollama-models.html#quantization">양자화 가이드</a></p>
 
   <h3 id="vscode">VS Code (Visual Studio Code)</h3>
   <p>
@@ -984,7 +984,7 @@
     Intel과 AMD CPU 아키텍처. 대부분의 데스크톱과 서버는 x86-64(64비트 x86)를 사용합니다.
     Ollama는 x86-64 CPU에서 AVX2 명령어를 활용하여 추론 속도를 높입니다.
   </p>
-  <p><strong>관련 페이지:</strong> <a href="dev-environment.html#hardware">하드웨어 가이드</a></p>
+  <p><strong>관련 페이지:</strong> <a href="ollama-installation.html#gpu-support">하드웨어 가이드</a></p>
 
   <h3 id="xml">XML (eXtensible Markup Language)</h3>
   <p>

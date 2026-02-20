@@ -49,6 +49,7 @@ var SEARCH_INDEX = [
   // 🏠 Ollama & 로컬 LLM
   { title: "Ollama 로컬 시작", url: "pages/quickstart-local.html", description: "Ollama로 로컬 실행 워크플로우 시작하기", keywords: "ollama local 로컬 빠른시작" },
   { title: "Ollama란?", url: "pages/ollama-intro.html", description: "Ollama 개념, 장점, 사용 사례", keywords: "ollama 소개 개념 로컬llm" },
+  { title: "GGUF 모델 포맷", url: "pages/gguf-format.html", description: "GGUF 파일 구조, 양자화 기법, 변환 워크플로, GPU 오프로딩, 벤치마크 상세 가이드", keywords: "gguf 모델 포맷 양자화 quantization llama.cpp mmap gpu offload 변환 safetensors" },
   { title: "Ollama 설치", url: "pages/ollama-installation.html", description: "Windows, macOS, Linux에서 Ollama 설치", keywords: "ollama installation 설치 윈도우 맥 리눅스" },
   { title: "Ollama 모델 가이드", url: "pages/ollama-models.html", description: "Llama, Mistral, CodeLlama 등 모델 설치 및 비교", keywords: "ollama models llama mistral codellama 모델" },
   { title: "Ollama 사용법", url: "pages/ollama-usage.html", description: "Ollama CLI 명령어, API, 모델 관리", keywords: "ollama usage cli api 사용법" },
@@ -191,6 +192,7 @@ var NAV_STRUCTURE = [
   { title: '🏠 Ollama & 로컬 LLM', pages: [
     { file: 'quickstart-local.html', title: 'Ollama 로컬 시작' },
     { file: 'ollama-intro.html', title: 'Ollama란?' },
+    { file: 'gguf-format.html', title: 'GGUF 모델 포맷' },
     { file: 'ollama-installation.html', title: 'Ollama 설치' },
     { file: 'ollama-models.html', title: 'Ollama 모델 가이드' },
     { file: 'ollama-usage.html', title: 'Ollama 사용법' },
