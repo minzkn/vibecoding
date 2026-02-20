@@ -317,6 +317,79 @@ QK^T = [[<span class="num">1×1+0×2+2×0</span>, <span class="num">1×0+0×1+2�
     <p class="diagram-caption">행렬 곱셈으로 토큰 간 유사도(어텐션 스코어) 계산</p>
   </div>
 
+  <h3 id="matrix-transform">행렬의 기하학적 해석: 공간 변환</h3>
+  <p>행렬은 벡터 공간을 변환하는 도구로 이해할 수 있습니다. LLM에서 가중치 행렬은 입력 벡터를 새로운 공간으로 변환하여 "의미 있는 특성"을 추출합니다.</p>
+  <pre><code><span class="cmt"># 2D 회전 행렬 (반시계 방향 45°)</span>
+<span class="fn">Rotation</span>(45°) = [
+  [ cos(45°), -sin(45°) ],
+  [ sin(45°),  cos(45°) ]
+] ≈ [
+  [ <span class="num">0.707</span>, <span class="num">-0.707</span> ],
+  [ <span class="num">0.707</span>,  <span class="num">0.707</span> ]
+]
+
+<span class="cmt"># 벡터 [1, 0] (x축 단위 벡터)에 적용</span>
+[<span class="num">0.707</span>, <span class="num">-0.707</span>] × [<span class="num">1</span>] + [<span class="num">0.707</span>, <span class="num">0.707</span>] × [<span class="num">0</span>]
+= [<span class="num">0.707</span>, <span class="num">0.707</span>]
+
+<span class="cmt"># 결과: 45° 방향으로 회전됨</span>
+
+<span class="cmt"># 신호망에서의 변환 의미:</span>
+<span class="cmt"># - 회전: 특성 간 관계 재배열</span>
+<span class="cmt"># - 스케일링: 특성 강조/약화</span>
+<span class="cmt"># - 전치: 특성 축 변환</span></code></pre>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 320"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="math-7-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <text x="350" y="30" text-anchor="middle" fill="var(--diagram-text)" font-size="13" font-weight="bold">행렬 곱셈의 기하학적 의미: 공간 변환</text>
+
+      <line x1="80" y1="200" x2="280" y2="200" stroke="var(--border-color)" stroke-width="1"/>
+      <line x1="180" y1="100" x2="180" y2="250" stroke="var(--border-color)" stroke-width="1"/>
+
+      <line x1="180" y1="200" x2="250" y2="150" stroke="var(--accent-primary)" stroke-width="3"
+            marker-end="url(#math-7-arrow)"/>
+      <text x="265" y="145" text-anchor="middle" fill="var(--accent-primary)" font-size="11">v₁ = [1,0]</text>
+
+      <line x1="180" y1="200" x2="220" y2="220" stroke="var(--diagram-accent)" stroke-width="3"
+            marker-end="url(#math-7-arrow)"/>
+      <text x="235" y="235" text-anchor="middle" fill="var(--diagram-accent)" font-size="11">v₂ = [0,1]</text>
+
+      <rect x="340" y="160" width="80" height="40" rx="4"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="1.5"/>
+      <text x="380" y="185" text-anchor="middle" fill="var(--diagram-text)" font-size="11">W</text>
+
+      <line x1="420" y1="180" x2="480" y2="180" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#math-7-arrow)"/>
+
+      <line x1="520" y1="200" x2="620" y2="200" stroke="var(--border-color)" stroke-width="1"/>
+      <line x1="570" y1="120" x2="570" y2="250" stroke="var(--border-color)" stroke-width="1"/>
+
+      <line x1="570" y1="200" x2="620" y2="150" stroke="var(--accent-primary)" stroke-width="3"
+            marker-end="url(#math-7-arrow)"/>
+      <text x="635" y="145" text-anchor="middle" fill="var(--accent-primary)" font-size="11">W·v₁</text>
+
+      <line x1="570" y1="200" x2="620" y2="220" stroke="var(--diagram-accent)" stroke-width="3"
+            marker-end="url(#math-7-arrow)"/>
+      <text x="635" y="235" text-anchor="middle" fill="var(--diagram-accent)" font-size="11">W·v₂</text>
+
+      <text x="350" y="280" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        입력 벡터 공간 (왼쪽) → 변환된 특성 공간 (오른쪽)
+      </text>
+      <text x="350" y="295" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        W(가중치 행렬)가 벡터의 "의미"를 재해석합니다
+      </text>
+    </svg>
+    <p class="diagram-caption">행렬 곱셈은 벡터 공간의 변환을 의미 (회전, 스케일링, 전단 등)</p>
+  </div>
+
   <h3 id="cosine-similarity">코사인 유사도</h3>
   <p>임베딩 벡터 간의 의미적 유사도를 측정할 때 <strong>코사인 유사도</strong>를 사용합니다. 벡터의 크기에 무관하게 방향만으로 비교하므로, 단어·문장 임베딩 비교의 표준 지표입니다.</p>
   <pre><code><span class="cmt"># 코사인 유사도 공식</span>
@@ -371,6 +444,116 @@ cos(θ) = (A · B) / (|A| × |B|)
       <text x="670" y="125" text-anchor="middle" fill="var(--text-secondary)" font-size="10">무관함</text>
     </svg>
     <p class="diagram-caption">코사인 유사도로 의미적 유사도 측정 (높은 cos = 비슷한 방향)</p>
+  </div>
+
+  <h3 id="activation-functions">활성화 함수: 비선형성의 핵심</h3>
+  <p>활성화 함수는 신경망에 <strong>비선형성(non-linearity)</strong>을 도입합니다. 선형 변환만으로는 복잡한 패턴을 학습할 수 없고, 활성화 함수를 통해 복잡한 결정 경계를 만들 수 있습니다.</p>
+
+  <h4 id="relu">ReLU (Rectified Linear Unit)</h4>
+  <p>현대 딥러닝에서 가장 널리 사용되는 활성화 함수입니다. 간단하면서도 효과적이며, gradient vanishing 문제를 완화합니다.</p>
+  <pre><code><span class="cmt"># ReLU 함수 정의</span>
+<span class="fn">ReLU</span>(x) = <span class="fn">max</span>(0, x)
+
+<span class="cmt"># 미분 (Gradient)</span>
+d/dx <span class="fn">ReLU</span>(x) = 
+  <span class="num">1</span>  <span class="cmt">if x > 0</span>
+  <span class="num">0</span>  <span class="cmt">if x ≤ 0</span>
+
+<span class="cmt"># 계산 예시</span>
+<span class="fn">ReLU</span>(<span class="num">3.5</span>) = <span class="num">3.5</span>    <span class="cmt"># 양수 → 그대로 통과</span>
+<span class="fn">ReLU</span>(<span class="num">-1.2</span>) = <span class="num">0</span>      <span class="cmt"># 음수 → 0</span>
+<span class="fn">ReLU</span>(<span class="num">0</span>)   = <span class="num">0</span>      <span class="cmt"># 영 → 0</span></code></pre>
+
+  <h4 id="sigmoid">Sigmoid: 확률로의 변환</h4>
+  <p>Sigmoid는 임의의 실수를 0~1 사이의 값으로 압축합니다. 이特性으로 인해 확률 해석이 필요할 때 유용합니다.</p>
+  <pre><code><span class="cmt"># Sigmoid 함수</span>
+σ(x) = <span class="num">1</span> / (<span class="num">1</span> + <span class="fn">exp</span>(-x))
+
+<span class="cmt"># 미분</span>
+d/dx σ(x) = σ(x) × (<span class="num">1</span> - σ(x))
+
+<span class="cmt"># 계산 예시</span>
+σ(<span class="num">0</span>)   = <span class="num">0.5</span>         <span class="cmt"># 중앙에서 0.5</span>
+σ(<span class="num">2</span>)   ≈ <span class="num">0.88</span>        <span class="cmt"># 양수 → 1에 가까움</span>
+σ(<span class="num">-2</span>)  ≈ <span class="num">0.12</span>        <span class="cmt"># 음수 → 0에 가까움</span>
+
+<span class="cmt"># 특성:</span>
+<span class="cmt"># - 출력 ∈ (0, 1) → 확률로 해석 가능</span>
+<span class="cmt"># - 미분값이 0~0.25 사이 (최대 0.25)</span>
+<span class="cmt"># - 깊은 네트워크에서 gradient vanishing 발생</span></code></pre>
+
+  <h4 id="tanh">Tanh: -1에서 1 사이</h4>
+  <p>Tanh는 Sigmoid와 비슷하지만 출력 범위가 -1에서 1 사이입니다. 평균이 0에 가까워 학습이 더 효율적입니다.</p>
+  <pre><code><span class="cmt"># Tanh 함수</span>
+<span class="fn">tanh</span>(x) = (<span class="fn">exp</span>(x) - <span class="fn">exp</span>(-x)) / (<span class="fn">exp</span>(x) + <span class="fn">exp</span>(-x))
+
+<span class="cmt"># 미분</span>
+d/dx <span class="fn">tanh</span>(x) = <span class="num">1</span> - <span class="fn">tanh</span>(x)²
+
+<span class="cmt"># 계산 예시</span>
+<span class="fn">tanh</span>(<span class="num">0</span>)   = <span class="num">0</span>
+<span class="fn">tanh</span>(<span class="num">1</span>)   ≈ <span class="num">0.76</span>
+<span class="fn">tanh</span>(<span class="num">-1</span>)  ≈ <span class="num">-0.76</span>
+
+<span class="cmt"># Sigmoid vs Tanh 비교:</span>
+<span class="cmt"># Sigmoid: 출력 (0, 1) - 양수만 출력</span>
+<span class="cmt"># Tanh: 출력 (-1, 1) - 양수/음수 모두 출력 (평균 0)</span></code></pre>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 300"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="math-8-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <text x="230" y="25" text-anchor="middle" fill="var(--diagram-text)" font-size="13" font-weight="bold">활성화 함수 비교</text>
+      <text x="230" y="45" text-anchor="middle" fill="var(--text-secondary)" font-size="10">x축: 입력값, y축: 출력값</text>
+
+      <line x1="30" y1="150" x2="430" y2="150" stroke="var(--border-color)" stroke-width="1"/>
+      <line x1="230" y1="50" x2="230" y2="250" stroke="var(--border-color)" stroke-width="1"/>
+
+      <path d="M 30,150 L 230,150 L 430,50" fill="none" stroke="var(--accent-primary)" stroke-width="2.5"/>
+      <text x="330" y="90" text-anchor="middle" fill="var(--accent-primary)" font-size="11">ReLU</text>
+
+      <path d="M 30,230 Q 150,230 230,150 Q 310,70 430,70" fill="none" stroke="var(--diagram-arrow)" stroke-width="2.5"/>
+      <text x="380" y="60" text-anchor="middle" fill="var(--diagram-arrow)" font-size="11">Sigmoid</text>
+
+      <path d="M 30,70 Q 130,70 230,150 Q 330,230 430,230" fill="none" stroke="var(--diagram-accent)" stroke-width="2.5"/>
+      <text x="350" y="260" text-anchor="middle" fill="var(--diagram-accent)" font-size="11">Tanh</text>
+
+      <text x="230" y="270" text-anchor="middle" fill="var(--text-secondary)" font-size="10">0</text>
+      <text x="30" y="160" text-anchor="middle" fill="var(--text-secondary)" font-size="10">-3</text>
+      <text x="430" y="160" text-anchor="middle" fill="var(--text-secondary)" font-size="10">+3</text>
+
+      <rect x="470" y="60" width="200" height="180" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="570" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">특성 비교</text>
+
+      <text x="480" y="110" text-anchor="start" fill="var(--accent-primary)" font-size="10">• ReLU: max(0,x)</text>
+      <text x="480" y="125" text-anchor="start" fill="var(--text-secondary)" font-size="9">  출력: [0, ∞)</text>
+      <text x="480" y="138" text-anchor="start" fill="var(--text-secondary)" font-size="9">  미분: 0 또는 1</text>
+
+      <text x="480" y="160" text-anchor="start" fill="var(--diagram-arrow)" font-size="10">• Sigmoid: 1/(1+e^-x)</text>
+      <text x="480" y="175" text-anchor="start" fill="var(--text-secondary)" font-size="9">  출력: (0, 1)</text>
+      <text x="480" y="188" text-anchor="start" fill="var(--text-secondary)" font-size="9">  미분: 0~0.25</text>
+
+      <text x="480" y="210" text-anchor="start" fill="var(--diagram-accent)" font-size="10">• Tanh: (e^x-e^-x)/(e^x+e^-x)</text>
+      <text x="480" y="225" text-anchor="start" fill="var(--text-secondary)" font-size="9">  출력: (-1, 1)</text>
+      <text x="480" y="238" text-anchor="start" fill="var(--text-secondary)" font-size="9">  미분: 0~1</text>
+    </svg>
+    <p class="diagram-caption">주요 활성화 함수의 그래프와 특성 비교</p>
+  </div>
+
+  <div class="info-box info">
+    <strong>LLM에서의 활성화 함수:</strong>
+    <ul>
+      <li><strong>ReLU 또는 GELU</strong>: 은닉층에서 주로 사용 (GELU는 BERT, GPT 등 최신 모델에서 표준)</li>
+      <li><strong>Softmax</strong>: 마지막 층에서 다음 토큰 확률 계산</li>
+      <li><strong>Sigmoid</strong>: 이진 분류나 Gates (LSTM 등)에서 사용</li>
+    </ul>
   </div>
 </section>
 
@@ -526,6 +709,95 @@ f'(x) = lim[h→0] (f(x+h) - f(x)) / h
       <text x="350" y="230" text-anchor="middle" fill="var(--text-secondary)" font-size="10">← 손실 → 은닉 → 입력 (기울기 순전파)</text>
     </svg>
     <p class="diagram-caption">역전파: 손실로부터 입력 방향으로 기울기 계산</p>
+  </div>
+
+  <h3 id="gradient-problems">Gradient Vanishing & Exploding: 학습의 병목</h3>
+  <p>매우 깊은 신경망(LLM은 수십~수백 층)에서 학습할 때 발생하는 핵심 문제를 살펴봅니다.</p>
+
+  <h4 id="vanishing-gradient">Gradient Vanishing (기울기 소실)</h4>
+  <p>역전파 시 층을 거遡しながら gradient가 지수적으로 감소합니다. 앞쪽 층의 가중치가 거의 업데이트되지 않아 학습이 진행되지 않습니다.</p>
+  <pre><code><span class="cmt"># 문제 원인: Sigmoid/Tanh의 미분값이 1보다 작음</span>
+
+<span class="cmt"># Sigmoid 미분의 최대값</span>
+d/dx σ(x) = σ(x)(1 - σ(x)) ≤ <span class="num">0.25</span>
+
+<span class="cmt"># 100층의神经网络에서 역전파 시:</span>
+<span class="cmt"># gradient_100 = 0.25 × 0.25 × ... × 0.25 (100번)</span>
+<span class="cmt">#           ≈ 0.25^100 ≈ 10^-60</span>
+<span class="cmt"># → 앞쪽 층의 gradient가 거의 0!</span>
+
+<span class="cmt"># 해결 방법:</span>
+<span class="cmt"># 1) ReLU 사용 (gradient = 0 또는 1)</span>
+<span class="cmt"># 2) Residual Connection (덜 거침)</span>
+<span class="cmt"># 3) 적절한 가중치 초기화</span>
+<span class="cmt"># 4) Batch/Layer Normalization</span></code></pre>
+
+  <h4 id="exploding-gradient">Gradient Exploding (기울기 폭발)</h4>
+  <p>반대로 gradient가 지수적으로 증가하여 학습이 불안정해집니다. 가중치가 크게振荡하면서 수렴하지 않습니다.</p>
+  <pre><code><span class="cmt"># 문제 원인: 가중치 > 1인 경우 gradient가 증폭</span>
+
+<span class="cmt"># 예시: 50층에서 gradient 계산</span>
+<span class="cmt"># gradient_50 = 1.5 × 1.5 × ... × 1.5 (50번)</span>
+<span class="cmt">#           ≈ 1.5^50 ≈ 10^9</span>
+<span class="cmt"># → 가중치 업데이트가 폭발적!</span>
+
+<span class="cmt"># 증상:</span>
+<span class="cmt"># - 손실이 NaN으로 변함</span>
+<span class="cmt"># - 가중치가 inf 또는 NaN</span>
+<span class="cmt"># - 출력 값이极端적으로 커짐</span>
+
+<span class="cmt"># 해결 방법:</span>
+<span class="cmt"># 1) Gradient Clipping (임계값으로 자르기)</span>
+<span class="cmt"># 2) 적절한 학습률 설정</span>
+<span class="cmt"># 3) 가중치 정규화 (Weight Decay)</span></code></pre>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="math-9-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <text x="350" y="25" text-anchor="middle" fill="var(--diagram-text)" font-size="13" font-weight="bold">역전파에서 Gradient 흐름</text>
+
+      <rect x="30" y="80" width="60" height="40" rx="4" fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="60" y="105" text-anchor="middle" fill="var(--diagram-text)" font-size="10">Layer 1</text>
+
+      <rect x="120" y="80" width="60" height="40" rx="4" fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="150" y="105" text-anchor="middle" fill="var(--diagram-text)" font-size="10">...</text>
+
+      <rect x="200" y="80" width="60" height="40" rx="4" fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="230" y="105" text-anchor="middle" fill="var(--diagram-text)" font-size="10">Layer N</text>
+
+      <rect x="300" y="80" width="60" height="40" rx="4" fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="330" y="105" text-anchor="middle" fill="var(--diagram-text)" font-size="10">출력</text>
+
+      <text x="60" y="155" text-anchor="middle" fill="var(--diagram-text)" font-size="10">역전파:</text>
+      <text x="60" y="175" text-anchor="middle" fill="var(--diagram-text)" font-size="9">←梯度 전파</text>
+
+      <path d="M 330,100 Q 280,80 230,100" fill="none" stroke="var(--diagram-accent)" stroke-width="3"/>
+      <path d="M 230,100 Q 180,80 150,100" fill="none" stroke="var(--diagram-accent)" stroke-width="2"/>
+      <path d="M 150,100 Q 100,80 60,100" fill="none" stroke="var(--diagram-accent)" stroke-width="1"/>
+
+      <text x="150" y="160" text-anchor="middle" fill="var(--accent-primary)" font-size="10" font-weight="bold">Gradient Vanishing</text>
+      <text x="150" y="178" text-anchor="middle" fill="var(--text-secondary)" font-size="9">0.25^N → 0</text>
+
+      <rect x="460" y="40" width="210" height="90" rx="6" fill="none" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="565" y="65" text-anchor="middle" fill="var(--accent-primary)" font-size="12" font-weight="bold">해결 방법</text>
+      <text x="475" y="90" text-anchor="start" fill="var(--text-secondary)" font-size="10">• ReLU/GELU 활성화</text>
+      <text x="475" y="108" text-anchor="start" fill="var(--text-secondary)" font-size="10">• Residual Connection</text>
+      <text x="475" y="126" text-anchor="start" fill="var(--text-secondary)" font-size="10">• Layer/Batch Normalization</text>
+
+      <rect x="460" y="150" width="210" height="90" rx="6" fill="none" stroke="var(--diagram-arrow)" stroke-width="2"/>
+      <text x="565" y="175" text-anchor="middle" fill="var(--diagram-arrow)" font-size="12" font-weight="bold">해결 방법</text>
+      <text x="475" y="200" text-anchor="start" fill="var(--text-secondary)" font-size="10">• Gradient Clipping</text>
+      <text x="475" y="218" text-anchor="start" fill="var(--text-secondary)" font-size="10">• 적절한 학습률</text>
+      <text x="475" y="236" text-anchor="start" fill="var(--text-secondary)" font-size="10">• Weight Decay</text>
+    </svg>
+    <p class="diagram-caption">깊은 신경망에서 Gradient Vanishing/Exploding 문제와 해결 방법</p>
   </div>
 </section>
 
@@ -1093,6 +1365,162 @@ MultiHead = <span class="fn">Concat</span>(Head_1, Head_2, ..., Head_h) × W_O
       <text x="350" y="175" text-anchor="middle" fill="var(--diagram-text)" font-size="11" opacity="0.6">× N layers (반복)</text>
     </svg>
     <p class="diagram-caption">Transformer 블록의 기본 흐름 (임베딩 → Attention → FFN → 출력, N층 반복)</p>
+  </div>
+
+  <h3 id="layer-normalization">Layer Normalization: 학습 안정화의 핵심</h3>
+  <p><strong>Layer Normalization</strong>은 각 샘플 내에서 활성화 값들을 정규화합니다. Batch Normalization과 달리 배치 크기에 의존하지 않아 Online 학습이나 순환 신경망에서 유리합니다.</p>
+  <pre><code><span class="cmt"># Layer Normalization 공식</span>
+<span class="fn">LayerNorm</span>(x) = γ × (x - μ) / σ + β
+
+<span class="cmt"># μ (mu): 평균</span>
+μ = (<span class="num">1</span>/d) × Σ x_i
+
+<span class="cmt"># σ (sigma): 표준편차</span>
+σ = √[(<span class="num">1</span>/d) × Σ (x_i - μ)²]
+
+<span class="cmt"># γ (gamma): 학습 가능한 스케일 파라미터</span>
+<span class="cmt"># β (beta): 학습 가능한 이동 파라미터</span>
+
+<span class="cmt"># 구체적인 계산 예시 (단순화)</span>
+x = [<span class="num">2.0</span>, <span class="num">4.0</span>, <span class="num">6.0</span>]
+
+<span class="cmt"># 평균</span>
+μ = (<span class="num">2+4+6</span>) / <span class="num">3</span> = <span class="num">4.0</span>
+
+<span class="cmt"># 표준편차</span>
+σ = √[((<span class="num">2-4</span>)² + (<span class="num">4-4</span>)² + (<span class="num">6-4</span>)²) / <span class="num">3</span>]
+  = √[<span class="num">8</span>/<span class="num">3</span>] ≈ <span class="num">1.63</span>
+
+<span class="cmt"># 정규화 (γ=1, β=0 가정)</span>
+(x - μ) / σ = [<span class="num">-1.23</span>, <span class="num">0</span>, <span class="num">1.23</span>]</code></pre>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 220"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="math-10-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <text x="350" y="25" text-anchor="middle" fill="var(--diagram-text)" font-size="13" font-weight="bold">Layer Normalization 연산</text>
+
+      <rect x="40" y="60" width="150" height="80" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="115" y="90" text-anchor="middle" fill="var(--diagram-text)" font-size="12">입력 벡터</text>
+      <text x="115" y="115" text-anchor="middle" fill="var(--text-secondary)" font-size="10">[2.0, 4.0, 6.0]</text>
+
+      <rect x="260" y="60" width="150" height="80" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="335" y="90" text-anchor="middle" fill="var(--diagram-text)" font-size="12">평균/표준편차 계산</text>
+      <text x="335" y="115" text-anchor="middle" fill="var(--text-secondary)" font-size="10">μ=4.0, σ=1.63</text>
+
+      <rect x="480" y="60" width="150" height="80" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="555" y="90" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">출력</text>
+      <text x="555" y="115" text-anchor="middle" fill="var(--text-secondary)" font-size="10">정규화된 벡터</text>
+
+      <line x1="190" y1="100" x2="260" y2="100" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#math-10-arrow)"/>
+      <line x1="410" y1="100" x2="480" y2="100" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#math-10-arrow)"/>
+
+      <text x="350" y="170" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        LayerNorm(x) = γ × (x - μ) / σ + β
+      </text>
+      <text x="350" y="188" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        γ, β는 학습 가능한 파라미터 (입력 분포를 다시 학습적으로 맞춤)
+      </text>
+    </svg>
+    <p class="diagram-caption">Layer Normalization: 평균 0, 분산 1로 정규화 후 스케일/이동</p>
+  </div>
+
+  <div class="info-box info">
+    <strong>LayerNorm vs BatchNorm:</strong>
+    <ul>
+      <li><strong>BatchNorm</strong>: 배치 차원으로 정규화 (배치 크기에 의존) - 추론 시 배치 크기가 달라면 다른 결과</li>
+      <li><strong>LayerNorm</strong>: 샘플 내부에서 정규화 (배치 무관) - Transformer의 표준</li>
+      <li>LLM에서는 입력 시퀀스 길이가 가변적이고 배치 크기도 다양하므로 LayerNorm이 적합</li>
+    </ul>
+  </div>
+
+  <h3 id="position-encoding">Position Encoding: 순서의 수학적 표현</h3>
+  <p>Transformer는 본질적으로 순열 불변(permutation invariant)합니다. "고양이가 강아지를 물었다"와 "강아지가 고양이를 물었다"는 완전히 다른 의미인데, 위치 정보를 주입하지 않으면 이를 구분할 수 없습니다.</p>
+  <pre><span class="cmt"># Sinusoidal Position Encoding 공식</span>
+<span class="cmt"># 짝수 차원 (sin):</span>
+PE(pos, 2i)   = <span class="fn">sin</span>(pos / 10000^(2i/d_model))
+
+<span class="cmt"># 홀수 차원 (cos):</span>
+PE(pos, 2i+1) = <span class="fn">cos</span>(pos / 10000^(2i/d_model))
+
+<span class="cmt"># 매개변수:</span>
+<span class="cmt"># pos: 토큰 위치 (0, 1, 2, ...)</span>
+<span class="cmt"># i: 차원 인덱스 (0, 1, 2, ...)</span>
+<span class="cmt"># d_model: 임베딩 차원</span>
+
+<span class="cmt"># 계산 예시 (d_model=4, pos=0,1)</span>
+<span class="cmt"># i=0: 10000^(0/4) = 1</span>
+<span class="cmt"># i=1: 10000^(2/4) = 10000^0.5 = 10</span>
+
+PE(<span class="num">0</span>) = [<span class="num">sin(0/1)</span>=0,  <span class="num">cos(0/1)</span>=1,  <span class="num">sin(0/10)</span>=0, <span class="num">cos(0/10)</span>=1]
+        = [<span class="num">0</span>, <span class="num">1</span>, <span class="num">0</span>, <span class="num">1</span>]
+
+PE(<span class="num">1</span>) = [<span class="num">sin(1/1)</span>=0.84, <span class="num">cos(1/1)</span>=0.54, <span class="num">sin(1/10)</span>=0.10, <span class="num">cos(1/10)</span>=0.99]
+        = [<span class="num">0.84</span>, <span class="num">0.54</span>, <span class="num">0.10</span>, <span class="num">0.99</span>]</pre>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 260"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="math-11-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <text x="350" y="25" text-anchor="middle" fill="var(--diagram-text)" font-size="13" font-weight="bold">Sinusoidal Position Encoding</text>
+
+      <line x1="50" y1="200" x2="450" y2="200" stroke="var(--border-color)" stroke-width="1"/>
+      <line x1="50" y1="50" x2="50" y2="200" stroke="var(--border-color)" stroke-width="1"/>
+
+      <path d="M 50,200 Q 150,50 250,120 Q 350,190 450,100" fill="none" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="250" y="230" text-anchor="middle" fill="var(--accent-primary)" font-size="10">sin(pos / 10000^(2i/d))</text>
+
+      <line x1="480" y1="50" x2="650" y2="50" stroke="var(--border-color)" stroke-width="1"/>
+      <line x1="480" y1="50" x2="480" y2="200" stroke="var(--border-color)" stroke-width="1"/>
+
+      <path d="M 480,50 Q 530,100 580,150 Q 630,190 650,180" fill="none" stroke="var(--diagram-arrow)" stroke-width="2"/>
+      <text x="565" y="230" text-anchor="middle" fill="var(--diagram-arrow)" font-size="10">cos(pos / 10000^(2i/d))</text>
+
+      <rect x="80" y="60" width="100" height="30" rx="4" fill="var(--bg-secondary)" stroke="var(--border-color)"/>
+      <text x="130" y="80" text-anchor="middle" fill="var(--diagram-text)" font-size="9">토큰 0</text>
+
+      <rect x="200" y="80" width="100" height="30" rx="4" fill="var(--bg-secondary)" stroke="var(--border-color)"/>
+      <text x="250" y="100" text-anchor="middle" fill="var(--diagram-text)" font-size="9">토큰 1</text>
+
+      <rect x="320" y="120" width="100" height="30" rx="4" fill="var(--bg-secondary)" stroke="var(--border-color)"/>
+      <text x="370" y="140" text-anchor="middle" fill="var(--diagram-text)" font-size="9">토큰 2</text>
+
+      <rect x="510" y="60" width="120" height="30" rx="4" fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="1.5"/>
+      <text x="570" y="80" text-anchor="middle" fill="var(--diagram-text)" font-size="9">위치 인코딩 추가</text>
+
+      <line x1="130" y1="90" x2="510" y2="75" stroke="var(--diagram-arrow)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="250" y1="110" x2="510" y2="75" stroke="var(--diagram-arrow)" stroke-width="1" stroke-dasharray="4,4"/>
+
+      <text x="570" y="110" text-anchor="middle" fill="var(--text-secondary)" font-size="9">임베딩 + PE</text>
+      <text x="570" y="125" text-anchor="middle" fill="var(--text-secondary)" font-size="8">= 입력으로</text>
+    </svg>
+    <p class="diagram-caption">각 위치마다 고유한 파장을 가진 Sinusoidal 인코딩을 임베딩에 더함</p>
+  </div>
+
+  <div class="info-box tip">
+    <strong>Sinusoidal 인코딩의 장점:</strong>
+    <ul>
+      <li><strong>상대 위치 정보 포착</strong>: sin/cos의周期性으로 인해 인접한 위치가 유사한 인코딩</li>
+      <li><strong>외삽 가능</strong>: 학습하지 않은 위치도 Sinusoidal은 어느 정도 일반화</li>
+      <li><strong>학습 불필요</strong>: 고정된 함수로 계산되므로 학습 파라미터가 없음</li>
+    </ul>
   </div>
 </section>
 
