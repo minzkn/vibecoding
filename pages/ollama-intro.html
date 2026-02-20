@@ -358,9 +358,1207 @@ DELETE /api/delete        <span class="cmt"># 모델 삭제</span></code></pre>
   <h3 id="model-format">GGUF 모델 포맷</h3>
 
   <p>
-    Ollama는 <strong>GGUF</strong> (GPT-Generated Unified Format) 파일 형식을 사용합니다.
-    이는 llama.cpp 프로젝트에서 개발한 최적화된 형식입니다.
+    Ollama는 <strong>GGUF</strong> (Georgi Gerganov Unified Format) 파일 형식을 사용합니다.
+    GGUF는 <strong>Georgi Gerganov</strong>가 개발한 <a href="https://github.com/ggerganov/llama.cpp" target="_blank" rel="noopener">llama.cpp</a> 프로젝트의 핵심 모델 포맷으로,
+    로컬 환경에서 LLM을 효율적으로 실행하기 위해 설계되었습니다.
+    현재 Ollama, LM Studio, llama.cpp, GPT4All 등 대부분의 로컬 LLM 런타임이 GGUF를 표준 포맷으로 채택하고 있습니다.
   </p>
+
+  <div class="info-box">
+    <div class="info-box-title">📜 GGUF의 탄생 배경</div>
+    <p>
+      초기 llama.cpp는 <strong>GGML</strong> (Georgi Gerganov Machine Learning) 포맷을 사용했습니다.
+      GGML은 모델 가중치만 저장하고, 토크나이저와 메타데이터는 별도 파일로 관리해야 했습니다.
+      2023년 8월, 이러한 한계를 극복하기 위해 GGUF가 등장했습니다.
+      GGUF는 모델 가중치, 토크나이저, 하이퍼파라미터, 아키텍처 정보를 <strong>단일 파일</strong>에 모두 포함하여
+      모델 배포와 관리를 획기적으로 단순화했습니다.
+    </p>
+  </div>
+
+  <!-- GGML → GGUF 진화 다이어그램 -->
+  <svg viewBox="0 0 800 320" class="diagram" role="img" aria-label="GGML에서 GGUF로의 진화">
+    <defs>
+      <marker id="gguf-evo-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--diagram-arrow)" />
+      </marker>
+    </defs>
+
+    <!-- GGML 영역 -->
+    <rect x="30" y="30" width="300" height="260" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="180" y="58" fill="var(--diagram-text)" text-anchor="middle" font-size="17" font-weight="bold">GGML (구 포맷)</text>
+    <text x="180" y="78" fill="var(--text-secondary)" text-anchor="middle" font-size="11">2023년 이전</text>
+
+    <rect x="55" y="95" width="250" height="36" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="5"/>
+    <text x="180" y="118" fill="var(--diagram-text)" text-anchor="middle" font-size="13">model.bin — 가중치만 저장</text>
+
+    <rect x="55" y="140" width="250" height="36" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="5"/>
+    <text x="180" y="163" fill="var(--diagram-text)" text-anchor="middle" font-size="13">tokenizer.model — 별도 파일</text>
+
+    <rect x="55" y="185" width="250" height="36" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="5"/>
+    <text x="180" y="208" fill="var(--diagram-text)" text-anchor="middle" font-size="13">params.json — 별도 파일</text>
+
+    <text x="180" y="250" fill="var(--text-secondary)" text-anchor="middle" font-size="12">❌ 파일 누락 위험</text>
+    <text x="180" y="270" fill="var(--text-secondary)" text-anchor="middle" font-size="12">❌ 버전 불일치 문제</text>
+
+    <!-- 화살표 -->
+    <line x1="340" y1="160" x2="450" y2="160" stroke="var(--diagram-arrow)" stroke-width="3" marker-end="url(#gguf-evo-arrow)"/>
+    <text x="395" y="148" fill="var(--diagram-accent)" text-anchor="middle" font-size="13" font-weight="bold">진화</text>
+
+    <!-- GGUF 영역 -->
+    <rect x="460" y="30" width="310" height="260" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="3" rx="8"/>
+    <text x="615" y="58" fill="var(--diagram-accent)" text-anchor="middle" font-size="17" font-weight="bold">GGUF (현재 표준)</text>
+    <text x="615" y="78" fill="var(--text-secondary)" text-anchor="middle" font-size="11">2023년 8월~</text>
+
+    <rect x="485" y="95" width="260" height="140" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="1.5" rx="5"/>
+    <text x="615" y="118" fill="var(--diagram-accent)" text-anchor="middle" font-size="14" font-weight="bold">model.gguf (단일 파일)</text>
+    <text x="615" y="143" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 가중치 (텐서 데이터)</text>
+    <text x="615" y="163" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 토크나이저</text>
+    <text x="615" y="183" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 하이퍼파라미터</text>
+    <text x="615" y="203" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 아키텍처 메타데이터</text>
+
+    <text x="615" y="257" fill="var(--text-secondary)" text-anchor="middle" font-size="12">✅ 자기 완결적, 이식성 극대</text>
+    <text x="615" y="275" fill="var(--text-secondary)" text-anchor="middle" font-size="12">✅ 확장 가능한 KV 메타데이터</text>
+  </svg>
+  <p class="diagram-caption">GGML에서 GGUF로의 진화: 분산된 파일 → 단일 자기 완결적 파일</p>
+
+  <h4 id="gguf-version-history">GGUF 버전 히스토리</h4>
+
+  <p>
+    GGUF는 출시 이후 지속적으로 발전해왔습니다.
+    각 버전은 하위 호환성을 유지하면서 새로운 기능을 추가합니다.
+  </p>
+
+  <!-- GGUF 버전 타임라인 다이어그램 -->
+  <svg viewBox="0 0 800 400" class="diagram" role="img" aria-label="GGUF 버전 타임라인">
+    <!-- 타임라인 축 -->
+    <line x1="100" y1="50" x2="100" y2="380" stroke="var(--diagram-stroke)" stroke-width="3"/>
+
+    <!-- GGML 시대 -->
+    <circle cx="100" cy="60" r="8" fill="var(--diagram-stroke)"/>
+    <text x="125" y="55" fill="var(--text-secondary)" font-size="11">2023년 3월</text>
+    <rect x="125" y="60" width="640" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="140" y="80" fill="var(--diagram-text)" font-size="13" font-weight="bold">GGML 시대 (구 포맷)</text>
+    <text x="140" y="98" fill="var(--text-secondary)" font-size="11">llama.cpp 첫 릴리스. 가중치 전용 바이너리. 토크나이저/설정은 별도 파일. 모델 간 호환성 문제 빈발</text>
+
+    <!-- GGUF v1 -->
+    <circle cx="100" cy="130" r="8" fill="var(--diagram-accent)"/>
+    <text x="125" y="125" fill="var(--diagram-accent)" font-size="11" font-weight="bold">2023년 8월</text>
+    <rect x="125" y="130" width="640" height="65" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="6"/>
+    <text x="140" y="150" fill="var(--diagram-accent)" font-size="13" font-weight="bold">GGUF v1 — 최초 릴리스</text>
+    <text x="140" y="168" fill="var(--text-secondary)" font-size="11">• 단일 파일에 모든 정보 포함 (가중치 + 토크나이저 + 메타데이터)</text>
+    <text x="140" y="184" fill="var(--text-secondary)" font-size="11">• Key-Value 메타데이터 시스템 도입 • Magic Number 검증 (0x46475547)</text>
+
+    <!-- GGUF v2 -->
+    <circle cx="100" cy="215" r="8" fill="var(--diagram-accent)"/>
+    <text x="125" y="210" fill="var(--diagram-accent)" font-size="11" font-weight="bold">2023년 9월</text>
+    <rect x="125" y="215" width="640" height="65" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="6"/>
+    <text x="140" y="235" fill="var(--diagram-accent)" font-size="13" font-weight="bold">GGUF v2 — 토크나이저 개선</text>
+    <text x="140" y="253" fill="var(--text-secondary)" font-size="11">• 64비트 데이터 오프셋 지원 (대형 모델 &gt;4GB 텐서 데이터 대응)</text>
+    <text x="140" y="269" fill="var(--text-secondary)" font-size="11">• 토크나이저 메타데이터 구조 표준화 • 문자열 인코딩 UTF-8 표준화</text>
+
+    <!-- GGUF v3 -->
+    <circle cx="100" cy="300" r="10" fill="var(--diagram-accent)"/>
+    <text x="125" y="295" fill="var(--diagram-accent)" font-size="11" font-weight="bold">2023년 10월~현재</text>
+    <rect x="125" y="300" width="640" height="80" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="3" rx="6"/>
+    <text x="140" y="322" fill="var(--diagram-accent)" font-size="14" font-weight="bold">GGUF v3 — 현재 표준 ★</text>
+    <text x="140" y="342" fill="var(--text-secondary)" font-size="11">• 빅 엔디안(Big-Endian) 지원 (크로스 플랫폼 완전 호환)</text>
+    <text x="140" y="358" fill="var(--text-secondary)" font-size="11">• K-quant 양자화 타입 (Q4_K_M, Q5_K_S 등) • i-quant 도입 (IQ4_XS, IQ3_XXS)</text>
+    <text x="140" y="374" fill="var(--text-secondary)" font-size="11">• 파일 분할(Split) 지원 • 텐서 정렬(alignment) 커스터마이징</text>
+  </svg>
+  <p class="diagram-caption">GGUF 포맷 버전 타임라인: GGML → v1 → v2 → v3 (현재 표준)</p>
+
+  <h4 id="gguf-structure">GGUF 파일 내부 구조</h4>
+
+  <p>
+    GGUF 파일은 <strong>바이너리 포맷</strong>으로, 정해진 구조에 따라 순차적으로 데이터를 배치합니다.
+    모든 정보가 하나의 파일에 포함되므로 별도의 설정 파일 없이 모델을 로드할 수 있습니다.
+  </p>
+
+  <!-- GGUF 파일 구조 다이어그램 -->
+  <svg viewBox="0 0 800 520" class="diagram" role="img" aria-label="GGUF 파일 내부 구조">
+    <!-- 전체 파일 외곽 -->
+    <rect x="100" y="20" width="600" height="480" fill="none" stroke="var(--diagram-stroke)" stroke-width="2" rx="8" stroke-dasharray="8,4"/>
+    <text x="400" y="15" fill="var(--diagram-text)" text-anchor="middle" font-size="15" font-weight="bold">model.gguf</text>
+
+    <!-- 1. Magic Number -->
+    <rect x="130" y="40" width="540" height="50" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="6"/>
+    <text x="250" y="62" fill="var(--diagram-accent)" font-size="14" font-weight="bold">① Magic Number</text>
+    <text x="250" y="80" fill="var(--text-secondary)" font-size="11">0x46475547 ("GGUF" in Little-Endian)</text>
+    <text x="590" y="70" fill="var(--diagram-text)" text-anchor="middle" font-size="12">4 bytes</text>
+
+    <!-- 2. Header -->
+    <rect x="130" y="100" width="540" height="80" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
+    <text x="250" y="124" fill="var(--diagram-text)" font-size="14" font-weight="bold">② Header (헤더)</text>
+    <text x="250" y="145" fill="var(--text-secondary)" font-size="11">• version: GGUF 버전 (현재 v3)</text>
+    <text x="250" y="163" fill="var(--text-secondary)" font-size="11">• tensor_count / metadata_kv_count</text>
+    <text x="590" y="140" fill="var(--diagram-text)" text-anchor="middle" font-size="12">~20 bytes</text>
+
+    <!-- 3. Metadata KV -->
+    <rect x="130" y="190" width="540" height="130" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
+    <text x="250" y="214" fill="var(--diagram-text)" font-size="14" font-weight="bold">③ Metadata KV Pairs (메타데이터)</text>
+    <text x="250" y="237" fill="var(--text-secondary)" font-size="11">• general.architecture: "llama" / "mistral" / ...</text>
+    <text x="250" y="255" fill="var(--text-secondary)" font-size="11">• general.name: 모델 이름</text>
+    <text x="250" y="273" fill="var(--text-secondary)" font-size="11">• llama.context_length: 컨텍스트 길이</text>
+    <text x="250" y="291" fill="var(--text-secondary)" font-size="11">• tokenizer.ggml.model: 토크나이저 종류</text>
+    <text x="250" y="309" fill="var(--text-secondary)" font-size="11">• quantization_version: 양자화 정보 ...</text>
+    <text x="590" y="250" fill="var(--diagram-text)" text-anchor="middle" font-size="12">가변 크기</text>
+
+    <!-- 4. Tensor Info -->
+    <rect x="130" y="330" width="540" height="75" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
+    <text x="250" y="354" fill="var(--diagram-text)" font-size="14" font-weight="bold">④ Tensor Info (텐서 정보)</text>
+    <text x="250" y="375" fill="var(--text-secondary)" font-size="11">• 각 텐서의 이름, 차원, 데이터 타입, 오프셋</text>
+    <text x="250" y="393" fill="var(--text-secondary)" font-size="11">• 예: "blk.0.attn_q.weight" [4096, 4096] Q4_0</text>
+    <text x="590" y="370" fill="var(--diagram-text)" text-anchor="middle" font-size="12">가변 크기</text>
+
+    <!-- Alignment Padding -->
+    <rect x="130" y="413" width="540" height="25" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4" stroke-dasharray="4,3"/>
+    <text x="400" y="430" fill="var(--text-secondary)" text-anchor="middle" font-size="11">정렬 패딩 (기본 32바이트 정렬)</text>
+
+    <!-- 5. Tensor Data -->
+    <rect x="130" y="446" width="540" height="44" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="6"/>
+    <text x="250" y="472" fill="var(--diagram-accent)" font-size="14" font-weight="bold">⑤ Tensor Data (실제 가중치 데이터)</text>
+    <text x="590" y="472" fill="var(--diagram-text)" text-anchor="middle" font-size="12">파일의 대부분</text>
+  </svg>
+  <p class="diagram-caption">GGUF 파일 바이너리 레이아웃: Magic → Header → Metadata → Tensor Info → Tensor Data</p>
+
+  <p>
+    GGUF의 핵심 설계 원칙은 <strong>자기 설명적(self-describing)</strong> 구조입니다.
+    파일 자체에 모델을 로드하는 데 필요한 모든 정보가 담겨 있으므로,
+    외부 설정 파일이나 코드 없이도 모델의 아키텍처, 양자화 방식, 토크나이저 종류를 파악할 수 있습니다.
+  </p>
+
+  <pre><code><span class="cmt"># GGUF 파일 정보 확인 (llama.cpp 도구)</span>
+<span class="cmt"># gguf-dump: 메타데이터와 텐서 구조를 출력</span>
+$ python3 -c <span class="str">"
+from gguf import GGUFReader
+reader = GGUFReader('model.gguf')
+print(f'GGUF Version: {reader.header.version}')
+print(f'Tensor Count: {reader.header.tensor_count}')
+print(f'Metadata KV Count: {reader.header.metadata_kv_count}')
+for kv in reader.fields.values():
+    print(f'  {kv.name}: {kv.data}')
+"</span>
+
+<span class="cmt"># 출력 예시</span>
+GGUF Version: <span class="num">3</span>
+Tensor Count: <span class="num">291</span>
+Metadata KV Count: <span class="num">23</span>
+  general.architecture: llama
+  general.name: Llama <span class="num">3.2</span> <span class="num">3</span>B Instruct
+  llama.context_length: <span class="num">131072</span>
+  llama.embedding_length: <span class="num">3072</span>
+  llama.block_count: <span class="num">28</span>
+  llama.attention.head_count: <span class="num">24</span>
+  tokenizer.ggml.model: gpt2
+  general.quantization_version: <span class="num">2</span></code></pre>
+
+  <h4 id="gguf-binary-header">바이너리 헤더 Hex Dump</h4>
+
+  <p>
+    실제 GGUF 파일의 첫 바이트를 살펴보면 포맷의 구조를 직접 확인할 수 있습니다.
+    아래는 <code>hexdump</code> 명령으로 확인한 GGUF v3 파일의 헤더 영역입니다.
+  </p>
+
+  <pre><code><span class="cmt"># GGUF 파일 헤더 Hex Dump 확인</span>
+$ hexdump -C model.gguf | head -n <span class="num">4</span>
+
+<span class="num">00000000</span>  <span class="str">47 47 55 46</span>  <span class="num">03 00 00 00</span>  <span class="num">17 00 00 00</span>  <span class="num">00 00 00 00</span>  |GGUF............|
+<span class="num">00000010</span>  <span class="num">23 01 00 00  00 00 00 00</span>  <span class="num">14 00 00 00  00 00 00 00</span>  |#...............|
+         ╰─┬────────╯ ╰─┬────────╯ ╰─┬────────────────────╯ ╰─┬────────────────────╯
+     <span class="str">Magic Number</span>   <span class="str">Version=3</span>    <span class="str">tensor_count=23(0x17)</span>    <span class="str">metadata_kv_count=291(0x123)</span>
+
+<span class="cmt"># 상세 구조 해설</span>
+Offset  <span class="num">0x00</span>-<span class="num">0x03</span>: <span class="str">47 47 55 46</span> → <span class="str">"GGUF"</span> (ASCII, Little-Endian)
+Offset  <span class="num">0x04</span>-<span class="num">0x07</span>: <span class="num">03 00 00 00</span> → version = <span class="num">3</span> (uint32_t LE)
+Offset  <span class="num">0x08</span>-<span class="num">0x0F</span>: <span class="num">17 00 00 00 00 00 00 00</span> → tensor_count = <span class="num">23</span> (uint64_t LE)
+Offset  <span class="num">0x10</span>-<span class="num">0x17</span>: <span class="num">23 01 00 00 00 00 00 00</span> → metadata_kv_count = <span class="num">291</span> (uint64_t LE)
+
+<span class="cmt"># 파일 전체 구조 오프셋 확인</span>
+$ python3 -c <span class="str">"
+import struct
+with open('model.gguf', 'rb') as f:
+    magic = f.read(4)
+    version = struct.unpack('&lt;I', f.read(4))[0]
+    n_tensors = struct.unpack('&lt;Q', f.read(8))[0]
+    n_kv = struct.unpack('&lt;Q', f.read(8))[0]
+    print(f'Magic: {magic}')
+    print(f'Version: {version}')
+    print(f'Tensors: {n_tensors}')
+    print(f'KV pairs: {n_kv}')
+"</span>
+Magic: b<span class="str">'GGUF'</span>
+Version: <span class="num">3</span>
+Tensors: <span class="num">23</span>
+KV pairs: <span class="num">291</span></code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 GGUF Magic Number</div>
+    <p>
+      GGUF 파일은 반드시 <code>0x47475546</code> ("GGUF"의 ASCII) 매직 넘버로 시작합니다.
+      빅 엔디안 시스템에서는 <code>0x47475546</code>이 그대로, 리틀 엔디안에서도 <code>0x46554747</code>이 아닌
+      동일한 바이트 순서(<code>47 47 55 46</code>)를 사용합니다. 이를 통해 파일의 엔디안을 감지합니다.
+      만약 첫 4바이트가 <code>46 55 47 47</code>이면 빅 엔디안 GGUF로 판별합니다.
+    </p>
+  </div>
+
+  <h4 id="gguf-metadata-kv">메타데이터 KV 상세</h4>
+
+  <p>
+    GGUF 메타데이터는 <strong>Key-Value 쌍</strong>으로 구성됩니다.
+    키는 네임스페이스 규칙(<code>general.*</code>, <code>{arch}.*</code>, <code>tokenizer.*</code>)을 따릅니다.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>네임스페이스</th>
+        <th>주요 키</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>general.*</strong></td>
+        <td>architecture, name, author, license, description</td>
+        <td>모델 기본 정보 (아키텍처 종류, 이름, 라이선스 등)</td>
+      </tr>
+      <tr>
+        <td><strong>{arch}.*</strong></td>
+        <td>context_length, embedding_length, block_count, attention.head_count</td>
+        <td>아키텍처별 하이퍼파라미터 (llama.*, mistral.*, phi.* 등)</td>
+      </tr>
+      <tr>
+        <td><strong>tokenizer.*</strong></td>
+        <td>ggml.model, ggml.tokens, ggml.scores, ggml.bos_token_id</td>
+        <td>토크나이저 종류, 어휘, 특수 토큰 ID</td>
+      </tr>
+      <tr>
+        <td><strong>quantize.*</strong></td>
+        <td>imatrix.file, imatrix.dataset</td>
+        <td>양자화에 사용된 중요도 행렬(importance matrix) 정보</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 id="gguf-metadata-value-types">메타데이터 값 타입</h4>
+
+  <p>
+    GGUF 메타데이터의 각 Key-Value 쌍에서 Value는 다음 타입 중 하나를 가집니다.
+    이 타입 시스템 덕분에 메타데이터를 파싱할 때 별도의 스키마 파일이 필요 없습니다.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>타입 ID</th>
+        <th>타입명</th>
+        <th>크기</th>
+        <th>사용 예</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0</td><td>UINT8</td><td>1B</td><td>불리언 플래그</td></tr>
+      <tr><td>1</td><td>INT8</td><td>1B</td><td>-</td></tr>
+      <tr><td>2</td><td>UINT16</td><td>2B</td><td>-</td></tr>
+      <tr><td>3</td><td>INT16</td><td>2B</td><td>-</td></tr>
+      <tr><td>4</td><td>UINT32</td><td>4B</td><td>context_length, head_count</td></tr>
+      <tr><td>5</td><td>INT32</td><td>4B</td><td>-</td></tr>
+      <tr><td>6</td><td>FLOAT32</td><td>4B</td><td>rope_freq_base, layer_norm_eps</td></tr>
+      <tr><td>7</td><td>BOOL</td><td>1B</td><td>-</td></tr>
+      <tr><td>8</td><td><strong>STRING</strong></td><td>가변</td><td>architecture, name, license</td></tr>
+      <tr><td>9</td><td><strong>ARRAY</strong></td><td>가변</td><td>tokenizer.ggml.tokens (어휘 목록)</td></tr>
+      <tr><td>10</td><td>UINT64</td><td>8B</td><td>-</td></tr>
+      <tr><td>11</td><td>INT64</td><td>8B</td><td>-</td></tr>
+      <tr><td>12</td><td>FLOAT64</td><td>8B</td><td>-</td></tr>
+    </tbody>
+  </table>
+
+  <h4 id="gguf-architectures">지원 아키텍처</h4>
+
+  <p>
+    <code>general.architecture</code> 키는 모델의 아키텍처 종류를 지정합니다.
+    GGUF는 현재 다양한 Transformer 변형 아키텍처를 지원하며, 지속적으로 확장되고 있습니다.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>아키텍처 ID</th>
+        <th>대표 모델</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>llama</code></td><td>Llama 2/3, Mistral, Yi, Qwen2</td><td>가장 보편적. RoPE + GQA/MHA 기반 디코더</td></tr>
+      <tr><td><code>falcon</code></td><td>Falcon 7B/40B/180B</td><td>Multi-query attention 기반</td></tr>
+      <tr><td><code>gpt2</code></td><td>GPT-2</td><td>원조 GPT 아키텍처</td></tr>
+      <tr><td><code>gptj</code></td><td>GPT-J 6B</td><td>Rotary embedding + parallel attention</td></tr>
+      <tr><td><code>gptneox</code></td><td>GPT-NeoX, Pythia</td><td>EleutherAI 계열</td></tr>
+      <tr><td><code>mpt</code></td><td>MPT 7B/30B</td><td>ALiBi attention, FlashAttention</td></tr>
+      <tr><td><code>baichuan</code></td><td>Baichuan 7B/13B</td><td>중국어 특화</td></tr>
+      <tr><td><code>starcoder</code></td><td>StarCoder, StarCoder2</td><td>코드 생성 특화</td></tr>
+      <tr><td><code>phi2</code></td><td>Phi-2, Phi-3</td><td>Microsoft 소형 고효율 모델</td></tr>
+      <tr><td><code>gemma</code></td><td>Gemma, Gemma 2</td><td>Google 오픈 웨이트 모델</td></tr>
+      <tr><td><code>command-r</code></td><td>Command R/R+</td><td>Cohere RAG 특화 모델</td></tr>
+      <tr><td><code>qwen2</code></td><td>Qwen2, Qwen2.5</td><td>Alibaba 다국어 모델</td></tr>
+      <tr><td><code>deepseek2</code></td><td>DeepSeek-V2/V3</td><td>MoE (Mixture of Experts) 아키텍처</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 아키텍처 생태계 다이어그램 -->
+  <svg viewBox="0 0 800 320" class="diagram" role="img" aria-label="GGUF 아키텍처 생태계">
+    <!-- 중심: GGUF -->
+    <circle cx="400" cy="160" r="60" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="3"/>
+    <text x="400" y="155" fill="var(--diagram-accent)" text-anchor="middle" font-size="18" font-weight="bold">GGUF</text>
+    <text x="400" y="175" fill="var(--text-secondary)" text-anchor="middle" font-size="10">범용 포맷</text>
+
+    <!-- llama 계열 (좌상) -->
+    <rect x="30" y="20" width="150" height="75" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="8"/>
+    <text x="105" y="43" fill="var(--diagram-accent)" text-anchor="middle" font-size="13" font-weight="bold">Llama 계열</text>
+    <text x="105" y="60" fill="var(--text-secondary)" text-anchor="middle" font-size="10">Llama3, Mistral, Yi</text>
+    <text x="105" y="75" fill="var(--text-secondary)" text-anchor="middle" font-size="10">Qwen2, CodeLlama</text>
+    <text x="105" y="88" fill="var(--diagram-accent)" text-anchor="middle" font-size="9">가장 많이 사용 ★</text>
+    <line x1="180" y1="70" x2="345" y2="135" stroke="var(--diagram-stroke)" stroke-width="1.5"/>
+
+    <!-- Falcon (좌하) -->
+    <rect x="30" y="230" width="140" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="100" y="253" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">Falcon</text>
+    <text x="100" y="270" fill="var(--text-secondary)" text-anchor="middle" font-size="10">7B / 40B / 180B</text>
+    <line x1="165" y1="250" x2="350" y2="190" stroke="var(--diagram-stroke)" stroke-width="1.5"/>
+
+    <!-- GPT 계열 (상단) -->
+    <rect x="260" y="10" width="110" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="315" y="33" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">GPT 계열</text>
+    <text x="315" y="50" fill="var(--text-secondary)" text-anchor="middle" font-size="10">GPT-2, J, NeoX</text>
+    <line x1="340" y1="65" x2="380" y2="105" stroke="var(--diagram-stroke)" stroke-width="1.5"/>
+
+    <!-- Phi (우상) -->
+    <rect x="510" y="10" width="110" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="565" y="33" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">Phi</text>
+    <text x="565" y="50" fill="var(--text-secondary)" text-anchor="middle" font-size="10">Phi-2, Phi-3</text>
+    <line x1="530" y1="65" x2="435" y2="115" stroke="var(--diagram-stroke)" stroke-width="1.5"/>
+
+    <!-- StarCoder (우) -->
+    <rect x="620" y="100" width="150" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="695" y="123" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">StarCoder</text>
+    <text x="695" y="140" fill="var(--text-secondary)" text-anchor="middle" font-size="10">코드 생성 특화</text>
+    <line x1="620" y1="130" x2="460" y2="150" stroke="var(--diagram-stroke)" stroke-width="1.5"/>
+
+    <!-- Gemma (우하) -->
+    <rect x="620" y="200" width="150" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="695" y="223" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">Gemma</text>
+    <text x="695" y="240" fill="var(--text-secondary)" text-anchor="middle" font-size="10">Google 오픈 웨이트</text>
+    <line x1="620" y1="220" x2="455" y2="180" stroke="var(--diagram-stroke)" stroke-width="1.5"/>
+
+    <!-- DeepSeek MoE (하단) -->
+    <rect x="340" y="260" width="150" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="415" y="283" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">DeepSeek MoE</text>
+    <text x="415" y="300" fill="var(--text-secondary)" text-anchor="middle" font-size="10">V2 / V3 (MoE 구조)</text>
+    <line x1="410" y1="260" x2="405" y2="220" stroke="var(--diagram-stroke)" stroke-width="1.5"/>
+
+    <!-- MPT (좌중) -->
+    <rect x="30" y="120" width="120" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="90" y="143" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">MPT</text>
+    <text x="90" y="160" fill="var(--text-secondary)" text-anchor="middle" font-size="10">ALiBi attention</text>
+    <line x1="150" y1="150" x2="340" y2="155" stroke="var(--diagram-stroke)" stroke-width="1.5"/>
+
+    <!-- Qwen/Baichuan (하좌) -->
+    <rect x="160" y="260" width="150" height="55" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="8"/>
+    <text x="235" y="283" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">Baichuan</text>
+    <text x="235" y="300" fill="var(--text-secondary)" text-anchor="middle" font-size="10">중국어 특화</text>
+    <line x1="270" y1="260" x2="370" y2="210" stroke="var(--diagram-stroke)" stroke-width="1.5"/>
+  </svg>
+  <p class="diagram-caption">GGUF가 지원하는 다양한 아키텍처: 하나의 포맷으로 수십 종의 모델을 통합</p>
+
+  <h4 id="gguf-data-types">GGUF 지원 데이터 타입</h4>
+
+  <p>
+    GGUF는 원본 부동소수점부터 극도로 압축된 양자화 타입까지 다양한 데이터 타입을 지원합니다.
+    각 타입은 <strong>메모리 효율</strong>과 <strong>추론 품질</strong> 사이의 트레이드오프를 제공합니다.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>타입</th>
+        <th>비트/가중치</th>
+        <th>블록 크기</th>
+        <th>설명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>F32</td>
+        <td>32-bit</td>
+        <td>-</td>
+        <td>원본 정밀도. 학습/변환 중간 단계에서 사용</td>
+      </tr>
+      <tr>
+        <td>F16</td>
+        <td>16-bit</td>
+        <td>-</td>
+        <td>반정밀도. 원본에 가까운 품질, GPU 추론 최적</td>
+      </tr>
+      <tr>
+        <td>BF16</td>
+        <td>16-bit</td>
+        <td>-</td>
+        <td>Brain Float16. 넓은 지수 범위, 학습에 유리</td>
+      </tr>
+      <tr>
+        <td>Q8_0</td>
+        <td>8-bit</td>
+        <td>32</td>
+        <td>8비트 양자화. 품질 손실 최소, 크기 50% 감소</td>
+      </tr>
+      <tr>
+        <td>Q5_K_M</td>
+        <td>5-bit</td>
+        <td>32</td>
+        <td>K-quant (중요도 기반). 품질/크기 균형 우수</td>
+      </tr>
+      <tr>
+        <td><strong>Q4_K_M</strong></td>
+        <td>4-bit</td>
+        <td>32</td>
+        <td><strong>가장 널리 사용</strong>. 실용적 품질, 크기 75% 감소</td>
+      </tr>
+      <tr>
+        <td>Q4_0</td>
+        <td>4-bit</td>
+        <td>32</td>
+        <td>기본 4비트. K-quant보다 단순하지만 빠름</td>
+      </tr>
+      <tr>
+        <td>Q3_K_M</td>
+        <td>3-bit</td>
+        <td>32</td>
+        <td>3비트. 리소스 제한 환경에서 사용</td>
+      </tr>
+      <tr>
+        <td>Q2_K</td>
+        <td>2-bit</td>
+        <td>32</td>
+        <td>2비트. 극한 압축, 품질 저하 주의</td>
+      </tr>
+      <tr>
+        <td>IQ4_XS</td>
+        <td>~4-bit</td>
+        <td>256</td>
+        <td>i-quant (중요도 행렬). 같은 비트에서 더 높은 품질</td>
+      </tr>
+      <tr>
+        <td>IQ3_XXS</td>
+        <td>~3-bit</td>
+        <td>256</td>
+        <td>i-quant 극압축. 연구/실험용</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 양자화 명명 규칙</div>
+    <ul>
+      <li><strong>Q{n}_0</strong>: 기본(legacy) 양자화 — 단순하고 빠르지만 품질 낮음</li>
+      <li><strong>Q{n}_K_S / Q{n}_K_M / Q{n}_K_L</strong>: K-quant — 레이어별 중요도 기반 양자화 (S=Small, M=Medium, L=Large). <code>_M</code>이 가장 일반적</li>
+      <li><strong>IQ{n}_*</strong>: i-quant — 중요도 행렬(imatrix)을 사용하여 더 정교한 양자화. 같은 비트에서 Q보다 높은 품질</li>
+    </ul>
+  </div>
+
+  <h4 id="gguf-block-quantization">블록 양자화 동작 원리</h4>
+
+  <p>
+    GGUF의 양자화는 <strong>블록 단위</strong>로 작동합니다.
+    가중치를 작은 블록(보통 32개씩)으로 나누고, 각 블록마다 <strong>스케일 팩터</strong>와
+    <strong>양자화된 정수 값</strong>을 저장합니다.
+    추론 시에는 역양자화(dequantization)하여 부동소수점으로 복원합니다.
+  </p>
+
+  <!-- 블록 양자화 원리 다이어그램 -->
+  <svg viewBox="0 0 800 450" class="diagram" role="img" aria-label="블록 양자화 동작 원리">
+    <defs>
+      <marker id="bq-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--diagram-arrow)" />
+      </marker>
+    </defs>
+
+    <text x="400" y="22" fill="var(--diagram-text)" text-anchor="middle" font-size="15" font-weight="bold">Q4_0 블록 양자화 과정 (32개 가중치 → 1블록)</text>
+
+    <!-- 원본 FP16 가중치 -->
+    <rect x="30" y="40" width="740" height="70" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
+    <text x="50" y="62" fill="var(--diagram-text)" font-size="13" font-weight="bold">① 원본 FP16 가중치 (32개, 64 bytes)</text>
+    <text x="50" y="82" fill="var(--text-secondary)" font-size="11">[0.0312, -0.1523, 0.2148, -0.0078, 0.1875, -0.3242, 0.0547, 0.1094, ...]  × 32개</text>
+    <text x="50" y="100" fill="var(--text-secondary)" font-size="11">각 값: 16-bit 부동소수점 (2 bytes × 32 = 64 bytes)</text>
+
+    <!-- 화살표 -->
+    <line x1="400" y1="115" x2="400" y2="148" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#bq-arrow)"/>
+    <text x="410" y="135" fill="var(--diagram-accent)" font-size="11">양자화</text>
+
+    <!-- 양자화 과정 -->
+    <rect x="30" y="150" width="740" height="110" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="6"/>
+    <text x="50" y="172" fill="var(--diagram-accent)" font-size="13" font-weight="bold">② 양자화 과정</text>
+    <text x="50" y="195" fill="var(--diagram-text)" font-size="12">1. 블록 내 최대 절댓값(absmax) 계산: max(|values|) = 0.3242</text>
+    <text x="50" y="215" fill="var(--diagram-text)" font-size="12">2. 스케일 팩터(scale) 산출: scale = absmax / 7 = 0.04632 (4비트: -8~7 범위)</text>
+    <text x="50" y="235" fill="var(--diagram-text)" font-size="12">3. 각 값을 양자화: q[i] = round(value[i] / scale) + 8 → 4비트 정수 (0~15)</text>
+    <text x="50" y="252" fill="var(--text-secondary)" font-size="11">예: 0.0312 / 0.04632 ≈ 0.67 → round → 1 + 8 = 9,  -0.3242 / 0.04632 ≈ -7.0 → round → -7 + 8 = 1</text>
+
+    <!-- 화살표 -->
+    <line x1="400" y1="264" x2="400" y2="295" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#bq-arrow)"/>
+
+    <!-- 저장 형태 -->
+    <rect x="30" y="298" width="740" height="68" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="6"/>
+    <text x="50" y="320" fill="var(--diagram-accent)" font-size="13" font-weight="bold">③ 저장 형태 (총 18 bytes — 64 bytes → 18 bytes, 72% 절약)</text>
+    <text x="50" y="340" fill="var(--diagram-text)" font-size="12">[scale: FP16 2bytes] [q0q1: 4bit×2=1byte] [q2q3: 1byte] ... [q30q31: 1byte]</text>
+    <text x="50" y="358" fill="var(--text-secondary)" font-size="11">스케일 팩터(2B) + 양자화 값(4bit × 32 = 16B) = 18 bytes/block</text>
+
+    <!-- 화살표 -->
+    <line x1="400" y1="370" x2="400" y2="400" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#bq-arrow)"/>
+    <text x="410" y="388" fill="var(--diagram-accent)" font-size="11">역양자화</text>
+
+    <!-- 복원 -->
+    <rect x="30" y="404" width="740" height="40" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
+    <text x="50" y="425" fill="var(--diagram-text)" font-size="13" font-weight="bold">④ 역양자화 (추론 시)</text>
+    <text x="400" y="425" fill="var(--text-secondary)" font-size="11">value[i] = (q[i] - 8) × scale → [0.0463, -0.1389, 0.2316, -0.0000, 0.1852, -0.3242, ...]</text>
+  </svg>
+  <p class="diagram-caption">Q4_0 블록 양자화: 32개 FP16 가중치(64B) → 스케일+양자화값(18B)으로 72% 압축</p>
+
+  <h4 id="gguf-quant-comparison">양자화 기법 심화 비교</h4>
+
+  <p>
+    GGUF는 세 가지 주요 양자화 패밀리를 지원합니다.
+    각 기법은 정밀도와 성능의 트레이드오프가 다릅니다.
+  </p>
+
+  <!-- 양자화 기법 비교 다이어그램 -->
+  <svg viewBox="0 0 800 350" class="diagram" role="img" aria-label="양자화 기법 심화 비교">
+    <!-- Legacy Quant -->
+    <rect x="30" y="30" width="230" height="290" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="145" y="55" fill="var(--diagram-text)" text-anchor="middle" font-size="15" font-weight="bold">Legacy Quant</text>
+    <text x="145" y="73" fill="var(--text-secondary)" text-anchor="middle" font-size="11">Q4_0, Q5_0, Q8_0</text>
+    <line x1="50" y1="82" x2="240" y2="82" stroke="var(--diagram-stroke)" stroke-width="1"/>
+    <text x="145" y="103" fill="var(--diagram-text)" text-anchor="middle" font-size="12">단일 스케일 팩터/블록</text>
+    <text x="145" y="123" fill="var(--diagram-text)" text-anchor="middle" font-size="12">모든 레이어 동일 처리</text>
+    <text x="145" y="148" fill="var(--text-secondary)" text-anchor="middle" font-size="11">장점:</text>
+    <text x="145" y="166" fill="var(--diagram-text)" text-anchor="middle" font-size="12">⚡ 가장 빠른 양자화/추론</text>
+    <text x="145" y="184" fill="var(--diagram-text)" text-anchor="middle" font-size="12">⚡ 구현 단순</text>
+    <text x="145" y="209" fill="var(--text-secondary)" text-anchor="middle" font-size="11">단점:</text>
+    <text x="145" y="227" fill="var(--diagram-text)" text-anchor="middle" font-size="12">❌ 품질 상대적 낮음</text>
+    <text x="145" y="245" fill="var(--diagram-text)" text-anchor="middle" font-size="12">❌ 이상치 가중치에 취약</text>
+    <rect x="70" y="265" width="150" height="28" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="145" y="284" fill="var(--text-secondary)" text-anchor="middle" font-size="12">속도 우선 시 선택</text>
+
+    <!-- K-Quant -->
+    <rect x="285" y="30" width="230" height="290" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="3" rx="8"/>
+    <text x="400" y="55" fill="var(--diagram-accent)" text-anchor="middle" font-size="15" font-weight="bold">K-Quant ★ 추천</text>
+    <text x="400" y="73" fill="var(--text-secondary)" text-anchor="middle" font-size="11">Q4_K_S/M/L, Q5_K_M, Q6_K</text>
+    <line x1="305" y1="82" x2="495" y2="82" stroke="var(--diagram-accent)" stroke-width="1"/>
+    <text x="400" y="103" fill="var(--diagram-text)" text-anchor="middle" font-size="12">슈퍼블록 + 서브블록 구조</text>
+    <text x="400" y="123" fill="var(--diagram-text)" text-anchor="middle" font-size="12">레이어별 중요도 차등 할당</text>
+    <text x="400" y="148" fill="var(--text-secondary)" text-anchor="middle" font-size="11">장점:</text>
+    <text x="400" y="166" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 최적의 품질/크기 균형</text>
+    <text x="400" y="184" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 중요 레이어는 높은 정밀도</text>
+    <text x="400" y="209" fill="var(--text-secondary)" text-anchor="middle" font-size="11">단점:</text>
+    <text x="400" y="227" fill="var(--diagram-text)" text-anchor="middle" font-size="12">⚠️ Legacy보다 약간 느림</text>
+    <text x="400" y="245" fill="var(--diagram-text)" text-anchor="middle" font-size="12">⚠️ 양자화 시간 약간 더 소요</text>
+    <rect x="325" y="265" width="150" height="28" fill="var(--diagram-accent)" rx="4" opacity="0.15"/>
+    <text x="400" y="284" fill="var(--diagram-accent)" text-anchor="middle" font-size="12" font-weight="bold">대부분의 경우 최선</text>
+
+    <!-- i-Quant -->
+    <rect x="540" y="30" width="230" height="290" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="655" y="55" fill="var(--diagram-text)" text-anchor="middle" font-size="15" font-weight="bold">i-Quant (imatrix)</text>
+    <text x="655" y="73" fill="var(--text-secondary)" text-anchor="middle" font-size="11">IQ4_XS, IQ3_XXS, IQ2_XXS</text>
+    <line x1="560" y1="82" x2="750" y2="82" stroke="var(--diagram-stroke)" stroke-width="1"/>
+    <text x="655" y="103" fill="var(--diagram-text)" text-anchor="middle" font-size="12">중요도 행렬 기반 양자화</text>
+    <text x="655" y="123" fill="var(--diagram-text)" text-anchor="middle" font-size="12">가중치별 중요도 측정 후 처리</text>
+    <text x="655" y="148" fill="var(--text-secondary)" text-anchor="middle" font-size="11">장점:</text>
+    <text x="655" y="166" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 동일 비트에서 최고 품질</text>
+    <text x="655" y="184" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 극압축에서도 합리적 품질</text>
+    <text x="655" y="209" fill="var(--text-secondary)" text-anchor="middle" font-size="11">단점:</text>
+    <text x="655" y="227" fill="var(--diagram-text)" text-anchor="middle" font-size="12">❌ 캘리브레이션 데이터 필요</text>
+    <text x="655" y="245" fill="var(--diagram-text)" text-anchor="middle" font-size="12">❌ 양자화 시간 크게 증가</text>
+    <rect x="580" y="265" width="150" height="28" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="4"/>
+    <text x="655" y="284" fill="var(--text-secondary)" text-anchor="middle" font-size="12">극압축 필요 시 선택</text>
+  </svg>
+  <p class="diagram-caption">세 가지 양자화 기법 비교: Legacy(속도) vs K-Quant(균형, 추천) vs i-Quant(품질)</p>
+
+  <h4 id="gguf-size-benchmark">모델 크기별 양자화 벤치마크</h4>
+
+  <p>
+    실제 모델에 양자화를 적용했을 때의 파일 크기와 품질(Perplexity) 변화입니다.
+    Perplexity(PPL)는 낮을수록 좋으며, 언어 모델이 텍스트를 얼마나 잘 예측하는지를 나타냅니다.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>양자화</th>
+        <th>7B 크기</th>
+        <th>7B PPL</th>
+        <th>13B 크기</th>
+        <th>13B PPL</th>
+        <th>70B 크기</th>
+        <th>70B PPL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>F16</td>
+        <td>13.5 GB</td>
+        <td>5.59</td>
+        <td>25.0 GB</td>
+        <td>5.09</td>
+        <td>131 GB</td>
+        <td>3.32</td>
+      </tr>
+      <tr>
+        <td>Q8_0</td>
+        <td>7.2 GB</td>
+        <td>5.60</td>
+        <td>13.3 GB</td>
+        <td>5.09</td>
+        <td>69.4 GB</td>
+        <td>3.32</td>
+      </tr>
+      <tr>
+        <td>Q6_K</td>
+        <td>5.5 GB</td>
+        <td>5.60</td>
+        <td>10.3 GB</td>
+        <td>5.10</td>
+        <td>53.7 GB</td>
+        <td>3.33</td>
+      </tr>
+      <tr>
+        <td>Q5_K_M</td>
+        <td>4.8 GB</td>
+        <td>5.63</td>
+        <td>9.0 GB</td>
+        <td>5.11</td>
+        <td>46.7 GB</td>
+        <td>3.34</td>
+      </tr>
+      <tr>
+        <td><strong>Q4_K_M</strong></td>
+        <td><strong>4.1 GB</strong></td>
+        <td><strong>5.68</strong></td>
+        <td><strong>7.6 GB</strong></td>
+        <td><strong>5.14</strong></td>
+        <td><strong>39.6 GB</strong></td>
+        <td><strong>3.36</strong></td>
+      </tr>
+      <tr>
+        <td>Q4_0</td>
+        <td>3.8 GB</td>
+        <td>5.77</td>
+        <td>7.0 GB</td>
+        <td>5.20</td>
+        <td>36.2 GB</td>
+        <td>3.39</td>
+      </tr>
+      <tr>
+        <td>IQ4_XS</td>
+        <td>3.7 GB</td>
+        <td>5.66</td>
+        <td>6.8 GB</td>
+        <td>5.12</td>
+        <td>35.0 GB</td>
+        <td>3.35</td>
+      </tr>
+      <tr>
+        <td>Q3_K_M</td>
+        <td>3.3 GB</td>
+        <td>5.93</td>
+        <td>6.1 GB</td>
+        <td>5.30</td>
+        <td>31.7 GB</td>
+        <td>3.45</td>
+      </tr>
+      <tr>
+        <td>IQ3_XXS</td>
+        <td>2.7 GB</td>
+        <td>5.85</td>
+        <td>4.9 GB</td>
+        <td>5.24</td>
+        <td>25.6 GB</td>
+        <td>3.41</td>
+      </tr>
+      <tr>
+        <td>Q2_K</td>
+        <td>2.5 GB</td>
+        <td>6.79</td>
+        <td>4.7 GB</td>
+        <td>5.79</td>
+        <td>24.6 GB</td>
+        <td>3.72</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 양자화 크기/품질 트레이드오프 시각화 -->
+  <svg viewBox="0 0 800 300" class="diagram" role="img" aria-label="양자화 크기/품질 트레이드오프 (7B 모델 기준)">
+    <text x="400" y="20" fill="var(--diagram-text)" text-anchor="middle" font-size="14" font-weight="bold">7B 모델 — 양자화별 크기 vs 품질 (Perplexity)</text>
+
+    <!-- 축 -->
+    <line x1="80" y1="40" x2="80" y2="260" stroke="var(--diagram-stroke)" stroke-width="1.5"/>
+    <line x1="80" y1="260" x2="760" y2="260" stroke="var(--diagram-stroke)" stroke-width="1.5"/>
+    <text x="30" y="150" fill="var(--text-secondary)" text-anchor="middle" font-size="10" transform="rotate(-90, 30, 150)">PPL (낮을수록 좋음)</text>
+    <text x="420" y="285" fill="var(--text-secondary)" text-anchor="middle" font-size="10">파일 크기 (GB)</text>
+
+    <!-- Y축 눈금 -->
+    <text x="72" y="68" fill="var(--text-secondary)" text-anchor="end" font-size="9">5.5</text>
+    <line x1="76" y1="65" x2="84" y2="65" stroke="var(--diagram-stroke)" stroke-width="1"/>
+    <text x="72" y="128" fill="var(--text-secondary)" text-anchor="end" font-size="9">5.7</text>
+    <line x1="76" y1="125" x2="84" y2="125" stroke="var(--diagram-stroke)" stroke-width="1"/>
+    <text x="72" y="188" fill="var(--text-secondary)" text-anchor="end" font-size="9">5.9</text>
+    <line x1="76" y1="185" x2="84" y2="185" stroke="var(--diagram-stroke)" stroke-width="1"/>
+    <text x="72" y="248" fill="var(--text-secondary)" text-anchor="end" font-size="9">6.1</text>
+    <line x1="76" y1="245" x2="84" y2="245" stroke="var(--diagram-stroke)" stroke-width="1"/>
+
+    <!-- X축 눈금 -->
+    <text x="150" y="275" fill="var(--text-secondary)" text-anchor="middle" font-size="9">2GB</text>
+    <text x="270" y="275" fill="var(--text-secondary)" text-anchor="middle" font-size="9">4GB</text>
+    <text x="390" y="275" fill="var(--text-secondary)" text-anchor="middle" font-size="9">6GB</text>
+    <text x="510" y="275" fill="var(--text-secondary)" text-anchor="middle" font-size="9">8GB</text>
+    <text x="640" y="275" fill="var(--text-secondary)" text-anchor="middle" font-size="9">10GB</text>
+    <text x="750" y="275" fill="var(--text-secondary)" text-anchor="middle" font-size="9">14GB</text>
+
+    <!-- 데이터 포인트 (x: 크기, y: PPL) -->
+    <!-- F16: 13.5GB, 5.59 → x=730, y=57 -->
+    <circle cx="730" cy="57" r="6" fill="var(--diagram-stroke)"/>
+    <text x="730" y="48" fill="var(--text-secondary)" text-anchor="middle" font-size="9">F16</text>
+
+    <!-- Q8_0: 7.2GB, 5.60 → x=475, y=60 -->
+    <circle cx="475" cy="60" r="6" fill="var(--diagram-stroke)"/>
+    <text x="475" y="48" fill="var(--text-secondary)" text-anchor="middle" font-size="9">Q8_0</text>
+
+    <!-- Q5_K_M: 4.8GB, 5.63 → x=310, y=69 -->
+    <circle cx="310" cy="69" r="6" fill="var(--diagram-stroke)"/>
+    <text x="310" y="58" fill="var(--text-secondary)" text-anchor="middle" font-size="9">Q5_K_M</text>
+
+    <!-- Q4_K_M: 4.1GB, 5.68 → x=267, y=84 -->
+    <circle cx="267" cy="84" r="8" fill="var(--diagram-accent)"/>
+    <text x="267" y="72" fill="var(--diagram-accent)" text-anchor="middle" font-size="10" font-weight="bold">Q4_K_M ★</text>
+
+    <!-- IQ4_XS: 3.7GB, 5.66 → x=243, y=78 -->
+    <circle cx="243" cy="78" r="6" fill="var(--diagram-stroke)"/>
+    <text x="215" y="88" fill="var(--text-secondary)" text-anchor="middle" font-size="9">IQ4_XS</text>
+
+    <!-- Q4_0: 3.8GB, 5.77 → x=248, y=111 -->
+    <circle cx="248" cy="111" r="6" fill="var(--diagram-stroke)"/>
+    <text x="218" y="116" fill="var(--text-secondary)" text-anchor="middle" font-size="9">Q4_0</text>
+
+    <!-- Q3_K_M: 3.3GB, 5.93 → x=218, y=159 -->
+    <circle cx="218" cy="159" r="6" fill="var(--diagram-stroke)"/>
+    <text x="188" y="163" fill="var(--text-secondary)" text-anchor="middle" font-size="9">Q3_K_M</text>
+
+    <!-- IQ3_XXS: 2.7GB, 5.85 → x=182, y=135 -->
+    <circle cx="182" cy="135" r="6" fill="var(--diagram-stroke)"/>
+    <text x="165" y="145" fill="var(--text-secondary)" text-anchor="middle" font-size="9">IQ3_XXS</text>
+
+    <!-- Q2_K: 2.5GB, 6.79 (off chart, mark at edge) → x=170, y=250 -->
+    <circle cx="170" cy="248" r="6" fill="var(--diagram-stroke)"/>
+    <text x="170" y="242" fill="var(--text-secondary)" text-anchor="middle" font-size="9">Q2_K (6.79)</text>
+
+    <!-- Sweet spot 영역 표시 -->
+    <rect x="230" y="60" width="100" height="70" fill="var(--diagram-accent)" opacity="0.08" rx="8"/>
+    <text x="280" y="145" fill="var(--diagram-accent)" text-anchor="middle" font-size="10">Sweet Spot</text>
+  </svg>
+  <p class="diagram-caption">7B 모델 양자화 트레이드오프: Q4_K_M이 크기 대비 품질의 최적점(Sweet Spot)</p>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 양자화 선택 실전 가이드</div>
+    <ul>
+      <li><strong>품질 최우선</strong>: Q8_0 — PPL 손실 거의 없음, F16 대비 47% 크기 절감</li>
+      <li><strong>최적 균형 (추천)</strong>: <strong>Q4_K_M</strong> — PPL 약 1.6% 증가, 크기 70% 절감. 대부분의 작업에서 체감 차이 없음</li>
+      <li><strong>극한 압축</strong>: IQ4_XS — Q4_K_M보다 작으면서 비슷한 품질 (imatrix 필요)</li>
+      <li><strong>RAM 극히 부족</strong>: IQ3_XXS 또는 Q2_K — 품질 저하 감수. 테스트 후 사용 권장</li>
+      <li><strong>모델이 클수록</strong> 양자화 영향 작음 — 70B Q4_K_M은 7B F16보다 품질이 높음</li>
+    </ul>
+  </div>
+
+  <h4 id="gguf-vs-others">다른 모델 포맷과의 비교</h4>
+
+  <!-- 모델 포맷 비교 다이어그램 -->
+  <svg viewBox="0 0 800 380" class="diagram" role="img" aria-label="모델 포맷 비교">
+    <!-- GGUF -->
+    <rect x="30" y="30" width="170" height="320" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="3" rx="8"/>
+    <text x="115" y="58" fill="var(--diagram-accent)" text-anchor="middle" font-size="16" font-weight="bold">GGUF</text>
+    <text x="115" y="78" fill="var(--text-secondary)" text-anchor="middle" font-size="10">llama.cpp</text>
+    <text x="115" y="108" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ CPU 추론 최적</text>
+    <text x="115" y="130" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 단일 파일</text>
+    <text x="115" y="152" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 양자화 내장</text>
+    <text x="115" y="174" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ mmap 지원</text>
+    <text x="115" y="196" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 메타데이터</text>
+    <text x="115" y="228" fill="var(--text-secondary)" text-anchor="middle" font-size="11">용도: 로컬 추론</text>
+    <text x="115" y="248" fill="var(--text-secondary)" text-anchor="middle" font-size="11">Ollama, LM Studio</text>
+    <text x="115" y="268" fill="var(--text-secondary)" text-anchor="middle" font-size="11">GPT4All</text>
+    <rect x="55" y="290" width="120" height="30" fill="var(--diagram-accent)" rx="4" opacity="0.2"/>
+    <text x="115" y="310" fill="var(--diagram-accent)" text-anchor="middle" font-size="12" font-weight="bold">로컬 LLM 표준</text>
+
+    <!-- SafeTensors -->
+    <rect x="220" y="30" width="170" height="320" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="305" y="58" fill="var(--diagram-text)" text-anchor="middle" font-size="16" font-weight="bold">SafeTensors</text>
+    <text x="305" y="78" fill="var(--text-secondary)" text-anchor="middle" font-size="10">Hugging Face</text>
+    <text x="305" y="108" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ GPU 학습 최적</text>
+    <text x="305" y="130" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 안전한 로딩</text>
+    <text x="305" y="152" fill="var(--diagram-text)" text-anchor="middle" font-size="12">❌ 양자화 없음</text>
+    <text x="305" y="174" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ mmap 지원</text>
+    <text x="305" y="196" fill="var(--diagram-text)" text-anchor="middle" font-size="12">⚠️ 제한적 메타</text>
+    <text x="305" y="228" fill="var(--text-secondary)" text-anchor="middle" font-size="11">용도: 학습/파인튜닝</text>
+    <text x="305" y="248" fill="var(--text-secondary)" text-anchor="middle" font-size="11">HuggingFace Hub</text>
+    <text x="305" y="268" fill="var(--text-secondary)" text-anchor="middle" font-size="11">Transformers</text>
+    <rect x="245" y="290" width="120" height="30" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" rx="4"/>
+    <text x="305" y="310" fill="var(--diagram-text)" text-anchor="middle" font-size="12">HF 생태계 표준</text>
+
+    <!-- PyTorch (.pt/.bin) -->
+    <rect x="410" y="30" width="170" height="320" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="495" y="58" fill="var(--diagram-text)" text-anchor="middle" font-size="16" font-weight="bold">PyTorch</text>
+    <text x="495" y="78" fill="var(--text-secondary)" text-anchor="middle" font-size="10">.pt / .bin</text>
+    <text x="495" y="108" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ GPU 학습 최적</text>
+    <text x="495" y="130" fill="var(--diagram-text)" text-anchor="middle" font-size="12">❌ pickle 보안 위험</text>
+    <text x="495" y="152" fill="var(--diagram-text)" text-anchor="middle" font-size="12">❌ 양자화 없음</text>
+    <text x="495" y="174" fill="var(--diagram-text)" text-anchor="middle" font-size="12">❌ mmap 불가</text>
+    <text x="495" y="196" fill="var(--diagram-text)" text-anchor="middle" font-size="12">❌ 메타데이터 없음</text>
+    <text x="495" y="228" fill="var(--text-secondary)" text-anchor="middle" font-size="11">용도: 연구/학습</text>
+    <text x="495" y="248" fill="var(--text-secondary)" text-anchor="middle" font-size="11">PyTorch 네이티브</text>
+    <text x="495" y="268" fill="var(--text-secondary)" text-anchor="middle" font-size="11">레거시 호환</text>
+    <rect x="435" y="290" width="120" height="30" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" rx="4"/>
+    <text x="495" y="310" fill="var(--diagram-text)" text-anchor="middle" font-size="12">레거시 포맷</text>
+
+    <!-- ONNX -->
+    <rect x="600" y="30" width="170" height="320" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="685" y="58" fill="var(--diagram-text)" text-anchor="middle" font-size="16" font-weight="bold">ONNX</text>
+    <text x="685" y="78" fill="var(--text-secondary)" text-anchor="middle" font-size="10">Open Neural Network</text>
+    <text x="685" y="108" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 크로스 프레임워크</text>
+    <text x="685" y="130" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 최적화 런타임</text>
+    <text x="685" y="152" fill="var(--diagram-text)" text-anchor="middle" font-size="12">⚠️ 제한적 양자화</text>
+    <text x="685" y="174" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ mmap 지원</text>
+    <text x="685" y="196" fill="var(--diagram-text)" text-anchor="middle" font-size="12">✅ 연산 그래프 포함</text>
+    <text x="685" y="228" fill="var(--text-secondary)" text-anchor="middle" font-size="11">용도: 프로덕션 배포</text>
+    <text x="685" y="248" fill="var(--text-secondary)" text-anchor="middle" font-size="11">DirectML, ONNX RT</text>
+    <text x="685" y="268" fill="var(--text-secondary)" text-anchor="middle" font-size="11">Edge 디바이스</text>
+    <rect x="625" y="290" width="120" height="30" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" rx="4"/>
+    <text x="685" y="310" fill="var(--diagram-text)" text-anchor="middle" font-size="12">배포 최적화</text>
+  </svg>
+  <p class="diagram-caption">주요 모델 포맷 비교: GGUF는 로컬 CPU/GPU 추론에 최적화된 포맷</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>비교 항목</th>
+        <th>GGUF</th>
+        <th>SafeTensors</th>
+        <th>PyTorch (.pt)</th>
+        <th>ONNX</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>주요 용도</strong></td>
+        <td>로컬 추론</td>
+        <td>학습/배포</td>
+        <td>연구/학습</td>
+        <td>프로덕션 배포</td>
+      </tr>
+      <tr>
+        <td><strong>양자화</strong></td>
+        <td>2~8비트 내장</td>
+        <td>미지원</td>
+        <td>미지원</td>
+        <td>제한적</td>
+      </tr>
+      <tr>
+        <td><strong>CPU 추론</strong></td>
+        <td>최적화됨</td>
+        <td>비효율적</td>
+        <td>비효율적</td>
+        <td>보통</td>
+      </tr>
+      <tr>
+        <td><strong>GPU 추론</strong></td>
+        <td>지원 (부분 오프로드)</td>
+        <td>최적</td>
+        <td>최적</td>
+        <td>지원</td>
+      </tr>
+      <tr>
+        <td><strong>메모리 매핑</strong></td>
+        <td>✅ mmap</td>
+        <td>✅ mmap</td>
+        <td>❌</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong>보안</strong></td>
+        <td>안전 (바이너리)</td>
+        <td>안전</td>
+        <td>⚠️ pickle 위험</td>
+        <td>안전</td>
+      </tr>
+      <tr>
+        <td><strong>메타데이터</strong></td>
+        <td>풍부 (KV 쌍)</td>
+        <td>제한적</td>
+        <td>없음</td>
+        <td>연산 그래프</td>
+      </tr>
+      <tr>
+        <td><strong>단일 파일</strong></td>
+        <td>✅</td>
+        <td>⚠️ (분할 가능)</td>
+        <td>⚠️ (분할 가능)</td>
+        <td>✅</td>
+      </tr>
+      <tr>
+        <td><strong>변환 난이도</strong></td>
+        <td>쉬움 (llama.cpp)</td>
+        <td>쉬움</td>
+        <td>기본 포맷</td>
+        <td>보통</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 id="gguf-mmap">메모리 매핑(mmap)과 GGUF</h4>
+
+  <p>
+    GGUF가 빠르게 모델을 로드할 수 있는 핵심 비결은 <strong>메모리 매핑(mmap)</strong>입니다.
+    일반적인 파일 로딩은 디스크→RAM 전체 복사가 필요하지만,
+    mmap은 운영체제의 가상 메모리 시스템을 활용하여 파일을 직접 메모리 공간에 매핑합니다.
+  </p>
+
+  <!-- mmap 다이어그램 -->
+  <svg viewBox="0 0 800 280" class="diagram" role="img" aria-label="mmap 동작 원리">
+    <defs>
+      <marker id="mmap-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--diagram-arrow)" />
+      </marker>
+    </defs>
+
+    <!-- 일반 로딩 -->
+    <text x="200" y="25" fill="var(--diagram-text)" text-anchor="middle" font-size="14" font-weight="bold">일반 로딩 (read)</text>
+
+    <rect x="40" y="40" width="130" height="60" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
+    <text x="105" y="65" fill="var(--diagram-text)" text-anchor="middle" font-size="12">디스크</text>
+    <text x="105" y="85" fill="var(--text-secondary)" text-anchor="middle" font-size="11">model.gguf (4GB)</text>
+
+    <line x1="175" y1="70" x2="225" y2="70" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#mmap-arrow)"/>
+    <text x="200" y="62" fill="var(--text-secondary)" text-anchor="middle" font-size="10">전체 복사</text>
+
+    <rect x="230" y="40" width="130" height="60" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="6"/>
+    <text x="295" y="65" fill="var(--diagram-text)" text-anchor="middle" font-size="12">RAM</text>
+    <text x="295" y="85" fill="var(--text-secondary)" text-anchor="middle" font-size="11">4GB 전부 점유</text>
+
+    <text x="200" y="125" fill="var(--text-secondary)" text-anchor="middle" font-size="11">⏱ 로딩 수초~수십초 / RAM 전부 사용</text>
+
+    <!-- mmap 로딩 -->
+    <text x="600" y="25" fill="var(--diagram-accent)" text-anchor="middle" font-size="14" font-weight="bold">mmap 로딩 (GGUF)</text>
+
+    <rect x="450" y="40" width="130" height="60" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="6"/>
+    <text x="515" y="65" fill="var(--diagram-text)" text-anchor="middle" font-size="12">디스크</text>
+    <text x="515" y="85" fill="var(--text-secondary)" text-anchor="middle" font-size="11">model.gguf (4GB)</text>
+
+    <line x1="585" y1="55" x2="635" y2="55" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#mmap-arrow)" stroke-dasharray="6,3"/>
+    <text x="610" y="48" fill="var(--text-secondary)" text-anchor="middle" font-size="9">필요한 페이지만</text>
+
+    <rect x="640" y="40" width="130" height="60" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="6"/>
+    <text x="705" y="65" fill="var(--diagram-text)" text-anchor="middle" font-size="12">가상 메모리</text>
+    <text x="705" y="85" fill="var(--text-secondary)" text-anchor="middle" font-size="11">필요 분만 RAM 사용</text>
+
+    <text x="600" y="125" fill="var(--text-secondary)" text-anchor="middle" font-size="11">⚡ 즉시 로딩 / RAM 절약 / OS 캐시 활용</text>
+
+    <!-- 비교 박스 -->
+    <rect x="150" y="150" width="500" height="110" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="400" y="175" fill="var(--diagram-accent)" text-anchor="middle" font-size="14" font-weight="bold">mmap 장점 요약</text>
+    <text x="400" y="200" fill="var(--diagram-text)" text-anchor="middle" font-size="12">• 로딩 시간: 수초 → 거의 즉시 (메모리 매핑만 설정)</text>
+    <text x="400" y="220" fill="var(--diagram-text)" text-anchor="middle" font-size="12">• 여러 프로세스가 같은 모델 파일을 공유 가능 (메모리 절약)</text>
+    <text x="400" y="240" fill="var(--diagram-text)" text-anchor="middle" font-size="12">• OS가 자동으로 자주 쓰는 부분을 RAM에 캐시</text>
+  </svg>
+  <p class="diagram-caption">일반 파일 로딩 vs mmap: GGUF는 mmap을 통해 즉시 로딩과 메모리 공유를 실현</p>
+
+  <h4 id="gguf-gpu-offload">GPU 오프로딩 (Partial Offload)</h4>
+
+  <p>
+    GGUF 기반 추론 엔진(llama.cpp, Ollama)은 모델의 레이어를 <strong>GPU와 CPU에 분산</strong>하여 배치할 수 있습니다.
+    이를 <strong>GPU 오프로딩</strong>이라 하며, VRAM이 모델 전체를 수용하지 못할 때 핵심적인 기능입니다.
+    <code>--n-gpu-layers</code> (줄여서 <code>-ngl</code>) 파라미터로 GPU에 올릴 레이어 수를 지정합니다.
+  </p>
+
+  <!-- GPU 오프로딩 다이어그램 -->
+  <svg viewBox="0 0 800 420" class="diagram" role="img" aria-label="GPU 오프로딩 원리">
+    <defs>
+      <marker id="offload-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--diagram-arrow)" />
+      </marker>
+    </defs>
+
+    <text x="400" y="22" fill="var(--diagram-text)" text-anchor="middle" font-size="14" font-weight="bold">28-Layer 모델의 GPU 오프로딩 시나리오</text>
+
+    <!-- 시나리오 1: CPU Only (ngl=0) -->
+    <rect x="30" y="40" width="160" height="350" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="110" y="62" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">CPU Only</text>
+    <text x="110" y="78" fill="var(--text-secondary)" text-anchor="middle" font-size="10">-ngl 0</text>
+
+    <rect x="45" y="90" width="130" height="280" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="4"/>
+    <text x="110" y="110" fill="var(--diagram-text)" text-anchor="middle" font-size="11" font-weight="bold">CPU (RAM)</text>
+    <text x="110" y="130" fill="var(--text-secondary)" text-anchor="middle" font-size="10">Layer 0~27</text>
+    <text x="110" y="148" fill="var(--text-secondary)" text-anchor="middle" font-size="10">(전체 28층)</text>
+    <rect x="55" y="160" width="110" height="180" fill="var(--diagram-stroke)" rx="3" opacity="0.15"/>
+    <text x="110" y="255" fill="var(--text-secondary)" text-anchor="middle" font-size="10">4.1 GB RAM</text>
+    <text x="110" y="355" fill="var(--text-secondary)" text-anchor="middle" font-size="10">느림 (1x)</text>
+
+    <!-- 시나리오 2: Partial (ngl=20) -->
+    <rect x="220" y="40" width="175" height="350" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="8"/>
+    <text x="307" y="62" fill="var(--diagram-accent)" text-anchor="middle" font-size="12" font-weight="bold">Partial Offload</text>
+    <text x="307" y="78" fill="var(--text-secondary)" text-anchor="middle" font-size="10">-ngl 20</text>
+
+    <rect x="235" y="90" width="145" height="105" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="1.5" rx="4"/>
+    <text x="307" y="110" fill="var(--diagram-accent)" text-anchor="middle" font-size="11" font-weight="bold">GPU (VRAM)</text>
+    <text x="307" y="130" fill="var(--text-secondary)" text-anchor="middle" font-size="10">Layer 0~19</text>
+    <rect x="245" y="138" width="125" height="45" fill="var(--diagram-accent)" rx="3" opacity="0.15"/>
+    <text x="307" y="165" fill="var(--text-secondary)" text-anchor="middle" font-size="10">2.9 GB VRAM</text>
+
+    <line x1="307" y1="198" x2="307" y2="208" stroke="var(--diagram-arrow)" stroke-width="1.5" marker-end="url(#offload-arrow)"/>
+
+    <rect x="235" y="210" width="145" height="105" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="4"/>
+    <text x="307" y="230" fill="var(--diagram-text)" text-anchor="middle" font-size="11" font-weight="bold">CPU (RAM)</text>
+    <text x="307" y="250" fill="var(--text-secondary)" text-anchor="middle" font-size="10">Layer 20~27</text>
+    <rect x="245" y="258" width="125" height="45" fill="var(--diagram-stroke)" rx="3" opacity="0.15"/>
+    <text x="307" y="285" fill="var(--text-secondary)" text-anchor="middle" font-size="10">1.2 GB RAM</text>
+    <text x="307" y="355" fill="var(--text-secondary)" text-anchor="middle" font-size="10">보통 (3~5x)</text>
+
+    <!-- 시나리오 3: Full GPU (ngl=99) -->
+    <rect x="425" y="40" width="160" height="350" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="3" rx="8"/>
+    <text x="505" y="62" fill="var(--diagram-accent)" text-anchor="middle" font-size="12" font-weight="bold">Full GPU ★</text>
+    <text x="505" y="78" fill="var(--text-secondary)" text-anchor="middle" font-size="10">-ngl 99 (전체)</text>
+
+    <rect x="440" y="90" width="130" height="280" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="1.5" rx="4"/>
+    <text x="505" y="110" fill="var(--diagram-accent)" text-anchor="middle" font-size="11" font-weight="bold">GPU (VRAM)</text>
+    <text x="505" y="130" fill="var(--text-secondary)" text-anchor="middle" font-size="10">Layer 0~27</text>
+    <text x="505" y="148" fill="var(--text-secondary)" text-anchor="middle" font-size="10">(전체 28층)</text>
+    <rect x="450" y="160" width="110" height="180" fill="var(--diagram-accent)" rx="3" opacity="0.15"/>
+    <text x="505" y="255" fill="var(--text-secondary)" text-anchor="middle" font-size="10">4.1 GB VRAM</text>
+    <text x="505" y="355" fill="var(--diagram-accent)" text-anchor="middle" font-size="10" font-weight="bold">최고속 (10~20x)</text>
+
+    <!-- VRAM 가이드 -->
+    <rect x="615" y="40" width="160" height="350" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="695" y="65" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">VRAM 필요량</text>
+    <text x="695" y="82" fill="var(--text-secondary)" text-anchor="middle" font-size="10">(Q4_K_M 기준)</text>
+
+    <text x="695" y="115" fill="var(--diagram-text)" text-anchor="middle" font-size="11">3B → ~2 GB</text>
+    <text x="695" y="140" fill="var(--diagram-text)" text-anchor="middle" font-size="11">7B → ~4 GB</text>
+    <text x="695" y="165" fill="var(--diagram-text)" text-anchor="middle" font-size="11">13B → ~8 GB</text>
+    <text x="695" y="190" fill="var(--diagram-text)" text-anchor="middle" font-size="11">34B → ~20 GB</text>
+    <text x="695" y="215" fill="var(--diagram-text)" text-anchor="middle" font-size="11">70B → ~40 GB</text>
+
+    <line x1="625" y1="235" x2="765" y2="235" stroke="var(--diagram-stroke)" stroke-width="1"/>
+    <text x="695" y="258" fill="var(--text-secondary)" text-anchor="middle" font-size="10">일반 GPU별 권장</text>
+    <text x="695" y="278" fill="var(--diagram-text)" text-anchor="middle" font-size="11">8GB → 7B 풀 GPU</text>
+    <text x="695" y="298" fill="var(--diagram-text)" text-anchor="middle" font-size="11">12GB → 13B 풀 GPU</text>
+    <text x="695" y="318" fill="var(--diagram-text)" text-anchor="middle" font-size="11">24GB → 34B 풀 GPU</text>
+    <text x="695" y="338" fill="var(--diagram-text)" text-anchor="middle" font-size="11">48GB → 70B 풀 GPU</text>
+    <text x="695" y="370" fill="var(--text-secondary)" text-anchor="middle" font-size="9">KV 캐시 추가 필요</text>
+    <text x="695" y="383" fill="var(--text-secondary)" text-anchor="middle" font-size="9">(컨텍스트 길이에 비례)</text>
+  </svg>
+  <p class="diagram-caption">GPU 오프로딩 시나리오: CPU Only → Partial → Full GPU (속도 10~20배 차이)</p>
+
+  <pre><code><span class="cmt"># Ollama에서 GPU 레이어 수 지정</span>
+OLLAMA_NUM_GPU_LAYERS=<span class="num">20</span> ollama run llama3.2:3b
+
+<span class="cmt"># llama.cpp 직접 사용 시</span>
+./llama-cli -m model.gguf -ngl <span class="num">99</span>  <span class="cmt"># 전체 GPU 오프로드</span>
+./llama-cli -m model.gguf -ngl <span class="num">20</span>  <span class="cmt"># 20개 레이어만 GPU</span>
+./llama-cli -m model.gguf -ngl <span class="num">0</span>   <span class="cmt"># CPU 전용 (GPU 미사용)</span>
+
+<span class="cmt"># VRAM 사용량 실시간 모니터링</span>
+watch -n <span class="num">1</span> nvidia-smi  <span class="cmt"># NVIDIA GPU</span>
+<span class="cmt"># macOS: 활성 상태 보기 → GPU 히스토리</span></code></pre>
+
+  <h4 id="gguf-convert">GGUF 변환 워크플로</h4>
+
+  <p>
+    Hugging Face의 SafeTensors/PyTorch 모델을 GGUF로 변환하는 과정입니다.
+    llama.cpp 프로젝트의 <code>convert_hf_to_gguf.py</code> 스크립트를 사용합니다.
+  </p>
+
+  <pre><code><span class="cmt"># 1. llama.cpp 클론 및 빌드</span>
+git clone https://github.com/ggerganov/llama.cpp
+cd llama.cpp
+pip install -r requirements.txt
+
+<span class="cmt"># 2. Hugging Face 모델을 GGUF F16으로 변환</span>
+python convert_hf_to_gguf.py \
+  /path/to/hf-model \
+  --outfile model-f16.gguf \
+  --outtype f16
+
+<span class="cmt"># 3. 양자화 적용 (F16 → Q4_K_M)</span>
+./llama-quantize model-f16.gguf model-q4km.gguf Q4_K_M
+
+<span class="cmt"># 중요도 행렬(imatrix) 기반 양자화 (더 높은 품질)</span>
+<span class="cmt"># 먼저 imatrix 생성</span>
+./llama-imatrix \
+  -m model-f16.gguf \
+  -f calibration-data.txt \
+  -o imatrix.dat
+
+<span class="cmt"># imatrix를 사용한 양자화</span>
+./llama-quantize \
+  --imatrix imatrix.dat \
+  model-f16.gguf \
+  model-iq4xs.gguf IQ4_XS</code></pre>
+
+  <!-- 변환 워크플로 다이어그램 -->
+  <svg viewBox="0 0 800 180" class="diagram" role="img" aria-label="GGUF 변환 워크플로">
+    <defs>
+      <marker id="gguf-conv-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--diagram-arrow)" />
+      </marker>
+    </defs>
+
+    <!-- HF Model -->
+    <rect x="20" y="45" width="150" height="70" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="95" y="72" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">HF 모델</text>
+    <text x="95" y="92" fill="var(--text-secondary)" text-anchor="middle" font-size="10">.safetensors / .bin</text>
+    <text x="95" y="106" fill="var(--text-secondary)" text-anchor="middle" font-size="10">+ config.json</text>
+
+    <!-- Arrow 1 -->
+    <line x1="175" y1="80" x2="225" y2="80" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#gguf-conv-arrow)"/>
+    <text x="200" y="70" fill="var(--text-secondary)" text-anchor="middle" font-size="9">convert_hf</text>
+
+    <!-- F16 GGUF -->
+    <rect x="230" y="45" width="150" height="70" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="305" y="72" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">GGUF (F16)</text>
+    <text x="305" y="92" fill="var(--text-secondary)" text-anchor="middle" font-size="10">원본 품질 유지</text>
+    <text x="305" y="106" fill="var(--text-secondary)" text-anchor="middle" font-size="10">~13GB (7B 모델)</text>
+
+    <!-- Arrow 2 -->
+    <line x1="385" y1="80" x2="435" y2="80" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#gguf-conv-arrow)"/>
+    <text x="410" y="70" fill="var(--text-secondary)" text-anchor="middle" font-size="9">quantize</text>
+
+    <!-- Quantized GGUF -->
+    <rect x="440" y="45" width="150" height="70" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="3" rx="8"/>
+    <text x="515" y="72" fill="var(--diagram-accent)" text-anchor="middle" font-size="13" font-weight="bold">GGUF (Q4_K_M)</text>
+    <text x="515" y="92" fill="var(--text-secondary)" text-anchor="middle" font-size="10">양자화 적용</text>
+    <text x="515" y="106" fill="var(--text-secondary)" text-anchor="middle" font-size="10">~4GB (7B 모델)</text>
+
+    <!-- Arrow 3 -->
+    <line x1="595" y1="80" x2="645" y2="80" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#gguf-conv-arrow)"/>
+    <text x="620" y="70" fill="var(--text-secondary)" text-anchor="middle" font-size="9">ollama create</text>
+
+    <!-- Ollama -->
+    <rect x="650" y="45" width="130" height="70" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="8"/>
+    <text x="715" y="72" fill="var(--diagram-accent)" text-anchor="middle" font-size="13" font-weight="bold">Ollama</text>
+    <text x="715" y="92" fill="var(--text-secondary)" text-anchor="middle" font-size="10">ollama run</text>
+    <text x="715" y="106" fill="var(--text-secondary)" text-anchor="middle" font-size="10">로컬 추론 실행</text>
+
+    <!-- 하단 라벨 -->
+    <text x="400" y="155" fill="var(--text-secondary)" text-anchor="middle" font-size="12">HuggingFace → F16 변환 → 양자화 → 로컬 실행</text>
+    <text x="400" y="172" fill="var(--text-secondary)" text-anchor="middle" font-size="11">총 소요 시간: 수분 ~ 수십분 (모델 크기에 따라)</text>
+  </svg>
+  <p class="diagram-caption">GGUF 변환 파이프라인: HuggingFace 모델 → F16 → 양자화 → Ollama 실행</p>
+
+  <h4 id="gguf-features">GGUF 핵심 특징 요약</h4>
 
   <table>
     <thead>
@@ -372,19 +1570,391 @@ DELETE /api/delete        <span class="cmt"># 모델 삭제</span></code></pre>
     <tbody>
       <tr>
         <td><strong>단일 파일</strong></td>
-        <td>모델, 토크나이저, 메타데이터를 하나의 파일로 패키징</td>
+        <td>모델 가중치, 토크나이저, 하이퍼파라미터, 아키텍처 메타데이터를 하나의 <code>.gguf</code> 파일로 패키징. 파일 하나만 옮기면 모델 이동 완료</td>
       </tr>
       <tr>
-        <td><strong>양자화</strong></td>
-        <td>Q4_0, Q5_K_M, Q8_0 등 다양한 양자화 레벨 지원</td>
+        <td><strong>다양한 양자화</strong></td>
+        <td>Q2_K ~ Q8_0, IQ 시리즈 등 10가지 이상의 양자화 레벨 내장 지원. K-quant, i-quant 등 고급 양자화 기법 포함</td>
       </tr>
       <tr>
         <td><strong>메모리 매핑</strong></td>
-        <td>mmap으로 빠른 로딩, 메모리 효율적</td>
+        <td>mmap을 통한 즉시 로딩, 멀티 프로세스 메모리 공유, OS 레벨 캐싱 자동 활용</td>
+      </tr>
+      <tr>
+        <td><strong>자기 설명적</strong></td>
+        <td>확장 가능한 KV 메타데이터로 모델의 모든 정보를 파일 자체에서 확인 가능. 외부 설정 파일 불필요</td>
       </tr>
       <tr>
         <td><strong>크로스 플랫폼</strong></td>
-        <td>Windows, Linux, macOS 모두 지원</td>
+        <td>Windows, Linux, macOS (ARM/x86) 모두 지원. 엔디안 표준화로 플랫폼 간 바이너리 호환</td>
+      </tr>
+      <tr>
+        <td><strong>확장성</strong></td>
+        <td>버전 관리 시스템으로 하위 호환성 유지. 새로운 양자화 타입이나 메타데이터 추가 시 기존 파일과 호환</td>
+      </tr>
+      <tr>
+        <td><strong>광범위한 지원</strong></td>
+        <td>Ollama, LM Studio, llama.cpp, GPT4All, KoboldCpp, text-generation-webui 등 대부분의 로컬 LLM 도구가 지원</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4 id="gguf-split">GGUF Split — 대용량 모델 분할</h4>
+
+  <p>
+    70B 이상의 대형 모델은 단일 GGUF 파일이 수십 GB에 달합니다.
+    일부 파일 시스템(FAT32 등)은 4GB 제한이 있고, 대용량 파일 전송 시 문제가 될 수 있습니다.
+    GGUF v3부터 <strong>파일 분할(Split)</strong>을 공식 지원합니다.
+  </p>
+
+  <pre><code><span class="cmt"># GGUF 파일 분할 (llama.cpp 도구)</span>
+./llama-gguf-split --split-max-size <span class="num">8</span>G model-70b-q4km.gguf model-70b-q4km
+
+<span class="cmt"># 결과: 분할된 파일들</span>
+model-70b-q4km-00001-of-00005.gguf  <span class="cmt"># 8GB</span>
+model-70b-q4km-00002-of-00005.gguf  <span class="cmt"># 8GB</span>
+model-70b-q4km-00003-of-00005.gguf  <span class="cmt"># 8GB</span>
+model-70b-q4km-00004-of-00005.gguf  <span class="cmt"># 8GB</span>
+model-70b-q4km-00005-of-00005.gguf  <span class="cmt"># 나머지</span>
+
+<span class="cmt"># 분할된 파일 다시 병합</span>
+./llama-gguf-split --merge model-70b-q4km-00001-of-00005.gguf merged-model.gguf
+
+<span class="cmt"># Ollama는 분할 파일도 직접 사용 가능</span>
+<span class="cmt"># Modelfile에서 첫 번째 파일만 지정하면 나머지를 자동 탐지</span>
+<span class="kw">FROM</span> ./model-70b-q4km-00001-of-00005.gguf</code></pre>
+
+  <h4 id="gguf-tensor-mapping">Transformer 블록과 GGUF 텐서 매핑</h4>
+
+  <p>
+    GGUF 파일 내부의 텐서 이름은 Transformer 아키텍처의 각 구성 요소에 직접 매핑됩니다.
+    텐서 이름을 이해하면 모델의 구조를 파일 레벨에서 파악할 수 있습니다.
+  </p>
+
+  <!-- Transformer 텐서 매핑 다이어그램 -->
+  <svg viewBox="0 0 800 530" class="diagram" role="img" aria-label="Transformer 블록과 GGUF 텐서 매핑">
+    <text x="400" y="22" fill="var(--diagram-text)" text-anchor="middle" font-size="14" font-weight="bold">Llama 아키텍처 — GGUF 텐서 이름 매핑</text>
+
+    <!-- 임베딩 레이어 -->
+    <rect x="250" y="35" width="300" height="40" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="6"/>
+    <text x="400" y="57" fill="var(--diagram-accent)" text-anchor="middle" font-size="12" font-weight="bold">token_embd.weight</text>
+    <text x="400" y="70" fill="var(--text-secondary)" text-anchor="middle" font-size="9">[vocab_size × embed_dim] — 토큰 임베딩</text>
+
+    <!-- Transformer Block ×N -->
+    <rect x="80" y="90" width="640" height="350" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="8" stroke-dasharray="8,4"/>
+    <text x="120" y="112" fill="var(--diagram-accent)" font-size="13" font-weight="bold">× N blocks (blk.{i}.*)</text>
+    <text x="700" y="112" fill="var(--text-secondary)" text-anchor="end" font-size="10">예: blk.0.*, blk.1.*, ...</text>
+
+    <!-- Attention Norm -->
+    <rect x="110" y="125" width="580" height="30" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="4"/>
+    <text x="400" y="145" fill="var(--diagram-text)" text-anchor="middle" font-size="11" font-weight="bold">blk.{i}.attn_norm.weight</text>
+    <text x="680" y="145" fill="var(--text-secondary)" text-anchor="end" font-size="9">RMSNorm</text>
+
+    <!-- Self-Attention -->
+    <rect x="110" y="165" width="580" height="95" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="130" y="183" fill="var(--diagram-text)" font-size="11" font-weight="bold">Self-Attention</text>
+
+    <rect x="130" y="192" width="130" height="25" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="3"/>
+    <text x="195" y="209" fill="var(--diagram-text)" text-anchor="middle" font-size="10">attn_q.weight</text>
+
+    <rect x="275" y="192" width="130" height="25" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="3"/>
+    <text x="340" y="209" fill="var(--diagram-text)" text-anchor="middle" font-size="10">attn_k.weight</text>
+
+    <rect x="420" y="192" width="130" height="25" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="3"/>
+    <text x="485" y="209" fill="var(--diagram-text)" text-anchor="middle" font-size="10">attn_v.weight</text>
+
+    <rect x="130" y="225" width="420" height="25" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="3"/>
+    <text x="340" y="242" fill="var(--diagram-text)" text-anchor="middle" font-size="10">attn_output.weight — [embed_dim × embed_dim]</text>
+
+    <text x="680" y="210" fill="var(--text-secondary)" text-anchor="end" font-size="9">Query/Key/Value</text>
+    <text x="680" y="242" fill="var(--text-secondary)" text-anchor="end" font-size="9">Output proj</text>
+
+    <!-- FFN Norm -->
+    <rect x="110" y="270" width="580" height="30" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="4"/>
+    <text x="400" y="290" fill="var(--diagram-text)" text-anchor="middle" font-size="11" font-weight="bold">blk.{i}.ffn_norm.weight</text>
+    <text x="680" y="290" fill="var(--text-secondary)" text-anchor="end" font-size="9">RMSNorm</text>
+
+    <!-- FFN (SwiGLU) -->
+    <rect x="110" y="310" width="580" height="95" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="130" y="328" fill="var(--diagram-text)" font-size="11" font-weight="bold">Feed-Forward (SwiGLU)</text>
+
+    <rect x="130" y="337" width="175" height="25" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="3"/>
+    <text x="217" y="354" fill="var(--diagram-text)" text-anchor="middle" font-size="10">ffn_gate.weight</text>
+
+    <rect x="320" y="337" width="175" height="25" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="3"/>
+    <text x="407" y="354" fill="var(--diagram-text)" text-anchor="middle" font-size="10">ffn_up.weight</text>
+
+    <rect x="130" y="370" width="365" height="25" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="3"/>
+    <text x="312" y="387" fill="var(--diagram-text)" text-anchor="middle" font-size="10">ffn_down.weight — [embed_dim × ff_dim]</text>
+
+    <text x="680" y="354" fill="var(--text-secondary)" text-anchor="end" font-size="9">Gate + Up proj</text>
+    <text x="680" y="387" fill="var(--text-secondary)" text-anchor="end" font-size="9">Down proj</text>
+
+    <!-- Output -->
+    <rect x="250" y="450" width="300" height="30" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="4"/>
+    <text x="400" y="470" fill="var(--diagram-text)" text-anchor="middle" font-size="11" font-weight="bold">output_norm.weight → output.weight</text>
+    <text x="400" y="510" fill="var(--text-secondary)" text-anchor="middle" font-size="10">[embed_dim] RMSNorm → [vocab_size × embed_dim] 출력 헤드</text>
+  </svg>
+  <p class="diagram-caption">Llama 아키텍처의 GGUF 텐서 이름: blk.{i}.attn_q/k/v, ffn_gate/up/down 등</p>
+
+  <pre><code><span class="cmt"># GGUF 파일의 텐서 목록 확인</span>
+$ python3 -c <span class="str">"
+from gguf import GGUFReader
+reader = GGUFReader('llama-3.2-3b-q4km.gguf')
+for tensor in reader.tensors:
+    dims = ' × '.join(str(d) for d in tensor.shape)
+    print(f'{tensor.name:40s} [{dims}] {tensor.tensor_type.name}')
+"</span>
+
+<span class="cmt"># 출력 예시 (Llama 3.2 3B)</span>
+token_embd.weight                        [<span class="num">128256</span> × <span class="num">3072</span>] Q4_K
+blk.<span class="num">0</span>.attn_norm.weight                   [<span class="num">3072</span>] F32
+blk.<span class="num">0</span>.attn_q.weight                      [<span class="num">3072</span> × <span class="num">3072</span>] Q4_K
+blk.<span class="num">0</span>.attn_k.weight                      [<span class="num">3072</span> × <span class="num">1024</span>] Q4_K
+blk.<span class="num">0</span>.attn_v.weight                      [<span class="num">3072</span> × <span class="num">1024</span>] Q6_K
+blk.<span class="num">0</span>.attn_output.weight                 [<span class="num">3072</span> × <span class="num">3072</span>] Q4_K
+blk.<span class="num">0</span>.ffn_norm.weight                    [<span class="num">3072</span>] F32
+blk.<span class="num">0</span>.ffn_gate.weight                    [<span class="num">3072</span> × <span class="num">8192</span>] Q4_K
+blk.<span class="num">0</span>.ffn_up.weight                      [<span class="num">3072</span> × <span class="num">8192</span>] Q4_K
+blk.<span class="num">0</span>.ffn_down.weight                    [<span class="num">8192</span> × <span class="num">3072</span>] Q6_K
+<span class="cmt">... (blk.1 ~ blk.27 동일 패턴 반복)</span>
+output_norm.weight                       [<span class="num">3072</span>] F32
+output.weight                            [<span class="num">128256</span> × <span class="num">3072</span>] Q6_K</code></pre>
+
+  <div class="info-box">
+    <div class="info-box-title">📌 K-quant의 차등 양자화</div>
+    <p>
+      위 출력에서 <code>attn_v.weight</code>와 <code>ffn_down.weight</code>는 <strong>Q6_K</strong>(6비트)로,
+      나머지는 <strong>Q4_K</strong>(4비트)로 양자화된 것을 볼 수 있습니다.
+      이것이 K-quant의 핵심 — <strong>모델 품질에 민감한 텐서는 높은 정밀도</strong>를,
+      덜 민감한 텐서는 낮은 정밀도를 적용하여 전체 품질을 유지하면서 크기를 줄입니다.
+      <code>_norm.weight</code>는 항상 F32로 유지되는데, 정규화 파라미터는 극히 작은 크기이면서
+      품질에 큰 영향을 주기 때문입니다.
+    </p>
+  </div>
+
+  <h4 id="gguf-hf-guide">HuggingFace에서 GGUF 모델 찾기</h4>
+
+  <p>
+    HuggingFace Hub에서 GGUF 모델을 효율적으로 찾고 올바른 양자화 버전을 선택하는 방법입니다.
+  </p>
+
+  <pre><code><span class="cmt"># HuggingFace Hub에서 GGUF 모델 검색</span>
+<span class="cmt"># https://huggingface.co/models?library=gguf</span>
+
+<span class="cmt"># 주요 GGUF 양자화 제공자</span>
+<span class="cmt"># ① bartowski — 가장 활발한 GGUF 변환자, imatrix 적용</span>
+<span class="cmt"># ② unsloth  — Llama/Mistral 계열 최적화 변환</span>
+<span class="cmt"># ③ mmnga    — 일본어/다국어 모델 GGUF 변환</span>
+
+<span class="cmt"># huggingface-cli로 직접 다운로드</span>
+pip install huggingface-hub
+huggingface-cli download \
+  bartowski/Llama-3.2-3B-Instruct-GGUF \
+  --include <span class="str">"*Q4_K_M.gguf"</span> \
+  --local-dir ./models
+
+<span class="cmt"># 특정 양자화만 골라서 다운로드 (와일드카드)</span>
+huggingface-cli download \
+  bartowski/Qwen2.5-7B-Instruct-GGUF \
+  --include <span class="str">"*Q5_K_M.gguf"</span> \
+  --local-dir ./models
+
+<span class="cmt"># Ollama에서 직접 Hugging Face GGUF 사용 (v0.4+)</span>
+ollama run hf.co/bartowski/Llama-3.2-3B-Instruct-GGUF:Q4_K_M</code></pre>
+
+  <div class="info-box tip">
+    <div class="info-box-title">💡 GGUF 모델 선택 체크리스트</div>
+    <ul>
+      <li><strong>모델 이름에 "-GGUF"</strong>가 붙은 리포지토리를 찾으세요 (예: <code>Llama-3.2-3B-Instruct-GGUF</code>)</li>
+      <li><strong>imatrix 적용 여부</strong> 확인 — README에 "importance matrix" 언급이 있으면 더 높은 품질</li>
+      <li><strong>양자화 선택 기준</strong>: VRAM/RAM 여유에 맞는 파일 크기 확인 후, <code>Q4_K_M</code>부터 시작</li>
+      <li><strong>파일명 규칙</strong>: <code>모델명-Q{비트}_{방식}_{크기}.gguf</code> (예: <code>model-Q4_K_M.gguf</code>)</li>
+      <li><strong>최신 변환자 선호</strong>: bartowski, unsloth 등 활발히 활동하는 변환자의 모델이 최신 llama.cpp와 호환될 가능성이 높음</li>
+    </ul>
+  </div>
+
+  <h4 id="gguf-ecosystem-tools">GGUF 생태계 도구 모음</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>도구</th>
+        <th>설명</th>
+        <th>주요 명령/용도</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>llama-quantize</strong></td>
+        <td>F16/F32 GGUF를 양자화</td>
+        <td><code>llama-quantize model-f16.gguf model-q4km.gguf Q4_K_M</code></td>
+      </tr>
+      <tr>
+        <td><strong>llama-imatrix</strong></td>
+        <td>중요도 행렬(imatrix) 생성</td>
+        <td><code>llama-imatrix -m model.gguf -f calib.txt -o imatrix.dat</code></td>
+      </tr>
+      <tr>
+        <td><strong>llama-gguf-split</strong></td>
+        <td>GGUF 파일 분할/병합</td>
+        <td><code>llama-gguf-split --split-max-size 8G model.gguf out</code></td>
+      </tr>
+      <tr>
+        <td><strong>convert_hf_to_gguf.py</strong></td>
+        <td>HuggingFace → GGUF 변환</td>
+        <td><code>python convert_hf_to_gguf.py /path/to/model --outtype f16</code></td>
+      </tr>
+      <tr>
+        <td><strong>gguf-py (Python)</strong></td>
+        <td>GGUF 파일 읽기/쓰기 라이브러리</td>
+        <td><code>pip install gguf</code> → <code>GGUFReader</code>, <code>GGUFWriter</code></td>
+      </tr>
+      <tr>
+        <td><strong>llama-cli</strong></td>
+        <td>GGUF 모델 CLI 추론</td>
+        <td><code>llama-cli -m model.gguf -p "Hello" -ngl 99</code></td>
+      </tr>
+      <tr>
+        <td><strong>llama-server</strong></td>
+        <td>GGUF 모델 HTTP 서버 (OpenAI 호환)</td>
+        <td><code>llama-server -m model.gguf --port 8080 -ngl 99</code></td>
+      </tr>
+      <tr>
+        <td><strong>llama-perplexity</strong></td>
+        <td>모델 품질 벤치마크 (PPL 측정)</td>
+        <td><code>llama-perplexity -m model.gguf -f wikitext-2-raw/wiki.test.raw</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- GGUF 생태계 다이어그램 -->
+  <svg viewBox="0 0 800 360" class="diagram" role="img" aria-label="GGUF 생태계 도구">
+    <defs>
+      <marker id="eco-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+        <polygon points="0 0, 10 3, 0 6" fill="var(--diagram-arrow)" />
+      </marker>
+    </defs>
+
+    <text x="400" y="22" fill="var(--diagram-text)" text-anchor="middle" font-size="14" font-weight="bold">GGUF 생태계 전체 워크플로</text>
+
+    <!-- 소스 모델들 (좌측) -->
+    <rect x="20" y="45" width="130" height="120" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="85" y="68" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">소스 모델</text>
+    <text x="85" y="88" fill="var(--text-secondary)" text-anchor="middle" font-size="10">HuggingFace</text>
+    <text x="85" y="103" fill="var(--text-secondary)" text-anchor="middle" font-size="10">SafeTensors</text>
+    <text x="85" y="118" fill="var(--text-secondary)" text-anchor="middle" font-size="10">PyTorch (.pt)</text>
+    <text x="85" y="133" fill="var(--text-secondary)" text-anchor="middle" font-size="10">GGML (레거시)</text>
+    <text x="85" y="155" fill="var(--text-secondary)" text-anchor="middle" font-size="9">직접 학습/파인튜닝</text>
+
+    <!-- 변환 도구 -->
+    <line x1="155" y1="105" x2="195" y2="105" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#eco-arrow)"/>
+
+    <rect x="200" y="60" width="130" height="90" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="265" y="82" fill="var(--diagram-text)" text-anchor="middle" font-size="11" font-weight="bold">변환 도구</text>
+    <text x="265" y="100" fill="var(--text-secondary)" text-anchor="middle" font-size="10">convert_hf_to_gguf</text>
+    <text x="265" y="115" fill="var(--text-secondary)" text-anchor="middle" font-size="10">llama-quantize</text>
+    <text x="265" y="130" fill="var(--text-secondary)" text-anchor="middle" font-size="10">llama-imatrix</text>
+    <text x="265" y="143" fill="var(--text-secondary)" text-anchor="middle" font-size="10">llama-gguf-split</text>
+
+    <!-- GGUF 파일 (중앙) -->
+    <line x1="335" y1="105" x2="385" y2="105" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#eco-arrow)"/>
+
+    <rect x="390" y="50" width="140" height="110" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="3" rx="8"/>
+    <text x="460" y="78" fill="var(--diagram-accent)" text-anchor="middle" font-size="16" font-weight="bold">.gguf</text>
+    <text x="460" y="98" fill="var(--text-secondary)" text-anchor="middle" font-size="10">단일 파일 포맷</text>
+    <text x="460" y="115" fill="var(--text-secondary)" text-anchor="middle" font-size="10">가중치 + 메타데이터</text>
+    <text x="460" y="130" fill="var(--text-secondary)" text-anchor="middle" font-size="10">+ 토크나이저</text>
+    <text x="460" y="148" fill="var(--text-secondary)" text-anchor="middle" font-size="9">gguf-py로 읽기/쓰기</text>
+
+    <!-- 런타임 (우측) -->
+    <line x1="535" y1="80" x2="585" y2="60" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#eco-arrow)"/>
+    <line x1="535" y1="105" x2="585" y2="105" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#eco-arrow)"/>
+    <line x1="535" y1="130" x2="585" y2="150" stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#eco-arrow)"/>
+
+    <rect x="590" y="35" width="185" height="38" fill="var(--diagram-fill)" stroke="var(--diagram-accent)" stroke-width="2" rx="6"/>
+    <text x="682" y="54" fill="var(--diagram-accent)" text-anchor="middle" font-size="12" font-weight="bold">Ollama</text>
+    <text x="682" y="67" fill="var(--text-secondary)" text-anchor="middle" font-size="9">ollama run / serve</text>
+
+    <rect x="590" y="83" width="185" height="38" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="682" y="102" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">LM Studio</text>
+    <text x="682" y="115" fill="var(--text-secondary)" text-anchor="middle" font-size="9">GUI 기반 로컬 추론</text>
+
+    <rect x="590" y="131" width="185" height="38" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1.5" rx="6"/>
+    <text x="682" y="150" fill="var(--diagram-text)" text-anchor="middle" font-size="12" font-weight="bold">llama.cpp (CLI/Server)</text>
+    <text x="682" y="163" fill="var(--text-secondary)" text-anchor="middle" font-size="9">llama-cli / llama-server</text>
+
+    <!-- 추가 런타임들 -->
+    <rect x="590" y="179" width="90" height="28" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="5"/>
+    <text x="635" y="197" fill="var(--text-secondary)" text-anchor="middle" font-size="9">GPT4All</text>
+    <rect x="685" y="179" width="90" height="28" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="5"/>
+    <text x="730" y="197" fill="var(--text-secondary)" text-anchor="middle" font-size="9">KoboldCpp</text>
+
+    <!-- 하단: 외부 앱 통합 -->
+    <rect x="100" y="215" width="600" height="130" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="2" rx="8"/>
+    <text x="400" y="238" fill="var(--diagram-text)" text-anchor="middle" font-size="13" font-weight="bold">외부 앱 통합 (OpenAI 호환 API 경유)</text>
+
+    <rect x="120" y="250" width="110" height="35" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="5"/>
+    <text x="175" y="272" fill="var(--diagram-text)" text-anchor="middle" font-size="10">Continue.dev</text>
+
+    <rect x="245" y="250" width="90" height="35" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="5"/>
+    <text x="290" y="272" fill="var(--diagram-text)" text-anchor="middle" font-size="10">Aider</text>
+
+    <rect x="350" y="250" width="100" height="35" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="5"/>
+    <text x="400" y="272" fill="var(--diagram-text)" text-anchor="middle" font-size="10">Open WebUI</text>
+
+    <rect x="465" y="250" width="100" height="35" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="5"/>
+    <text x="515" y="272" fill="var(--diagram-text)" text-anchor="middle" font-size="10">LangChain</text>
+
+    <rect x="580" y="250" width="100" height="35" fill="var(--diagram-fill)" stroke="var(--diagram-stroke)" stroke-width="1" rx="5"/>
+    <text x="630" y="272" fill="var(--diagram-text)" text-anchor="middle" font-size="10">커스텀 앱</text>
+
+    <text x="400" y="310" fill="var(--text-secondary)" text-anchor="middle" font-size="10">REST API (http://localhost:11434) → /api/generate, /api/chat, /v1/chat/completions</text>
+    <text x="400" y="335" fill="var(--text-secondary)" text-anchor="middle" font-size="10">GGUF 모델 하나로 CLI, GUI, API, 외부 앱까지 — 완전한 로컬 AI 스택 구축</text>
+  </svg>
+  <p class="diagram-caption">GGUF 생태계: 소스 모델 → 변환 → .gguf → 다양한 런타임 → 외부 앱 통합</p>
+
+  <h4 id="gguf-faq">GGUF 자주 묻는 질문 (FAQ)</h4>
+
+  <table>
+    <thead>
+      <tr>
+        <th>질문</th>
+        <th>답변</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>GGUF와 GGML의 차이는?</strong></td>
+        <td>GGML은 가중치만 저장하는 구 포맷. GGUF는 토크나이저, 메타데이터까지 단일 파일에 포함하는 후속 포맷. 2023년 8월 이후 GGML은 폐기되었으며 모든 도구가 GGUF로 전환</td>
+      </tr>
+      <tr>
+        <td><strong>Q4_K_M과 Q4_0의 차이는?</strong></td>
+        <td>Q4_0은 모든 레이어를 동일하게 4비트로 양자화. Q4_K_M은 중요한 레이어(attention value, ffn_down 등)를 6비트로 유지하여 같은 비트에서 더 높은 품질 제공. 파일 크기는 Q4_K_M이 약 8% 큼</td>
+      </tr>
+      <tr>
+        <td><strong>양자화하면 모델이 "멍청해"지나?</strong></td>
+        <td>Q4_K_M 기준으로 Perplexity 증가는 약 1~2%에 불과. 대부분의 일상 작업(코드 생성, 대화, 요약)에서 체감 차이 거의 없음. 단, Q2_K 이하에서는 눈에 띄는 품질 저하 발생</td>
+      </tr>
+      <tr>
+        <td><strong>GPU가 없어도 되나?</strong></td>
+        <td>가능. GGUF의 핵심 장점이 CPU 추론 최적화. 양자화된 4비트 모델은 CPU에서도 충분히 사용 가능. 단, GPU를 사용하면 10~20배 빠름</td>
+      </tr>
+      <tr>
+        <td><strong>GGUF를 직접 파인튜닝할 수 있나?</strong></td>
+        <td>불가. GGUF는 추론 전용 포맷. 파인튜닝은 SafeTensors/PyTorch 형태로 수행 후 GGUF로 변환해야 함. LoRA 어댑터는 별도 적용 가능</td>
+      </tr>
+      <tr>
+        <td><strong>최대 지원 모델 크기는?</strong></td>
+        <td>이론적 제한 없음 (64비트 오프셋). 실무적으로 405B (Llama 3.1 405B) 모델까지 GGUF로 변환·실행 사례 있음. 파일 분할(Split)로 대용량 처리</td>
+      </tr>
+      <tr>
+        <td><strong>SafeTensors와 GGUF 중 뭘 받아야?</strong></td>
+        <td>로컬에서 Ollama/LM Studio로 추론하려면 GGUF. HuggingFace Transformers로 학습/파인튜닝하려면 SafeTensors. 둘 다 필요하면 SafeTensors 받아서 GGUF로 변환</td>
+      </tr>
+      <tr>
+        <td><strong>imatrix(i-quant) 꼭 필요한가?</strong></td>
+        <td>Q4_K_M 이상에서는 거의 차이 없음. IQ3_XXS, IQ2_XXS 등 극압축 양자화에서만 의미 있는 품질 차이 발생. 캘리브레이션 데이터셋이 필요하여 추가 작업 소요</td>
       </tr>
     </tbody>
   </table>

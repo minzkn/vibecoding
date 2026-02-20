@@ -361,12 +361,21 @@
   </p>
   <p><strong>관련 페이지:</strong> <a href="model-comparison.html">LLM 모델 비교</a></p>
 
-  <h3 id="gguf">GGUF (GPT-Generated Unified Format)</h3>
+  <h3 id="gguf">GGUF (Georgi Gerganov Unified Format)</h3>
   <p>
-    로컬 LLM 실행을 위한 경량 모델 포맷. Ollama, LM Studio, llama.cpp가 사용하는 표준 포맷입니다.
-    양자화(Quantization)된 모델을 효율적으로 저장하고 로드합니다.
+    <strong>Georgi Gerganov</strong>가 개발한 llama.cpp 프로젝트의 로컬 LLM 모델 포맷.
+    GGML(구 포맷)을 계승하여 2023년 8월에 등장했으며, 모델 가중치, 토크나이저, 하이퍼파라미터, 아키텍처 메타데이터를
+    <strong>단일 파일</strong>에 모두 포함하는 자기 설명적(self-describing) 바이너리 포맷입니다.
+    mmap(메모리 매핑)을 통한 즉시 로딩, Q2_K~Q8_0 등 다양한 양자화 내장 지원, 크로스 플랫폼 호환이 핵심 특징입니다.
+    Ollama, LM Studio, llama.cpp, GPT4All 등 대부분의 로컬 LLM 런타임이 GGUF를 표준 포맷으로 채택하고 있습니다.
   </p>
-  <p><strong>관련 페이지:</strong> <a href="ollama-intro.html">Ollama 소개</a>, <a href="ollama-advanced.html#quantization">양자화 가이드</a></p>
+  <p><strong>관련 페이지:</strong>
+    <a href="ollama-intro.html#model-format">GGUF 상세 가이드</a>,
+    <a href="ollama-intro.html#gguf-structure">파일 내부 구조</a>,
+    <a href="ollama-intro.html#gguf-block-quantization">양자화 동작 원리</a>,
+    <a href="ollama-intro.html#gguf-gpu-offload">GPU 오프로딩</a>,
+    <a href="ollama-advanced.html#quantization">양자화 가이드</a>
+  </p>
 
   <h3 id="git">Git (깃)</h3>
   <p>
