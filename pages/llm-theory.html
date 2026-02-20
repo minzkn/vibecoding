@@ -200,43 +200,513 @@ P = [<span class="num">0.463</span>, <span class="num">0.281</span>, <span class
 </section>
 
 <section class="content-section">
-  <h2 id="math-basics">수학 기초: 벡터와 행렬</h2>
-  <p>LLM의 내부 동작을 이해하려면 최소한의 선형대수 직관이 필요합니다.</p>
+  <h2 id="math-basics">수학 기초: 선형대수</h2>
+  <p>LLM의 내부 동작을 이해하려면 최소한의 선형대수와 미적분 직관이 필요합니다. 이 섹션에서는 AI/ML에서 가장 빈번하게 사용되는 수학적 개념들을 다룹니다.</p>
+
+  <h3 id="vector-basics">벡터: 단어를 숫자로</h3>
+  <p><strong>벡터</strong>는 숫자를 일렬로並べ한 것입니다. LLM에서는 모든 단어나 토큰을 벡터로 표현합니다. 이를 <strong>임베딩(embedding)</strong>이라고 합니다.</p>
+  <pre><code><span class="cmt"># 토큰 임베딩 예시 (단순화한 4차원)</span>
+<span class="str">"고양이"</span>  →  [<span class="num">0.2</span>, <span class="num">-0.5</span>, <span class="num">1.3</span>, <span class="num">0.8</span>]
+<span class="str">"강아지"</span>  →  [<span class="num">0.3</span>, <span class="num">-0.4</span>, <span class="num">1.1</span>, <span class="num">0.7</span>]
+<span class="str">"자동차"</span>  →  [<span class="num">-0.9</span>, <span class="num">0.7</span>, <span class="num">-0.2</span>, <span class="num">1.5</span>]
+
+<span class="cmt"># "고양이"와 "강아지"는 숫자가 비슷 → 의미도 유사</span>
+<span class="cmt"># "고양이"와 "자동차"는 숫자가 다름 → 의미도 다름</span></code></pre>
+  <p>실제 LLM에서는 차원이 훨씬 높습니다(예: 4096차원). 높은 차원 공간에서 유사한 의미를 가진 단어들이 서로 가까이 위치하게 됩니다.</p>
+
+  <h3 id="dot-product">내적: 유사도를 측정하는 핵심 연산</h3>
+  <p><strong>내적(dot product)</strong>은 두 벡터의 유사도를 측정하는 기본 연산입니다.Attention 메커니즘의 핵심이 바로 이 내적 연산입니다.</p>
+  <pre><code><span class="cmt"># 내적 정의</span>
+v · w = ∑ v_i × w_i = v₁w₁ + v₂w₂ + ... + vₙwₙ
+
+<span class="cmt"># 구체적인 계산 예시</span>
+[<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>] · [<span class="num">4</span>, <span class="num">5</span>, <span class="num">6</span>] = <span class="num">1×4</span> + <span class="num">2×5</span> + <span class="num">3×6</span> = <span class="num">4</span> + <span class="num">10</span> + <span class="num">18</span> = <span class="num">32</span>
+
+<span class="cmt"># 기하학적 해석:</span>
+<span class="cmt"># - 두 벡터가 같은 방향 → 내적 > 0 (양수)</span>
+<span class="cmt"># - 두 벡터가 수직(90°) → 내적 = 0</span>
+<span class="cmt"># - 두 벡터가 반대 방향 → 내적 < 0 (음수)</span></code></pre>
+
+  <h3 id="matrix-basics">행렬: 벡터의 모음</h3>
+  <p><strong>행렬</strong>은 숫자를 2차원 형태로並べ한 것입니다. LLM에서 행렬은 여러 가지 의미를 가집니다:</p>
   <ul>
-    <li><strong>벡터</strong>: 숫자의 배열. 토큰 임베딩을 벡터로 표현합니다. 예: "고양이" → [0.2, -0.5, 1.3, ...]</li>
-    <li><strong>행렬</strong>: 벡터를 쌓은 2차원 배열. 어텐션 계산의 기본 단위입니다</li>
-    <li><strong>내적(dot product)</strong>: 두 벡터의 유사도를 측정하는 연산. Attention의 핵심</li>
+    <li><strong>가중치 행렬</strong>: 행과 열이 있는 학습 가능한 파라미터</li>
+    <li><strong>임베딩 행렬</strong>: 모든 토큰의 임베딩을 행으로 저장</li>
+    <li><strong>어텐션 스코어 행렬</strong>: 토큰 쌍 간 유사도를 저장</li>
   </ul>
-  <pre><code><span class="cmt"># 내적 예시</span>
-v · w = ∑ v_i × w_i
+  <pre><code><span class="cmt"># 행렬 예시: 3개의 토큰 임베딩 (각 4차원)</span>
+<span class="cmt"># 각 행 = 하나의 토큰</span>
+Embeddings = [
+  [<span class="num">0.2</span>, <span class="num">-0.5</span>, <span class="num">1.3</span>, <span class="num">0.8</span>],   <span class="cmt"># 토큰 1: "The"</span>
+  [<span class="num">0.1</span>, <span class="num">-0.3</span>, <span class="num">0.9</span>, <span class="num">0.5</span>],   <span class="cmt"># 토큰 2: "cat"</span>
+  [<span class="num">-0.1</span>, <span class="num">0.2</span>, <span class="num">0.7</span>, <span class="num">1.2</span>]    <span class="cmt"># 토큰 3: "sat"</span>
+]
 
-<span class="cmt"># 구체적인 예</span>
-[1, 2, 3] · [4, 5, 6] = 1×4 + 2×5 + 3×6 = <span class="num">32</span>
-
-<span class="cmt"># 의미: 두 벡터가 비슷한 방향이면 내적이 큰 양수,</span>
-<span class="cmt">#       반대 방향이면 음수, 수직이면 0에 가깝다</span></code></pre>
+<span class="cmt"># 행렬의 크기: 3행 × 4열 = 3×4 행렬</span></code></pre>
 
   <h3 id="matrix-multiply">행렬 곱셈과 Attention의 연결</h3>
   <p>Attention에서 Q(Query)와 K(Key)의 유사도를 한꺼번에 구할 때 행렬 곱셈을 사용합니다. 내적을 모든 토큰 쌍에 대해 동시에 계산하는 것입니다.</p>
-  <pre><code><span class="cmt"># 행렬 곱셈 예시: Q(2×3) × K^T(3×2) = Score(2×2)</span>
-Q = [[<span class="num">1</span>, <span class="num">0</span>, <span class="num">2</span>],    K^T = [[<span class="num">1</span>, <span class="num">0</span>],
-     [<span class="num">0</span>, <span class="num">1</span>, <span class="num">1</span>]]          [<span class="num">2</span>, <span class="num">1</span>],
-                           [<span class="num">0</span>, <span class="num">3</span>]]
+  <pre><code><span class="cmt"># 행렬 곱셈: Q(2×3) × K^T(3×2) = Score(2×2)</span>
+<span class="cmt"># Q: 2개 토큰의 Query (각 3차원)</span>
+Q = [[<span class="num">1</span>, <span class="num">0</span>, <span class="num">2</span>],
+     [<span class="num">0</span>, <span class="num">1</span>, <span class="num">1</span>]]
 
-QK^T = [[<span class="num">1×1+0×2+2×0</span>, <span class="num">1×0+0×1+2×3</span>],   = [[<span class="num">1</span>, <span class="num">6</span>],
-        [<span class="num">0×1+1×2+1×0</span>, <span class="num">0×0+1×1+1×3</span>]]     [<span class="num">2</span>, <span class="num">4</span>]]
+<span class="cmt"># K: 2개 토큰의 Key (각 3차원) → 전치하여 3×2</span>
+K = [[<span class="num">1</span>, <span class="num">2</span>, <span class="num">0</span>],
+     [<span class="num">0</span>, <span class="num">1</span>, <span class="num">3</span>]]
+K^T = [[<span class="num">1</span>, <span class="num">0</span>],
+        [<span class="num">2</span>, <span class="num">1</span>],
+        [<span class="num">0</span>, <span class="num">3</span>]]
 
-<span class="cmt"># 결과의 각 원소 = 해당 Query와 Key의 내적(유사도)</span>
-<span class="cmt"># QK^T[0][1] = 6 → 첫 번째 Query와 두 번째 Key가 매우 유사</span></code></pre>
+<span class="cmt"># 행렬 곱셈 수행</span>
+QK^T = [[<span class="num">1×1+0×2+2×0</span>, <span class="num">1×0+0×1+2×3</span>],
+        [<span class="num">0×1+1×2+1×0</span>, <span class="num">0×0+1×1+1×3</span>]]
+     = [[<span class="num">1</span>, <span class="num">6</span>],
+        [<span class="num">2</span>, <span class="num">4</span>]]
+
+<span class="cmt"># 결과 해석:</span>
+<span class="cmt"># QK^T[0][1] = 6 → 첫 번째 Query와 두 번째 Key가 매우 유사</span>
+<span class="cmt"># QK^T[1][0] = 2 → 두 번째 Query와 첫 번째 Key의 유사도</span></code></pre>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 300"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="math-1-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="30" y="40" width="120" height="80" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="90" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Query</text>
+      <text x="90" y="95" text-anchor="middle" fill="var(--diagram-text)" font-size="11" opacity="0.7">토큰 A</text>
+      <text x="90" y="110" text-anchor="middle" fill="var(--text-secondary)" font-size="10">[1, 0, 2]</text>
+
+      <rect x="30" y="170" width="120" height="80" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="90" y="205" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Query</text>
+      <text x="90" y="225" text-anchor="middle" fill="var(--diagram-text)" font-size="11" opacity="0.7">토큰 B</text>
+      <text x="90" y="240" text-anchor="middle" fill="var(--text-secondary)" font-size="10">[0, 1, 1]</text>
+
+      <rect x="250" y="40" width="120" height="80" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="310" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Key</text>
+      <text x="310" y="95" text-anchor="middle" fill="var(--diagram-text)" font-size="11" opacity="0.7">토큰 A</text>
+      <text x="310" y="110" text-anchor="middle" fill="var(--text-secondary)" font-size="10">[1, 2, 0]</text>
+
+      <rect x="250" y="170" width="120" height="80" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="310" y="205" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Key</text>
+      <text x="310" y="225" text-anchor="middle" fill="var(--diagram-text)" font-size="11" opacity="0.7">토큰 B</text>
+      <text x="310" y="240" text-anchor="middle" fill="var(--text-secondary)" font-size="10">[0, 1, 3]</text>
+
+      <line x1="150" y1="80" x2="250" y2="80" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#math-1-arrow)"/>
+      <line x1="150" y1="210" x2="250" y2="210" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#math-1-arrow)"/>
+
+      <rect x="450" y="100" width="220" height="100" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="560" y="135" text-anchor="middle" fill="var(--diagram-text)" font-size="13" font-weight="bold">어텐션 스코어 행렬</text>
+      <text x="560" y="160" text-anchor="middle" fill="var(--diagram-text)" font-size="12">Q × K^T</text>
+      <text x="560" y="185" text-anchor="middle" fill="var(--text-secondary)" font-size="11">[[ 1,  6],</text>
+      <text x="560" y="200" text-anchor="middle" fill="var(--text-secondary)" font-size="11">[ 2,  4]]</text>
+    </svg>
+    <p class="diagram-caption">행렬 곱셈으로 토큰 간 유사도(어텐션 스코어) 계산</p>
+  </div>
 
   <h3 id="cosine-similarity">코사인 유사도</h3>
-  <p>임베딩 벡터 간의 의미적 유사도를 측정할 때 코사인 유사도를 사용합니다. 벡터의 크기에 무관하게 방향만으로 비교하므로, 단어·문장 임베딩 비교의 표준 지표입니다.</p>
-  <pre><code><span class="cmt"># 코사인 유사도</span>
-cos(A, B) = (A · B) / (|A| × |B|)
+  <p>임베딩 벡터 간의 의미적 유사도를 측정할 때 <strong>코사인 유사도</strong>를 사용합니다. 벡터의 크기에 무관하게 방향만으로 비교하므로, 단어·문장 임베딩 비교의 표준 지표입니다.</p>
+  <pre><code><span class="cmt"># 코사인 유사도 공식</span>
+cos(θ) = (A · B) / (|A| × |B|)
 
-<span class="cmt"># 범위: -1(정반대) ~ 0(무관) ~ 1(동일 방향)</span>
-<span class="cmt"># 예: "고양이"와 "강아지" 임베딩 → cos ≈ 0.85 (높은 유사도)</span>
-<span class="cmt"># 예: "고양이"와 "자동차" 임베딩 → cos ≈ 0.12 (낮은 유사도)</span></code></pre>
+<span class="cmt"># |A|: 벡터 A의 크기 (노름)</span>
+<span class="cmt"># |A| = √(A₁² + A₂² + ... + Aₙ²)</span>
+
+<span class="cmt"># 결과 범위:</span>
+<span class="cmt"># - 1.0: 같은 방향 (완전히 유사)</span>
+<span class="cmt"># - 0.0: 수직 (무관)</span>
+<span class="cmt"># - -1.0: 반대 방향 (완전히 다름)</span>
+
+<span class="cmt"># 실제 예시:</span>
+<span class="cmt"># "고양이"와 "강아지" → cos ≈ 0.85 (높은 유사도)</span>
+<span class="cmt"># "고양이"와 "자동차" → cos ≈ 0.12 (낮은 유사도)</span>
+<span class="cmt"># "좋다"와 "나쁘다" → cos ≈ -0.3 (반대 의미)</span></code></pre>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 220"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="math-2-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <line x1="100" y1="150" x2="500" y2="150" stroke="var(--border-color)" stroke-width="1"/>
+
+      <line x1="150" y1="150" x2="250" y2="50" stroke="var(--diagram-arrow)" stroke-width="3"
+            marker-end="url(#math-2-arrow)"/>
+      <text x="200" y="100" text-anchor="middle" fill="var(--diagram-text)" font-size="12">A:고양이</text>
+      <text x="200" y="120" text-anchor="middle" fill="var(--text-secondary)" font-size="10">cos=0.85</text>
+
+      <line x1="200" y1="150" x2="320" y2="80" stroke="var(--diagram-accent)" stroke-width="3"
+            marker-end="url(#math-2-arrow)"/>
+      <text x="260" y="115" text-anchor="middle" fill="var(--diagram-text)" font-size="12">B:강아지</text>
+      <text x="260" y="135" text-anchor="middle" fill="var(--text-secondary)" font-size="10">높은 유사도</text>
+
+      <line x1="350" y1="150" x2="450" y2="120" stroke="var(--diagram-arrow)" stroke-width="3"
+            marker-end="url(#math-2-arrow)" stroke-dasharray="5,5"/>
+      <text x="400" y="140" text-anchor="middle" fill="var(--diagram-text)" font-size="12">C:자동차</text>
+      <text x="400" y="160" text-anchor="middle" fill="var(--text-secondary)" font-size="10">낮은 유사도</text>
+
+      <circle cx="550" cy="110" r="40" fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="550" y="105" text-anchor="middle" fill="var(--diagram-text)" font-size="11">cos > 0.7</text>
+      <text x="550" y="125" text-anchor="middle" fill="var(--accent-primary)" font-size="10">유사함</text>
+
+      <circle cx="550" cy="110" r="40" fill="none" stroke="var(--border-color)" stroke-width="1.5" opacity="0.5" transform="translate(120, 20)"/>
+      <text x="670" y="105" text-anchor="middle" fill="var(--diagram-text)" font-size="11">cos < 0.3</text>
+      <text x="670" y="125" text-anchor="middle" fill="var(--text-secondary)" font-size="10">무관함</text>
+    </svg>
+    <p class="diagram-caption">코사인 유사도로 의미적 유사도 측정 (높은 cos = 비슷한 방향)</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="calculus-basics">미분과 기울기: 학습의 핵심</h2>
+  <p>LLM은 <strong>경사 하강법(Gradient Descent)</strong>으로 학습합니다. 이 섹션에서는 미분과 기울기의 개념을 다룹니다.</p>
+
+  <h3 id="derivative-intuition">미분: 변화율의 측정</h3>
+  <p><strong>미분(differentiation)</strong>은 "변수가 조금 변할 때 함수의 출력은 얼마나 변하는가"를 측정합니다. ML에서 이것을用来 학습 방향을 결정합니다.</p>
+  <pre><code><span class="cmt"># 미분의 정의</span>
+f'(x) = lim[h→0] (f(x+h) - f(x)) / h
+
+<span class="cmt"># 직관적 의미: "x가 1 증가하면 f(x)는 얼마나 증가하는가?"</span>
+
+<span class="cmt"># 간단한 예: f(x) = x²</span>
+<span class="cmt"># x = 3에서:</span>
+<span class="cmt"># f'(3) = 2 × 3 = 6</span>
+<span class="cmt"># → x가 1 증가하면 f(x)가 약 6 증가</span>
+
+<span class="cmt"># ML에서 자주 등장하는 미분:</span>
+<span class="cmt"># f(x) = xⁿ     → f'(x) = n × xⁿ⁻¹</span>
+<span class="cmt"># f(x) = eˣ    → f'(x) = eˣ</span>
+<span class="cmt"># f(x) = log(x) → f'(x) = 1/x</span></code></pre>
+
+  <h3 id="gradient-descent">경사 하강법: 손실을 줄이는 법</h3>
+  <p><strong>경사 하강법(Gradient Descent)</strong>은 함수의 최소값을 찾는 알고리즘입니다. ML에서는 "손실(loss)"을 최소화하는 파라미터를 찾습니다.</p>
+  <pre><code><span class="cmt"># 경사 하강법 공식</span>
+θ_new = θ_old - η × ∇L(θ)
+
+<span class="cmt"># θ: 학습할 파라미터 (가중치)</span>
+<span class="cmt"># η (eta): 학습률 (learning rate)</span>
+<span class="cmt"># ∇L(θ): 손실 함수의 기울기</span>
+
+<span class="cmt"># 구체적인 예: L(θ) = (θ - 3)²</span>
+<span class="cmt"># 이 손실을 최소화하는 θ = 3</span>
+
+<span class="cmt"># 1단계: θ = 0에서 시작</span>
+<span class="cmt"># L(θ) = (0 - 3)² = 9</span>
+<span class="cmt"># ∇L(θ) = 2 × (θ - 3) = 2 × (-3) = -6</span>
+<span class="cmt"># θ_new = 0 - 0.1 × (-6) = 0.6</span>
+
+<span class="cmt"># 2단계: θ = 0.6에서</span>
+<span class="cmt"># L(θ) = (0.6 - 3)² = 5.76</span>
+<span class="cmt"># ∇L(θ) = 2 × (0.6 - 3) = -4.8</span>
+<span class="cmt"># θ_new = 0.6 - 0.1 × (-4.8) = 1.08</span>
+
+<span class="cmt"># 3단계: θ = 1.08에서</span>
+<span class="cmt"># θ_new = 1.08 - 0.1 × (-3.84) = 1.46</span>
+
+<span class="cmt"># ... 반복하면 θ가 3에 수렴</span></code></pre>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="math-3-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <path d="M 50,220 Q 150,20 350,220" fill="none" stroke="var(--diagram-arrow)" stroke-width="3"/>
+
+      <circle cx="100" cy="100" r="8" fill="var(--accent-primary)"/>
+      <text x="100" y="85" text-anchor="middle" fill="var(--diagram-text)" font-size="10">시작 θ=0</text>
+      <line x1="100" y1="100" x2="150" y2="170" stroke="var(--diagram-accent)" stroke-width="2" stroke-dasharray="5,5"
+            marker-end="url(#math-3-arrow)"/>
+
+      <circle cx="150" cy="170" r="8" fill="var(--accent-primary)"/>
+      <text x="150" y="195" text-anchor="middle" fill="var(--diagram-text)" font-size="10">θ=0.6</text>
+      <line x1="150" y1="170" x2="195" y2="195" stroke="var(--diagram-accent)" stroke-width="2" stroke-dasharray="5,5"
+            marker-end="url(#math-3-arrow)"/>
+
+      <circle cx="195" cy="195" r="8" fill="var(--accent-primary)"/>
+      <text x="195" y="220" text-anchor="middle" fill="var(--diagram-text)" font-size="10">θ=1.08</text>
+      <line x1="195" y1="195" x2="235" y2="205" stroke="var(--diagram-accent)" stroke-width="2" stroke-dasharray="5,5"
+            marker-end="url(#math-3-arrow)"/>
+
+      <circle cx="280" cy="205" r="6" fill="var(--diagram-accent)"/>
+      <text x="280" y="230" text-anchor="middle" fill="var(--diagram-text)" font-size="10">→ 수렴</text>
+
+      <circle cx="350" cy="220" r="8" fill="var(--accent-primary)"/>
+      <text x="350" y="250" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">최소값 θ=3</text>
+
+      <text x="500" y="80" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">경사 하강법</text>
+      <text x="500" y="110" text-anchor="middle" fill="var(--text-secondary)" font-size="11">θ_new = θ - η × ∇L(θ)</text>
+      <text x="500" y="140" text-anchor="middle" fill="var(--text-secondary)" font-size="10">η(학습률)이 크면:</text>
+      <text x="500" y="155" text-anchor="middle" fill="var(--text-secondary)" font-size="10">→ 수렴太快 (발산 위험)</text>
+      <text x="500" y="175" text-anchor="middle" fill="var(--text-secondary)" font-size="10">η(학습률)이 작으면:</text>
+      <text x="500" y="190" text-anchor="middle" fill="var(--text-secondary)" font-size="10">→ 수렴慢 (시간 오래 걸림)</text>
+    </svg>
+    <p class="diagram-caption">경사 하강법으로 손실 함수의 최소값 탐색</p>
+  </div>
+
+  <h3 id="chain-rule">연쇄 법칙: 복잡한 함수의 미분</h3>
+  <p>LLM은 매우 깊은 신경망으로 구성됩니다. <strong>연쇄 법칙(chain rule)</strong>을 사용하면 여러 층을 통과한 미분을 계산할 수 있습니다. 이것이 <strong>역전파(backpropagation)</strong>의 수학적 기초입니다.</p>
+  <pre><code><span class="cmt"># 연쇄 법칙</span>
+<span class="cmt"># y = f(g(x))일 때,</span>
+<span class="cmt"># dy/dx = (df/dg) × (dg/dx)</span>
+
+<span class="cmt"># 구체적인 예:</span>
+<span class="cmt"># x → g(x) = 2x + 1 → f(g) = g²</span>
+<span class="cmt"># y = f(g(x)) = (2x + 1)²</span>
+
+<span class="cmt"># 연쇄 법칙으로 미분:</span>
+<span class="cmt"># dg/dx = 2</span>
+<span class="cmt"># df/dg = 2g = 2(2x + 1) = 4x + 2</span>
+<span class="cmt"># dy/dx = 2 × (4x + 2) = 8x + 4</span>
+
+<span class="cmt"># 신경망에서 역전파:</span>
+<span class="cmt"># 출력층 ← 은닉층 ← 입력층</span>
+<span class="cmt"># 각 층의 기울기를 차례로 곱해감</span>
+<span class="cmt"># ∇L/∂W = (∂L/∂a) × (∂a/∂z) × (∂z/∂W)</span></code></pre>
+
+  <h3 id="backprop-visual">역전파 개념도</h3>
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 250"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="math-4-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="30" y="100" width="80" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="70" y="130" text-anchor="middle" fill="var(--diagram-text)" font-size="12">입력 x</text>
+
+      <rect x="170" y="100" width="80" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="210" y="130" text-anchor="middle" fill="var(--diagram-text)" font-size="12">은닉 h</text>
+
+      <rect x="310" y="100" width="80" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="350" y="130" text-anchor="middle" fill="var(--diagram-text)" font-size="12">출력 y</text>
+
+      <rect x="430" y="90" width="120" height="70" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="490" y="115" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">손실 계산</text>
+      <text x="490" y="140" text-anchor="middle" fill="var(--text-secondary)" font-size="10">L = (y - ŷ)²</text>
+
+      <line x1="110" y1="125" x2="170" y2="125" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#math-4-arrow)"/>
+      <line x1="250" y1="125" x2="310" y2="125" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#math-4-arrow)"/>
+
+      <path d="M 430,125 Q 390,160 350,125" fill="none" stroke="var(--diagram-accent)" stroke-width="2" stroke-dasharray="5,5"/>
+      <path d="M 310,125 Q 250,180 210,125" fill="none" stroke="var(--diagram-accent)" stroke-width="2" stroke-dasharray="5,5"/>
+      <path d="M 210,125 Q 150,160 110,125" fill="none" stroke="var(--diagram-accent)" stroke-width="2" stroke-dasharray="5,5"/>
+
+      <text x="350" y="210" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">역전파 (Backpropagation)</text>
+      <text x="350" y="230" text-anchor="middle" fill="var(--text-secondary)" font-size="10">← 손실 → 은닉 → 입력 (기울기 순전파)</text>
+    </svg>
+    <p class="diagram-caption">역전파: 손실로부터 입력 방향으로 기울기 계산</p>
+  </div>
+</section>
+
+<section class="content-section">
+  <h2 id="probability-basics">확률론 기초: 불확실성의 수학</h2>
+  <p>LLM은 본질적으로 확률 모델입니다. 출력이 확률 분포에서 샘플링되고, 학습은 확률을 최대화하는 방향으로 진행됩니다.</p>
+
+  <h3 id="probability-distribution">확률 분포</h3>
+  <p><strong>확률 분포</strong>는 각 가능한 결과가 나타날 확률을 정의합니다. LLM에서는 다음 토큰이 될 수 있는 모든 단어에 확률을 할당합니다.</p>
+  <pre><code><span class="cmt"># 확률 분포의 조건</span>
+<span class="cmt"># 1) 모든 확률은 0 이상: P(x) ≥ 0</span>
+<span class="cmt"># 2) 확률의 합은 1: Σ P(x) = 1</span>
+
+<span class="cmt"># LLM의 다음 토큰 확률 분포 예시</span>
+<span class="cmt"># 입력: "서울의"</span>
+next_token_probs = {
+  <span class="str">"수"</span>: <span class="num">0.35</span>,    <span class="cmt"># "서울의 수"</span>
+  <span class="str">"首都"</span>: <span class="num">0.25</span>,    <span class="cmt"># "서울의 수도"</span>
+  <span class="str">"날씨"</span>: <span class="num">0.15</span>,    <span class="cmt"># "서울의 날씨"</span>
+  <span class="str">"맛"</span>: <span class="num">0.10</span>,     <span class="cmt"># "서울의 맛"</span>
+  <span class="str">"...</span>   <span class="num">0.15</span>     <span class="cmt"># 다른 단어들</span>
+}
+<span class="cmt"># 합계: 1.0 ✓</span></code></pre>
+
+  <h3 id="softmax-function">Softmax: 로짓을 확률로</h3>
+  <p>LLM의 마지막 층은 <strong>로짓(logit)</strong>이라는 점수를 출력합니다. Softmax 함수가 이 점수를 확률로 변환합니다.</p>
+  <pre><code><span class="cmt"># Softmax 함수</span>
+<span class="fn">softmax</span>(z_i) = <span class="fn">exp</span>(z_i) / Σⱼ <span class="fn">exp</span>(z_j)
+
+<span class="cmt"># z: 로짓 (LLM 출력 점수)</span>
+<span class="cmt"># exp(): 지수 함수 (양수)</span>
+
+<span class="cmt"># 구체적인 예</span>
+z = [<span class="num">2.0</span>, <span class="num">1.0</span>, <span class="num">0.5</span>]  <span class="cmt"># 로짓</span>
+
+<span class="cmt"># exp(z)</span>
+exp_z = [<span class="num">7.39</span>, <span class="num">2.72</span>, <span class="num">1.65</span>]
+
+<span class="cmt"># 합계</span>
+sum_exp = <span class="num">7.39</span> + <span class="num">2.72</span> + <span class="num">1.65</span> = <span class="num">11.76</span>
+
+<span class="cmt"># Softmax (확률)</span>
+P = [<span class="num">7.39/11.76</span>, <span class="num">2.72/11.76</span>, <span class="num">1.65/11.76</span>]
+  = [<span class="num">0.63</span>, <span class="num">0.23</span>, <span class="num">0.14</span>]
+
+<span class="cmt"># 검증: 0.63 + 0.23 + 0.14 = 1.0 ✓</span></code></pre>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="math-5-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <rect x="30" y="80" width="140" height="80" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="100" y="105" text-anchor="middle" fill="var(--diagram-text)" font-size="12">로짓 (Logits)</text>
+      <text x="100" y="130" text-anchor="middle" fill="var(--text-secondary)" font-size="11">[2.0, 1.0, 0.5]</text>
+      <text x="100" y="150" text-anchor="middle" fill="var(--text-secondary)" font-size="10">LLM 최종 층 출력</text>
+
+      <rect x="300" y="80" width="140" height="80" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="370" y="105" text-anchor="middle" fill="var(--diagram-text)" font-size="12">exp() 적용</text>
+      <text x="370" y="130" text-anchor="middle" fill="var(--text-secondary)" font-size="11">[7.4, 2.7, 1.6]</text>
+      <text x="370" y="150" text-anchor="middle" fill="var(--text-secondary)" font-size="10">양수로 변환</text>
+
+      <rect x="530" y="80" width="140" height="80" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="600" y="105" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">확률 (Prob)</text>
+      <text x="600" y="130" text-anchor="middle" fill="var(--diagram-text)" font-size="11">[0.63, 0.23, 0.14]</text>
+      <text x="600" y="150" text-anchor="middle" fill="var(--text-secondary)" font-size="10">합계 = 1.0</text>
+
+      <line x1="170" y1="120" x2="300" y2="120" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#math-5-arrow)"/>
+      <line x1="440" y1="120" x2="530" y2="120" stroke="var(--diagram-arrow)" stroke-width="2"
+            marker-end="url(#math-5-arrow)"/>
+
+      <rect x="100" y="200" width="500" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1"/>
+      <text x="350" y="225" text-anchor="middle" fill="var(--diagram-text)" font-size="11">softmax(zᵢ) = exp(zᵢ) / Σ exp(zⱼ)</text>
+      <text x="350" y="245" text-anchor="middle" fill="var(--text-secondary)" font-size="10">높은 로짓 → 높은 확률, 합계 정규화</text>
+    </svg>
+    <p class="diagram-caption">Softmax로 로짓을 확률 분포로 변환</p>
+  </div>
+
+  <h3 id="cross-entropy">크로스엔트로피: 학습의 손실 함수</h3>
+  <p>LLM의 학습은 <strong>크로스엔트로피(Cross-Entropy)</strong> 손실 함수를 사용합니다. 이것은 "예측 확률 분포"와 "진짜 확률 분포"의 차이를 측정합니다.</p>
+  <pre><code><span class="cmt"># 크로스엔트로피</span>
+H(p, q) = - Σ p(x) × log(q(x))
+
+<span class="cmt"># p(x): 실제 분포 (원-핫: 정답만 1, 나머지는 0)</span>
+<span class="cmt"># q(x): 모델 예측 분포 (softmax 출력)</span>
+
+<span class="cmt"># 구체적인 예</span>
+<span class="cmt"># 정답: "수" (원-핫 인코딩)</span>
+p = [<span class="num">1</span>, <span class="num">0</span>, <span class="num">0</span>]  <span class="cmt"># "수"=1, others=0</span>
+
+<span class="cmt"># 모델 예측</span>
+q = [<span class="num">0.63</span>, <span class="num">0.23</span>, <span class="num">0.14</span>]
+
+<span class="cmt"># 크로스엔트로피 계산</span>
+<span class="cmt"># H = -[1×log(0.63) + 0×log(0.23) + 0×log(0.14)]</span>
+<span class="cmt"># H = -log(0.63) ≈ 0.46</span>
+
+<span class="cmt"># 해석:</span>
+<span class="cmt"># - 정답 확률이 높으면 (0.99) → loss ≈ 0.01 (작음)</span>
+<span class="cmt"># - 정답 확률이 낮으면 (0.01) → loss ≈ 4.61 ( 큼)</span></code></pre>
+
+  <h3 id="negative-log-likelihood">음성 로그 우도: 크로스엔트로피의 다른 표현</h3>
+  <p>실제 구현에서는 <strong>음성 로그 우도(Negative Log-Likelihood, NLL)</strong>를 더 자주 사용합니다. 원-핫 인코딩에서는 두 값이 같습니다.</p>
+  <pre><code><span class="cmt"># 음성 로그 우도 (NLL)</span>
+NLL = -log(q[target])
+
+<span class="cmt"># 위 예시에서:</span>
+<span class="cmt"># target = "수" (index 0)</span>
+<span class="cmt"># q[0] = 0.63</span>
+<span class="cmt"># NLL = -log(0.63) ≈ 0.46</span>
+
+<span class="cmt"># 왜 로그를 사용할까?</span>
+<span class="cmt"># - 확률의 곱 → 로그의 합 (계산 편리)</span>
+<span class="cmt"># - 0~1 사이 값 → 로그 후 음수 (손실로 적합)</span>
+<span class="cmt"># - 정답 확률 1.0 → log(1) = 0 (손실 0) ✓</span>
+<span class="cmt"># - 정답 확률 0.1 → log(0.1) ≈ -2.3 (큰 손실)</span></code></pre>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 260"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;background:var(--diagram-fill);border-radius:8px;padding:20px;">
+      <defs>
+        <marker id="math-6-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <text x="350" y="35" text-anchor="middle" fill="var(--diagram-text)" font-size="13" font-weight="bold">손실(Loss)과 정답 확률의 관계</text>
+
+      <line x1="50" y1="200" x2="650" y2="200" stroke="var(--border-color)" stroke-width="1"/>
+      <line x1="50" y1="200" x2="50" y2="50" stroke="var(--border-color)" stroke-width="1"/>
+
+      <path d="M 50,200 Q 150,200 250,200" fill="none" stroke="var(--accent-primary)" stroke-width="3"/>
+      <path d="M 250,200 Q 350,100 450,60" fill="none" stroke="var(--diagram-arrow)" stroke-width="3"/>
+      <path d="M 450,60 Q 550,30 650,20" fill="none" stroke="var(--diagram-arrow)" stroke-width="3"/>
+
+      <text x="80" y="220" text-anchor="middle" fill="var(--text-secondary)" font-size="10">0.0</text>
+      <text x="350" y="220" text-anchor="middle" fill="var(--text-secondary)" font-size="10">0.5</text>
+      <text x="620" y="220" text-anchor="middle" fill="var(--text-secondary)" font-size="10">1.0</text>
+
+      <text x="30" y="70" text-anchor="middle" fill="var(--text-secondary)" font-size="10">손실</text>
+      <text x="30" y="200" text-anchor="middle" fill="var(--text-secondary)" font-size="10">높음</text>
+      <text x="30" y="100" text-anchor="middle" fill="var(--text-secondary)" font-size="10">낮음</text>
+
+      <circle cx="100" cy="200" r="6" fill="var(--accent-primary)"/>
+      <text x="100" y="185" text-anchor="middle" fill="var(--text-secondary)" font-size="9">정답 확률 0</text>
+
+      <circle cx="350" cy="130" r="6" fill="var(--accent-primary)"/>
+      <text x="350" y="115" text-anchor="middle" fill="var(--text-secondary)" font-size="9">정답 확률 0.5</text>
+
+      <circle cx="600" cy="40" r="6" fill="var(--accent-primary)"/>
+      <text x="600" y="25" text-anchor="middle" fill="var(--text-secondary)" font-size="9">정답 확률 1.0</text>
+
+      <rect x="100" y="230" width="180" height="20" rx="4" fill="var(--bg-secondary)" stroke="var(--border-color)"/>
+      <text x="190" y="244" text-anchor="middle" fill="var(--text-secondary)" font-size="9">-log(정답 확률)</text>
+
+      <rect x="420" y="230" width="180" height="20" rx="4" fill="var(--bg-secondary)" stroke="var(--border-color)"/>
+      <text x="510" y="244" text-anchor="middle" fill="var(--text-secondary)" font-size="9">정답 확률 ↑ = 손실 ↓</text>
+    </svg>
+    <p class="diagram-caption">정답 확률이 높을수록 손실이 낮아지는 관계</p>
+  </div>
+
+  <div class="info-box info">
+    <strong>핵심 정리:</strong>
+    <ul>
+      <li><strong>Softmax</strong>: 로짓 점수를 확률로 변환 (항상 합=1)</li>
+      <li><strong>크로스엔트로피/NLL</strong>: 예측과 정답의 차이를 측정하는 손실</li>
+      <li><strong>경사 하강법</strong>: 손실을 최소화하는 방향으로 가중치 업데이트</li>
+      <li><strong>역전파</strong>: 연쇄 법칙으로 각 가중치의 기여도 계산</li>
+    </ul>
+  </div>
 </section>
 
 <section class="content-section">
