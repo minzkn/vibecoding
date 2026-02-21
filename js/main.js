@@ -123,6 +123,7 @@ var SEARCH_INDEX = [
   { title: "RAG 완전 가이드", url: "pages/rag-guide.html",
     description: "RAG 원리, 아키텍처 패턴, 청킹·임베딩·벡터DB·검색전략, 고급기법, 평가",
     keywords: "rag retrieval augmented generation 검색증강 임베딩 벡터db 청킹 hybrid reranking ragas" },
+  { title: "Tensor Core 완전 가이드", url: "pages/tensor-core.html", description: "NVIDIA Tensor Core의 원리, 세대별 발전, WMMA 연산, LLM 추론·학습 최적화 기법", keywords: "tensor core nvidia gpu deep learning matrix multiplication wmma cuda llm 추론 학습 최적화 volta ampere hopper" },
 
   // 🤖 n8n & AI 자동화
   { title: "n8n이란?", url: "pages/n8n-intro.html", description: "n8n 워크플로우 자동화 플랫폼 소개: 설치, 핵심 개념, 기본 워크플로우 구축", keywords: "n8n 워크플로우 자동화 노코드 로우코드 셀프호스팅 zapier 대안" },
@@ -263,7 +264,8 @@ var NAV_STRUCTURE = [
     { file: 'llm-handbook-concepts.html', title: 'LLM 핸드북: 개념과 구조' },
     { file: 'llm-handbook-training.html', title: 'LLM 핸드북: 학습·정렬·추론' },
     { file: 'llm-handbook-ops.html', title: 'LLM 핸드북: 제품화·운영·안전' },
-    { file: 'rag-guide.html', title: 'RAG 완전 가이드' }
+    { file: 'rag-guide.html', title: 'RAG 완전 가이드' },
+    { file: 'tensor-core.html', title: 'Tensor Core 완전 가이드' }
   ]},
   { title: '🤖 n8n & AI 자동화', pages: [
     { file: 'n8n-intro.html', title: 'n8n이란?' },
