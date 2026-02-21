@@ -107,7 +107,7 @@
   </table>
 
   <div class="diagram-container">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 350"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 320"
          style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
       <defs>
         <marker id="tc-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
@@ -117,64 +117,80 @@
       </defs>
 
       <!-- CPU Layer -->
-      <rect x="20" y="20" width="660" height="50" rx="6"
+      <rect x="20" y="20" width="500" height="50" rx="6"
             fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="350" y="50" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">
+      <text x="150" y="50" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">
         CPU (Scalar Processing)
       </text>
+      <text x="450" y="50" text-anchor="middle" fill="var(--text-secondary)" font-size="11">
+        Performance: 1x
+      </text>
 
-      <line x1="350" y1="70" x2="350" y2="95"
+      <line x1="270" y1="70" x2="270" y2="95"
             stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tc-arrow)"/>
 
       <!-- CUDA Core Layer -->
-      <rect x="20" y="95" width="660" height="50" rx="6"
+      <rect x="20" y="95" width="500" height="50" rx="6"
             fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
-      <text x="350" y="125" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">
+      <text x="150" y="125" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">
         CUDA Core (SIMT Parallel)
       </text>
+      <text x="450" y="125" text-anchor="middle" fill="var(--diagram-accent)" font-size="11" font-weight="bold">
+        Performance: ~10x
+      </text>
 
-      <line x1="350" y1="145" x2="350" y2="170"
+      <line x1="270" y1="145" x2="270" y2="170"
             stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tc-arrow)"/>
 
       <!-- Tensor Core Layer -->
-      <rect x="20" y="170" width="660" height="50" rx="6"
+      <rect x="20" y="170" width="500" height="50" rx="6"
             fill="var(--accent-primary)" fill-opacity="0.2"
             stroke="var(--accent-primary)" stroke-width="3"/>
-      <text x="350" y="200" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">
+      <text x="150" y="200" text-anchor="middle" fill="var(--diagram-text)" font-size="14" font-weight="bold">
         Tensor Core (Matrix FMA Hardware)
       </text>
+      <text x="450" y="200" text-anchor="middle" fill="var(--diagram-accent)" font-size="11" font-weight="bold">
+        Performance: ~100x
+      </text>
 
-      <line x1="350" y1="220" x2="350" y2="245"
+      <line x1="270" y1="220" x2="270" y2="245"
             stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tc-arrow)"/>
 
       <!-- Operation Flow -->
-      <rect x="20" y="245" width="660" height="50" rx="6"
+      <rect x="20" y="245" width="500" height="50" rx="6"
             fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="350" y="275" text-anchor="middle" fill="var(--diagram-text)" font-size="13">
+      <text x="150" y="275" text-anchor="middle" fill="var(--diagram-text)" font-size="13">
         Input A (M×K) × Input B (K×N) → Output C (M×N)
       </text>
 
-      <!-- Performance Arrow -->
-      <rect x="550" y="20" width="100" height="275" rx="6"
-            fill="var(--diagram-accent)" fill-opacity="0.15"
-            stroke="var(--diagram-accent)" stroke-width="2" stroke-dasharray="5,3"/>
-      <text x="600" y="100" text-anchor="middle" fill="var(--diagram-accent)" font-size="11" font-weight="bold">
+      <!-- Legend Box -->
+      <rect x="540" y="20" width="140" height="275" rx="6"
+            fill="var(--diagram-accent)" fill-opacity="0.1"
+            stroke="var(--diagram-accent)" stroke-width="1.5" stroke-dasharray="5,3"/>
+      <text x="610" y="40" text-anchor="middle" fill="var(--diagram-accent)" font-size="11" font-weight="bold">
         Performance
       </text>
-      <text x="600" y="130" text-anchor="middle" fill="var(--diagram-accent)" font-size="11">
-        1x
+      <text x="610" y="70" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        (FLOPS 기준)
       </text>
-      <text x="600" y="165" text-anchor="middle" fill="var(--diagram-accent)" font-size="11">
-        ~10x
+      <text x="610" y="105" text-anchor="middle" fill="var(--diagram-text)" font-size="10">
+        CPU: 1x
       </text>
-      <text x="600" y="215" text-anchor="middle" fill="var(--diagram-accent)" font-size="11">
-        ~100x
+      <text x="610" y="145" text-anchor="middle" fill="var(--diagram-accent)" font-size="10">
+        CUDA: ~10x
       </text>
-
-      <!-- Arrow from Tensor Core to Output -->
-      <line x1="620" y1="245" x2="620" y2="295"
-            stroke="var(--diagram-accent)" stroke-width="3"/>
-      <polygon points="620,300 615,290 625,290" fill="var(--diagram-accent)"/>
+      <text x="610" y="185" text-anchor="middle" fill="var(--diagram-accent)" font-size="10" font-weight="bold">
+        Tensor: ~100x
+      </text>
+      <text x="610" y="210" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        (FP16 MMA 기준)
+      </text>
+      <text x="610" y="240" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        A100 16×16
+      </text>
+      <text x="610" y="260" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        행렬 연산
+      </text>
     </svg>
     <p class="diagram-caption">그림 1: CPU에서 Tensor Core로의 연산 처리 방식 변화</p>
   </div>
@@ -205,7 +221,7 @@ fragment&lt;accumulator&gt; <span class="fn">c_frag</span>;
 <span class="fn">store_matrix_sync</span>(c_data, c_frag, <span class="num">16</span>, mem_row_major);</code></pre>
 
   <div class="diagram-container">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 360"
          style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
       <defs>
         <marker id="tc-flow-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
@@ -275,11 +291,29 @@ fragment&lt;accumulator&gt; <span class="fn">c_frag</span>;
       <!-- Arrow TC → C -->
       <line x1="410" y1="130" x2="520" y2="130"
             stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tc-flow-arrow)"/>
+
+      <!-- Dimension Explanation Box -->
+      <rect x="30" y="240" width="640" height="100" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="350" y="265" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        행렬 곱셈 차원 설명
+      </text>
+      <text x="350" y="290" text-anchor="middle" fill="var(--diagram-text)" font-size="10">
+        M = 출력 행 수 | K = 입력 차원 (공통) | N = 출력 열 수
+      </text>
+      <text x="350" y="310" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        예: A(M×K) × B(K×N) → C(M×N) | M=-batch, K=embedding, N=vocab
+      </text>
     </svg>
     <p class="diagram-caption">그림 2: Tensor Core WMMA 연산 데이터 플로우</p>
   </div>
 
   <h3 id="precision-formats">지원 정밀도 형식</h3>
+  <p>Tensor Core는 세대에 따라 다양한 정밀도를 지원합니다. 특히 Blackwell Ultra의 NVFP4는 NVIDIA 특화 포맷으로, 기존 FP4보다 높은 정확도를 제공합니다.</p>
+
+  <div class="info-box info">
+    <strong>NVFP4란?</strong> NVIDIA가 Blackwell Ultra에서 도입한 특화 4비트 부동소수점 포맷입니다. 2단계 스케일링(E4M3 FP8 마이크로블록 스케일 + 텐서 레벨 FP32 스케일)을 사용하여 하드웨어 가속 양자화를 구현합니다. FP8과 유사한 정확도(약 1% 이내 차이)를 유지하면서 메모리 사용량을 크게 줄입니다.
+  </div>
   <table>
     <thead>
       <tr>
@@ -332,6 +366,18 @@ fragment&lt;accumulator&gt; <span class="fn">c_frag</span>;
         <td>추론 (양자화)</td>
         <td>✓ (Hopper+)</td>
       </tr>
+      <tr>
+        <td>FP6</td>
+        <td>6</td>
+        <td>추론 (Blackwell+)</td>
+        <td>✓ (Blackwell)</td>
+      </tr>
+      <tr>
+        <td>NVFP4</td>
+        <td>4</td>
+        <td>추론 (Blackwell Ultra)</td>
+        <td>✓ (Blackwell Ultra)</td>
+      </tr>
     </tbody>
   </table>
 </section>
@@ -364,30 +410,159 @@ fragment&lt;accumulator&gt; <span class="fn">c_frag</span>;
     <li>MIG (Multi-Instance GPU) partitioning</li>
   </ul>
 
-  <h3 id="ada-lovelace">Ada Lovelace (H100, 2022)</h3>
-  <p>Transformer 엔진이 추가되어 LLM 추론에 최적화되었습니다.</p>
-<ul>
-    <li>132개의 Tensor Core 클러스터 × 2 (H100)</li>
-    <li>Transformer 엔진 (FP8 동적-precision)</li>
-    <li>FP8 추론 지원</li>
-    <li>NVLink 4세대 (900GB/s)</li>
+  <h3 id="hopper-transformer-engine">Hopper Transformer Engine (H100, 2022)</h3>
+  <p>Hopper에서 도입된 Transformer Engine은 LLM 추론과 학습을 혁신적으로 가속화합니다.</p>
+  <ul>
+    <li>동적 FP8/FP16 정밀도 자동 전환</li>
+    <li>Transformer 레이어별 최적 정밀도 자동 선택</li>
+    <li>TF32, FP64, FP16 대비 3배 성능 향상</li>
+    <li>LLM 학습에서 A100 대비 9배, 추론에서 30배 성능 향상</li>
   </ul>
 
-  <h3 id="hopper-h100">Hopper (H100, 2023)</h3>
-  <p>최신 세대로, sparsity, FP8, Transformer 최적화가 집약되었습니다.</p>
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 360"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="te-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Main Flow: Input → Engine → Tensor Core → Output -->
+      <!-- Input -->
+      <rect x="30" y="30" width="100" height="45" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="80" y="58" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        입력 텐서
+      </text>
+
+      <!-- Transformer Engine -->
+      <rect x="160" y="25" width="140" height="55" rx="6"
+            fill="var(--accent-primary)" fill-opacity="0.25"
+            stroke="var(--accent-primary)" stroke-width="2.5"/>
+      <text x="230" y="45" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        Transformer Engine
+      </text>
+      <text x="230" y="63" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        동적 정밀도: FP8 ↔ FP16
+      </text>
+
+      <line x1="130" y1="52" x2="160" y2="52"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#te-arrow)"/>
+
+      <!-- Tensor Core -->
+      <rect x="330" y="25" width="140" height="55" rx="6"
+            fill="var(--diagram-accent)" fill-opacity="0.2"
+            stroke="var(--diagram-accent)" stroke-width="2"/>
+      <text x="400" y="45" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        Tensor Core
+      </text>
+      <text x="400" y="63" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        MMA 연산 수행
+      </text>
+
+      <line x1="300" y1="52" x2="330" y2="52"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#te-arrow)"/>
+
+      <!-- Output -->
+      <rect x="500" y="30" width="100" height="45" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="550" y="58" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        출력 텐서
+      </text>
+
+      <line x1="470" y1="52" x2="500" y2="52"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#te-arrow)"/>
+
+      <!-- Arrow from Engine to Tensor Core (direct) -->
+      <line x1="230" y1="80" x2="230" y2="110"
+            stroke="var(--diagram-arrow)" stroke-width="2" stroke-dasharray="4,2"/>
+      <line x1="230" y1="110" x2="400" y2="110"
+            stroke="var(--diagram-arrow)" stroke-width="2" stroke-dasharray="4,2"/>
+      <text x="315" y="105" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        정밀도 정보 전달
+      </text>
+
+      <!-- Attention Box -->
+      <rect x="30" y="140" width="200" height="60" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="130" y="162" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">
+        Attention
+      </text>
+      <text x="130" y="182" text-anchor="middle" fill="var(--diagram-text)" font-size="9">
+        Q × Kᵀ → Softmax → V
+      </text>
+
+      <!-- FFN Box -->
+      <rect x="250" y="140" width="200" height="60" rx="6"
+            fill="var="bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="350" y="162" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">
+        Feed-Forward Network
+      </text>
+      <text x="350" y="182" text-anchor="middle" fill="var(--diagram-text)" font-size="9">
+        GELU + Linear
+      </text>
+
+      <!-- Precision Info Box -->
+      <rect x="470" y="140" width="200" height="60" rx="6"
+            fill="var(--accent-primary)" fill-opacity="0.15"
+            stroke="var(--accent-primary)" stroke-width="1.5"/>
+      <text x="570" y="162" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">
+        정밀도 선택
+      </text>
+      <text x="570" y="182" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        FP8: 2× 처리량
+      </text>
+      <text x="570" y="194" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        FP16: 높은 정확도
+      </text>
+
+      <!-- Performance Box -->
+      <rect x="30" y="240" width="640" height="100" rx="6"
+            fill="var(--accent-primary)" fill-opacity="0.15"
+            stroke="var(--accent-primary)" stroke-width="1.5"/>
+      <text x="350" y="268" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        Hopper Transformer Engine 성능 향상
+      </text>
+      <text x="350" y="295" text-anchor="middle" fill="var(--diagram-text)" font-size="10">
+        LLM 학습: 9배 | 추론: 30배 (vs A100)
+      </text>
+      <text x="350" y="318" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        FP8 정밀도로 처리량 2배 향상
+      </text>
+    </svg>
+    <p class="diagram-caption">그림 3-1: Hopper Transformer Engine 동작 원리</p>
+  </div>
+
+  <h3 id="hopper-h100">Hopper with Ada Lovelace (H100, 2022)</h3>
+  <p>H100 GPU는 NVIDIA Hopper 아키텍처(마이크로아키텍처는 Ada Lovelace)를 기반으로 하며, Transformer 엔진이 추가되어 LLM 추론에 최적화되었습니다.</p>
   <ul>
     <li>132개의 Tensor Core 클러스터 × 2 (H100)</li>
     <li>Transformer 엔진 (FP8 동적 정밀도)</li>
-    <li>FP8 추론 최적화</li>
-    <li>Dynamic Programming, Collective Operations 지원</li>
+    <li>FP8 추론 지원</li>
+    <li>NVLink 4세대 (900GB/s)</li>
+    <li>동적 프로그래밍, Collective Operations 지원</li>
   </ul>
 
   <h3 id="blackwell-b100">Blackwell (B100/B200, 2024)</h3>
-  <p>가장 최신 세대로, FP4 양자화와 대폭 향상된 추론 성능을 제공합니다.</p>
+  <p>가장 최신 세대로, FP4/NVFP4 양자화와 대폭 향상된 추론 성능을 제공합니다.</p>
   <ul>
-    <li>FP4 정밀도 지원</li>
-    <li>FP8 대비 2배 효율</li>
-    <li>제3세대 Tensor Core</li>
+    <li>제5세대 Tensor Core (FP4/FP6/FP8 지원)</li>
+    <li>NVFP4 정밀도 (NVIDIA 특화 4비트 포맷)</li>
+    <li>FP8 대비 2배 효율, FP16 대비 3.5배 메모리 절약</li>
+    <li>NVLink 5세대 (1.8TB/s)</li>
+    <li>Dual-die 설계 (208B 트랜지스터)</li>
+  </ul>
+
+  <h3 id="blackwell-ultra">Blackwell Ultra (B200 Ultra, GB300, 2025)</h3>
+  <p>Blackwell의 진화형으로, NVFP4 정밀도와 2세대 Transformer Engine이 적용된 최신 제품입니다.</p>
+  <ul>
+    <li>NVFP4 dense 연산: 최대 15 PetaFLOPS</li>
+    <li>2세대 Transformer Engine (micro-tensor scaling)</li>
+    <li>256KB Tensor Memory (TMEM) 내장</li>
+    <li>Attention 레이어 가속화 2배 향상</li>
+    <li>HBM3E 최대 288GB 지원</li>
     <li>NVLink 5세대 (1.8TB/s)</li>
   </ul>
 
@@ -401,144 +576,308 @@ fragment&lt;accumulator&gt; <span class="fn">c_frag</span>;
         </marker>
       </defs>
 
+      <!-- First Row: Architecture Evolution -->
       <!-- Volta -->
-      <rect x="30" y="20" width="130" height="60" rx="6"
+      <rect x="20" y="20" width="100" height="50" rx="6"
             fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="95" y="45" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
-        Volta (2017)
+      <text x="70" y="40" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        Volta
       </text>
-      <text x="95" y="62" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
-        FP16, V100
+      <text x="70" y="56" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        2017
       </text>
 
-      <line x1="160" y1="50" x2="220" y2="50"
+      <line x1="120" y1="45" x2="160" y2="45"
             stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tc-gen-arrow)"/>
 
       <!-- Turing -->
-      <rect x="220" y="20" width="130" height="60" rx="6"
+      <rect x="160" y="20" width="100" height="50" rx="6"
             fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="285" y="45" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
-        Turing (2018)
+      <text x="210" y="40" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        Turing
       </text>
-      <text x="285" y="62" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
-        INT8/4, T4
+      <text x="210" y="56" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        2018
       </text>
 
-      <line x1="350" y1="50" x2="410" y2="50"
+      <line x1="260" y1="45" x2="300" y2="45"
             stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tc-gen-arrow)"/>
 
       <!-- Ampere -->
-      <rect x="410" y="20" width="130" height="60" rx="6"
+      <rect x="300" y="20" width="100" height="50" rx="6"
             fill="var(--accent-primary)" fill-opacity="0.2"
             stroke="var(--accent-primary)" stroke-width="2"/>
-      <text x="475" y="45" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
-        Ampere (2020)
+      <text x="350" y="40" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        Ampere
       </text>
-      <text x="475" y="62" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
-        TF32/BF16, A100
+      <text x="350" y="56" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        2020
       </text>
 
-      <line x1="540" y1="50" x2="600" y2="50"
+      <line x1="400" y1="45" x2="440" y2="45"
             stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tc-gen-arrow)"/>
 
-      <!-- Ada/Hopper -->
-      <rect x="600" y="20" width="80" height="60" rx="6"
+      <!-- Hopper -->
+      <rect x="440" y="20" width="100" height="50" rx="6"
             fill="var(--accent-primary)" fill-opacity="0.3"
             stroke="var(--accent-primary)" stroke-width="2"/>
-      <text x="640" y="45" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+      <text x="490" y="40" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
         Hopper
       </text>
-      <text x="640" y="62" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
-        FP8
+      <text x="490" y="56" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        2022
       </text>
 
-      <!-- Row 2 -->
-      <rect x="30" y="110" width="130" height="60" rx="6"
-            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="95" y="135" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
-        Volta (2017)
+      <line x1="540" y1="45" x2="580" y2="45"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#tc-gen-arrow)"/>
+
+      <!-- Blackwell -->
+      <rect x="580" y="20" width="100" height="50" rx="6"
+            fill="var(--accent-primary)" fill-opacity="0.4"
+            stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="630" y="40" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        Blackwell
       </text>
-      <text x="95" y="152" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+      <text x="630" y="56" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        2024
+      </text>
+
+      <!-- Second Row: Supported Precision -->
+      <rect x="20" y="90" width="100" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1"/>
+      <text x="70" y="115" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
         FP16 only
       </text>
 
-      <rect x="220" y="110" width="130" height="60" rx="6"
-            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="285" y="135" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
-        Turing (2018)
-      </text>
-      <text x="285" y="152" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+      <rect x="160" y="90" width="100" height="50" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1"/>
+      <text x="210" y="115" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
         + INT8/4
       </text>
 
-      <rect x="410" y="110" width="130" height="60" rx="6"
-            fill="var(--accent-primary)" fill-opacity="0.2"
-            stroke="var(--accent-primary)" stroke-width="2"/>
-      <text x="475" y="135" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
-        Ampere (2020)
-      </text>
-      <text x="475" y="152" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
-        + TF32/BF16/Sparse
+      <rect x="300" y="90" width="100" height="50" rx="6"
+            fill="var(--accent-primary)" fill-opacity="0.15"
+            stroke="var(--accent-primary)" stroke-width="1"/>
+      <text x="350" y="115" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        + TF32/BF16
       </text>
 
-      <rect x="600" y="110" width="80" height="60" rx="6"
+      <rect x="440" y="90" width="100" height="50" rx="6"
+            fill="var(--accent-primary)" fill-opacity="0.2"
+            stroke="var(--accent-primary)" stroke-width="1"/>
+      <text x="490" y="115" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        + FP8/TE
+      </text>
+
+      <rect x="580" y="90" width="100" height="50" rx="6"
             fill="var(--accent-primary)" fill-opacity="0.3"
             stroke="var(--accent-primary)" stroke-width="2"/>
-      <text x="640" y="135" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
-        Hopper
-      </text>
-      <text x="640" y="152" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
-        + FP8/Transformer
+      <text x="630" y="115" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">
+        + FP4/FP6
       </text>
 
       <!-- Performance Comparison -->
-      <rect x="30" y="200" width="650" height="100" rx="6"
+      <rect x="20" y="165" width="660" height="120" rx="6"
             fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="355" y="225" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+      <text x="350" y="190" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
         상대적 추론 성능 (FP16/BF16 기준)
       </text>
 
       <!-- V100 bar -->
-      <rect x="50" y="240" width="80" height="30" rx="4"
+      <rect x="40" y="210" width="80" height="30" rx="4"
             fill="var(--border-color)"/>
-      <text x="90" y="260" text-anchor="middle" fill="var(--bg-secondary)" font-size="10">
+      <text x="80" y="230" text-anchor="middle" fill="var(--bg-secondary)" font-size="10">
         V100
       </text>
-      <text x="90" y="278" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+      <text x="80" y="250" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
         1x
       </text>
 
       <!-- A100 bar -->
-      <rect x="170" y="240" width="100" height="30" rx="4"
+      <rect x="150" y="210" width="90" height="30" rx="4"
             fill="var(--accent-primary)" fill-opacity="0.4"/>
-      <text x="220" y="260" text-anchor="middle" fill="var(--bg-secondary)" font-size="10">
+      <text x="195" y="230" text-anchor="middle" fill="var(--bg-secondary)" font-size="10">
         A100
       </text>
-      <text x="220" y="278" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+      <text x="195" y="250" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
         ~3x
       </text>
 
       <!-- H100 bar -->
-      <rect x="310" y="240" width="140" height="30" rx="4"
+      <rect x="270" y="210" width="110" height="30" rx="4"
             fill="var(--accent-primary)" fill-opacity="0.6"/>
-      <text x="380" y="260" text-anchor="middle" fill="var(--bg-secondary)" font-size="10">
+      <text x="325" y="230" text-anchor="middle" fill="var(--bg-secondary)" font-size="10">
         H100
       </text>
-      <text x="380" y="278" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
-        ~9x (FP8: ~30x)
+      <text x="325" y="250" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        ~9x
       </text>
 
-      <!-- B100 bar -->
-      <rect x="490" y="240" width="150" height="30" rx="4"
-            fill="var(--accent-primary)" fill-opacity="0.8"/>
-      <text x="565" y="260" text-anchor="middle" fill="var(--bg-secondary)" font-size="10">
+      <!-- H100 FP8 bar -->
+      <rect x="400" y="210" width="80" height="30" rx="4"
+            fill="var(--accent-primary)" fill-opacity="0.6"/>
+      <text x="440" y="230" text-anchor="middle" fill="var(--bg-secondary)" font-size="9">
+        H100 FP8
+      </text>
+      <text x="440" y="250" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        ~30x
+      </text>
+
+      <!-- B200 bar -->
+      <rect x="500" y="210" width="80" height="30" rx="4"
+            fill="var(--accent-primary)" fill-opacity="0.7"/>
+      <text x="540" y="230" text-anchor="middle" fill="var(--bg-secondary)" font-size="10">
         B200
       </text>
-      <text x="565" y="278" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
-        ~30x (FP4: ~60x)
+      <text x="540" y="250" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        ~30x
+      </text>
+
+      <!-- B200 Ultra bar -->
+      <rect x="600" y="210" width="80" height="30" rx="4"
+            fill="var(--accent-primary)" fill-opacity="0.9"/>
+      <text x="640" y="230" text-anchor="middle" fill="var(--bg-secondary)" font-size="9">
+        B200 Ultra
+      </text>
+      <text x="640" y="250" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        ~40x
+      </text>
+
+      <!-- Performance notes -->
+      <text x="350" y="280" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        FP4 양자화 시 추가 2배 향상 (B200: ~60x, Ultra: ~80x)
       </text>
     </svg>
     <p class="diagram-caption">그림 3: Tensor Core 세대별 발전과 성능 비교</p>
+  </div>
+
+  <h3 id="blackwell-5th-gen">Blackwell 5세대 Tensor Core 기술</h3>
+  <p>Blackwell 아키텍처의 5세대 Tensor Core는 이전 세대와는 근본적으로 다른 설계 철학을 가집니다.</p>
+
+  <h4 id="warp-async-mma">비동기 MMA (Warp-group MMA)</h4>
+  <p>이전 세대(Volta, Ampere, Hopper)까지는 warp 내 32개 스레드가 동기화되어 행렬 곱셈을 수행하는 warp-synchronous 모델을 사용했습니다. Blackwell에서는 <code>tcgen05.mma</code> 명령어를 통해 각 스레드가 독립적으로 MMA를 수행할 수 있어 유연성이 크게 향상되었습니다.</p>
+
+  <div class="info-box info">
+    <strong>tcgen05 명령어:</strong> Blackwell에서 도입된 새로운 PTX 명령어로, 단일 스레드에서 Tensor Core 행렬 연산을 수행합니다. 이전 세대의 <code>mma.sync</code>, <code>wgmma</code>와 달리 스레드 간 동기화 오버헤드가 없어 더 효율적인 스케줄링이 가능합니다.
+  </div>
+
+  <h4 id="micro-tensor-scaling">Micro-Tensor Scaling</h4>
+  <p>Blackwell 2세대 Transformer Engine은 micro-tensor scaling 기술을 사용하여 FP4 정밀도의 정확도 손실을 최소화합니다. 이 기술은 16개 값 블록마다 FP8(E4M3) 마이크로 스케일을 적용하고, 텐서 레벨에서 FP32 스케일을 추가로 적용하는 2단계 스케일링 방식입니다.</p>
+
+  <h4 id="tmem-tensor-memory">Tensor Memory (TMEM)</h4>
+  <p>Blackwell SM당 256KB의 Tensor Memory가 내장되어 있습니다. 이는 warp 동기적으로 중간 결과를 저장하여 off-chip 메모리 트래픽을 줄이고 데이터 재사용을 극대화합니다.</p>
+
+  <div class="diagram-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 340"
+         style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
+      <defs>
+        <marker id="bb-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
+                markerWidth="10" markerHeight="7" orient="auto">
+          <polygon points="0 0, 10 3.5, 0 7" fill="var(--diagram-arrow)"/>
+        </marker>
+      </defs>
+
+      <!-- Hopper vs Blackwell Comparison -->
+      <rect x="30" y="20" width="310" height="90" rx="8"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="185" y="42" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        Hopper (4th Gen Tensor Core)
+      </text>
+      <text x="185" y="60" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        Warp-synchronous MMA (wgmma)
+      </text>
+      <text x="185" y="75" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        FP8 / FP16 / BF16 / TF32
+      </text>
+      <text x="185" y="90" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        1세대 Transformer Engine
+      </text>
+
+      <line x1="340" y1="65" x2="370" y2="65"
+            stroke="var(--diagram-arrow)" stroke-width="3" marker-end="url(#bb-arrow)"/>
+
+      <!-- Blackwell -->
+      <rect x="370" y="20" width="300" height="90" rx="8"
+            fill="var(--accent-primary)" fill-opacity="0.2"
+            stroke="var(--accent-primary)" stroke-width="2.5"/>
+      <text x="520" y="42" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        Blackwell (5th Gen Tensor Core)
+      </text>
+      <text x="520" y="60" text-anchor="middle" fill="var(--diagram-text)" font-size="9">
+        Asynchronous MMA (tcgen05)
+      </text>
+      <text x="520" y="75" text-anchor="middle" fill="var(--diagram-text)" font-size="9">
+        FP4 / FP6 / FP8 / FP16 / BF32
+      </text>
+      <text x="520" y="90" text-anchor="middle" fill="var(--diagram-text)" font-size="9">
+        2세대 Transformer Engine
+      </text>
+
+      <!-- NVFP4 Direct Conversion -->
+      <rect x="30" y="140" width="640" height="80" rx="8"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="350" y="162" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
+        NVFP4 양자화 (Direct Conversion)
+      </text>
+      <text x="350" y="182" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+        FP16/FP32 → NVFP4 (2단계 스케일링)
+      </text>
+
+      <!-- Block 1: Input -->
+      <rect x="50" y="200" width="120" height="30" rx="4"
+            fill="var(--diagram-accent)" fill-opacity="0.3" stroke="var(--diagram-accent)" stroke-width="1.5"/>
+      <text x="110" y="220" text-anchor="middle" fill="var(--diagram-text)" font-size="9">
+        FP16/FP32
+      </text>
+
+      <line x1="170" y1="215" x2="210" y2="215"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#bb-arrow)"/>
+
+      <!-- Block 2: NVFP4 Quantization -->
+      <rect x="210" y="200" width="180" height="30" rx="4"
+            fill="var(--accent-primary)" fill-opacity="0.3" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="300" y="220" text-anchor="middle" fill="var(--diagram-text)" font-size="9" font-weight="bold">
+        NVFP4 양자화
+      </text>
+      <text x="300" y="232" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        (마이크로 + 텐서 스케일)
+      </text>
+
+      <line x1="390" y1="215" x2="430" y2="215"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#bb-arrow)"/>
+
+      <!-- Block 3: Tensor Core -->
+      <rect x="430" y="200" width="80" height="30" rx="4"
+            fill="var(--accent-primary)" fill-opacity="0.5" stroke="var(--accent-primary)" stroke-width="2"/>
+      <text x="470" y="220" text-anchor="middle" fill="var(--diagram-text)" font-size="9" font-weight="bold">
+        Tensor Core
+      </text>
+
+      <line x1="510" y1="215" x2="550" y2="215"
+            stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#bb-arrow)"/>
+
+      <!-- Block 4: Output -->
+      <rect x="550" y="200" width="100" height="30" rx="4"
+            fill="var(--diagram-accent)" fill-opacity="0.2" stroke="var(--diagram-accent)" stroke-width="1.5"/>
+      <text x="600" y="220" text-anchor="middle" fill="var(--diagram-text)" font-size="9">
+        결과 출력
+      </text>
+
+      <!-- Benefits Box -->
+      <rect x="30" y="255" width="640" height="70" rx="6"
+            fill="var(--diagram-accent)" fill-opacity="0.1"
+            stroke="var(--diagram-accent)" stroke-width="1.5"/>
+      <text x="350" y="280" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        NVFP4 이점
+      </text>
+      <text x="350" y="300" text-anchor="middle" fill="var(--diagram-text)" font-size="10">
+        FP8 유사 정확도 | FP8 대비 1.8×, FP16 대비 3.5× 메모리 절약
+      </text>
+      <text x="350" y="316" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
+        하드웨어 가속 양자화 (정확도 손실 1% 이내)
+      </text>
+    </svg>
+    <p class="diagram-caption">그림 3-2: Blackwell 5세대 Tensor Core vs Hopper + NVFP4 양자화</p>
   </div>
 </section>
 
@@ -549,7 +888,16 @@ fragment&lt;accumulator&gt; <span class="fn">c_frag</span>;
   <h3 id="inference-optimization">추론 최적화 기법</h3>
 
   <h4 id="kv-cache-optimization">KV Cache 최적화</h4>
-  <p>추론 시 이전 토큰의 Key-Value 행렬을 캐싱하여 중복 계산을 방지합니다. Tensor Core는 이 KV 캐시 행렬 곱셈을 가속화합니다.</p>
+  <p>추론 시 이전 토큰의 Key-Value 행렬을 캐싱하여 중복 계산을 방지합니다. Tensor Core는 이 KV 캐시 행렬 곱셈을 가속화합니다. Blackwell에서는 TMEM(Tensor Memory)을 통해 KV 캐시를 더 효율적으로 관리합니다.</p>
+
+  <h4 id="blackwell-inference">Blackwell Inference 최적화</h4>
+  <p>Blackwell GPU는 추론에 최적화된 여러 기능을 제공합니다:</p>
+  <ul>
+    <li><strong>FP4/FP6 양자화:</strong> KV 캐시와 가중치를 4비트로 양자화하여 메모리 사용량 최소화</li>
+    <li><strong>NVFP4:</strong> Blackwell Ultra 특화 포맷으로 FP8 유사 정확도 달성</li>
+    <li><strong>2세대 Transformer Engine:</strong> 동적 정밀도 선택으로 각 레이어에 최적 정밀도 적용</li>
+    <li><strong>Tensor Memory 활용:</strong> TMEM에서 KV 캐시 직접 처리로 메모리 대역폭 절약</li>
+  </ul>
 
   <h4 id="quantization">양자화 (Quantization)</h4>
   <p>FP16/BF16에서 INT8/INT4로 모델을 양자화하여 메모리와 대역폭을 절약하면서 추론 속도를 향상시킵니다.</p>
@@ -600,7 +948,7 @@ scaler = <span class="fn">GradScaler</span>()
   <p>메모리 제약으로 큰 배치 크기를 사용하지 못하는 경우, 작은 배치의 그래디언트를 누적하여 동일한 효과를 얻습니다.</p>
 
   <div class="diagram-container">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 380"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 480"
          style="width:100%;max-width:700px;display:block;margin:1.5em auto;">
       <defs>
         <marker id="llm-arrow" viewBox="0 0 10 7" refX="10" refY="3.5"
@@ -609,107 +957,153 @@ scaler = <span class="fn">GradScaler</span>()
         </marker>
       </defs>
 
+      <!-- Top: LLM Forward Pass -->
       <!-- Input Tokens -->
-      <rect x="20" y="30" width="140" height="50" rx="6"
+      <rect x="30" y="20" width="100" height="40" rx="6"
             fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="90" y="60" text-anchor="middle" fill="var(--diagram-text)" font-size="12">
-        Input Tokens
+      <text x="80" y="45" text-anchor="middle" fill="var(--diagram-text)" font-size="10">
+        Input
       </text>
 
       <!-- Embedding -->
-      <rect x="200" y="30" width="120" height="50" rx="6"
+      <rect x="150" y="20" width="90" height="40" rx="6"
             fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="260" y="60" text-anchor="middle" fill="var(--diagram-text)" font-size="12">
+      <text x="195" y="45" text-anchor="middle" fill="var(--diagram-text)" font-size="10">
         Embedding
       </text>
 
-      <line x1="160" y1="55" x2="200" y2="55"
+      <line x1="130" y1="40" x2="150" y2="40"
             stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#llm-arrow)"/>
 
-      <!-- Transformer Block 1 -->
-      <rect x="360" y="10" width="200" height="90" rx="8"
+      <!-- Transformer Block -->
+      <rect x="260" y="10" width="160" height="60" rx="8"
             fill="var(--accent-primary)" fill-opacity="0.15"
             stroke="var(--accent-primary)" stroke-width="2"/>
-      <text x="460" y="35" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
-        Transformer Block 1
+      <text x="340" y="32" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">
+        Transformer Block
       </text>
-      <text x="460" y="52" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
+      <text x="340" y="48" text-anchor="middle" fill="var(--diagram-text)" font-size="9">
         Attention + FFN
       </text>
-      <text x="460" y="69" text-anchor="middle" fill="var(--diagram-accent)" font-size="10">
-        Tensor Core: Q×Kᵀ, V
+      <text x="340" y="62" text-anchor="middle" fill="var(--diagram-accent)" font-size="8">
+        Tensor Core 연산
       </text>
 
-      <line x1="320" y1="55" x2="360" y2="55"
+      <line x1="240" y1="40" x2="260" y2="40"
             stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#llm-arrow)"/>
 
-      <!-- ... More Blocks -->
-      <rect x="360" y="110" width="200" height="30" rx="6"
-            fill="var(--border-color)" stroke="var(--border-color)" stroke-width="1" stroke-dasharray="4,2"/>
-      <text x="460" y="130" text-anchor="middle" fill="var(--text-secondary)" font-size="10">
-        ... (N blocks)
-      </text>
-
       <!-- Output -->
-      <rect x="600" y="30" width="80" height="50" rx="6"
+      <rect x="440" y="20" width="80" height="40" rx="6"
             fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="640" y="60" text-anchor="middle" fill="var(--diagram-text)" font-size="11">
+      <text x="480" y="45" text-anchor="middle" fill="var(--diagram-text)" font-size="10">
         Output
       </text>
 
-      <line x1="560" y1="55" x2="600" y2="55"
+      <line x1="420" y1="40" x2="440" y2="40"
             stroke="var(--diagram-arrow)" stroke-width="2" marker-end="url(#llm-arrow)"/>
 
-      <!-- GPU Memory Layout -->
-      <rect x="20" y="180" width="660" height="180" rx="6"
-            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="350" y="205" text-anchor="middle" fill="var(--diagram-text)" font-size="12" font-weight="bold">
-        GPU Memory & Tensor Core 활용
+      <!-- Connection: Transformer ↔ Memory -->
+      <line x1="340" y1="70" x2="340" y2="100"
+            stroke="var(--diagram-arrow)" stroke-width="2"/>
+      <text x="350" y="88" text-anchor="middle" fill="var(--diagram-arrow)" font-size="8" font-weight="bold">
+        데이터 읽기/쓰기
       </text>
 
-      <!-- Weights -->
-      <rect x="40" y="220" width="180" height="50" rx="4"
+      <!-- Middle: Legend -->
+      <rect x="30" y="100" width="640" height="22" rx="4"
+            fill="var(--diagram-accent)" fill-opacity="0.1"
+            stroke="var(--diagram-accent)" stroke-width="1" stroke-dasharray="4,2"/>
+      <text x="350" y="116" text-anchor="middle" fill="var(--diagram-accent)" font-size="9" font-weight="bold">
+        GPU HBM Memory ↔ Tensor Core 데이터 흐름
+      </text>
+
+      <!-- Bottom: Memory Layout -->
+      <rect x="30" y="135" width="640" height="160" rx="6"
+            fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
+      <text x="350" y="158" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
+        GPU HBM (High Bandwidth Memory)
+      </text>
+
+      <!-- Model Weights -->
+      <rect x="50" y="175" width="120" height="50" rx="4"
             fill="var(--diagram-accent)" fill-opacity="0.3" stroke="var(--diagram-accent)" stroke-width="1.5"/>
-      <text x="130" y="250" text-anchor="middle" fill="var(--diagram-text)" font-size="11">
+      <text x="110" y="198" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">
         Model Weights
+      </text>
+      <text x="110" y="216" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        (읽기 전용)
+      </text>
+
+      <!-- Arrow: Weights → Transformer -->
+      <line x1="110" y1="175" x2="110" y2="120"
+            stroke="var(--diagram-arrow)" stroke-width="2"/>
+      <text x="118" y="150" text-anchor="middle" fill="var(--diagram-arrow)" font-size="7">
+        읽기
       </text>
 
       <!-- KV Cache -->
-      <rect x="250" y="220" width="180" height="50" rx="4"
+      <rect x="200" y="175" width="120" height="50" rx="4"
             fill="var(--diagram-accent)" fill-opacity="0.2" stroke="var(--diagram-accent)" stroke-width="1.5"/>
-      <text x="340" y="250" text-anchor="middle" fill="var(--diagram-text)" font-size="11">
+      <text x="260" y="198" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">
         KV Cache
+      </text>
+      <text x="260" y="216" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        (읽기/쓰기)
+      </text>
+
+      <!-- Arrow: KV Cache ↔ Transformer (bidirectional) -->
+      <line x1="260" y1="175" x2="260" y2="120"
+            stroke="var(--diagram-arrow)" stroke-width="2"/>
+      <text x="268" y="150" text-anchor="middle" fill="var(--diagram-arrow)" font-size="7">
+        읽기
+      </text>
+      <line x1="260" y1="295" x2="260" y2="330"
+            stroke="var(--diagram-accent)" stroke-width="2"/>
+      <text x="268" y="315" text-anchor="middle" fill="var(--diagram-accent)" font-size="7">
+        쓰기
       </text>
 
       <!-- Activations -->
-      <rect x="460" y="220" width="180" height="50" rx="4"
+      <rect x="350" y="175" width="120" height="50" rx="4"
             fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="1.5"/>
-      <text x="550" y="250" text-anchor="middle" fill="var(--diagram-text)" font-size="11">
+      <text x="410" y="198" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">
         Activations
       </text>
+      <text x="410" y="216" text-anchor="middle" fill="var(--text-secondary)" font-size="8">
+        (읽기/쓰기)
+      </text>
 
-      <!-- Tensor Core -->
-      <rect x="160" y="300" width="200" height="40" rx="6"
+      <!-- Arrow: Activations ↔ Transformer -->
+      <line x1="410" y1="175" x2="410" y2="120"
+            stroke="var(--diagram-arrow)" stroke-width="2"/>
+      <text x="418" y="150" text-anchor="middle" fill="var(--diagram-arrow)" font-size="7">
+        읽기
+      </text>
+      <line x1="410" y1="295" x2="410" y2="330"
+            stroke="var(--diagram-accent)" stroke-width="2"/>
+      <text x="418" y="315" text-anchor="middle" fill="var(--diagram-accent)" font-size="7">
+        쓰기
+      </text>
+
+      <!-- Tensor Core Operations -->
+      <rect x="500" y="170" width="140" height="60" rx="6"
             fill="var(--accent-primary)" fill-opacity="0.3"
             stroke="var(--accent-primary)" stroke-width="2"/>
-      <text x="260" y="325" text-anchor="middle" fill="var(--diagram-text)" font-size="11" font-weight="bold">
-        Tensor Core Operations
+      <text x="570" y="195" text-anchor="middle" fill="var(--diagram-text)" font-size="10" font-weight="bold">
+        Tensor Core
       </text>
-      <text x="260" y="340" text-anchor="middle" fill="var(--text-secondary)" font-size="9">
-        Q×Kᵀ, Attention, FFN, Output Projection
+      <text x="570" y="213" text-anchor="middle" fill="var(--diagram-text)" font-size="9">
+        MMA 연산 수행
       </text>
 
-      <!-- Arrows to Tensor Core -->
-      <line x1="130" y1="270" x2="130" y2="300"
-            stroke="var(--diagram-arrow)" stroke-width="1.5"/>
-      <line x1="220" y1="270" x2="220" y2="300"
-            stroke="var(--diagram-arrow)" stroke-width="1.5"/>
-      <line x1="340" y1="270" x2="340" y2="300"
-            stroke="var(--diagram-arrow)" stroke-width="1.5"/>
-      <line x1="430" y1="270" x2="430" y2="300"
-            stroke="var(--diagram-arrow)" stroke-width="1.5"/>
+      <!-- Arrow: Tensor Core result → Memory -->
+      <line x1="570" y1="230" x2="570" y2="265"
+            stroke="var(--diagram-accent)" stroke-width="2"/>
+      <text x="578" y="250" text-anchor="middle" fill="var(--diagram-accent)" font-size="7">
+        결과 저장
+      </text>
     </svg>
-    <p class="diagram-caption">그림 4: LLM 추론에서 Tensor Core 활용 구조</p>
+    <p class="diagram-caption">그림 4: LLM 추론에서 Tensor Core와 GPU Memory 데이터 흐름</p>
   </div>
 </section>
 
@@ -793,58 +1187,91 @@ outputs = llm.generate(
   <p>LLM 추론에서 Tensor Core의 성능 영향을 이해하기 위한 벤치마크 가이드입니다.</p>
 
   <h3 id="llm-benchmark">추론 성능 비교</h3>
+  <p>아래 수치는 70B 파라미터 LLM 기준이며, 실제 성능은 모델 아키텍처, 배치 크기, KV 캐시 크기 등에 따라 달라질 수 있습니다.</p>
   <table>
     <thead>
       <tr>
         <th>GPU</th>
+        <th>아키텍처</th>
         <th>정밀도</th>
-        <th> throughput (tokens/s)</th>
+        <th>Throughput (tokens/s)</th>
         <th>Latency (ms)</th>
         <th>VRAM</th>
+        <th>대역폭</th>
       </tr>
     </thead>
     <tbody>
       <tr>
         <td>A100-40GB</td>
+        <td>Ampere</td>
         <td>FP16</td>
         <td>~50</td>
         <td>~200</td>
         <td>40GB</td>
+        <td>2TB/s</td>
       </tr>
       <tr>
         <td>A100-80GB</td>
+        <td>Ampere</td>
         <td>FP16</td>
         <td>~80</td>
         <td>~125</td>
         <td>80GB</td>
+        <td>2TB/s</td>
       </tr>
       <tr>
         <td>H100</td>
+        <td>Hopper</td>
         <td>FP16</td>
         <td>~200</td>
         <td>~50</td>
         <td>80GB</td>
+        <td>3.2TB/s</td>
       </tr>
       <tr>
         <td>H100</td>
+        <td>Hopper</td>
         <td>FP8</td>
         <td>~500</td>
         <td>~20</td>
         <td>80GB</td>
+        <td>3.2TB/s</td>
+      </tr>
+      <tr>
+        <td>H200</td>
+        <td>Hopper</td>
+        <td>FP8</td>
+        <td>~700</td>
+        <td>~14</td>
+        <td>141GB</td>
+        <td>4.8TB/s</td>
       </tr>
       <tr>
         <td>B200</td>
+        <td>Blackwell</td>
         <td>FP8</td>
         <td>~1800</td>
         <td>~5</td>
         <td>192GB</td>
+        <td>8TB/s</td>
       </tr>
       <tr>
         <td>B200</td>
+        <td>Blackwell</td>
         <td>FP4</td>
         <td>~3500</td>
         <td>~3</td>
         <td>192GB</td>
+        <td>8TB/s</td>
+      </tr>
+      <tr>
+        <td>B200 Ultra</td>
+        <td>Blackwell Ultra</td>
+        <td>NVFP4</td>
+        <td>~4000</td>
+        <td>~2</td>
+        <td>288GB</td>
+        <td>8TB/s</td>
       </tr>
     </tbody>
   </table>
@@ -858,24 +1285,34 @@ outputs = llm.generate(
   <h2 id="best-practices">모범 사례</h2>
   <ul>
     <li><strong>드라이버 업데이트:</strong> 최신 NVIDIA 드라이버로 Tensor Core 최적화 활용</li>
-    <li><strong>CUDA 버전:</strong> CUDA 11.8 이상 (Tensor Core 완전 지원)</li>
-    <li><strong>PyTorch 버전:</strong> 1.13 이상 (AMP 및 Tensor Core 자동 활용)</li>
-    <li><strong>정밀도 선택:</strong> 학습은 BF16, 추론은 FP8/INT8</li>
+    <li><strong>CUDA 버전:</strong> CUDA 12.8 이상 (Blackwell 5세대 Tensor Core 완전 지원)</li>
+    <li><strong>PyTorch 버전:</strong> 2.4 이상 (FP8, Blackwell 지원)</li>
+    <li><strong>정밀도 선택:</strong> 
+      <ul>
+        <li>학습: BF16 (Ampere+)</li>
+        <li>추론 (H100): FP8</li>
+        <li>추론 (Blackwell Ultra): NVFP4 또는 FP4</li>
+      </ul>
+    </li>
     <li><strong>배치 크기:</strong> VRAM 대비 최대 배치 크기 시도</li>
     <li><strong>vLLM/TensorRT-LLM:</strong> 추론 최적화 프레임워크 사용</li>
+    <li><strong>Blackwell 활용:</strong> TMEM 활성화, FP4/NVFP4 양자화 적용</li>
+    <li><strong>메모리 대역폭:</strong> Blackwell HBM3e 8TB/s 최대한 활용</li>
   </ul>
 </section>
 
-<section class="content-section">
-  <h2 id="references">참고자료</h2>
-  <ul>
-    <li><a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#tensor-cores" target="_blank" rel="noopener">NVIDIA CUDA Tensor Core 문서</a></li>
-    <li><a href="https://developer.nvidia.com/blog/nvidia-hopper-architecture-introduction/" target="_blank" rel="noopener">NVIDIA Hopper Architecture</a></li>
-    <li><a href="https://pytorch.org/docs/stable/amp.html" target="_blank" rel="noopener">PyTorch Automatic Mixed Precision</a></li>
-    <li><a href="https://docs.vllm.ai/" target="_blank" rel="noopener">vLLM 문서</a></li>
-    <li><a href="pages/llm-theory.html">LLM 이론 종합</a></li>
-    <li><a href="pages/gguf-format.html">GGUF 모델 포맷 (양자화)</a></li>
-  </ul>
+  <section class="content-section">
+    <h2 id="references">참고자료</h2>
+    <ul>
+      <li><a href="https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#tensor-cores" target="_blank" rel="noopener">NVIDIA CUDA Tensor Core 문서</a></li>
+      <li><a href="https://developer.nvidia.com/blog/nvidia-hopper-architecture-introduction/" target="_blank" rel="noopener">NVIDIA Hopper Architecture</a></li>
+      <li><a href="https://www.nvidia.com/en-us/data-center/technologies/blackwell-architecture/" target="_blank" rel="noopener">NVIDIA Blackwell Architecture</a></li>
+      <li><a href="https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/" target="_blank" rel="noopener">NVIDIA Blackwell Ultra - AI Factory Era</a></li>
+      <li><a href="https://pytorch.org/docs/stable/amp.html" target="_blank" rel="noopener">PyTorch Automatic Mixed Precision</a></li>
+      <li><a href="https://docs.vllm.ai/" target="_blank" rel="noopener">vLLM 문서</a></li>
+      <li><a href="pages/llm-theory.html">LLM 이론 종합</a></li>
+      <li><a href="pages/gguf-format.html">GGUF 모델 포맷 (양자화)</a></li>
+    </ul>
 
   <div class="info-box info">
     <strong>다음 학습:</strong>
